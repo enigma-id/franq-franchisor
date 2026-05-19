@@ -1,0 +1,28 @@
+html {
+  font-family: Roboto, sans-serif;
+}
+
+.recharts-surface {
+    outline: none !important;
+    border: none !important;
+    & * {
+        outline: none !important;
+        border: none !important;
+    }
+    &:focus {
+        outline: none !important;
+        border: none !important;
+    }
+}
+
+@layer utilities {
+    /* hide scrollbar but keep scrolling */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE & Edge */
+        scrollbar-width: none;     /* Firefox */
+    }
+}
