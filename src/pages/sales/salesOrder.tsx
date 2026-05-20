@@ -21,7 +21,7 @@ export function SalesOrder() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="sales"
+        category="Operations"
         title="Sales Order"
         subtitle="Kelola transaksi penjualan ke seluruh outlet."
         action={

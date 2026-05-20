@@ -77,7 +77,7 @@ export function SettlementMonthly() {
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-      <Page.Header category="Report" title="Settlement Monthly" subtitle="" />
+      <Page.Header category="Operations" title="Settlement Monthly" subtitle="" />
       <Page.Body className="flex-1 flex flex-col min-h-0 ">
         <SettlementSummaryCards summary={summary} />
 

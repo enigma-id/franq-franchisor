@@ -21,32 +21,25 @@ const createTableConfig = ({
   filter,
   onRowClick,
   columns: {
-    name: {
-      title: "Nama Skema",
-      sortable: true,
-      component: (row: any) => (
-        <span className="text-sm font-semibold">{row?.name ?? "-"}</span>
-      ),
-    },
     min_nominal: {
       title: "Min Nominal",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm font-semibold text-right block">
+        <span className="text-sm font-semibold text-left block">
           Rp {Number(row?.min_nominal ?? 0).toLocaleString("id-ID")}
         </span>
       ),
-      align: "right",
+      align: "left",
     },
     bonus: {
       title: "Bonus",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm font-semibold text-right block">
+        <span className="text-sm font-semibold text-left block">
           {row?.bonus ?? 0}%
         </span>
       ),
-      align: "right",
+      align: "left",
     },
     actions: {
       title: "",
@@ -87,7 +80,9 @@ const createTableConfig = ({
               </div>
               <div className="flex flex-col items-start leading-tight">
                 <span className="font-bold text-[13px]">Delete</span>
-                <span className="text-[11px] text-slate-400">Remove schema</span>
+                <span className="text-[11px] text-slate-400">
+                  Remove schema
+                </span>
               </div>
             </button>
           </Dropdown.Item>

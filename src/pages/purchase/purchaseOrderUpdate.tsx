@@ -2,18 +2,18 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Button, Loading } from "@/components/ui";
-import { usePOSCatalog } from "@/services/pos/hooks";
+import { usePurchaseOrder } from "@/services/purchase/hooks";
 import { Save, RefreshCw } from "lucide-react";
 import { useEnigmaUI } from "@/components";
 import {
-  PosCatalogForm,
-  type PosCatalogFormData,
-} from "./components/posCatalogForm";
+  PurchaseOrderForm,
+  type PurchaseOrderFormData,
+} from "./components/purchaseOrderForm";
 
-export function PosCatalogUpdate() {
+export function PurchaseOrderUpdate() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { show, showResult, update, updateResult } = usePOSCatalog();
+  const { show, showResult, update, updateResult } = usePurchaseOrder();
   const { isLoading: isLoadingDetail, data: detailData } = showResult;
   const { isLoading: isUpdating, isSuccess } = updateResult;
   const { showToast } = useEnigmaUI();
@@ -27,19 +27,19 @@ export function PosCatalogUpdate() {
   useEffect(() => {
     if (isSuccess) {
       showToast({
-        message: "Katalog POS berhasil diperbarui",
+        message: "Purchase Order berhasil diperbarui",
         type: "success",
         position: "bottom-center",
         duration: 4000,
       });
-      navigate("/setting/pos/catalog");
+      navigate(`/purchase/order/${id}`, { replace: true });
       updateResult.reset?.();
     }
-  }, [isSuccess, navigate, updateResult, showToast]);
+  }, [isSuccess, navigate, id, updateResult, showToast]);
 
-  const handleSubmit = (formData: PosCatalogFormData) => {
+  const handleSubmit = (formData: PurchaseOrderFormData) => {
     if (id) {
-      update({ id, ...formData });
+      update({ id, payload: { ...formData } });
     }
   };
 
@@ -48,14 +48,18 @@ export function PosCatalogUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Settings"
-        title="Ubah Katalog POS"
-        subtitle={initialData ? `Perbarui katalog POS: ${initialData.name}` : "Perbarui produk menu kasir POS."}
+        category="Operations"
+        title="Ubah Purchase Order"
+        subtitle={
+          initialData
+            ? `Perbarui pesanan dengan referensi: ${initialData.code || initialData.reff_code || id}`
+            : "Perbarui transaksi pengadaan bahan baku."
+        }
         backTo={() => navigate(-1)}
         action={
           <Button
             type="submit"
-            form="pos-catalog-form"
+            form="purchase-order-form"
             disabled={isUpdating || isLoadingDetail}
             variant="success"
           >
@@ -75,12 +79,12 @@ export function PosCatalogUpdate() {
           <div className="flex flex-col items-center justify-center h-64 space-y-4">
             <RefreshCw className="w-8 h-8 text-violet-600 animate-spin" />
             <p className="text-sm font-medium text-slate-500 animate-pulse">
-              Memuat detail katalog...
+              Memuat detail purchase order...
             </p>
           </div>
         ) : (
-          <PosCatalogForm
-            id="pos-catalog-form"
+          <PurchaseOrderForm
+            id="purchase-order-form"
             initialData={initialData}
             onSubmit={handleSubmit}
           />
@@ -90,4 +94,4 @@ export function PosCatalogUpdate() {
   );
 }
 
-export default PosCatalogUpdate;
+export default PurchaseOrderUpdate;

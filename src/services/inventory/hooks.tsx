@@ -29,10 +29,12 @@ export const useInventoryItem = createCrudHook({
     activate: { hook: useActivateItemMutation },
     deactivate: { hook: useDeactivateItemMutation },
   },
-  additionalQueries: {
-    fractions: useLazyGetItemFractionsQuery,
-  },
   entityName: "inventoryItem",
+});
+
+export const useItemFractions = createCrudHook({
+  useLazyShowQuery: useLazyGetItemFractionsQuery,
+  entityName: "itemFractions",
 });
 
 // Inventory Catalog

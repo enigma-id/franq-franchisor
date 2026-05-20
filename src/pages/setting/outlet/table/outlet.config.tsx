@@ -26,19 +26,16 @@ const createTableConfig = ({
       sortable: true,
       component: (row: any) => (
         <div>
-          <div className="text-sm font-bold">{row?.name ?? "-"}</div>
-          {row?.brand && (
-            <div className="text-xs text-gray-400">{row.brand}</div>
-          )}
+          <div className="text-sm font-bold">{row?.alias ?? "-"}</div>
         </div>
       ),
     },
-    outlet_type: {
+    type: {
       title: "Type",
       sortable: true,
       component: (row: any) => (
         <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-medium">
-          {row?.outlet_type?.name ?? "-"}
+          {row?.type?.name ?? "-"}
         </span>
       ),
       align: "center",
@@ -48,7 +45,9 @@ const createTableConfig = ({
       component: (row: any) => (
         <div>
           <div className="text-sm">{row?.phone ?? "-"}</div>
-          <div className="text-xs text-gray-400">{row?.recipient ?? "-"}</div>
+          <div className="text-xs text-gray-400">
+            {row?.recipient_name ?? "-"}
+          </div>
         </div>
       ),
     },
@@ -56,14 +55,18 @@ const createTableConfig = ({
       title: "Kabupaten",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm text-gray-600">{row?.regency?.name ?? "-"}</span>
+        <span className="text-sm text-gray-600">
+          {row?.village?.district?.regency?.regency_alias ?? "-"}
+        </span>
       ),
     },
     village: {
       title: "Kecamatan",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm text-gray-600">{row?.village?.name ?? "-"}</span>
+        <span className="text-sm text-gray-600">
+          {row?.village?.city ?? "-"}
+        </span>
       ),
     },
     shipping_time: {
@@ -79,7 +82,7 @@ const createTableConfig = ({
         };
         return (
           <span className="text-xs text-gray-500">
-            {time ? labels[time] ?? time : "-"}
+            {time ? (labels[time] ?? time) : "-"}
           </span>
         );
       },
@@ -124,7 +127,9 @@ const createTableConfig = ({
               </div>
               <div className="flex flex-col items-start leading-tight">
                 <span className="font-bold text-[13px]">Delete</span>
-                <span className="text-[11px] text-slate-400">Remove outlet</span>
+                <span className="text-[11px] text-slate-400">
+                  Remove outlet
+                </span>
               </div>
             </button>
           </Dropdown.Item>

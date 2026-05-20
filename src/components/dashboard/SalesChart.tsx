@@ -357,7 +357,7 @@ export const SalesChart: React.FC<SalesChartProps> = ({
   }
 
   return (
-    <div className="w-full rounded-3xl bg-white border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden">
+    <div className="w-full rounded-3xl bg-white border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden min-h-110">
       {/* Premium Header */}
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50/50">
         <div className="flex items-center gap-3">

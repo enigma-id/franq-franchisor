@@ -10,6 +10,7 @@ import { Plus } from "lucide-react";
 
 export function PurchaseOrder() {
   const navigate = useNavigate();
+
   const tableConfig = useMemo(() => {
     return createTableConfig({
       onRowClick: (row: any) => navigate(`/purchase/order/${row.id}`),
@@ -21,7 +22,7 @@ export function PurchaseOrder() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="purchase"
+        category="Operations"
         title="Purchase Order"
         subtitle="Kelola transaksi dan status order pembelian barang ke supplier."
         action={

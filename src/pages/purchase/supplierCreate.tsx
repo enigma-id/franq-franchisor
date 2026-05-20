@@ -33,7 +33,7 @@ export function PurchaseSupplierCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="purchase"
+        category="Operations"
         title="Tambah Supplier"
         subtitle="Registrasikan supplier logistik & bahan baku baru."
         backTo={() => navigate(-1)}

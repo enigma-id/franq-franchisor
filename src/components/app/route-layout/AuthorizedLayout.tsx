@@ -447,7 +447,7 @@ export function AuthorizedLayout() {
 
         {/* Page content */}
         <main
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-hidden"
           id="main-content"
           tabIndex={-1}
         >

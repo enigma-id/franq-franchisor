@@ -263,7 +263,7 @@ export function InventoryItemForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Base Price"
-              type="number"
+              type="currency"
               value={formData.base_price}
               onChange={(e) =>
                 handleInputChange("base_price", Number(e.target.value))

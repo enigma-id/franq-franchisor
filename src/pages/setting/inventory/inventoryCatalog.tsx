@@ -9,19 +9,56 @@ import { Button, Modal } from "@/components/ui";
 import { Plus } from "lucide-react";
 import { useEnigmaUI } from "@/components";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
+import { AssignOutletModal } from "./components/AssignOutletModal";
 
 export function InventoryCatalog() {
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
-  const { remove: removeCatalog, removeResult: removeCatalogResult } =
-    useInventoryCatalog();
+  const { openModal, closeModal, showToast } = useEnigmaUI();
+  const { 
+    remove: removeCatalog, 
+    removeResult: removeCatalogResult,
+    activate: activateCatalog,
+    activateResult: activateCatalogResult,
+    deactivate: deactivateCatalog,
+    deactivateResult: deactivateCatalogResult,
+  } = useInventoryCatalog();
+
+  const handleToggleActive = (v: any) => {
+    if (v.is_active) {
+      deactivateCatalog({ id: v.id as string });
+    } else {
+      activateCatalog({ id: v.id as string });
+    }
+  };
 
   const tableConfig = useMemo(() => createTableConfig({
-    onClick: (row: any) => navigate(`/setting/inventory/catalog/update/${row.id}`),
+    onClick: (row: any) =>
+      navigate(`/setting/inventory/catalog/update/${row.id}`),
     onRemove: (row: any) => openDelete(row),
-  }), [navigate]);
+    onOutletType: (row: any) => openOutletType(row),
+    onToggleActive: (row: any) => handleToggleActive(row),
+  }), [navigate, activateCatalog, deactivateCatalog]);
 
-  const Table = useTable("setting_inventory_catalog", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "setting_inventory_catalog",
+    tableConfig as TableConfig<unknown>,
+  );
+
+  const openOutletType = (row: any) => {
+    openModal({
+      id: "assign-outlet-catalog",
+      content: (
+        <AssignOutletModal
+          catalog={row}
+          onClose={() => closeModal("assign-outlet-catalog")}
+          onSuccess={() => {
+            closeModal("assign-outlet-catalog");
+            Table.boot();
+          }}
+        />
+      ),
+    });
+  };
 
   const openDelete = (v: any) => {
     openModal({
@@ -75,10 +112,36 @@ export function InventoryCatalog() {
     }
   }, [removeCatalogResult]);
 
+  useEffect(() => {
+    if (activateCatalogResult?.isSuccess) {
+      showToast({
+        message: "Catalog berhasil diaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      activateCatalogResult.reset?.();
+    }
+  }, [activateCatalogResult, Table, showToast]);
+
+  useEffect(() => {
+    if (deactivateCatalogResult?.isSuccess) {
+      showToast({
+        message: "Catalog berhasil dinonaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      deactivateCatalogResult.reset?.();
+    }
+  }, [deactivateCatalogResult, Table, showToast]);
+
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Inventory"
         title="Inventory Catalog"
         subtitle="Daftar catalog inventori yang tersedia."
         action={

@@ -3,7 +3,9 @@ import PurchaseSupplierCreate from "./supplierCreate";
 import PurchaseSupplierUpdate from "./supplierUpdate";
 import { PurchaseOrder } from "./purchaseOrder";
 import { PurchaseOrderCreate } from "./purchaseOrderCreate";
+import PurchaseOrderUpdate from "./purchaseOrderUpdate";
 import { PurchaseOrderDetail } from "./purchaseOrderDetail";
+import { PurchaseOrderPrint } from "./purchaseOrderPrint";
 import { Demand } from "./demand";
 
 export const purchaseRoutes = [
@@ -28,8 +30,16 @@ export const purchaseRoutes = [
     element: <PurchaseOrderCreate />,
   },
   {
+    path: "/purchase/order/update/:id",
+    element: <PurchaseOrderUpdate />,
+  },
+  {
     path: "/purchase/order/:id",
     element: <PurchaseOrderDetail />,
+  },
+  {
+    path: "/purchase/order/print/:id",
+    element: <PurchaseOrderPrint />,
   },
   {
     path: "/purchase/demand",

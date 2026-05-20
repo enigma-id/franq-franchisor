@@ -85,7 +85,7 @@ export function SettlementDaily() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Report"
+        category="Operations"
         title={`Settlement Daily — ${month}`}
         subtitle=""
         backTo={() => navigate(-1)}

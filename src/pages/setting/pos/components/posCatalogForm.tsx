@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Input, Checkbox, RemoteSelect } from "@/components/ui";
+import { Checkbox, Input, RemoteSelect } from "@/components/ui";
+import type { SelectOptionValue } from "@/services/types/table";
 import { Plus, Trash2 } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 import { useEnigmaUI } from "@/components";
@@ -9,6 +10,12 @@ import {
   usePOSCatalog,
 } from "@/services/pos/hooks";
 
+const addonTypeOptions: SelectOptionValue[] = [
+  { label: "Quantity", value: "quantity" },
+  { label: "Checkbox", value: "checkbox" },
+  { label: "Options", value: "options" },
+];
+
 export interface ActiveChannelRow {
   channel_id: number;
   name: string;
@@ -17,27 +24,26 @@ export interface ActiveChannelRow {
 }
 
 export interface AdditionalOption {
-  additionalSelected: any | null;
-  additional_id: number;
+  catalogSelected: any | null;
+  catalog_id: number;
 }
 
 export interface AddonGroupInput {
   name: string;
-  required: number;
+  type: string;
   options: AdditionalOption[];
 }
 
 export interface PosCatalogFormData extends Record<string, unknown> {
   name: string;
-  sku: string;
-  barcode: string;
-  pos_category_id: number;
+  code: string;
+  category_id: number;
   base_price: number;
   is_vatable: number;
   is_additional: number;
   image: string;
-  channels: { channel_id: number; unit_price: number }[];
-  additionals: { name: string; required: number; child_ids: number[] }[];
+  channels: { channel_id: number; name: string; is_active: number; unit_price: number }[];
+  additionals: { name: string; type: string; childs: { catalog_id: number }[] }[];
 }
 
 interface PosCatalogFormProps {
@@ -69,9 +75,8 @@ export function PosCatalogForm({
 
   const [formData, setFormData] = useState({
     name: "",
-    sku: "",
-    barcode: "",
-    pos_category_id: 0,
+    code: "",
+    category_id: 0,
     base_price: 0,
     is_vatable: 0,
     is_additional: 0,
@@ -83,8 +88,9 @@ export function PosCatalogForm({
     const fetchChannels = async () => {
       try {
         const response = (await getChannels({ page: 1, limit: 100 })) as any;
-        if (response?.data?.data?.data) {
-          const mapped = response.data.data.data.map((chan: any) => ({
+        const list = response?.data ?? [];
+        if (Array.isArray(list)) {
+          const mapped = list.map((chan: any) => ({
             channel_id: chan.id,
             name: chan.name,
             is_active: 0,
@@ -104,19 +110,18 @@ export function PosCatalogForm({
     if (initialData) {
       setFormData({
         name: initialData.name ?? "",
-        sku: initialData.sku ?? "",
-        barcode: initialData.barcode ?? "",
-        pos_category_id: initialData.pos_category_id ?? 0,
+        code: initialData.code ?? "",
+        category_id: initialData.category_id ?? 0,
         base_price: initialData.base_price ?? 0,
         is_vatable: initialData.is_vatable ?? 0,
         is_additional: initialData.is_additional ?? 0,
         image: initialData.image ?? "",
       });
 
-      if (initialData.pos_category_id) {
+      if (initialData.category_id) {
         // Assume loaded category selected mapping or resolve it
         setCategorySelected({
-          id: initialData.pos_category_id,
+          id: initialData.category_id,
           name: "Kategori Terpilih", // placeholder or map from additional loaded state
         });
       }
@@ -142,10 +147,10 @@ export function PosCatalogForm({
         const mappedAddons: AddonGroupInput[] = initialData.additionals.map(
           (group: any) => ({
             name: group.name,
-            required: group.required,
-            options: group.child_ids.map((id: number) => ({
-              additionalSelected: { id, name: `Topping #${id}` }, // placeholder
-              additional_id: id,
+            type: group.type ?? "",
+            options: group.childs.map((child: any) => ({
+              catalogSelected: { id: child.catalog_id, name: `Topping #${child.catalog_id}` }, // placeholder
+              catalog_id: child.catalog_id,
             })),
           }),
         );
@@ -186,11 +191,11 @@ export function PosCatalogForm({
       ...prev,
       {
         name: "",
-        required: 0,
+        type: "",
         options: [
           {
-            additionalSelected: null,
-            additional_id: 0,
+            catalogSelected: null,
+            catalog_id: 0,
           },
         ],
       },
@@ -209,15 +214,12 @@ export function PosCatalogForm({
     });
   };
 
-  const handleAddonGroupRequiredToggle = (
-    groupIndex: number,
-    required: boolean,
-  ) => {
+  const handleAddonGroupTypeChange = (groupIndex: number, type: string) => {
     setAddonGroups((prev) => {
       const updated = [...prev];
       updated[groupIndex] = {
         ...updated[groupIndex],
-        required: required ? 1 : 0,
+        type,
       };
       return updated;
     });
@@ -231,8 +233,8 @@ export function PosCatalogForm({
         options: [
           ...updated[groupIndex].options,
           {
-            additionalSelected: null,
-            additional_id: 0,
+            catalogSelected: null,
+            catalog_id: 0,
           },
         ],
       };
@@ -273,7 +275,7 @@ export function PosCatalogForm({
 
       // Uniqueness constraint validation across the current group
       const alreadySelected = currentOptions.some(
-        (opt, idx) => idx !== optionIndex && opt.additional_id === product?.id,
+        (opt, idx) => idx !== optionIndex && opt.catalog_id === product?.id,
       );
 
       if (alreadySelected && product) {
@@ -287,8 +289,8 @@ export function PosCatalogForm({
       }
 
       updated[groupIndex].options[optionIndex] = {
-        additionalSelected: product,
-        additional_id: product?.id || 0,
+        catalogSelected: product,
+        catalog_id: product?.id || 0,
       };
       return updated;
     });
@@ -298,35 +300,63 @@ export function PosCatalogForm({
     setAddonGroups((prev) => {
       const updated = [...prev];
       updated[groupIndex].options[optionIndex] = {
-        additionalSelected: null,
-        additional_id: 0,
+        catalogSelected: null,
+        catalog_id: 0,
       };
       return updated;
     });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        showToast({
+          message: "Ukuran file terlalu besar, maksimal 2MB",
+          type: "error",
+          position: "bottom-center",
+          duration: 3000,
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setFormData((prev) => ({ ...prev, image: base64String }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, image: "" }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const payload: PosCatalogFormData = {
-      ...formData,
+      category_id: Number(formData.category_id),
+      code: formData.code,
+      name: formData.name,
+      base_price: Number(formData.base_price),
+      image: formData.image,
       is_vatable: Number(formData.is_vatable),
       is_additional: Number(formData.is_additional),
-      base_price: Number(formData.base_price),
-      // Filter out only active channel rows
-      channels: channelsList
-        .filter((row) => row.is_active === 1)
-        .map((row) => ({
-          channel_id: row.channel_id,
-          unit_price: Number(row.unit_price),
-        })),
-      // Map addon groups payload structure
+      channels: channelsList.map((row) => ({
+        name: row.name,
+        channel_id: row.channel_id,
+        is_active: row.is_active,
+        unit_price: Number(row.unit_price),
+      })),
       additionals:
         formData.is_additional === 0
           ? addonGroups.map((group) => ({
+              type: group.type,
               name: group.name,
-              required: Number(group.required),
-              child_ids: group.options.map((opt) => opt.additional_id),
+              childs: group.options.map((opt) => ({
+                catalog_id: opt.catalog_id,
+              })),
             }))
           : [],
     };
@@ -351,7 +381,11 @@ export function PosCatalogForm({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-5">
+    <form
+      id={id}
+      onSubmit={handleSubmit}
+      className="max-w-6xl mx-auto space-y-5"
+    >
       {/* Section 1: Informasi Utama */}
       <div
         className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
@@ -362,318 +396,398 @@ export function PosCatalogForm({
             Informasi Menu Utama
           </h2>
         </div>
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Input
-            label="Nama Produk Menu"
-            required
-            value={formData.name}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, name: e.target.value }))
-            }
-            placeholder="Contoh: Roti Coklat Keju"
-            variant="primary"
-            error={FormState?.errors?.name as string}
-          />
-          <Input
-            label="SKU Produk"
-            required
-            value={formData.sku}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, sku: e.target.value }))
-            }
-            placeholder="Contoh: K-ROTCOKKEJ"
-            variant="primary"
-            error={FormState?.errors?.sku as string}
-          />
-          <Input
-            label="Barcode / EAN (Opsional)"
-            value={formData.barcode}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, barcode: e.target.value }))
-            }
-            placeholder="E.g. 8991234567890"
-            variant="primary"
-          />
-          <RemoteSelect
-            label="Kategori Menu POS"
-            placeholder="Pilih Kategori"
-            value={categorySelected}
-            hook={categoriesResult as any}
-            fetchData={(page, search) =>
-              getCategories({ page, search, is_active: "true" }) as any
-            }
-            getLabel={(item: any) => item?.name || ""}
-            getValue={(item: any) => item?.id}
-            onChange={(val) => {
-              setCategorySelected(val);
-              setFormData((prev) => ({
-                ...prev,
-                pos_category_id: val?.id || 0,
-              }));
-            }}
-            onClear={() => {
-              setCategorySelected(null);
-              setFormData((prev) => ({ ...prev, pos_category_id: 0 }));
-            }}
-            required
-            error={FormState?.errors?.pos_category_id as string}
-          />
-          <Input
-            label="Harga Dasar POS (Rp)"
-            required
-            type="number"
-            value={formData.base_price}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                base_price: Number(e.target.value),
-              }))
-            }
-            placeholder="Contoh: 15000"
-            variant="primary"
-            min={0}
-            error={FormState?.errors?.base_price as string}
-          />
-          <div className="flex gap-6 items-center pt-5">
-            <Checkbox
-              label="Dikenakan PPN?"
-              checked={formData.is_vatable === 1}
+        <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column: Core Identity Fields */}
+          <div className="space-y-5">
+            <Input
+              label="Nama Produk Menu"
+              required
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              placeholder="Contoh: Roti Coklat Keju"
+              variant="primary"
+              error={FormState?.errors?.name as string}
+            />
+
+            <Input
+              label="Kode Produk"
+              required
+              value={formData.code}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, code: e.target.value }))
+              }
+              placeholder="Contoh: K-ROTCOKKEJ"
+              variant="primary"
+              error={FormState?.errors?.code as string}
+            />
+
+            <RemoteSelect
+              label="Kategori Menu POS"
+              placeholder="Pilih Kategori"
+              value={categorySelected}
+              hook={categoriesResult as any}
+              fetchData={(page, search) =>
+                getCategories({ page, search, is_active: "true" }) as any
+              }
+              getLabel={(item: any) => item?.name || ""}
+              getValue={(item: any) => item?.id}
+              onChange={(val) => {
+                setCategorySelected(val);
+                setFormData((prev) => ({
+                  ...prev,
+                  category_id: val?.id || 0,
+                }));
+              }}
+              onClear={() => {
+                setCategorySelected(null);
+                setFormData((prev) => ({ ...prev, category_id: 0 }));
+              }}
+              required
+              error={FormState?.errors?.category_id as string}
+            />
+
+            <Input
+              label="Harga Dasar POS (Rp)"
+              required
+              type="currency"
+              value={formData.base_price}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  is_vatable: e.target.checked ? 1 : 0,
+                  base_price: Number(e.target.value),
                 }))
               }
+              placeholder="Contoh: 15000"
               variant="primary"
+              min={0}
+              error={FormState?.errors?.base_price as string}
             />
-            <Checkbox
-              label="Merupakan menu topping / tambahan?"
-              checked={formData.is_additional === 1}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  is_additional: e.target.checked ? 1 : 0,
-                }))
-              }
-              variant="primary"
-            />
+          </div>
+
+          {/* Right Column: Media & Flags */}
+          <div className="space-y-5">
+            <div>
+              <label className="text-xs font-bold text-slate-600 uppercase block mb-3">
+                Gambar Menu (Opsional)
+              </label>
+              <div className="flex items-start gap-4">
+                {formData.image ? (
+                  <div className="relative group w-32 h-32 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50">
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <label className="p-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-md cursor-pointer">
+                        <Plus className="w-4 h-4 text-slate-600" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md cursor-pointer"
+                        title="Hapus Gambar"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="w-32 h-32 border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all group">
+                    <Plus className="w-4 h-4 text-slate-400 group-hover:text-emerald-500" />
+                    <span className="text-[10px] font-bold text-slate-500 group-hover:text-emerald-600">
+                      Pilih Gambar
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                )}
+                <div className="text-[11px] text-slate-400 pt-1">
+                  Maks. 2MB (JPG, PNG, WEBP)
+                </div>
+              </div>
+              {typeof FormState?.errors?.image === "string" && (
+                <span className="text-xs text-red-500 font-semibold mt-2 block">
+                  {FormState.errors.image}
+                </span>
+              )}
+            </div>
+
+            <div className="border-t border-slate-100 pt-5">
+              <label className="text-xs font-bold text-slate-600 uppercase block mb-3">
+                Pengaturan Tambahan
+              </label>
+              <div className="space-y-3">
+                <Checkbox
+                  label="Dikenakan PPN?"
+                  checked={formData.is_vatable === 1}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_vatable: e.target.checked ? 1 : 0,
+                    }))
+                  }
+                  variant="primary"
+                />
+                <Checkbox
+                  label="Merupakan menu topping / tambahan?"
+                  checked={formData.is_additional === 1}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_additional: e.target.checked ? 1 : 0,
+                    }))
+                  }
+                  variant="primary"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Section 2: Channel Pricing Matrix */}
+      {/* Section 2 & 3: Channel Pricing + Add-on Groups side by side */}
       <div
-        className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-        style={{ overflow: "visible", zIndex: 15 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-5"
+        style={{ alignItems: "start" }}
       >
-        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-            Matriks Harga Penjualan POS Channel
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Aktifkan channel dan tentukan harga khusus per channel jika berbeda
-            dari harga dasar.
-          </p>
-        </div>
-        <div style={{ overflow: "visible" }}>
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
-                <th className="px-4 py-3 w-20 text-center">Status</th>
-                <th className="px-4 py-3">Nama Channel</th>
-                <th className="px-4 py-3 text-right w-64">
-                  Harga Jual Channel (Rp)
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {channelsList.map((row, idx) => (
-                <tr
-                  key={row.channel_id}
-                  className="hover:bg-slate-50/30 transition-colors"
-                >
-                  <td className="px-4 py-3 align-middle text-center">
-                    <input
-                      type="checkbox"
+        {/* Section 2: Channel Pricing Matrix */}
+        <div
+          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+          style={{ overflow: "visible", zIndex: 15 }}
+        >
+          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+              Matriks Harga Penjualan POS Channel
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Aktifkan channel dan tentukan harga khusus per channel jika
+              berbeda dari harga dasar.
+            </p>
+          </div>
+          <div className="p-4" style={{ overflow: "visible" }}>
+            {channelsList.length === 0 ? (
+              <p className="py-6 text-center text-sm text-slate-400 italic">
+                Memuat data channel penjualan...
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-3">
+                {channelsList.map((row, idx) => (
+                  <div
+                    key={row.channel_id}
+                    className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                      row.is_active === 1
+                        ? "border-emerald-200 bg-emerald-50/40"
+                        : "border-slate-200 bg-slate-50/40"
+                    }`}
+                  >
+                    <Checkbox
                       checked={row.is_active === 1}
                       onChange={(e) =>
                         handleChannelActiveToggle(idx, e.target.checked)
                       }
-                      className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
-                    />
-                  </td>
-                  <td className="px-4 py-3 align-middle text-sm font-semibold text-slate-700">
-                    {row.name}
-                  </td>
-                  <td className="px-4 py-3 align-middle">
-                    <Input
-                      type="number"
-                      disabled={row.is_active === 0}
-                      value={row.unit_price}
-                      onChange={(e) =>
-                        handleChannelPriceChange(idx, Number(e.target.value))
-                      }
-                      placeholder="Harga jual channel..."
-                      variant="primary"
-                      min={0}
-                      className="text-right h-9"
-                    />
-                  </td>
-                </tr>
-              ))}
-              {channelsList.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="px-4 py-8 text-center text-sm text-slate-400 italic"
-                  >
-                    Memuat data channel penjualan...
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Section 3: Add-on Groups (Jika bukan menu tambahan itu sendiri) */}
-      {formData.is_additional === 0 && (
-        <div
-          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-          style={{ overflow: "visible", zIndex: 10 }}
-        >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-              Pengaturan Menu Tambahan (Add-on Groups)
-            </h2>
-            <button
-              type="button"
-              onClick={addAddonGroup}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              Tambah Kelompok Add-on
-            </button>
-          </div>
-
-          <div className="p-5 space-y-5" style={{ overflow: "visible" }}>
-            {addonGroups.map((group, groupIdx) => (
-              <div
-                key={groupIdx}
-                className="bg-slate-50/50 border border-slate-200 rounded-xl p-5 relative space-y-4"
-                style={{ overflow: "visible" }}
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/60 pb-3">
-                  <div className="flex-1 max-w-md">
-                    <Input
-                      placeholder="Contoh: Pilih Topping, Tingkat Kemanisan"
-                      value={group.name}
-                      onChange={(e) =>
-                        handleAddonGroupNameChange(groupIdx, e.target.value)
-                      }
-                      variant="primary"
-                      className="h-9 font-semibold text-slate-700 bg-white"
-                      error={getAddonError(groupIdx, "name")}
-                    />
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <Checkbox
-                      label="Wajib Dipilih Konsumen?"
-                      checked={group.required === 1}
-                      onChange={(e) =>
-                        handleAddonGroupRequiredToggle(
-                          groupIdx,
-                          e.target.checked,
-                        )
-                      }
                       variant="primary"
                     />
-                    <button
-                      type="button"
-                      onClick={() => removeAddonGroup(groupIdx)}
-                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                      title="Hapus Kelompok"
-                    >
-                      <Trash2 className="w-4.5 h-4.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Addon Options Sub-table */}
-                <div
-                  className="space-y-3 pt-2"
-                  style={{ overflow: "visible" }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Opsi Pilihan Menu Tambahan
+                    <span className="flex-1 text-sm font-semibold text-slate-700 truncate">
+                      {row.name}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => addAddonOptionRow(groupIdx)}
-                      className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      Tambah Opsi
-                    </button>
+                    <div className="w-36 shrink-0">
+                      <Input
+                        type="currency"
+                        disabled={row.is_active === 0}
+                        value={row.unit_price}
+                        onChange={(e) =>
+                          handleChannelPriceChange(idx, Number(e.target.value))
+                        }
+                        placeholder="Harga..."
+                        variant="primary"
+                        min={0}
+                        className="text-right h-8 text-sm"
+                      />
+                    </div>
                   </div>
-
-                  <div className="space-y-3" style={{ overflow: "visible" }}>
-                    {group.options.map((opt, optIdx) => (
-                      <div key={optIdx} className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <RemoteSelect
-                            placeholder="Pilih topping / menu tambahan..."
-                            value={opt.additionalSelected}
-                            hook={additionalResult as any}
-                            fetchData={(page, search) =>
-                              getAdditionalProducts({
-                                page,
-                                search,
-                                is_additional: "1",
-                                is_active: "true",
-                              }) as any
-                            }
-                            getLabel={(item: any) => item?.name || ""}
-                            getValue={(item: any) => item?.id}
-                            onChange={(product) =>
-                              handleAddonOptionChange(
-                                groupIdx,
-                                optIdx,
-                                product,
-                              )
-                            }
-                            onClear={() =>
-                              handleAddonOptionClear(groupIdx, optIdx)
-                            }
-                            error={getAddonError(groupIdx, "option", optIdx)}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeAddonOptionRow(groupIdx, optIdx)}
-                          disabled={group.options.length === 1}
-                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                          title="Hapus opsi"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {addonGroups.length === 0 && (
-              <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-sm text-slate-400 italic">
-                Belum ada kelompok add-on yang ditambahkan. Menu ini akan dijual
-                tanpa menu tambahan.
+                ))}
               </div>
             )}
           </div>
         </div>
-      )}
+
+        {/* Section 3: Add-on Groups (Jika bukan menu tambahan itu sendiri) */}
+        {formData.is_additional === 0 ? (
+          <div
+            className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+            style={{ overflow: "visible", zIndex: 10 }}
+          >
+            <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+              <div>
+                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                  Pengaturan Menu Tambahan
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">Addon Menu</p>
+              </div>
+              <button
+                type="button"
+                onClick={addAddonGroup}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                Tambah Kelompok Add-on
+              </button>
+            </div>
+
+            <div className="p-5 space-y-5" style={{ overflow: "visible" }}>
+              {addonGroups.map((group, groupIdx) => (
+                <div
+                  key={groupIdx}
+                  className="bg-slate-50/50 border border-slate-200 rounded-xl p-5 relative space-y-4"
+                  style={{ overflow: "visible" }}
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/60 pb-3">
+                    <div className="flex-1 max-w-md">
+                      <Input
+                        placeholder="Contoh: Pilih Topping, Tingkat Kemanisan"
+                        value={group.name}
+                        onChange={(e) =>
+                          handleAddonGroupNameChange(groupIdx, e.target.value)
+                        }
+                        variant="primary"
+                        className="font-semibold text-slate-700 bg-white"
+                        error={getAddonError(groupIdx, "name")}
+                      />
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div style={{ minWidth: 200 }}>
+                        <RemoteSelect<SelectOptionValue>
+                          placeholder="Tipe Add-on"
+                          data={addonTypeOptions}
+                          value={
+                            group.type
+                              ? (addonTypeOptions.find(
+                                  (o) => o.value === group.type,
+                                ) ?? null)
+                              : null
+                          }
+                          getLabel={(item) =>
+                            item ? `Tipe: ${item.label}` : ""
+                          }
+                          renderItem={(item) => item?.label}
+                          onChange={(val) =>
+                            handleAddonGroupTypeChange(
+                              groupIdx,
+                              (val?.value as string) ?? "",
+                            )
+                          }
+                          onClear={() =>
+                            handleAddonGroupTypeChange(groupIdx, "")
+                          }
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeAddonGroup(groupIdx)}
+                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                        title="Hapus Kelompok"
+                      >
+                        <Trash2 className="w-4.5 h-4.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Addon Options Sub-table */}
+                  <div
+                    className="space-y-3 pt-2"
+                    style={{ overflow: "visible" }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Opsi Pilihan Menu Tambahan
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => addAddonOptionRow(groupIdx)}
+                        className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Tambah Opsi
+                      </button>
+                    </div>
+
+                    <div
+                      className="grid grid-cols-1 gap-3"
+                      style={{ overflow: "visible" }}
+                    >
+                      {group.options.map((opt, optIdx) => (
+                        <div key={optIdx} className="flex items-center gap-2">
+                          <div className="flex-1">
+                            <RemoteSelect
+                              placeholder="Pilih topping / menu tambahan..."
+                              value={opt.catalogSelected}
+                              hook={additionalResult as any}
+                              fetchData={(page, search) =>
+                                getAdditionalProducts({
+                                  page,
+                                  search,
+                                  is_additional: "1",
+                                  is_active: "true",
+                                }) as any
+                              }
+                              getLabel={(item: any) => item?.name || ""}
+                              getValue={(item: any) => item?.id}
+                              onChange={(product) =>
+                                handleAddonOptionChange(
+                                  groupIdx,
+                                  optIdx,
+                                  product,
+                                )
+                              }
+                              onClear={() =>
+                                handleAddonOptionClear(groupIdx, optIdx)
+                              }
+                              error={getAddonError(groupIdx, "option", optIdx)}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeAddonOptionRow(groupIdx, optIdx)
+                            }
+                            disabled={group.options.length === 1}
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shrink-0"
+                            title="Hapus opsi"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {addonGroups.length === 0 && (
+                <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-sm text-slate-400 italic">
+                  Belum ada kelompok add-on yang ditambahkan. Menu ini akan
+                  dijual tanpa menu tambahan.
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div /> /* Empty div to maintain grid layout when addons are hidden */
+        )}
+      </div>
     </form>
   );
 }

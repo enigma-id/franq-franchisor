@@ -11,14 +11,29 @@ import { usePOSCatalog } from "@/services/pos/hooks";
 
 export function PosCatalog() {
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
-  const { remove: removeCatalog, removeResult: removeCatalogResult } =
-    usePOSCatalog();
+  const { openModal, closeModal, showToast } = useEnigmaUI();
+  const { 
+    remove: removeCatalog, 
+    removeResult: removeCatalogResult,
+    activate: activateCatalog,
+    activateResult: activateCatalogResult,
+    deactivate: deactivateCatalog,
+    deactivateResult: deactivateCatalogResult,
+  } = usePOSCatalog();
+
+  const handleToggleActive = (v: any) => {
+    if (v.is_active) {
+      deactivateCatalog({ id: v.id as string });
+    } else {
+      activateCatalog({ id: v.id as string });
+    }
+  };
 
   const tableConfig = useMemo(() => createTableConfig({
     onClick: (row: any) => navigate(`/setting/pos/catalog/update/${row.id}`),
     onRemove: (row: any) => openDelete(row),
-  }), [navigate]);
+    onToggleActive: (row: any) => handleToggleActive(row),
+  }), [navigate, activateCatalog, deactivateCatalog]);
 
   const Table = useTable(
     "setting_pos_catalog",
@@ -77,10 +92,36 @@ export function PosCatalog() {
     }
   }, [removeCatalogResult]);
 
+  useEffect(() => {
+    if (activateCatalogResult?.isSuccess) {
+      showToast({
+        message: "POS Catalog berhasil diaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      activateCatalogResult.reset?.();
+    }
+  }, [activateCatalogResult, Table, showToast]);
+
+  useEffect(() => {
+    if (deactivateCatalogResult?.isSuccess) {
+      showToast({
+        message: "POS Catalog berhasil dinonaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      deactivateCatalogResult.reset?.();
+    }
+  }, [deactivateCatalogResult, Table, showToast]);
+
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="POS Catalog"
         subtitle="Daftar menu POS."
         action={

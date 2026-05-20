@@ -98,7 +98,7 @@ export function SalesOrderDetail() {
   if (isLoading) {
     return (
       <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-        <Page.Header category="Sales" title="Sales Order Detail" />
+        <Page.Header category="Operations" title="Sales Order Detail" />
         <Page.Body>
           <div className="flex-1 flex items-center justify-center min-h-64">
             <Loading size="lg" variant="spinner" />
@@ -111,7 +111,7 @@ export function SalesOrderDetail() {
   if (!order) {
     return (
       <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-        <Page.Header category="Sales" title="Sales Order Detail" />
+        <Page.Header category="Operations" title="Sales Order Detail" />
         <Page.Body>
           <div className="flex-1 flex items-center justify-center min-h-64">
             <div className="text-center">
@@ -142,7 +142,7 @@ export function SalesOrderDetail() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Sales"
+        category="Operations"
         title={`Order #${order.id}`}
         backTo={() => navigate(-1)}
         action={

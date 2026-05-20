@@ -59,13 +59,15 @@ export function UserForm({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-6">
-      <div className="card-info bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-2">
-          Detail Pengguna
-        </h3>
+    <form id={id} onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-5">
+      <div className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm">
+        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            Detail Pengguna
+          </h2>
+        </div>
         
-        <div className="space-y-4">
+        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
           <Input
             label="Nama Lengkap"
             required
@@ -93,12 +95,14 @@ export function UserForm({
         </div>
       </div>
 
-      <div className="card-info bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-2">
-          Kredensial & Keamanan
-        </h3>
+      <div className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm">
+        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            Kredensial & Keamanan
+          </h2>
+        </div>
         
-        <div className="space-y-4">
+        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
           <Input
             label={isEdit ? "Password Baru" : "Password"}
             required={!isEdit}

@@ -12,9 +12,23 @@ import { useInventoryItem } from "@/services/inventory/hooks";
 
 export function InventoryItem() {
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
-  const { remove: removeItem, removeResult: removeItemResult } =
-    useInventoryItem();
+  const { openModal, closeModal, showToast } = useEnigmaUI();
+  const { 
+    remove: removeItem, 
+    removeResult: removeItemResult,
+    activate: activateItem,
+    activateResult: activateItemResult,
+    deactivate: deactivateItem,
+    deactivateResult: deactivateItemResult,
+  } = useInventoryItem();
+
+  const handleToggleActive = (v: any) => {
+    if (v.is_active) {
+      deactivateItem({ id: v.id as string });
+    } else {
+      activateItem({ id: v.id as string });
+    }
+  };
 
   const tableConfig = useMemo(
     () =>
@@ -27,8 +41,9 @@ export function InventoryItem() {
         onRemove: (v: any) => {
           openDelete(v);
         },
+        onToggleActive: (row: any) => handleToggleActive(row),
       }),
-    [navigate],
+    [navigate, activateItem, deactivateItem],
   );
   const Table = useTable(
     "setting_inventory_item",
@@ -87,10 +102,36 @@ export function InventoryItem() {
     }
   }, [removeItemResult]);
 
+  useEffect(() => {
+    if (activateItemResult?.isSuccess) {
+      showToast({
+        message: "Item berhasil diaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      activateItemResult.reset?.();
+    }
+  }, [activateItemResult, Table, showToast]);
+
+  useEffect(() => {
+    if (deactivateItemResult?.isSuccess) {
+      showToast({
+        message: "Item berhasil dinonaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      deactivateItemResult.reset?.();
+    }
+  }, [deactivateItemResult, Table, showToast]);
+
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Inventory"
         title="Inventory Item"
         subtitle="Daftar item inventori."
         action={

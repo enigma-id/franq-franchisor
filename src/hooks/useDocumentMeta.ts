@@ -85,7 +85,7 @@ const META_MAP: Record<string, RouteMeta> = {
   },
   "/report/stock": {
     title: "Stock Report - Franchisor Portal",
-    description: "Laporan stok inventaris.",
+    description: "Laporan stok barang.",
   },
   "/setting/business": {
     title: "Franchise Setting - Franchisor Portal",
@@ -93,7 +93,7 @@ const META_MAP: Record<string, RouteMeta> = {
   },
   "/setting/inventory/catalog": {
     title: "Master Catalog - Franchisor Portal",
-    description: "Manajemen katalog inventaris.",
+    description: "Manajemen katalog barang.",
   },
   "/setting/inventory/catalog/create": {
     title: "Tambah Master Catalog - Franchisor Portal",
@@ -105,7 +105,7 @@ const META_MAP: Record<string, RouteMeta> = {
   },
   "/setting/inventory/item": {
     title: "Master Item - Franchisor Portal",
-    description: "Manajemen item inventaris.",
+    description: "Manajemen item barang.",
   },
   "/setting/inventory/item/create": {
     title: "Tambah Master Item - Franchisor Portal",
@@ -193,7 +193,7 @@ function matchRoute(pathname: string): RouteMeta {
   for (const pattern of Object.keys(META_MAP)) {
     if (pattern.includes("/:")) {
       const regexPattern = new RegExp(
-        "^" + pattern.replace(/\/:[^/]+/g, "/[^/]+") + "$"
+        "^" + pattern.replace(/\/:[^/]+/g, "/[^/]+") + "$",
       );
       if (regexPattern.test(pathname)) {
         return META_MAP[pattern];

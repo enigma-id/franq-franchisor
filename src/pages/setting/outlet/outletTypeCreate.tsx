@@ -36,7 +36,7 @@ export function OutletTypeCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Tambah Tipe Outlet"
         subtitle="Buat tipe klasifikasi outlet baru."
         backTo={() => navigate(-1)}

@@ -1,6 +1,7 @@
 import { Dropdown } from "@/components";
 import config from "@/services/table/const";
-import { Edit, MoreVertical, Trash } from "lucide-react";
+import { Edit, MoreVertical, Trash, Store, Power } from "lucide-react";
+import { Toggle } from "@/components/ui";
 
 const createTableConfig = ({
   onRowClick,
@@ -8,12 +9,16 @@ const createTableConfig = ({
   filter,
   onClick,
   onRemove,
+  onOutletType,
+  onToggleActive,
 }: {
   onRowClick?: (row: any) => void;
   lockFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
   onRemove?: (row: any) => void;
+  onOutletType?: (row: any) => void;
+  onToggleActive?: (row: any) => void;
 } = {}) => ({
   ...config,
   url: "/inventory/catalog",
@@ -43,9 +48,7 @@ const createTableConfig = ({
       component: (row: any) => (
         <div>
           <div className="text-sm font-semibold">{row?.name ?? "-"}</div>
-          {row?.code && (
-            <div className="text-xs text-gray-400">{row.code}</div>
-          )}
+          {row?.code && <div className="text-xs text-gray-400">{row.code}</div>}
         </div>
       ),
     },
@@ -81,7 +84,7 @@ const createTableConfig = ({
       title: "Outlet Type",
       sortable: false,
       component: (row: any) => (
-        <span className="text-sm">{row?.outlet_type_count ?? 0} type</span>
+        <span className="text-sm">{row?.outlets?.length ?? 0} type</span>
       ),
       align: "center",
     },
@@ -99,16 +102,16 @@ const createTableConfig = ({
     is_active: {
       title: "Status",
       sortable: true,
-      component: (row: any) =>
-        row?.is_active ? (
-          <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">
-            Active
-          </span>
-        ) : (
-          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full font-medium">
-            Inactive
-          </span>
-        ),
+      component: (row: any) => (
+        <div className="flex justify-center items-center">
+          <Toggle
+            checked={!!row?.is_active}
+            onChange={() => onToggleActive?.(row)}
+            variant="success"
+            size="sm"
+          />
+        </div>
+      ),
       align: "center",
     },
     actions: {
@@ -127,7 +130,7 @@ const createTableConfig = ({
             onSelect={() => onClick?.(row)}
             className="hover:bg-indigo-50 hover:text-indigo-600"
           >
-            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
+            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
               <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                 <Edit className="w-4 h-4" />
               </div>
@@ -139,18 +142,57 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
+
+          <Dropdown.Item
+            onSelect={() => onToggleActive?.(row)}
+            className={row?.is_active ? "hover:bg-amber-50 hover:text-amber-600" : "hover:bg-emerald-50 hover:text-emerald-600"}
+          >
+            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
+              <div className={`w-8 h-8 rounded-lg ${row?.is_active ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"} flex items-center justify-center`}>
+                <Power className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">
+                  {row?.is_active ? "Deactivate" : "Activate"}
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  {row?.is_active ? "Deactivate catalog" : "Activate catalog"}
+                </span>
+              </div>
+            </button>
+          </Dropdown.Item>
+
           <div className="my-1 border-t border-slate-50"></div>
           <Dropdown.Item
             onSelect={() => onRemove?.(row)}
             className="hover:bg-red-50 hover:text-red-600"
           >
-            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
+            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
               <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
                 <Trash className="w-4 h-4" />
               </div>
               <div className="flex flex-col items-start leading-tight">
                 <span className="font-bold text-[13px]">Delete</span>
-                <span className="text-[11px] text-slate-400">Remove catalog</span>
+                <span className="text-[11px] text-slate-400">
+                  Remove catalog
+                </span>
+              </div>
+            </button>
+          </Dropdown.Item>
+          <div className="my-1 border-t border-slate-50"></div>
+          <Dropdown.Item
+            onSelect={() => onOutletType?.(row)}
+            className="hover:bg-blue-50 hover:text-blue-600"
+          >
+            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <Store className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">Outlet Type</span>
+                <span className="text-[11px] text-slate-400">
+                  Manage availability
+                </span>
               </div>
             </button>
           </Dropdown.Item>

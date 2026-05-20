@@ -77,7 +77,7 @@ export function OutletPage() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Outlet"
         subtitle="Daftar outlet franchise."
         action={

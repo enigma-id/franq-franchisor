@@ -33,7 +33,7 @@ export function UserCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Tambah User"
         subtitle="Registrasikan pengguna sistem baru."
         backTo={() => navigate(-1)}

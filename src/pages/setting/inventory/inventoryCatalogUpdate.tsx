@@ -27,7 +27,7 @@ export function InventoryCatalogUpdate() {
   useEffect(() => {
     if (isSuccess) {
       showToast({
-        message: "Katalog Inventaris berhasil diperbarui",
+        message: "Katalog Barang berhasil diperbarui",
         type: "success",
         position: "bottom-center",
         duration: 4000,
@@ -48,9 +48,13 @@ export function InventoryCatalogUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
-        title="Ubah Katalog Inventaris"
-        subtitle={initialData ? `Perbarui katalog inventaris: ${initialData.name}` : "Perbarui katalog produk inventaris."}
+        category="Inventory"
+        title="Ubah Katalog Barang"
+        subtitle={
+          initialData
+            ? `Perbarui katalog barang: ${initialData.name}`
+            : "Perbarui katalog produk barang."
+        }
         backTo={() => navigate(-1)}
         action={
           <Button

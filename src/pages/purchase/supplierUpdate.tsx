@@ -45,7 +45,7 @@ export function PurchaseSupplierUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="purchase"
+        category="Operations"
         title="Ubah Supplier"
         subtitle={initialData ? `Perbarui profil supplier: ${initialData.name}` : "Perbarui profil supplier."}
         backTo={() => navigate(-1)}

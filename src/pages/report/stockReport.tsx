@@ -11,7 +11,7 @@ export function StockReport() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="report"
+        category="Inventory"
         title="Stock"
         subtitle="Laporan stok inventori saat ini."
       />

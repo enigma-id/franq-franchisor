@@ -48,7 +48,7 @@ export function OutletUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Ubah Outlet"
         subtitle={initialData ? `Perbarui profil outlet: ${initialData.name}` : "Perbarui profil outlet waralaba."}
         backTo={() => navigate(-1)}

@@ -35,18 +35,14 @@ export function StoreOutletForm({
 
   // Geographic region custom hook
   const {
-    provinces,
-    isLoadingProvinces,
     getProvinces,
-    regencies,
-    isLoadingRegencies,
+    provincesResult,
     getRegencies,
-    districts,
-    isLoadingDistricts,
+    regenciesResult,
     getDistricts,
-    villages,
-    isLoadingVillages,
+    districtsResult,
     getVillages,
+    villagesResult,
   } = useRegion();
 
   const [provinceSelected, setProvinceSelected] = useState<any | null>(null);
@@ -90,22 +86,47 @@ export function StoreOutletForm({
       });
 
       if (initialData.outlet_type_id) {
-        setOutletTypeSelected(initialData.outlet_type ?? { id: initialData.outlet_type_id, name: "Tipe Outlet Terpilih" });
+        setOutletTypeSelected(
+          initialData.outlet_type ?? {
+            id: initialData.outlet_type_id,
+            name: "Tipe Outlet Terpilih",
+          },
+        );
       }
       if (initialData.province_id) {
-        setProvinceSelected(initialData.province ?? { id: initialData.province_id, name: "Provinsi Terpilih" });
+        setProvinceSelected(
+          initialData.province ?? {
+            id: initialData.province_id,
+            name: "Provinsi Terpilih",
+          },
+        );
         getRegencies(initialData.province_id);
       }
       if (initialData.regency_id) {
-        setRegencySelected(initialData.regency ?? { id: initialData.regency_id, name: "Kabupaten/Kota Terpilih" });
+        setRegencySelected(
+          initialData.regency ?? {
+            id: initialData.regency_id,
+            name: "Kabupaten/Kota Terpilih",
+          },
+        );
         getDistricts(initialData.regency_id);
       }
       if (initialData.district_id) {
-        setDistrictSelected(initialData.district ?? { id: initialData.district_id, name: "Kecamatan Terpilih" });
+        setDistrictSelected(
+          initialData.district ?? {
+            id: initialData.district_id,
+            name: "Kecamatan Terpilih",
+          },
+        );
         getVillages(initialData.district_id);
       }
       if (initialData.village_id) {
-        setVillageSelected(initialData.village ?? { id: initialData.village_id, name: "Kelurahan/Desa Terpilih" });
+        setVillageSelected(
+          initialData.village ?? {
+            id: initialData.village_id,
+            name: "Kelurahan/Desa Terpilih",
+          },
+        );
       }
     }
   }, [initialData]);
@@ -213,13 +234,22 @@ export function StoreOutletForm({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
+    <form
+      id={id}
+      onSubmit={handleSubmit}
+      className="max-w-4xl mx-auto space-y-6"
+    >
       {/* Section 1: Informasi Utama */}
-      <div className="card-info bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-2">
-          Informasi Utama
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div
+        className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
+        style={{ overflow: "visible", zIndex: 20 }}
+      >
+        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            Informasi Utama
+          </h2>
+        </div>
+        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
           <Input
             label="Nama Outlet"
             required
@@ -255,168 +285,198 @@ export function StoreOutletForm({
             required
             error={FormState?.errors?.outlet_type_id as string}
           />
-          <Input
-            label="No. Telepon Outlet"
-            required
-            value={formData.phone}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, phone: e.target.value }))
-            }
-            placeholder="Contoh: 022123456"
-            variant="primary"
-            error={FormState?.errors?.phone as string}
-          />
+          <div className="md:col-span-2">
+            <Input
+              label="No. Telepon Outlet"
+              required
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, phone: e.target.value }))
+              }
+              placeholder="Contoh: 022123456"
+              variant="primary"
+              error={FormState?.errors?.phone as string}
+            />
+          </div>
         </div>
       </div>
 
       {/* Section 2: Informasi PIC & Kredensial Owner */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card-info bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-2">
-            Person In Charge (PIC)
-          </h3>
-          <Input
-            label="Nama PIC"
-            required
-            value={formData.pic_name}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, pic_name: e.target.value }))
-            }
-            placeholder="Contoh: Budi Santoso"
-            variant="primary"
-            error={FormState?.errors?.pic_name as string}
-          />
-          <Input
-            label="No. Telepon PIC"
-            required
-            value={formData.pic_phone}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, pic_phone: e.target.value }))
-            }
-            placeholder="Contoh: 081234567890"
-            variant="primary"
-            error={FormState?.errors?.pic_phone as string}
-          />
+        <div
+          className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
+          style={{ overflow: "visible", zIndex: 15 }}
+        >
+          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+              Person In Charge (PIC)
+            </h2>
+          </div>
+          <div className="p-5 space-y-4">
+            <Input
+              label="Nama PIC"
+              required
+              value={formData.pic_name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, pic_name: e.target.value }))
+              }
+              placeholder="Contoh: Budi Santoso"
+              variant="primary"
+              error={FormState?.errors?.pic_name as string}
+            />
+            <Input
+              label="No. Telepon PIC"
+              required
+              value={formData.pic_phone}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, pic_phone: e.target.value }))
+              }
+              placeholder="Contoh: 081234567890"
+              variant="primary"
+              error={FormState?.errors?.pic_phone as string}
+            />
+          </div>
         </div>
 
-        <div className="card-info bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-2">
-            Akun Pemilik (Owner Credentials)
-          </h3>
-          <Input
-            label="Username Pemilik"
-            required
-            value={formData.username}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, username: e.target.value }))
-            }
-            placeholder="Contoh: budi_sukabread"
-            variant="primary"
-            error={FormState?.errors?.username as string}
-          />
-          <Input
-            label="PIN (6 Digit Angka)"
-            required
-            type="password"
-            maxLength={6}
-            value={formData.pin}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                pin: e.target.value.replace(/\D/g, ""),
-              }))
-            }
-            placeholder="Contoh: 123456"
-            variant="primary"
-            error={FormState?.errors?.pin as string}
-          />
+        <div
+          className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
+          style={{ overflow: "visible", zIndex: 15 }}
+        >
+          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+              Akun Pemilik (Owner Credentials)
+            </h2>
+          </div>
+          <div className="p-5 space-y-4">
+            <Input
+              label="Username Pemilik"
+              required
+              value={formData.username}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, username: e.target.value }))
+              }
+              placeholder="Contoh: budi_sukabread"
+              variant="primary"
+              error={FormState?.errors?.username as string}
+            />
+            <Input
+              label="PIN (6 Digit Angka)"
+              required
+              type="password"
+              maxLength={6}
+              value={formData.pin}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  pin: e.target.value.replace(/\D/g, ""),
+                }))
+              }
+              placeholder="Contoh: 123456"
+              variant="primary"
+              error={FormState?.errors?.pin as string}
+            />
+          </div>
         </div>
       </div>
 
       {/* Section 3: Regional & Alamat */}
-      <div className="card-info bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-2">
-          Regional & Lokasi
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <RemoteSelect
-            label="Provinsi"
-            placeholder="Pilih Provinsi"
-            value={provinceSelected}
-            hook={{ data: provinces, isLoading: isLoadingProvinces } as any}
-            fetchData={(page, search) =>
-              getProvinces({ page, search }) as any
-            }
-            getLabel={(item: any) => item?.name || ""}
-            getValue={(item: any) => item?.id}
-            onChange={handleProvinceChange}
-            onClear={handleProvinceClear}
-            required
-            error={FormState?.errors?.province_id as string}
-          />
-          <RemoteSelect
-            label="Kabupaten / Kota"
-            placeholder="Pilih Kabupaten / Kota"
-            value={regencySelected}
-            hook={{ data: regencies, isLoading: isLoadingRegencies } as any}
-            fetchData={(page, search) =>
-              getRegencies(formData.province_id, { page, search }) as any
-            }
-            getLabel={(item: any) => item?.name || ""}
-            getValue={(item: any) => item?.id}
-            onChange={handleRegencyChange}
-            onClear={handleRegencyClear}
-            required
-            disabled={!formData.province_id}
-            error={FormState?.errors?.regency_id as string}
-          />
-          <RemoteSelect
-            label="Kecamatan"
-            placeholder="Pilih Kecamatan"
-            value={districtSelected}
-            hook={{ data: districts, isLoading: isLoadingDistricts } as any}
-            fetchData={(page, search) =>
-              getDistricts(formData.regency_id, { page, search }) as any
-            }
-            getLabel={(item: any) => item?.name || ""}
-            getValue={(item: any) => item?.id}
-            onChange={handleDistrictChange}
-            onClear={handleDistrictClear}
-            required
-            disabled={!formData.regency_id}
-            error={FormState?.errors?.district_id as string}
-          />
-          <RemoteSelect
-            label="Kelurahan / Desa"
-            placeholder="Pilih Kelurahan / Desa"
-            value={villageSelected}
-            hook={{ data: villages, isLoading: isLoadingVillages } as any}
-            fetchData={(page, search) =>
-              getVillages(formData.district_id, { page, search }) as any
-            }
-            getLabel={(item: any) => item?.name || ""}
-            getValue={(item: any) => item?.id}
-            onChange={handleVillageChange}
-            onClear={handleVillageClear}
-            required
-            disabled={!formData.district_id}
-            error={FormState?.errors?.village_id as string}
-          />
+      <div
+        className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
+        style={{ overflow: "visible", zIndex: 10 }}
+      >
+        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            Regional & Lokasi
+          </h2>
         </div>
-        <div className="space-y-1">
-          <Input
-            label="Alamat Lengkap"
-            required
-            value={formData.address}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, address: e.target.value }))
-            }
-            placeholder="Contoh: Jl. Diponegoro No. 22"
-            variant="primary"
-            error={FormState?.errors?.address as string}
-          />
-          <div className="flex justify-end text-xs text-slate-400">
-            {formData.address.length}/130 karakter
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <RemoteSelect
+              label="Provinsi"
+              placeholder="Pilih Provinsi"
+              value={provinceSelected}
+              hook={provincesResult as any}
+              fetchData={(page, search) =>
+                getProvinces({ page, search }) as any
+              }
+              getLabel={(item: any) => item?.name || ""}
+              getValue={(item: any) => item?.id}
+              onChange={handleProvinceChange}
+              onClear={handleProvinceClear}
+              required
+              error={FormState?.errors?.province_id as string}
+            />
+            <RemoteSelect
+              label="Kabupaten / Kota"
+              placeholder="Pilih Kabupaten / Kota"
+              value={regencySelected}
+              hook={regenciesResult as any}
+              fetchData={(page, search) =>
+                getRegencies(formData.province_id, { page, search }) as any
+              }
+              getLabel={(item: any) => item?.name || ""}
+              getValue={(item: any) => item?.id}
+              onChange={handleRegencyChange}
+              onClear={handleRegencyClear}
+              required
+              disabled={!formData.province_id}
+              error={FormState?.errors?.regency_id as string}
+              key={provinceSelected?.id}
+              watchKey={formData.province_id}
+            />
+            <RemoteSelect
+              label="Kecamatan"
+              placeholder="Pilih Kecamatan"
+              value={districtSelected}
+              hook={districtsResult as any}
+              fetchData={(page, search) =>
+                getDistricts(formData.regency_id, { page, search }) as any
+              }
+              getLabel={(item: any) => item?.name || ""}
+              getValue={(item: any) => item?.id}
+              onChange={handleDistrictChange}
+              onClear={handleDistrictClear}
+              required
+              disabled={!formData.regency_id}
+              error={FormState?.errors?.district_id as string}
+              key={regencySelected?.id}
+              watchKey={formData.regency_id}
+            />
+            <RemoteSelect
+              label="Kelurahan / Desa"
+              placeholder="Pilih Kelurahan / Desa"
+              value={villageSelected}
+              hook={villagesResult as any}
+              fetchData={(page, search) =>
+                getVillages(formData.district_id, { page, search }) as any
+              }
+              getLabel={(item: any) => item?.name || ""}
+              getValue={(item: any) => item?.id}
+              onChange={handleVillageChange}
+              onClear={handleVillageClear}
+              required
+              disabled={!formData.district_id}
+              error={FormState?.errors?.village_id as string}
+              key={districtSelected?.id}
+              watchKey={formData.district_id}
+            />
+          </div>
+          <div className="space-y-1">
+            <Input
+              label="Alamat Lengkap"
+              required
+              type="textarea"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, address: e.target.value }))
+              }
+              placeholder="Contoh: Jl. Diponegoro No. 22"
+              variant="primary"
+              error={FormState?.errors?.address as string}
+            />
+            <div className="flex justify-end text-xs text-slate-400">
+              {formData.address.length}/130 karakter
+            </div>
           </div>
         </div>
       </div>

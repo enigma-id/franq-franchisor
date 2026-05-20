@@ -154,9 +154,10 @@ export const RemoteSelect = <T,>({
       }
 
       const res = hook.data;
-      const page = res.meta?.page ?? 1;
-      const hasNext = res.meta?.has_next ?? false;
-      const newData = res.data ?? [];
+      const isArray = Array.isArray(res);
+      const page = isArray ? 1 : (res.meta?.page ?? 1);
+      const hasNext = isArray ? false : (res.meta?.has_next ?? false);
+      const newData = isArray ? res : (res.data ?? []);
 
       // Ketika page === 1, selalu replace data lama dengan data baru (bisa empty array)
       // Ketika page > 1, append data baru ke data lama

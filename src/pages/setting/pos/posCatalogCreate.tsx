@@ -36,7 +36,7 @@ export function PosCatalogCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Tambah Katalog POS"
         subtitle="Registrasikan produk menu kasir POS baru."
         backTo={() => navigate(-1)}

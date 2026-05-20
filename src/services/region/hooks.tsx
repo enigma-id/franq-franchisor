@@ -46,17 +46,13 @@ export const useRegion = () => {
   };
 
   return {
-    provinces: provincesResult.data,
-    isLoadingProvinces: provincesResult.isLoading,
     getProvinces,
-    regencies: regenciesResult.data,
-    isLoadingRegencies: regenciesResult.isLoading,
+    provincesResult,
     getRegencies,
-    districts: districtsResult.data,
-    isLoadingDistricts: districtsResult.isLoading,
+    regenciesResult,
     getDistricts,
-    villages: villagesResult.data,
-    isLoadingVillages: villagesResult.isLoading,
+    districtsResult,
     getVillages,
+    villagesResult,
   };
 };

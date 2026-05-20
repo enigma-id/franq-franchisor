@@ -12,7 +12,7 @@ export function PosItemDaily() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="report"
+        category="Operations"
         title="POS Item Daily"
         subtitle="Laporan penjualan item per hari."
       />

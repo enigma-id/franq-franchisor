@@ -20,7 +20,7 @@ export function Demand() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="purchase"
+        category="Operations"
         title="Demand Item"
         subtitle="Daftar kebutuhan stok item berdasarkan permintaan outlet."
       />

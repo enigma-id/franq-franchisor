@@ -9,8 +9,6 @@ import { OutletPage } from "./outlet/outlet";
 import StoreOutletCreate from "./outlet/outletCreate";
 import StoreOutletUpdate from "./outlet/outletUpdate";
 import { OutletType } from "./outlet/outletType";
-import OutletTypeCreate from "./outlet/outletTypeCreate";
-import OutletTypeUpdate from "./outlet/outletTypeUpdate";
 import { PosChannel } from "./pos/posChannel";
 import { PosCategory } from "./pos/posCategory";
 import { PosCatalog } from "./pos/posCatalog";
@@ -72,14 +70,6 @@ export const settingRoutes = [
   {
     path: "/setting/type/outlet",
     element: <OutletType />,
-  },
-  {
-    path: "/setting/type/outlet/create",
-    element: <OutletTypeCreate />,
-  },
-  {
-    path: "/setting/type/outlet/update/:id",
-    element: <OutletTypeUpdate />,
   },
   {
     path: "/setting/pos/channel",

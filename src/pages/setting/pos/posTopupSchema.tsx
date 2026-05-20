@@ -29,7 +29,6 @@ export function PosTopupSchema() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [formData, setFormData] = useState({
-    name: "",
     min_nominal: 0,
     bonus: 0,
   });
@@ -40,7 +39,6 @@ export function PosTopupSchema() {
         onClick: (row: any) => {
           setEditingItem(row);
           setFormData({
-            name: row?.name ?? "",
             min_nominal: row?.min_nominal ?? 0,
             bonus: row?.bonus ?? 0,
           });
@@ -50,10 +48,13 @@ export function PosTopupSchema() {
           openDelete(row);
         },
       }),
-    []
+    [],
   );
 
-  const Table = useTable("setting_pos_topup_schema", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "setting_pos_topup_schema",
+    tableConfig as TableConfig<unknown>,
+  );
 
   // Handle Create Success
   useEffect(() => {
@@ -103,13 +104,12 @@ export function PosTopupSchema() {
   const handleCloseModal = () => {
     setModalOpen(false);
     setEditingItem(null);
-    setFormData({ name: "", min_nominal: 0, bonus: 0 });
+    setFormData({ min_nominal: 0, bonus: 0 });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      name: formData.name,
       min_nominal: Number(formData.min_nominal),
       bonus: Number(formData.bonus),
     };
@@ -131,10 +131,15 @@ export function PosTopupSchema() {
           closeOnOutsideClick={false}
         >
           <Modal.Header>
-            <div className="font-bold text-lg text-slate-900 leading-7">Hapus Skema Topup</div>
+            <div className="font-bold text-lg text-slate-900 leading-7">
+              Hapus Skema Topup
+            </div>
           </Modal.Header>
           <Modal.Body className="text-sm font-normal text-slate-600 leading-5">
-            <p>Apakah Anda yakin ingin menghapus skema topup <strong>{row?.name}</strong>?</p>
+            <p>
+              Apakah Anda yakin ingin menghapus skema topup{" "}
+              <strong>{row?.name}</strong>?
+            </p>
           </Modal.Body>
           <Modal.Footer className="flex gap-2">
             <Button
@@ -169,7 +174,7 @@ export function PosTopupSchema() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Topup Schema"
         subtitle="Daftar skema top-up saldo."
         action={
@@ -200,7 +205,9 @@ export function PosTopupSchema() {
               {editingItem ? "Ubah Skema Topup" : "Tambah Skema Topup"}
             </span>
             <span className="text-xs text-slate-500 font-medium mt-0.5">
-              {editingItem ? "Ubah detail skema bonus topup saldo." : "Buat skema bonus topup saldo baru."}
+              {editingItem
+                ? "Ubah detail skema bonus topup saldo."
+                : "Buat skema bonus topup saldo baru."}
             </span>
           </div>
         </Modal.Header>
@@ -208,20 +215,16 @@ export function PosTopupSchema() {
         <Modal.Body className="pt-4 pb-2 text-left">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              label="Nama Skema Topup"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="Contoh: Promo Gajian, Cashback 10%"
-              variant="primary"
-              error={FormState?.errors?.name as string}
-            />
-            <Input
               label="Minimal Nominal Topup (Rp)"
               required
-              type="number"
+              type="currency"
               value={formData.min_nominal}
-              onChange={(e) => setFormData((prev) => ({ ...prev, min_nominal: Number(e.target.value) }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  min_nominal: Number(e.target.value),
+                }))
+              }
               placeholder="Contoh: 50000"
               variant="primary"
               min={0}
@@ -232,7 +235,12 @@ export function PosTopupSchema() {
               required
               type="number"
               value={formData.bonus}
-              onChange={(e) => setFormData((prev) => ({ ...prev, bonus: Number(e.target.value) }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  bonus: Number(e.target.value),
+                }))
+              }
               placeholder="Contoh: 10"
               variant="primary"
               min={0}
@@ -243,10 +251,18 @@ export function PosTopupSchema() {
         </Modal.Body>
 
         <Modal.Footer className="flex justify-end gap-2 pt-4">
-          <Button onClick={handleCloseModal} variant="secondary" disabled={isCreating || isUpdating}>
+          <Button
+            onClick={handleCloseModal}
+            variant="secondary"
+            disabled={isCreating || isUpdating}
+          >
             Batal
           </Button>
-          <Button onClick={handleSubmit} disabled={isCreating || isUpdating} variant="success">
+          <Button
+            onClick={handleSubmit}
+            disabled={isCreating || isUpdating}
+            variant="success"
+          >
             {isCreating || isUpdating ? (
               <Loading size="sm" variant="spinner" />
             ) : (

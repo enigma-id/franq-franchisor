@@ -16,6 +16,8 @@ import {
   Check,
   CreditCard,
   Trash2,
+  Edit,
+  Printer,
 } from "lucide-react";
 
 // Helper to get item type label
@@ -107,7 +109,7 @@ export function PurchaseOrderDetail() {
   if (isLoading) {
     return (
       <Page className="h- full flex flex- col min- h-0 bg-slate-50">
-        <Page.Header category="Purchase" title="Purchase Order Detail" />
+        <Page.Header category="Operations" title="Purchase Order Detail" />
         <Page.Body>
           <div className="flex-1 flex items- center justify-center min- h-64">
             <Loading size="lg" variant="spinner" />
@@ -120,7 +122,7 @@ export function PurchaseOrderDetail() {
   if (!order) {
     return (
       <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-        <Page.Header category="Purchase" title="Purchase Order Detail" />
+        <Page.Header category="Operations" title="Purchase Order Detail" />
         <Page.Body>
           <div className="flex-1 flex items-center justify-center min-h-64">
             <div className="text-center">
@@ -151,7 +153,7 @@ export function PurchaseOrderDetail() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Purchase"
+        category="Operations"
         title={`Order #${order.id}`}
         backTo={() => navigate(-1)}
         action={
@@ -166,6 +168,17 @@ export function PurchaseOrderDetail() {
             >
               <Check className="w-4 h-4" />
             </GuardedButton>
+
+            {/* Print Button if not pending */}
+            {order.document_status !== "PENDING" && (
+              <Button
+                variant="secondary"
+                onClick={() => window.open(`/purchase/order/print/${id}`, "_blank")}
+                title="Cetak Purchase Order"
+              >
+                <Printer className="w-4 h-4" />
+              </Button>
+            )}
             <GuardedButton
               allowed={guards.canPay}
               reason="Hanya order yang sudah disetujui dan belum lunas yang dapat dibayar."
@@ -175,6 +188,15 @@ export function PurchaseOrderDetail() {
               title="Bayar (Pay)"
             >
               <CreditCard className="w-4 h-4" />
+            </GuardedButton>
+            <GuardedButton
+              allowed={guards.canEdit}
+              reason="Hanya order dengan status pending yang dapat diubah."
+              variant="warning"
+              onClick={() => navigate(`/purchase/order/update/${id}`)}
+              title="Ubah"
+            >
+              <Edit className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canDelete}

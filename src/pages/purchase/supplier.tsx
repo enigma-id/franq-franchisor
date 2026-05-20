@@ -79,7 +79,7 @@ export function Supplier() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="purchase"
+        category="Operations"
         title="Supplier"
         subtitle="Kelola data supplier untuk pembelian stok."
         action={

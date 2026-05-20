@@ -208,7 +208,7 @@ export function SalesOrderCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="sales"
+        category="Operations"
         title="Tambah Sales Order"
         subtitle="Buat transaksi penjualan baru untuk outlet waralaba."
         backTo={() => navigate(-1)}
@@ -286,6 +286,7 @@ export function SalesOrderCreate() {
                 <Input
                   label="Catatan Opsional"
                   variant="primary"
+                  type="textarea"
                   placeholder="Tambahkan catatan khusus pengiriman atau transaksi..."
                   value={formData.note}
                   onChange={(e) =>
@@ -418,7 +419,7 @@ export function SalesOrderCreate() {
                   <div className="w-40">
                     <Input
                       variant="primary"
-                      type="number"
+                      type="currency"
                       value={formData.shipping_charge}
                       onChange={(e) =>
                         setFormData((prev) => ({

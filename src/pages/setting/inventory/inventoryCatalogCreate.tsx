@@ -19,7 +19,7 @@ export function InventoryCatalogCreate() {
   useEffect(() => {
     if (isSuccess) {
       showToast({
-        message: "Katalog Inventaris berhasil dibuat",
+        message: "Katalog Barang berhasil dibuat",
         type: "success",
         position: "bottom-center",
         duration: 4000,
@@ -36,9 +36,9 @@ export function InventoryCatalogCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
-        title="Tambah Katalog Inventaris"
-        subtitle="Buat katalog produk inventaris baru untuk dipasok to outlet."
+        category="Inventory"
+        title="Tambah Katalog Barang"
+        subtitle="Buat katalog produk barang baru untuk dipasok to outlet."
         backTo={() => navigate(-1)}
         action={
           <Button

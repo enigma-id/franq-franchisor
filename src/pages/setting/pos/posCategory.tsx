@@ -115,7 +115,7 @@ export function PosCategory() {
     };
 
     if (editingItem) {
-      update({ id: editingItem.id, ...payload });
+      update({ id: editingItem.id, payload });
     } else {
       create(payload);
     }
@@ -174,7 +174,7 @@ export function PosCategory() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="POS Category"
         subtitle="Daftar kategori POS."
         action={

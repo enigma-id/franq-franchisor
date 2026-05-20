@@ -239,7 +239,7 @@ export function BusinessSetting() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="Business"
         subtitle="Informasi franchise dan perusahaan."
         action={

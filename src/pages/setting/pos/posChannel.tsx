@@ -48,10 +48,13 @@ export function PosChannel() {
           openDelete(row);
         },
       }),
-    []
+    [],
   );
 
-  const Table = useTable("setting_pos_channel", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "setting_pos_channel",
+    tableConfig as TableConfig<unknown>,
+  );
 
   // Handle Create Success
   useEffect(() => {
@@ -112,7 +115,7 @@ export function PosChannel() {
     };
 
     if (editingItem) {
-      update({ id: editingItem.id, ...payload });
+      update({ id: editingItem.id, payload });
     } else {
       create(payload);
     }
@@ -128,10 +131,15 @@ export function PosChannel() {
           closeOnOutsideClick={false}
         >
           <Modal.Header>
-            <div className="font-bold text-lg text-slate-900 leading-7">Hapus POS Channel</div>
+            <div className="font-bold text-lg text-slate-900 leading-7">
+              Hapus POS Channel
+            </div>
           </Modal.Header>
           <Modal.Body className="text-sm font-normal text-slate-600 leading-5">
-            <p>Apakah Anda yakin ingin menghapus channel <strong>{row?.name}</strong>?</p>
+            <p>
+              Apakah Anda yakin ingin menghapus channel{" "}
+              <strong>{row?.name}</strong>?
+            </p>
           </Modal.Body>
           <Modal.Footer className="flex gap-2">
             <Button
@@ -166,7 +174,7 @@ export function PosChannel() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Settings"
         title="POS Channel"
         subtitle="Daftar channel penjualan POS."
         action={
@@ -197,7 +205,9 @@ export function PosChannel() {
               {editingItem ? "Ubah POS Channel" : "Tambah POS Channel"}
             </span>
             <span className="text-xs text-slate-500 font-medium mt-0.5">
-              {editingItem ? "Ubah detail sales channel POS kasir." : "Buat sales channel baru untuk POS kasir."}
+              {editingItem
+                ? "Ubah detail sales channel POS kasir."
+                : "Buat sales channel baru untuk POS kasir."}
             </span>
           </div>
         </Modal.Header>
@@ -208,7 +218,9 @@ export function PosChannel() {
               label="Nama Channel"
               required
               value={formData.name}
-              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
               placeholder="Contoh: GrabFood, ShopeeFood, Dine In"
               variant="primary"
               error={FormState?.errors?.name as string}
@@ -218,7 +230,12 @@ export function PosChannel() {
               required
               type="number"
               value={formData.margin}
-              onChange={(e) => setFormData((prev) => ({ ...prev, margin: Number(e.target.value) }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  margin: Number(e.target.value),
+                }))
+              }
               placeholder="Contoh: 20"
               variant="primary"
               min={0}
@@ -228,10 +245,18 @@ export function PosChannel() {
         </Modal.Body>
 
         <Modal.Footer className="flex justify-end gap-2 pt-4">
-          <Button onClick={handleCloseModal} variant="secondary" disabled={isCreating || isUpdating}>
+          <Button
+            onClick={handleCloseModal}
+            variant="secondary"
+            disabled={isCreating || isUpdating}
+          >
             Batal
           </Button>
-          <Button onClick={handleSubmit} disabled={isCreating || isUpdating} variant="success">
+          <Button
+            onClick={handleSubmit}
+            disabled={isCreating || isUpdating}
+            variant="success"
+          >
             {isCreating || isUpdating ? (
               <Loading size="sm" variant="spinner" />
             ) : (

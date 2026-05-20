@@ -43,7 +43,7 @@ export function InventoryItemCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="setting"
+        category="Inventory"
         title="Tambah Item"
         subtitle="Tambah item inventori baru."
         backTo={() => navigate(-1)}

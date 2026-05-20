@@ -1,5 +1,6 @@
+import { Badge } from "@/components";
 import config from "@/services/table/const";
-import { currencyFormat, dateFormat } from "@/utils";
+import { currencyFormat, dateFormat, getStatusVariant } from "@/utils";
 
 const createTableConfig = ({
   onRowClick,
@@ -39,6 +40,48 @@ const createTableConfig = ({
       align: "right",
       class: "text-right font-mono font-medium",
       component: (row: any) => currencyFormat(row.subtotal_nett),
+    },
+    document_status: {
+      title: "Status",
+      class: "text-center",
+      align: "center",
+      component: (row: any) => (
+        <Badge
+          variant={getStatusVariant(row.document_status)}
+          size="xs"
+          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+        >
+          {row.document_status?.toLowerCase()}
+        </Badge>
+      ),
+    },
+    receiving_status: {
+      title: "Receiving",
+      class: "text-center",
+      align: "center",
+      component: (row: any) => (
+        <Badge
+          variant={getStatusVariant(row.receiving_status)}
+          size="xs"
+          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+        >
+          {row.receiving_status?.toLowerCase()}
+        </Badge>
+      ),
+    },
+    payment_status: {
+      title: "Payment",
+      class: "text-center",
+      align: "center",
+      component: (row: any) => (
+        <Badge
+          variant={getStatusVariant(row.payment_status)}
+          size="xs"
+          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+        >
+          {row.payment_status?.toLowerCase()}
+        </Badge>
+      ),
     },
   },
 });
