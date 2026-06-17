@@ -1,0 +1,5360 @@
+{
+  "info": {
+    "_postman_id": "e2743269-45be-495c-a236-03dc41043591",
+    "name": "Franchisor",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "6134171"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "signup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "postman.setEnvironmentVariable(\"token\", jsonData.data.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"company_name\": \"PT Sukabread\",\n    \"username\": \"hq_sb\",\n    \"name\": \"Suka Bread\",\n    \"email\": \"sb@sb.co.id\",\n    \"phone\": \"089287931923\",\n    \"password\": \"123456789\",\n    \"confirm_password\": \"123456789\"\n\n}"
+            },
+            "url": {
+              "raw": "{{server}}/auth/signup",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "postman.setEnvironmentVariable(\"token\", jsonData.data.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"identifier\": \"hq_sb\",\n    \"password\": \"123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/auth/login",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "outlet",
+      "item": [
+        {
+          "name": "outlet",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"outlet_type_id\": \"845d5709-8c1f-4124-b31e-73bde3abdfbb\",\n    \"name\": \"LPSx\",\n    \"recipient_name\": \"Nurdin\",\n    \"phone\": \"08127982312\",\n    \"address\": \"LPS No. 15 BDG\",\n    \"region_id\": \"1c669200-c3f8-4312-b777-dd8b70ae3fdc\",\n    \"service_charges\": 0,\n    // ini kallo berisi adalah id pos channel dengan  [\"xxxx\", \"xyyy\"]\n    \"channels\": null,\n    \"owner_name\": \"Nurdinx\",\n    \"owner_username\": \"nurdinx\",\n    \"owner_password\": \"12345678\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"outlet_type_id\": \"845d5709-8c1f-4124-b31e-73bde3abdfbb\",\n    \"name\": \"LPS\",\n    \"recipient_name\": \"Nurdin\",\n    \"phone\": \"08127982312\",\n    \"address\": \"LPS No. 16 BDG\",\n    \"region_id\": \"1c669200-c3f8-4312-b777-dd8b70ae3fdc\",\n    \"service_charges\": 0,\n    // ini kallo berisi adalah id pos channel dengan  [\"xxxx\", \"xyyy\"]\n    \"channels\": [\n        \"c736e370-4180-49c1-8248-8296daa8cb8e\",\n        \"147bbb58-da45-42b3-af01-99e948ab4aa5\"\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/e258bf7a-9676-429f-80b6-b0b8646684e9",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/e258bf7a-9676-429f-80b6-b0b8646684e9",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/59a40472-4f5f-478e-bb2c-d77f58d6968c",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "59a40472-4f5f-478e-bb2c-d77f58d6968c"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/outlet",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/e258bf7a-9676-429f-80b6-b0b8646684e9/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/e258bf7a-9676-429f-80b6-b0b8646684e9/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update pos channel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"channels\": [\n        \"c736e370-4180-49c1-8248-8296daa8cb8e\"\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/e258bf7a-9676-429f-80b6-b0b8646684e9/channels",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9",
+                    "channels"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "outlet type",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Defaultx\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type/f29afd26-cc1f-422e-ad33-7af5eeb7254f",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type",
+                    "f29afd26-cc1f-422e-ad33-7af5eeb7254f"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type/f29afd26-cc1f-422e-ad33-7af5eeb7254f/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type",
+                    "f29afd26-cc1f-422e-ad33-7af5eeb7254f",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type/5c1deaf3-dfac-47a9-96a5-98d468313721",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type",
+                    "5c1deaf3-dfac-47a9-96a5-98d468313721"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type/f29afd26-cc1f-422e-ad33-7af5eeb7254f/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type",
+                    "f29afd26-cc1f-422e-ad33-7af5eeb7254f",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type/845d5709-8c1f-4124-b31e-73bde3abdfbb",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type",
+                    "845d5709-8c1f-4124-b31e-73bde3abdfbb"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/outlet/type",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "type"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pos",
+      "item": [
+        {
+          "name": "channel",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Shoope\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Dine-in\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel/147bbb58-da45-42b3-af01-99e948ab4aa5",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel",
+                    "147bbb58-da45-42b3-af01-99e948ab4aa5"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel/e258bf7a-9676-429f-80b6-b0b8646684e9",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel/968df5ab-f022-41e1-bcc4-1d8bd5588264",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel",
+                    "968df5ab-f022-41e1-bcc4-1d8bd5588264"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel/968df5ab-f022-41e1-bcc4-1d8bd5588264/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel",
+                    "968df5ab-f022-41e1-bcc4-1d8bd5588264",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/channel/968df5ab-f022-41e1-bcc4-1d8bd5588264/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "channel",
+                    "968df5ab-f022-41e1-bcc4-1d8bd5588264",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "category",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Makanan\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Makan\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category/8b0e4c1d-d0cd-4023-8f1b-faad50e637aa",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category",
+                    "8b0e4c1d-d0cd-4023-8f1b-faad50e637aa"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category/e258bf7a-9676-429f-80b6-b0b8646684e9",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category",
+                    "e258bf7a-9676-429f-80b6-b0b8646684e9"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category/f242ff19-2d4a-4af8-8754-b4d49ca22450",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category",
+                    "f242ff19-2d4a-4af8-8754-b4d49ca22450"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Defaultx\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category/091c8506-e7ab-4d7d-98da-5e578cc9f298/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category",
+                    "091c8506-e7ab-4d7d-98da-5e578cc9f298",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/category/091c8506-e7ab-4d7d-98da-5e578cc9f298/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "category",
+                    "091c8506-e7ab-4d7d-98da-5e578cc9f298",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "menu",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"category_id\": \"c492337a-8fc9-4d0a-9b2d-ba39fec860a8\",\n    \"name\": \"Ayam Goreng\",\n    \"base_price\": 7500,\n    \"image\": \"\",\n    \"is_vatable\": false,\n    \"is_additional\": false,\n    \"channel_prices\": [\n        {\n            \"pos_channel_id\": \"c736e370-4180-49c1-8248-8296daa8cb8e\",\n            \"price\": 15000\n        },\n        {\n            \"pos_channel_id\": \"147bbb58-da45-42b3-af01-99e948ab4aa5\",\n            \"price\": 26500\n        }\n    ],\n    \"ingredientsx\": [\n        {\n            \"catalog_id\": \"6065e388-c3fb-445e-9f2e-52a85240709d\",\n            \"porsi\": 6\n        },\n        {\n            \"catalog_id\": \"1c9a105c-270e-4817-bc45-d172d5c13e91\",\n            \"porsi\": 3\n        }\n    ]\n\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"category_id\": \"c492337a-8fc9-4d0a-9b2d-ba39fec860a8\",\n    \"name\": \"Kopi Kemari\",\n    \"base_price\": 7500,\n    \"image\": \"\",\n    \"is_vatable\": false,\n    \"is_additional\": false,\n    \"channel_prices\": [\n        {\n            \"pos_channel_id\": \"c736e370-4180-49c1-8248-8296daa8cb8e\",\n            \"price\": 15000\n        },\n        {\n            \"pos_channel_id\": \"147bbb58-da45-42b3-af01-99e948ab4aa5\",\n            \"price\": 26500\n        }\n    ],\n    \"ingredientsx\": [\n        {\n            \"catalog_id\": \"6065e388-c3fb-445e-9f2e-52a85240709d\",\n            \"porsi\": 6\n        },\n        {\n            \"catalog_id\": \"1c9a105c-270e-4817-bc45-d172d5c13e91\",\n            \"porsi\": 3\n        }\n    ],\n    \"addon_groups\": [\n        {\n            \"name\": \"Tambahan\",\n            \"type\": \"options\",\n            \"items\": [\n                {\n                    \"addon_menu_id\": \"b7ae7c35-55e0-4099-8f9c-4bc408f12909\"\n                }\n            ]\n        }\n    ]\n\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu/403da4f2-171f-4b6a-b3f5-35284d09d296",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu",
+                    "403da4f2-171f-4b6a-b3f5-35284d09d296"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update types",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"types\": [\n        \"845d5709-8c1f-4124-b31e-73bde3abdfbb\"\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu/919e43de-93cf-4359-8c89-86ccd612e3a8/types",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu",
+                    "919e43de-93cf-4359-8c89-86ccd612e3a8",
+                    "types"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu/925a9c7e-fc76-43e6-a857-be515d7f2173/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu",
+                    "925a9c7e-fc76-43e6-a857-be515d7f2173",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu/78726d5e-300e-4070-915d-320151ee7d35",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu",
+                    "78726d5e-300e-4070-915d-320151ee7d35"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu/925a9c7e-fc76-43e6-a857-be515d7f2173/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu",
+                    "925a9c7e-fc76-43e6-a857-be515d7f2173",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu/403da4f2-171f-4b6a-b3f5-35284d09d296",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu",
+                    "403da4f2-171f-4b6a-b3f5-35284d09d296"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/pos/menu",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "pos",
+                    "menu"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "member topup schema",
+      "item": [
+        {
+          "name": "create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"min_amount\": 600000,\n    \"bonus_percentage\": 6\n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"min_amount\": 600000,\n    \"bonus_percentage\": 7\n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus/6384841c-fea6-4294-a6e5-e1b5d44683e4",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus",
+                "6384841c-fea6-4294-a6e5-e1b5d44683e4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "activate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mobil\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus/6384841c-fea6-4294-a6e5-e1b5d44683e4/activate",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus",
+                "6384841c-fea6-4294-a6e5-e1b5d44683e4",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus/6384841c-fea6-4294-a6e5-e1b5d44683e4",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus",
+                "6384841c-fea6-4294-a6e5-e1b5d44683e4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus/845d5709-8c1f-4124-b31e-73bde3abdfbb",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus",
+                "845d5709-8c1f-4124-b31e-73bde3abdfbb"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deactivate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mobil\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus/6384841c-fea6-4294-a6e5-e1b5d44683e4/deactivate",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus",
+                "6384841c-fea6-4294-a6e5-e1b5d44683e4",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/member/topup-bonus",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "topup-bonus"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "warehouse",
+      "item": [
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/warehouse",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "warehouse"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "supplier",
+      "item": [
+        {
+          "name": "create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"PT Distributation Mekari\",\n    \"type\": \"distributor\",\n    \"address\": \"GRL\",\n    \"phone\": \"0828731982\",\n    \"sales_person\": \"mandi\",\n    \"bank_name\": \"BCS\",\n    \"bank_account\": \"Na\",\n    \"bank_number\": \"1802831\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/supplier",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"PT Distributation Mekari\",\n    \"type\": \"distributor\",\n    \"address\": \"GRL\",\n    \"phone\": \"0828731982\",\n    \"sales_person\": \"mandi\",\n    \"bank_name\": \"BCS\",\n    \"bank_account\": \"Na\",\n    \"bank_number\": \"1802831\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/supplier/f7d1e901-ee6b-498d-bcad-3fae87268eb4",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier",
+                "f7d1e901-ee6b-498d-bcad-3fae87268eb4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "activate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mobil\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/supplier/f7d1e901-ee6b-498d-bcad-3fae87268eb4/activate",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier",
+                "f7d1e901-ee6b-498d-bcad-3fae87268eb4",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \n}"
+            },
+            "url": {
+              "raw": "{{server}}/supplier/f7d1e901-ee6b-498d-bcad-3fae87268eb4",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier",
+                "f7d1e901-ee6b-498d-bcad-3fae87268eb4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/supplier/f7d1e901-ee6b-498d-bcad-3fae87268eb4",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier",
+                "f7d1e901-ee6b-498d-bcad-3fae87268eb4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deactivate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mobil\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/supplier/f7d1e901-ee6b-498d-bcad-3fae87268eb4/deactivate",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier",
+                "f7d1e901-ee6b-498d-bcad-3fae87268eb4",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/supplier",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "supplier"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "payment method",
+      "item": [
+        {
+          "name": "create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Kredit\",\n    \"provider\": \"other\",\n    \"type\": \"pos\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/payment/method",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mandiri\",\n    \"provider\": \"xendit\",\n    \"type\": \"franchise\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/payment/method/c75e2db3-0269-4133-8161-2212fd930a0c",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method",
+                "c75e2db3-0269-4133-8161-2212fd930a0c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "activate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mobil\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/payment/method/66776cbd-9499-48c8-a4ee-290690dbe51e/activate",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method",
+                "66776cbd-9499-48c8-a4ee-290690dbe51e",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \n}"
+            },
+            "url": {
+              "raw": "{{server}}/payment/method/c75e2db3-0269-4133-8161-2212fd930a0c",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method",
+                "c75e2db3-0269-4133-8161-2212fd930a0c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/payment/method/ba3ddf48-952e-4ed5-bd56-7210f5f7c4b1",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method",
+                "ba3ddf48-952e-4ed5-bd56-7210f5f7c4b1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deactivate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mobil\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/payment/method/ba3ddf48-952e-4ed5-bd56-7210f5f7c4b1/deactivate",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method",
+                "ba3ddf48-952e-4ed5-bd56-7210f5f7c4b1",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/payment/method",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment",
+                "method"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "inventory",
+      "item": [
+        {
+          "name": "item",
+          "item": [
+            {
+              "name": "create raw material",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"298AJ72321\",\n    \"name\": \"Kap\",\n    \"variant\": \"\",\n    \"packaging\": \"PCS\",\n    \"size\": \"70ML\",\n    \"is_batch_tracking\": false,\n    \"picking_strategy\": \"\",\n    \"base_price\": 0,\n    \"weight\": 70,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        },\n        {\n            \"name\": \"Pak\",\n            \"quantity\": 8\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create finished_goods",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"finished_goods\",\n    \"category\": \"Coffe\",\n    \"barcode\": \"\",\n    \"name\": \"Golda Latte\",\n    \"variant\": \"\",\n    \"packaging\": \"PCS\",\n    \"size\": \"100ML\",\n    \"is_batch_tracking\": true,\n    \"picking_strategy\": \"fefo\",\n    \"base_price\": 7500,\n    \"weight\": 100,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ],\n    \"boms\": [\n        {\n            \"material_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"quantity\": 0.5,\n            \"measurement\": \"Gram\"\n        },\n        {\n            \"material_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"quantity\": 0.8,\n            \"measurement\": \"Ml\"\n        }\n        \n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item?type=finished_goods",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "finished_goods"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/c638cdaf-d57d-4c26-91bb-ca559d0b2698",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "c638cdaf-d57d-4c26-91bb-ca559d0b2698"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"32817823\",\n    \"name\": \"Susu UHT \",\n    \"variant\": \"Putih\",\n    \"packaging\": \"Pcs\",\n    \"size\": \"250ML\",\n    \"is_batch_tracking\": true,\n    \"picking_strategy\": \"fifo\",\n    \"base_price\": 0,\n    \"weight\": 250,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        },\n        {\n            \"name\": \"Sacet\",\n            \"quantity\": 3\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/4481a684-d1ac-410a-b563-e1bfb2016198",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "4481a684-d1ac-410a-b563-e1bfb2016198"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update finished_goods",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"finished_goods\",\n    \"category\": \"Coffe\",\n    \"barcode\": \"\",\n    \"name\": \"Bean Spot Latte\",\n    \"variant\": \"\",\n    \"packaging\": \"PCS\",\n    \"size\": \"100ML\",\n    \"is_batch_tracking\": true,\n    \"picking_strategy\": \"fefo\",\n    \"base_price\": 7500,\n    \"weight\": 100,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ],\n    \"boms\": [\n        {\n            \"material_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"quantity\": 150,\n            \"measurement\": \"Gram\"\n        },\n        {\n            \"material_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"quantity\": 50,\n            \"measurement\": \"Ml\"\n        }\n        \n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/f4e4117f-dcb2-42b4-924f-bc2f6bfbebd7",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "f4e4117f-dcb2-42b4-924f-bc2f6bfbebd7"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/9ce937e0-0fbe-4b02-9afa-114794073c69",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "9ce937e0-0fbe-4b02-9afa-114794073c69"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/4481a684-d1ac-410a-b563-e1bfb2016198/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "4481a684-d1ac-410a-b563-e1bfb2016198",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"298AJ731\",\n    \"name\": \"Biji Kopi \",\n    \"variant\": \"Nurmel\",\n    \"packaging\": \"PCS\",\n    \"size\": \"500ML\",\n    \"is_batch_tracking\": false,\n    \"picking_strategy\": \"\",\n    \"base_price\": 0,\n    \"weight\": 500,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/4481a684-d1ac-410a-b563-e1bfb2016198/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "4481a684-d1ac-410a-b563-e1bfb2016198",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "catalog",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"c638cdaf-d57d-4c26-91bb-ca559d0b2698\",\n    \"fraction_id\": \"cb52a47f-6b65-4f79-9b9f-85c017c89cbb\",\n    \"measurement\": \"PCS\",\n    \"unit\": 1,\n    \"unit_price\": 8000\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create bundle",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Paket Kopi\",\n    \"is_bundle\": true,\n    \"unit_price\": 15000,\n    \"measurement\": \"PCS\",\n    \"unit\": 1,\n    \"items\": [\n        {\n            \"item_id\": \"2134af17-f569-4bc1-9fdd-5e89c2f860ad\",\n            \"fraction_id\": \"3b9b0b01-8243-4acf-96db-1c605f45d73f\",\n            \"quantity\": 2,\n            \"margin\": 2\n        },\n        {\n            \"item_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"fraction_id\": \"210ca7b7-c0ff-4789-a72b-424d01845b7e\",\n            \"quantity\": 3,\n            \"margin\": 2\n        },\n        {\n            \"item_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"fraction_id\": \"f1c893c5-aa95-486f-b8d5-2b6360a18696\",\n            \"quantity\": 1,\n            \"margin\": 2\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update bundle",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Paket Kopi\",\n    \"is_bundle\": true,\n    \"unit_price\": 15000,\n    \"measurement\": \"PCS\",\n    \"unit\": 1,\n    \"items\": [\n        {\n            \"id\": \"ef5d9bd5-2a36-43e1-86e9-1d690fd802a8\",\n            \"item_id\": \"2134af17-f569-4bc1-9fdd-5e89c2f860ad\",\n            \"fraction_id\": \"3b9b0b01-8243-4acf-96db-1c605f45d73f\",\n            \"quantity\": 2,\n            \"margin\": 2\n        },\n        {\n            \"item_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"fraction_id\": \"210ca7b7-c0ff-4789-a72b-424d01845b7e\",\n            \"quantity\": 3,\n            \"margin\": 2\n        },\n        {\n            \"item_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"fraction_id\": \"f1c893c5-aa95-486f-b8d5-2b6360a18696\",\n            \"quantity\": 1,\n            \"margin\": 2\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog/4a07ba05-0cb3-49fa-a4ec-8e1e0cd685e3",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog",
+                    "4a07ba05-0cb3-49fa-a4ec-8e1e0cd685e3"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"2134af17-f569-4bc1-9fdd-5e89c2f860ad\",\n    \"fraction_id\": \"811f749d-e115-4a54-9abb-af0096b353c0\",\n    \"measurement\": \"PCS\",\n    \"unit\": 2,\n    \"unit_price\": 15000\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog/1c9a105c-270e-4817-bc45-d172d5c13e91",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog",
+                    "1c9a105c-270e-4817-bc45-d172d5c13e91"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog/1c9a105c-270e-4817-bc45-d172d5c13e91/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog",
+                    "1c9a105c-270e-4817-bc45-d172d5c13e91",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog/0e435ed0-7177-4802-a287-d2a322c8c988",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog",
+                    "0e435ed0-7177-4802-a287-d2a322c8c988"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Mobil\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog/1c9a105c-270e-4817-bc45-d172d5c13e91/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog",
+                    "1c9a105c-270e-4817-bc45-d172d5c13e91",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog/1bf4dc8f-a8bf-4a1b-9681-d6bc86589b7a",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog",
+                    "1bf4dc8f-a8bf-4a1b-9681-d6bc86589b7a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/catalog",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "catalog"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "purchase",
+      "item": [
+        {
+          "name": "order",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"supplier_id\": \"7c186679-f6ec-49b2-9181-fb96f94569d5\",\n    \"warehouse_id\": \"89f4ff5e-b60d-4b35-925f-c001b069e82e\",\n    \"ref_code\": \"198727321\",\n    \"recipient_name\": \"Jandi\",\n    \"recipient_phone\": \"082971923\",\n    \"address\": \"GLA\",\n    \"eta_date\": \"2026-05-28\",\n    \"items\":[\n        {\n            \"item_id\": \"2134af17-f569-4bc1-9fdd-5e89c2f860ad\",\n            \"fraction_id\": \"811f749d-e115-4a54-9abb-af0096b353c0\",\n            \"quantity_ordered\": 5,\n            \"unit_nett\": 19500\n        },\n        {\n            \"item_id\": \"63025c14-4b71-447e-b6e7-da5a14ff55f2\",\n            \"fraction_id\": \"16062ce7-8df8-4a6d-91de-e4cfd930ea02\",\n            \"quantity_ordered\": 7,\n            \"unit_nett\": 53500\n        },\n        {\n            \"item_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"fraction_id\": \"f1c893c5-aa95-486f-b8d5-2b6360a18696\",\n            \"quantity_ordered\": 150,\n            \"unit_nett\": 1500\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order/aae18147-7d20-48ec-bb05-0efc5f6d0650",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order",
+                    "aae18147-7d20-48ec-bb05-0efc5f6d0650"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"supplier_id\": \"7c186679-f6ec-49b2-9181-fb96f94569d5\",\n    \"warehouse_id\": \"89f4ff5e-b60d-4b35-925f-c001b069e82e\",\n    \"ref_code\": \"198727321\",\n    \"recipient_name\": \"Jandi\",\n    \"recipient_phone\": \"082971923\",\n    \"address\": \"GLA\",\n    \"items\":[\n        {\n            \"id\": \"34390b41-b74c-4708-97ae-fb925b34942a\",\n            \"item_id\": \"2134af17-f569-4bc1-9fdd-5e89c2f860ad\",\n            \"fraction_id\": \"811f749d-e115-4a54-9abb-af0096b353c0\",\n            \"quantity_ordered\": 6,\n            \"unit_nett\": 8000\n        },\n        {\n            \"item_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"fraction_id\": \"210ca7b7-c0ff-4789-a72b-424d01845b7e\",\n            \"quantity_ordered\": 3,\n            \"unit_nett\": 500\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order/e8f441fb-d4bd-4e34-81d4-a9b978049b1a",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order",
+                    "e8f441fb-d4bd-4e34-81d4-a9b978049b1a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order/1b4af9b6-2d38-4fb6-867f-27ba741eefbb",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order",
+                    "1b4af9b6-2d38-4fb6-867f-27ba741eefbb"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "paid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order/e8f441fb-d4bd-4e34-81d4-a9b978049b1a/paid",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order",
+                    "e8f441fb-d4bd-4e34-81d4-a9b978049b1a",
+                    "paid"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "publish",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"298AJ731\",\n    \"name\": \"Biji Kopi \",\n    \"variant\": \"Nurmel\",\n    \"packaging\": \"PCS\",\n    \"size\": \"500ML\",\n    \"is_batch_tracking\": false,\n    \"picking_strategy\": \"\",\n    \"base_price\": 0,\n    \"weight\": 500,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/purchase/order/39b9e0d7-2980-468e-ad88-6bc473e4fac2/publish",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "purchase",
+                    "order",
+                    "39b9e0d7-2980-468e-ad88-6bc473e4fac2",
+                    "publish"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "item": [
+        {
+          "name": "plan",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"production_date\": \"2026-05-30\",\n    \"warehouse_id\": \"89f4ff5e-b60d-4b35-925f-c001b069e82e\",\n    \"items\": [\n        {\n            \"item_id\": \"f4e4117f-dcb2-42b4-924f-bc2f6bfbebd7\",\n            \"quantity\": 15\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/production/plan",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "plan"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/production/plan",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "plan"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/production/plan/446fd1f3-94be-4842-98f3-d85125f4e436",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "plan",
+                    "446fd1f3-94be-4842-98f3-d85125f4e436"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "publish",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"warehouse_id\": \"89f4ff5e-b60d-4b35-925f-c001b069e82e\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/production/plan/0c23c42a-ccaf-4cca-9e6d-1e49cec68ac7/publish",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "plan",
+                    "0c23c42a-ccaf-4cca-9e6d-1e49cec68ac7",
+                    "publish"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "complete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"298AJ731\",\n    \"name\": \"Biji Kopi \",\n    \"variant\": \"Nurmel\",\n    \"packaging\": \"PCS\",\n    \"size\": \"500ML\",\n    \"is_batch_tracking\": false,\n    \"picking_strategy\": \"\",\n    \"base_price\": 0,\n    \"weight\": 500,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/production/plan/0c23c42a-ccaf-4cca-9e6d-1e49cec68ac7/complete",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "plan",
+                    "0c23c42a-ccaf-4cca-9e6d-1e49cec68ac7",
+                    "complete"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/production/plan/db07d1a2-e8d0-459a-a789-f2e383555b9c",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "plan",
+                    "db07d1a2-e8d0-459a-a789-f2e383555b9c"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "item",
+          "item": [
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"quantity\": 2\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/production/item/79f6bfd1-1d6d-415c-8889-5126efbd2614",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "item",
+                    "79f6bfd1-1d6d-415c-8889-5126efbd2614"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "complete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"warehouse_id\" : \"d3b98367-623b-4d27-9362-db252d19d47d\",\n    \"quantity_produced\": 3   \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/production/item/66fb7db4-8e34-495b-8a92-afb34ce72ac6/complete",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "production",
+                    "item",
+                    "66fb7db4-8e34-495b-8a92-afb34ce72ac6",
+                    "complete"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sales",
+      "item": [
+        {
+          "name": "order",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"warehouse_id\": \"89f4ff5e-b60d-4b35-925f-c001b069e82e\",\n    \"ref_code\": \"\",\n    \"outlet_id\": \"e258bf7a-9676-429f-80b6-b0b8646684e9\",\n    \"recipient_name\": \"Jaka\",\n    \"recipient_phone\": \"0887287631\",\n    \"recipient_region_id\": \"1c669200-c3f8-4312-b777-dd8b70ae3fdc\",\n    \"recipient_address\": \"Dimana bro\",\n    \"note\": \"Hati-hati\",\n    \"shipping_date\": \"2026-06-30\",\n    \"requires_shipping\": false,\n    \"items\": [\n        {\n            \"catalog_id\": \"b3667630-092c-406c-afb8-38d36d4902e2\",\n            \"quantity_ordered\": 2\n        },\n        {\n            \"catalog_id\": \"1bf4dc8f-a8bf-4a1b-9681-d6bc86589b7a\",\n            \"quantity_ordered\": 5\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/1da6f410-4222-46f0-8522-284fb4fc2d6a",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "1da6f410-4222-46f0-8522-284fb4fc2d6a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"warehouse_id\": \"89f4ff5e-b60d-4b35-925f-c001b069e82e\",\n    \"ref_code\": \"\",\n    \"outlet_id\": \"e258bf7a-9676-429f-80b6-b0b8646684e9\",\n    \"recipient_name\": \"Jaka\",\n    \"recipient_phone\": \"0887287631\",\n    \"recipient_region_id\": \"1c669200-c3f8-4312-b777-dd8b70ae3fdc\",\n    \"recipient_address\": \"Dimana bro\",\n    \"note\": \"Hati-hati\",\n    \"shipping_date\": \"2026-06-30\",\n    \"requires_shipping\": false,\n    \"shipping_charges\": 20000,\n    \"items\": [\n        {\n            \"id\": \"c0581460-4379-4ff5-8adc-3f05c29f4bb2\",\n            \"catalog_id\": \"1bf4dc8f-a8bf-4a1b-9681-d6bc86589b7a\",\n            \"quantity_ordered\": 3\n        },\n        {\n            \"catalog_id\": \"6065e388-c3fb-445e-9f2e-52a85240709d\",\n            \"quantity_ordered\": 6\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/1da6f410-4222-46f0-8522-284fb4fc2d6a",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "1da6f410-4222-46f0-8522-284fb4fc2d6a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/89355b02-9f6e-4b56-b3be-72de0c9d8e11",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "89355b02-9f6e-4b56-b3be-72de0c9d8e11"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "publish",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/b70469bd-76b5-4482-bd6b-e0b3fa730a7b/publish",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "b70469bd-76b5-4482-bd6b-e0b3fa730a7b",
+                    "publish"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "paid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/2ca2d0be-c03e-421b-984f-40054d4e28e6/paid",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "2ca2d0be-c03e-421b-984f-40054d4e28e6",
+                    "paid"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "cancel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"note\": \"cancel saja\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/2ca2d0be-c03e-421b-984f-40054d4e28e6/cancel",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "2ca2d0be-c03e-421b-984f-40054d4e28e6",
+                    "cancel"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "retur",
+          "item": [
+            {
+              "name": "create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"finished_goods\",\n    \"category\": \"Coffe\",\n    \"barcode\": \"\",\n    \"name\": \"Bean Spot Latte\",\n    \"variant\": \"\",\n    \"packaging\": \"PCS\",\n    \"size\": \"100ML\",\n    \"is_batch_tracking\": true,\n    \"picking_strategy\": \"fefo\",\n    \"base_price\": 7500,\n    \"weight\": 100,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ],\n    \"boms\": [\n        {\n            \"material_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"quantity\": 200,\n            \"measurement\": \"Gram\"\n        },\n        {\n            \"material_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"quantity\": 50,\n            \"measurement\": \"Ml\"\n        }\n        \n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item?type=raw_material",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "raw_material"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/eeb58578-a78c-4291-9723-93e3186b0627",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "eeb58578-a78c-4291-9723-93e3186b0627"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"32817823\",\n    \"name\": \"Susu UHT \",\n    \"variant\": \"Putih\",\n    \"packaging\": \"Pcs\",\n    \"size\": \"250ML\",\n    \"is_batch_tracking\": true,\n    \"picking_strategy\": \"fifo\",\n    \"base_price\": 0,\n    \"weight\": 250,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        },\n        {\n            \"name\": \"Sacet\",\n            \"quantity\": 3\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/4481a684-d1ac-410a-b563-e1bfb2016198",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "4481a684-d1ac-410a-b563-e1bfb2016198"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update finished_goods",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"finished_goods\",\n    \"category\": \"Coffe\",\n    \"barcode\": \"\",\n    \"name\": \"Bean Spot Latte\",\n    \"variant\": \"\",\n    \"packaging\": \"PCS\",\n    \"size\": \"100ML\",\n    \"is_batch_tracking\": true,\n    \"picking_strategy\": \"fefo\",\n    \"base_price\": 7500,\n    \"weight\": 100,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ],\n    \"boms\": [\n        {\n            \"material_id\": \"eeb58578-a78c-4291-9723-93e3186b0627\",\n            \"quantity\": 150,\n            \"measurement\": \"Gram\"\n        },\n        {\n            \"material_id\": \"4481a684-d1ac-410a-b563-e1bfb2016198\",\n            \"quantity\": 50,\n            \"measurement\": \"Ml\"\n        }\n        \n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/f4e4117f-dcb2-42b4-924f-bc2f6bfbebd7",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "f4e4117f-dcb2-42b4-924f-bc2f6bfbebd7"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/9ce937e0-0fbe-4b02-9afa-114794073c69",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "9ce937e0-0fbe-4b02-9afa-114794073c69"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "activate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/4481a684-d1ac-410a-b563-e1bfb2016198/activate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "4481a684-d1ac-410a-b563-e1bfb2016198",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deactivate",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"type\": \"raw_material\",\n    \"category\": \"DEFAULT\",\n    \"barcode\": \"298AJ731\",\n    \"name\": \"Biji Kopi \",\n    \"variant\": \"Nurmel\",\n    \"packaging\": \"PCS\",\n    \"size\": \"500ML\",\n    \"is_batch_tracking\": false,\n    \"picking_strategy\": \"\",\n    \"base_price\": 0,\n    \"weight\": 500,\n    \"fractions\": [\n        {\n            \"name\": \"PCS\",\n            \"quantity\": 1\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/inventory/item/4481a684-d1ac-410a-b563-e1bfb2016198/deactivate",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "inventory",
+                    "item",
+                    "4481a684-d1ac-410a-b563-e1bfb2016198",
+                    "deactivate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "demand",
+      "item": [
+        {
+          "name": "get production",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/demand/production?production_date=2026-06-30",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "demand",
+                "production"
+              ],
+              "query": [
+                {
+                  "key": "production_date",
+                  "value": "2026-06-30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/demand/item",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "demand",
+                "item"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "item": [
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/profile/me",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "profile",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "perbaharui",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Super\",\n    \"password\": \"\",\n    \"confirm_password\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/profile/me",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "profile",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

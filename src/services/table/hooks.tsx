@@ -70,7 +70,7 @@ const useTable = <T = unknown,>(
           table: state as TableState<unknown>,
         }).unwrap()) as PaginatedResponse<T> | ApiResponse<T[]>;
 
-        const isSuccess = res?.status === "success";
+        const isSuccess = res?.message === "success";
 
         // Handle nested data extraction via dataKey (e.g., "session_data")
         let data: T[];
@@ -91,8 +91,8 @@ const useTable = <T = unknown,>(
           // Standard array response
           data = isSuccess && Array.isArray(res?.data) ? (res.data as T[]) : [];
           total =
-            isSuccess && (res?.total || data?.length)
-              ? ((res?.total || data?.length) as number)
+            isSuccess && "meta" in res && res.meta?.total
+              ? (res.meta.total as number)
               : 0;
         }
 

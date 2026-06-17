@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../../../services/auth/hook";
+import { useAuth } from "../../../../temp/services/auth/hook";
 
 const AuthGuard: React.FC = () => {
   const { isAuthenticated } = useAuth();

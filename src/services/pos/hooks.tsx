@@ -1,54 +1,47 @@
 import { createCrudHook } from "../hooks/createCrudHook";
 import {
-  useLazyGetCatalogsQuery,
-  useLazyShowCatalogQuery,
-  useCreateCatalogMutation,
-  useUpdateCatalogMutation,
-  useActivateCatalogMutation,
-  useDeactivateCatalogMutation,
-  useDeleteCatalogMutation,
+  useLazyGetMenusQuery,
   useLazyGetCategoriesQuery,
-  useLazyShowCategoryQuery,
+  useLazyGetChannelsQuery,
+  useCreateMenuMutation,
+  useUpdateMenuMutation,
+  useDeleteMenuMutation,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
-  useActivateCategoryMutation,
-  useDeactivateCategoryMutation,
   useDeleteCategoryMutation,
-  useLazyGetChannelsQuery,
-  useLazyShowChannelQuery,
   useCreateChannelMutation,
   useUpdateChannelMutation,
   useDeleteChannelMutation,
-  useLazyGetPaymentMethodsQuery,
-  useLazyShowPaymentMethodQuery,
-  useCreatePaymentMethodMutation,
-  useUpdatePaymentMethodMutation,
-  useDeletePaymentMethodMutation,
-  useLazyGetTopupSchemasQuery,
-  useLazyShowTopupSchemaQuery,
-  useCreateTopupSchemaMutation,
-  useUpdateTopupSchemaMutation,
-  useDeleteTopupSchemaMutation,
+  useActivateMenuMutation,
+  useDeactivateMenuMutation,
+  useUpdateMenuTypesMutation,
+  useActivateChannelMutation,
+  useDeactivateChannelMutation,
+  useActivateCategoryMutation,
+  useDeactivateCategoryMutation,
 } from "./api";
+import type {
+  POSMenuDetail,
+  POSCategoryDetail,
+  POSChannelDetail,
+} from "../types/pos";
 
-// POS Catalog
-export const usePOSCatalog = createCrudHook({
-  useLazyGetQuery: useLazyGetCatalogsQuery,
-  useLazyShowQuery: useLazyShowCatalogQuery,
-  useCreateMutation: useCreateCatalogMutation,
-  useUpdateMutation: useUpdateCatalogMutation,
-  useRemoveMutation: useDeleteCatalogMutation,
+export const usePOSMenu = createCrudHook<POSMenuDetail>({
+  entityName: "posMenu",
+  useLazyGetQuery: useLazyGetMenusQuery,
+  useCreateMutation: useCreateMenuMutation,
+  useUpdateMutation: useUpdateMenuMutation,
+  useRemoveMutation: useDeleteMenuMutation,
   customOperations: {
-    activate: { hook: useActivateCatalogMutation },
-    deactivate: { hook: useDeactivateCatalogMutation },
+    activate: { hook: useActivateMenuMutation },
+    deactivate: { hook: useDeactivateMenuMutation },
+    updateTypes: { hook: useUpdateMenuTypesMutation },
   },
-  entityName: "posCatalog",
 });
 
-// POS Category
-export const usePOSCategory = createCrudHook({
+export const usePOSCategory = createCrudHook<POSCategoryDetail>({
+  entityName: "posCategory",
   useLazyGetQuery: useLazyGetCategoriesQuery,
-  useLazyShowQuery: useLazyShowCategoryQuery,
   useCreateMutation: useCreateCategoryMutation,
   useUpdateMutation: useUpdateCategoryMutation,
   useRemoveMutation: useDeleteCategoryMutation,
@@ -56,35 +49,16 @@ export const usePOSCategory = createCrudHook({
     activate: { hook: useActivateCategoryMutation },
     deactivate: { hook: useDeactivateCategoryMutation },
   },
-  entityName: "posCategory",
 });
 
-// POS Channel
-export const usePOSChannel = createCrudHook({
+export const usePOSChannel = createCrudHook<POSChannelDetail>({
+  entityName: "posChannel",
   useLazyGetQuery: useLazyGetChannelsQuery,
-  useLazyShowQuery: useLazyShowChannelQuery,
   useCreateMutation: useCreateChannelMutation,
   useUpdateMutation: useUpdateChannelMutation,
   useRemoveMutation: useDeleteChannelMutation,
-  entityName: "posChannel",
-});
-
-// POS Payment Method
-export const usePOSPaymentMethod = createCrudHook({
-  useLazyGetQuery: useLazyGetPaymentMethodsQuery,
-  useLazyShowQuery: useLazyShowPaymentMethodQuery,
-  useCreateMutation: useCreatePaymentMethodMutation,
-  useUpdateMutation: useUpdatePaymentMethodMutation,
-  useRemoveMutation: useDeletePaymentMethodMutation,
-  entityName: "posPaymentMethod",
-});
-
-// POS Topup Schema
-export const usePOSTopupSchema = createCrudHook({
-  useLazyGetQuery: useLazyGetTopupSchemasQuery,
-  useLazyShowQuery: useLazyShowTopupSchemaQuery,
-  useCreateMutation: useCreateTopupSchemaMutation,
-  useUpdateMutation: useUpdateTopupSchemaMutation,
-  useRemoveMutation: useDeleteTopupSchemaMutation,
-  entityName: "posTopupSchema",
+  customOperations: {
+    activate: { hook: useActivateChannelMutation },
+    deactivate: { hook: useDeactivateChannelMutation },
+  },
 });

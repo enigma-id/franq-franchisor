@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../services/auth/hook";
 import { Button, Input } from "@/components/ui";
 import { Lock, User } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 import { AnimatedSystemSvg } from "@/components/app/AnimatedSystemSvg";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/services/auth/hooks";
 
 const SignInPage: React.FC = () => {
   const navigate = useNavigate();
-  const FormState = useAppSelector((s) => s.form);
+  const FormState = useAppSelector((s: any) => s.form);
   const { login, loginResult } = useAuth();
   const [form, setForm] = useState({
     username: "",
@@ -17,14 +17,19 @@ const SignInPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(form);
+    const payload = {
+      identifier: form.username,
+      password: form.password,
+    };
+
+    await login(payload);
   };
 
   useEffect(() => {
     if (loginResult.isSuccess) {
       navigate("/", { replace: true });
     }
-  }, [loginResult]);
+  }, [loginResult, navigate]);
 
   return (
     <div className="min-h-screen w-full relative flex items-center bg-white overflow-hidden font-sans">
@@ -77,8 +82,8 @@ const SignInPage: React.FC = () => {
                   <User size={18} className="text-[#a0aabf]" strokeWidth={2} />
                 }
                 error={
-                  typeof FormState?.errors?.username === "string"
-                    ? FormState.errors.username
+                  typeof FormState?.errors?.identifier === "string"
+                    ? FormState.errors.identifier
                     : undefined
                 }
               />
@@ -89,7 +94,7 @@ const SignInPage: React.FC = () => {
                 variant="primary"
                 name="password"
                 className="bg-[#f4f7fc]! rounded-2xl! py-4! pl-12! pr-4! text-[15px]! text-gray-700! placeholder-[#a0aabf]!"
-                placeholder="........"
+                placeholder="············"
                 type="password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}

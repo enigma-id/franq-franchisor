@@ -1,47 +1,101 @@
-// API Response Types
-export interface ApiResponse<T> {
-  status: "success" | "error";
-  data: T;
-  total?: number;
-  message?: string;
-}
+/**
+ * Core API type definitions for the WMS client application
+ */
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  total: number;
-}
-
+/**
+ * Base API error structure
+ */
 export interface ApiError {
-  status?: number | "error";
+  status?: number;
+  data?: {
+    message?: string;
+    errors?: {
+      id?: string;
+      [key: string]: string | string[] | unknown;
+    };
+    error?: string;
+  };
   message?: string;
-  validations?: Record<string, string[]>;
-  data?: { message?: string; errors?: Record<string, string> };
 }
 
-// Type guards for franchisee-v2 response shape
-export function isSuccessResponse<T>(res: unknown): res is ApiResponse<T> {
+/**
+ * API error response from RTK Query
+ */
+export interface ApiErrorResponse {
+  status: number;
+  data: {
+    message?: string;
+    errors?: Record<string, string | string[]>;
+    error?: string;
+  };
+}
+
+/**
+ * Base API response structure
+ */
+export interface ApiResponse<T = unknown> {
+  success?: boolean;
+  message?: string;
+  data?: T;
+  meta?: Record<string, unknown>;
+}
+
+/**
+ * Pagination metadata
+ */
+export interface PaginationMeta {
+  page?: number;
+  limit?: number;
+  total?: number;
+  total_pages?: number;
+  has_next?: boolean;
+  has_prev?: boolean;
+  [key: string]: unknown;
+}
+
+/**
+ * Paginated API response
+ */
+export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
+/**
+ * Type guard to check if an error is an ApiError
+ */
+export function isApiError(error: unknown): error is ApiError {
   return (
-    typeof res === "object" &&
-    res !== null &&
-    "status" in res &&
-    (res as ApiResponse<T>).status === "success"
+    typeof error === "object" &&
+    error !== null &&
+    ("status" in error || "data" in error)
   );
 }
 
+/**
+ * Type guard to check if response is a successful API response
+ */
+export function isApiResponse<T>(
+  response: unknown,
+): response is ApiResponse<T> {
+  return (
+    typeof response === "object" &&
+    response !== null &&
+    ("success" in response || "message" in response || "data" in response)
+  );
+}
+
+/**
+ * Type guard to check if response is a paginated response
+ */
 export function isPaginatedResponse<T>(
-  res: unknown,
-): res is PaginatedResponse<T> {
+  response: unknown,
+): response is PaginatedResponse<T> {
   return (
-    isSuccessResponse<T[]>(res) &&
-    "total" in res &&
-    typeof (res as PaginatedResponse<T>).total === "number"
-  );
-}
-
-export function isApiError(res: unknown): res is ApiError {
-  return (
-    typeof res === "object" &&
-    res !== null &&
-    "status" in res &&
-    (res as ApiError).status === "error"
+    isApiResponse<T[]>(response) &&
+    Array.isArray(response.data) &&
+    response.meta !== undefined &&
+    typeof response.meta === "object" &&
+    response.meta !== null
   );
 }

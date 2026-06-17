@@ -1,121 +1,103 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "../baseQuery";
+import { baseQuery } from "@/services/baseQuery";
 
 export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery,
-  tagTypes: ["Report"],
   endpoints: (builder) => ({
-    // POS Settlement
-
-    /** GET /report/pos/settlement - Get settlement data */
-    getSettlement: builder.query({
+    getOutstanding: builder.query({
       query: (params) => ({
-        url: "/report/pos/settlement",
+        url: `/report/outstanding`,
         method: "GET",
         params,
       }),
     }),
-
-    /** GET /report/pos/settlement/summary - Get settlement summary */
-    getSettlementSummary: builder.query({
-      query: (params) => ({
-        url: "/report/pos/settlement/summary",
-        method: "GET",
-        params,
-      }),
-    }),
-
-    // POS Item Sales Daily
-
-    /** GET /report/pos/item/sales/daily - Get item sales daily */
-    getItemSalesDaily: builder.query({
-      query: (params) => ({
-        url: "/report/pos/item/sales/daily",
-        method: "GET",
-        params,
-      }),
-    }),
-
-    // POS Order Summary
-
-    /** GET /report/pos/order/summary - Get sales order summary */
-    getSalesOrderSummary: builder.query({
-      query: (params) => ({
-        url: "/report/pos/order/summary",
-        method: "GET",
-        params,
-      }),
-    }),
-
-    // POS Outstanding Summary
-
-    /** GET /report/pos/order/outstanding/summary - Get outstanding summary */
     getOutstandingSummary: builder.query({
       query: (params) => ({
-        url: "/report/pos/order/outstanding/summary",
+        url: `/report/outstanding/summary`,
         method: "GET",
         params,
       }),
     }),
 
-    // Membership
-
-    /** GET /report/membership - Get membership report */
-    getMembership: builder.query({
+    getPOSSettlement: builder.query({
       query: (params) => ({
-        url: "/report/membership",
+        url: `/report/pos-settlement`,
         method: "GET",
         params,
       }),
     }),
-
-    /** GET /report/membership/summary - Get membership saldo summary */
-    getMembershipSaldoSummary: builder.query({
+    getPOSSettlementSummary: builder.query({
       query: (params) => ({
-        url: "/report/membership/summary",
+        url: `/report/pos-settlement/summary`,
         method: "GET",
         params,
       }),
     }),
 
-    /** GET /report/membership/:id - Get membership detail */
-    showMembership: builder.query({
-      query: ({ id, ...params }) => ({
-        url: `/report/membership/${id}`,
-        method: "GET",
-        params,
-      }),
-    }),
-
-    // Stock Report
-
-    /** GET /report/stock - Get stock report */
-    getStockReport: builder.query({
+    getB2BSettlement: builder.query({
       query: (params) => ({
-        url: "/report/stock",
+        url: `/report/b2b/settlement`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getB2BSettlementSummary: builder.query({
+      query: (params) => ({
+        url: `/report/b2b/settlement/summary`,
         method: "GET",
         params,
       }),
     }),
 
-    // Sales Report (alias for item sales daily)
-
-    /** GET /report/sales - Get sales report */
-    getSalesReport: builder.query({
+    getProductSales: builder.query({
       query: (params) => ({
-        url: "/report/pos/item/sales/daily",
+        url: `/report/product-sales`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getProductSalesSummary: builder.query({
+      query: (params) => ({
+        url: `/report/product-sales/summary`,
         method: "GET",
         params,
       }),
     }),
 
-    // Settlement Report (alias for settlement)
-
-    /** GET /report/settlement - Get settlement report */
-    getSettlementReport: builder.query({
+    getB2BProductSales: builder.query({
       query: (params) => ({
-        url: "/report/pos/settlement",
+        url: `/report/b2b/product-sales`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getB2BProductSalesSummary: builder.query({
+      query: (params) => ({
+        url: `/report/b2b/product-sales/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getRawMaterialSales: builder.query({
+      query: (params) => ({
+        url: `/report/raw-material-sales`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getRawMaterialSalesSummary: builder.query({
+      query: (params) => ({
+        url: `/report/raw-material-sales/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getWarehouseStock: builder.query({
+      query: (params) => ({
+        url: `/report/warehouse-stock`,
         method: "GET",
         params,
       }),
@@ -123,16 +105,19 @@ export const reportApi = createApi({
   }),
 });
 
+// export hooks RTK Query
 export const {
-  useLazyGetSettlementQuery,
-  useLazyGetSettlementSummaryQuery,
-  useLazyGetItemSalesDailyQuery,
-  useLazyGetSalesOrderSummaryQuery,
+  useLazyGetOutstandingQuery,
   useLazyGetOutstandingSummaryQuery,
-  useLazyGetMembershipQuery,
-  useLazyGetMembershipSaldoSummaryQuery,
-  useLazyShowMembershipQuery,
-  useLazyGetStockReportQuery,
-  useLazyGetSalesReportQuery,
-  useLazyGetSettlementReportQuery,
+  useLazyGetPOSSettlementQuery,
+  useLazyGetPOSSettlementSummaryQuery,
+  useLazyGetB2BSettlementQuery,
+  useLazyGetB2BSettlementSummaryQuery,
+  useLazyGetProductSalesQuery,
+  useLazyGetProductSalesSummaryQuery,
+  useLazyGetB2BProductSalesQuery,
+  useLazyGetB2BProductSalesSummaryQuery,
+  useLazyGetRawMaterialSalesQuery,
+  useLazyGetRawMaterialSalesSummaryQuery,
+  useLazyGetWarehouseStockQuery,
 } = reportApi;

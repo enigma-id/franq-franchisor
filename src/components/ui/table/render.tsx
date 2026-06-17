@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { useSelector } from "react-redux";
 import { currencyFormat } from "../../../utils/common";
@@ -29,9 +30,8 @@ function TableRender<T>({
   emptyDescription,
 }: TableRenderProps<T>) {
   // Generate dynamic columns from first row if provided
-  const effectiveColumns = dynamicColumns && rows?.length
-    ? dynamicColumns(rows)
-    : columns;
+  const effectiveColumns =
+    dynamicColumns && rows?.length ? dynamicColumns(rows) : columns;
 
   const StateSorting = useSelector(
     (state: RootState) => state?.table?.data[name]?.sorting,
@@ -89,7 +89,7 @@ function TableRender<T>({
         onClick={() => isSortable && onFieldSorted(field, column)}
       >
         <div className="flex items-center justify-between w-full gap-2 group">
-          <span className="text-[11px] font-bold tracking-[0.05em] text-[#8B95A5] uppercase">
+          <span className="text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase">
             {column?.title}
           </span>
 
@@ -176,7 +176,7 @@ function TableRender<T>({
       );
 
     return (
-      <div className="bg-white border border-gray-200 p-10 min-h-[400px] flex items-center justify-center">
+      <div className="bg-white border border-gray-200 p-10 min-h-100 flex items-center justify-center">
         <EmptyState
           type={isFiltered ? "filtered" : "empty"}
           onClearFilters={onClearFilters}
@@ -209,7 +209,12 @@ function TableRender<T>({
                 onClick={() => onRowClick?.(row)}
               >
                 {Object.keys(effectiveColumns).map((key) => (
-                  <Td key={key} field={key} column={effectiveColumns[key]} data={row} />
+                  <Td
+                    key={key}
+                    field={key}
+                    column={effectiveColumns[key]}
+                    data={row}
+                  />
                 ))}
               </tr>
             ))}

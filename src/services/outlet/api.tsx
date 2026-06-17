@@ -4,15 +4,15 @@ import { baseQuery } from "../baseQuery";
 export const outletApi = createApi({
   reducerPath: "outletApi",
   baseQuery,
-  tagTypes: ["Outlet"],
+  tagTypes: ["Outlet", "OutletType"],
   endpoints: (builder) => ({
     // ── /outlet ──
 
     /**
      * GET /outlet
-     * List outlets with pagination
+     * List outlets
      */
-    getOutlet: builder.query({
+    getOutlets: builder.query({
       query: (params) => ({
         url: "/outlet",
         method: "GET",
@@ -24,7 +24,7 @@ export const outletApi = createApi({
      * GET /outlet/:id
      * Get outlet detail
      */
-    showOutlet: builder.query({
+    getOutlet: builder.query({
       query: ({ id, ...params }) => ({
         url: `/outlet/${id}`,
         method: "GET",
@@ -58,12 +58,48 @@ export const outletApi = createApi({
 
     /**
      * DELETE /outlet/:id
-     * Delete outlet (soft delete)
+     * Delete outlet
      */
-    removeOutlet: builder.mutation({
+    deleteOutlet: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/outlet/${id}`,
         method: "DELETE",
+        body: payload,
+      }),
+    }),
+
+    /**
+     * PUT /outlet/:id
+     * Active outlet
+     */
+    activateOutlet: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/outlet/${id}/activate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /**
+     * PUT /outlet/:id
+     * Deactive outlet
+     */
+    deactivateOutlet: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/outlet/${id}/deactivate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /**
+     * PUT /outlet/:id
+     * Channels outlet
+     */
+    updateChannelOutlet: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/outlet/${id}/channels`,
+        method: "PUT",
         body: payload,
       }),
     }),
@@ -72,21 +108,20 @@ export const outletApi = createApi({
 
     /**
      * GET /outlet/type
-     * List outlet types with pagination
+     * List outlet types
      */
-    getTypes: builder.query({
-      query: (params) => ({
+    getOutletTypes: builder.query({
+      query: () => ({
         url: "/outlet/type",
         method: "GET",
-        params,
       }),
     }),
 
     /**
-     * GET /outlet/type/:id
-     * Get outlet type detail
+     * GET /outlet/:id
+     * Get outlet detail
      */
-    showType: builder.query({
+    getOutletType: builder.query({
       query: ({ id, ...params }) => ({
         url: `/outlet/type/${id}`,
         method: "GET",
@@ -98,7 +133,7 @@ export const outletApi = createApi({
      * POST /outlet/type
      * Create new outlet type
      */
-    createType: builder.mutation({
+    createOutletType: builder.mutation({
       query: (payload) => ({
         url: "/outlet/type",
         method: "POST",
@@ -107,10 +142,10 @@ export const outletApi = createApi({
     }),
 
     /**
-     * PUT /outlet/type/:id
-     * Update outlet type
+     * PUT /outlet/:id
+     * Update outlet
      */
-    updateType: builder.mutation({
+    updateOutletType: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/outlet/type/${id}`,
         method: "PUT",
@@ -119,13 +154,37 @@ export const outletApi = createApi({
     }),
 
     /**
-     * DELETE /outlet/type/:id
-     * Delete outlet type (soft delete)
+     * DELETE /outlet/:id
+     * Delete outlet
      */
-    removeType: builder.mutation({
+    deleteOutletType: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/outlet/type/${id}`,
         method: "DELETE",
+        body: payload,
+      }),
+    }),
+
+    /**
+     * PUT /outlet/:id
+     * Active outlet
+     */
+    activateOutletType: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/outlet/type/${id}/activate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /**
+     * PUT /outlet/:id
+     * Deactive outlet
+     */
+    deactivateOutletType: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/outlet/type/${id}/deactivate`,
+        method: "PUT",
         body: payload,
       }),
     }),
@@ -133,14 +192,20 @@ export const outletApi = createApi({
 });
 
 export const {
+  useLazyGetOutletsQuery,
   useLazyGetOutletQuery,
-  useLazyShowOutletQuery,
   useCreateOutletMutation,
   useUpdateOutletMutation,
-  useRemoveOutletMutation,
-  useLazyGetTypesQuery,
-  useLazyShowTypeQuery,
-  useCreateTypeMutation,
-  useUpdateTypeMutation,
-  useRemoveTypeMutation,
+  useDeleteOutletMutation,
+  useActivateOutletMutation,
+  useDeactivateOutletMutation,
+  useUpdateChannelOutletMutation,
+
+  useLazyGetOutletTypesQuery,
+  useLazyGetOutletTypeQuery,
+  useCreateOutletTypeMutation,
+  useUpdateOutletTypeMutation,
+  useDeleteOutletTypeMutation,
+  useActivateOutletTypeMutation,
+  useDeactivateOutletTypeMutation,
 } = outletApi;

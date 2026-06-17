@@ -13,9 +13,9 @@ import {
   useCreateCatalogMutation,
   useUpdateCatalogMutation,
   useDeleteCatalogMutation,
-  useAssignCatalogOutletMutation,
   useActivateCatalogMutation,
   useDeactivateCatalogMutation,
+  useUpdateOutletCatalogMutation,
 } from "./api";
 
 // Inventory Item
@@ -32,9 +32,10 @@ export const useInventoryItem = createCrudHook({
   entityName: "inventoryItem",
 });
 
+// Inventory Item Fractions
 export const useItemFractions = createCrudHook({
   useLazyShowQuery: useLazyGetItemFractionsQuery,
-  entityName: "itemFractions",
+  entityName: "inventoryItemFraction",
 });
 
 // Inventory Catalog
@@ -47,7 +48,7 @@ export const useInventoryCatalog = createCrudHook({
   customOperations: {
     activate: { hook: useActivateCatalogMutation },
     deactivate: { hook: useDeactivateCatalogMutation },
-    assignOutlet: { hook: useAssignCatalogOutletMutation },
+    assignOutlet: { hook: useUpdateOutletCatalogMutation },
   },
   entityName: "inventoryCatalog",
 });

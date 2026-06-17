@@ -1,0 +1,5 @@
+- [ ] Update non-form/non-table CRUD hooks to use direct imported RTK hook references (remove inline adapters where they affect useUpdateMutation/useLazyGetQuery/useCreateMutation/useRemoveMutation)
+  - [ ] `src/services/member/hooks.tsx`: replace inline `useUpdateMutation` adapter with `useUpdateTopupBonusMutation`
+  - [ ] `src/services/payment-method/hooks.tsx`: replace inline `useUpdateMutation` adapter with `useUpdatePaymentMethodMutation`
+  - [ ] Re-check any other hook file for inline `() => api.endpoints.*.useMutation()` wrappers in create/update/remove/customOperations and update where it matches the rule
+- [ ] Run `npm test` / `npm run build` / `npm run lint` (whatever exists) to ensure TypeScript compiles

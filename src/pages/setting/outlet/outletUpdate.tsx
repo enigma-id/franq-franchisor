@@ -1,22 +1,19 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
-import { Button, Loading } from "@/components/ui";
+import { OutletForm } from "./components/outletForm";
 import { useOutlet } from "@/services/outlet/hooks";
-import { Save, RefreshCw } from "lucide-react";
-import { useEnigmaUI } from "@/components";
-import {
-  StoreOutletForm,
-  type StoreOutletFormData,
-} from "./components/storeOutletForm";
 
-export function OutletUpdate() {
+import { Save, RefreshCw } from "lucide-react";
+import { Button, Loading } from "@/components/ui";
+import { useEnigmaUI } from "@/components";
+
+const OutletUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { show, showResult, update, updateResult } = useOutlet();
-  const { isLoading: isLoadingDetail, data: detailData } = showResult;
-  const { isLoading: isUpdating, isSuccess } = updateResult;
   const { showToast } = useEnigmaUI();
+  const { isLoading: isUpdating, isSuccess, reset: resetUpdate } = updateResult;
 
   useEffect(() => {
     if (id) {
@@ -29,34 +26,28 @@ export function OutletUpdate() {
       showToast({
         message: "Outlet berhasil diperbarui",
         type: "success",
-        position: "bottom-center",
-        duration: 4000,
       });
       navigate("/setting/outlet");
-      updateResult.reset?.();
+      resetUpdate();
     }
-  }, [isSuccess, navigate, updateResult, showToast]);
-
-  const handleSubmit = (formData: StoreOutletFormData) => {
-    if (id) {
-      update({ id, ...formData });
-    }
-  };
-
-  const initialData = detailData?.data as any;
+  }, [isSuccess, navigate, resetUpdate, showToast]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Settings"
-        title="Ubah Outlet"
-        subtitle={initialData ? `Perbarui profil outlet: ${initialData.name}` : "Perbarui profil outlet waralaba."}
+        category="Outlet"
+        title="Update Outlet"
+        subtitle={
+          showResult.data?.data
+            ? `Perbarui outlet: ${showResult.data.data.name}`
+            : "Perbarui informasi outlet yang sudah terdaftar."
+        }
         backTo={() => navigate(-1)}
         action={
           <Button
             type="submit"
-            form="store-outlet-form"
-            disabled={isUpdating || isLoadingDetail}
+            form="outlet-form"
+            disabled={isUpdating || showResult.isLoading}
             variant="success"
           >
             {isUpdating ? (
@@ -70,24 +61,27 @@ export function OutletUpdate() {
           </Button>
         }
       />
-      <Page.Body className="flex-1 overflow-auto p-4 md:p-6">
-        {isLoadingDetail ? (
-          <div className="flex flex-col items-center justify-center h-64 space-y-4">
-            <RefreshCw className="w-8 h-8 text-violet-600 animate-spin" />
-            <p className="text-sm font-medium text-slate-500 animate-pulse">
-              Memuat detail outlet...
-            </p>
-          </div>
-        ) : (
-          <StoreOutletForm
-            id="store-outlet-form"
-            initialData={initialData}
-            onSubmit={handleSubmit}
-          />
-        )}
+      <Page.Body>
+        <div className="mx-auto py-6">
+          {showResult.isLoading ? (
+            <div className="flex flex-col items-center justify-center h-64 space-y-4">
+              <RefreshCw className="w-8 h-8 text-violet-600 animate-spin" />
+              <p className="text-sm font-medium text-slate-500 animate-pulse">
+                Memuat detail outlet...
+              </p>
+            </div>
+          ) : (
+            <OutletForm
+              id="outlet-form"
+              initialData={showResult.data?.data}
+              onSubmit={(data) => update({ id: id!, payload: data as any })}
+              isLoading={isUpdating}
+            />
+          )}
+        </div>
       </Page.Body>
     </Page>
   );
-}
+};
 
-export default OutletUpdate;
+export default OutletUpdatePage;

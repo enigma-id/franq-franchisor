@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 
@@ -32,14 +33,22 @@ const persistConfig = {
   storage,
   blacklist: [
     "authApi",
-    "userApi",
     "dashboardApi",
     "purchaseApi",
     "salesApi",
     "reportApi",
-    "settingApi",
     "tableApi",
     "outletApi",
+    "posApi",
+    "paymentMethodApi",
+    "memberTopupBonusApi",
+    "productionApi",
+    "demandApi",
+    "warehouseApi",
+    "supplierApi",
+    "inventoryApi",
+    "regionApi",
+    "reportApi",
   ],
 };
 

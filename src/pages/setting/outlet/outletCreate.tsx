@@ -1,49 +1,41 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import { Page } from "@/components/app/layout";
-import { Button, Loading } from "@/components/ui";
+import { OutletForm } from "./components/outletForm";
 import { useOutlet } from "@/services/outlet/hooks";
-import { Save } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useEnigmaUI } from "@/components";
-import {
-  StoreOutletForm,
-  type StoreOutletFormData,
-} from "./components/storeOutletForm";
 
-export function OutletCreate() {
+import { Save } from "lucide-react";
+import { Button, Loading } from "@/components/ui";
+
+const OutletCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { create, createResult } = useOutlet();
-  const { isLoading: isCreating, isSuccess } = createResult;
   const { showToast } = useEnigmaUI();
+  const { isLoading: isCreating, isSuccess, reset: resetCreate } = createResult;
 
   useEffect(() => {
     if (isSuccess) {
       showToast({
         message: "Outlet berhasil dibuat",
         type: "success",
-        position: "bottom-center",
-        duration: 4000,
       });
       navigate("/setting/outlet");
-      createResult.reset?.();
+      resetCreate();
     }
-  }, [isSuccess, navigate, createResult, showToast]);
-
-  const handleSubmit = (data: StoreOutletFormData) => {
-    create(data);
-  };
+  }, [isSuccess, showToast]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Settings"
-        title="Tambah Outlet"
-        subtitle="Registrasikan outlet waralaba baru ke dalam sistem."
+        category="Outlet"
+        title="Tambah Outlet Baru"
+        subtitle="Daftarkan outlet baru ke dalam sistem Franchisor."
         backTo={() => navigate(-1)}
         action={
           <Button
             type="submit"
-            form="store-outlet-form"
+            form="outlet-form"
             disabled={isCreating}
             variant="success"
           >
@@ -52,17 +44,23 @@ export function OutletCreate() {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Simpan Outlet
+                Simpan
               </>
             )}
           </Button>
         }
       />
-      <Page.Body className="flex-1 overflow-auto p-4 md:p-6">
-        <StoreOutletForm id="store-outlet-form" onSubmit={handleSubmit} />
+      <Page.Body>
+        <div className="mx-auto py-6">
+          <OutletForm
+            id="outlet-form"
+            onSubmit={(data) => create(data as any)}
+            isLoading={isCreating}
+          />
+        </div>
       </Page.Body>
     </Page>
   );
-}
+};
 
-export default OutletCreate;
+export default OutletCreatePage;

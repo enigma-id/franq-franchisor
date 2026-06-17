@@ -1,29 +1,41 @@
-// Auth
+// Auth Types (v2 - New Collection)
+// Based on: auth/signup, auth/login, profile/me
+
 export interface User {
-  id: number;
-  name: string;
+  id: string;
+  franchisor_id: string;
+  usergroup_id: string;
+  outlet_id: string;
   username: string;
-  is_supervisor: boolean;
+  name: string;
   is_active: boolean;
-  last_login_at: string;
+  last_activity_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface AuthUser extends User {
-  token?: string;
+export interface SignupRequest {
+  company_name: string;
+  username: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirm_password: string;
 }
 
 export interface LoginRequest {
-  username: string;
+  identifier: string;
   password: string;
 }
 
 export interface LoginResponse {
-  user: AuthUser;
-  token: string;
+  user: User;
+  access_token: string;
 }
 
 export interface ProfileUpdateRequest {
-  name: string;
+  name?: string;
   password?: string;
   confirm_password?: string;
 }

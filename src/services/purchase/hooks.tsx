@@ -1,39 +1,22 @@
 import { createCrudHook } from "../hooks/createCrudHook";
 import {
   useLazyGetPurchaseOrdersQuery,
-  useLazyGetPurchaseOrderQuery,
   useCreatePurchaseOrderMutation,
   useUpdatePurchaseOrderMutation,
   useDeletePurchaseOrderMutation,
   useApprovePurchaseOrderMutation,
   usePaymentPurchaseOrderMutation,
-  useLazyGetSuppliersQuery,
-  useLazyGetSupplierQuery,
-  useCreateSupplierMutation,
-  useUpdateSupplierMutation,
-  useDeleteSupplierMutation,
 } from "./api";
+import type { PurchaseOrderDetail } from "../types/purchase";
 
-// Purchase Order
-export const usePurchaseOrder = createCrudHook({
+export const usePurchaseOrder = createCrudHook<PurchaseOrderDetail>({
+  entityName: "purchaseOrder",
   useLazyGetQuery: useLazyGetPurchaseOrdersQuery,
-  useLazyShowQuery: useLazyGetPurchaseOrderQuery,
   useCreateMutation: useCreatePurchaseOrderMutation,
   useUpdateMutation: useUpdatePurchaseOrderMutation,
   useRemoveMutation: useDeletePurchaseOrderMutation,
   customOperations: {
     approve: { hook: useApprovePurchaseOrderMutation },
-    payment: { hook: usePaymentPurchaseOrderMutation },
+    pay: { hook: usePaymentPurchaseOrderMutation },
   },
-  entityName: "purchase order",
-});
-
-// Supplier
-export const useSupplier = createCrudHook({
-  useLazyGetQuery: useLazyGetSuppliersQuery,
-  useLazyShowQuery: useLazyGetSupplierQuery,
-  useCreateMutation: useCreateSupplierMutation,
-  useUpdateMutation: useUpdateSupplierMutation,
-  useRemoveMutation: useDeleteSupplierMutation,
-  entityName: "supplier",
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Generic CRUD hook factory
  * Creates a standardized hook for CRUD operations with consistent error handling
@@ -31,10 +32,7 @@ export interface CrudHookConfig<TEntity = unknown> {
    * Lazy query hook for showing single entity
    */
   useLazyShowQuery?: () => readonly [
-    (options: {
-      id: string | number;
-      params?: Record<string, unknown>;
-    }) => Promise<unknown>,
+    (options: any) => Promise<unknown>,
     unknown,
     ...unknown[],
   ];
@@ -115,10 +113,7 @@ export interface CrudHookReturn<TEntity> {
   >;
 
   // Detail operations
-  show: (options: {
-    id: string | number;
-    params?: Record<string, unknown>;
-  }) => Promise<ApiResponse<TEntity> | undefined>;
+  show: (options: any) => Promise<ApiResponse<TEntity> | undefined>;
   showResult: OperationResult<ApiResponse<TEntity>>;
 
   // Create operations
@@ -241,26 +236,30 @@ export function createCrudHook<TEntity = unknown>(
     const [triggerShow, showResult] = useLazyShowQuery();
 
     const show = useCallback(
-      async (options: {
-        id: string | number;
-        params?: Record<string, unknown>;
-      }): Promise<ApiResponse<TEntity> | undefined> => {
+      async (options: any): Promise<ApiResponse<TEntity> | undefined> => {
         try {
-          const trigger = triggerShow as (options: {
-            id: string | number;
-            params?: Record<string, unknown>;
-          }) => {
+          const trigger = triggerShow as (
+            options:
+              | string
+              | number
+              | { id: string | number; params?: Record<string, unknown> },
+          ) => {
             unwrap: () => Promise<ApiResponse<TEntity>>;
           } & Promise<unknown>;
 
           if (triggerShow === useNoopLazyQuery()[0]) return undefined;
 
-          return await trigger({
-            id: options.id,
-            params: options.params,
-          }).unwrap();
+          const param =
+            typeof options === "object" && options !== null
+              ? { id: options.id, params: options.params }
+              : options;
+          return await trigger(param).unwrap();
         } catch (err) {
-          logger.error(`Failed to show ${entityName} ${options.id}`, err);
+          const id =
+            typeof options === "object" && options !== null
+              ? options.id
+              : options;
+          logger.error(`Failed to show ${entityName} ${id}`, err);
           throw err;
         }
       },
@@ -320,23 +319,17 @@ export function createCrudHook<TEntity = unknown>(
         payload?: Record<string, unknown>;
       }): Promise<void> => {
         try {
-          // Try calling with object format { id } (for delete mutations that expect { id: string })
-          try {
-            const mutationObject = removeMutation as (options: {
-              id: string | number;
-              payload?: Record<string, unknown>;
-            }) => { unwrap: () => Promise<unknown> } & Promise<unknown>;
-            await mutationObject({
-              id: options.id,
-              ...options.payload,
-            }).unwrap();
-          } catch {
-            // Fallback to simple id format (for delete mutations that expect id: string directly)
-            const mutationSimple = removeMutation as (id: string | number) => {
-              unwrap: () => Promise<unknown>;
-            } & Promise<unknown>;
-            await mutationSimple(options.id).unwrap();
-          }
+          const mutation = removeMutation as (options: {
+            id: string | number;
+            payload?: Record<string, unknown>;
+          }) => { unwrap: () => Promise<unknown> } & Promise<unknown>;
+
+          if (removeMutation === useNoopMutation()[0]) return;
+
+          await mutation({
+            id: options.id,
+            payload: options.payload,
+          }).unwrap();
         } catch (err) {
           failureWithTimeout(err);
         }

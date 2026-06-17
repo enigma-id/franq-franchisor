@@ -1,15 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { User } from "../types";
+import type { User } from "../types/auth";
 
-interface authState {
-  authenticated: boolean;
-  session: {
-    token: string;
-    user: User;
-  } | null;
+interface AuthSession {
+  access_token: string;
+  user: User;
 }
 
-const initialState: authState = {
+interface AuthState {
+  authenticated: boolean;
+  session: AuthSession | null;
+}
+
+const initialState: AuthState = {
   authenticated: false,
   session: null,
 };

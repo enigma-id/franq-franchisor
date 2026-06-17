@@ -155,6 +155,18 @@ export const inventoryApi = createApi({
     }),
 
     /**
+     * PUT /inventory/catalog/:id/types
+     * Update inventory catalog outlet
+     */
+    updateOutletCatalog: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/inventory/catalog/${id}/types`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /**
      * DELETE /inventory/catalog/:id
      * Delete inventory catalog (soft delete)
      */
@@ -162,18 +174,6 @@ export const inventoryApi = createApi({
       query: ({ id, ...payload }) => ({
         url: `/inventory/catalog/${id}`,
         method: "DELETE",
-        body: payload,
-      }),
-    }),
-
-    /**
-     * POST /inventory/catalog/:id/outlet
-     * Assign catalog to outlet
-     */
-    assignCatalogOutlet: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/inventory/catalog/${id}/outlet`,
-        method: "POST",
         body: payload,
       }),
     }),
@@ -205,23 +205,21 @@ export const inventoryApi = createApi({
 });
 
 export const {
-  // Item
   useLazyGetItemsQuery,
   useLazyGetItemQuery,
-  useLazyGetItemFractionsQuery,
   useCreateItemMutation,
   useUpdateItemMutation,
+  useDeleteItemMutation,
   useActivateItemMutation,
   useDeactivateItemMutation,
-  useDeleteItemMutation,
+  useLazyGetItemFractionsQuery,
 
-  // Catalog
   useLazyGetCatalogsQuery,
   useLazyGetCatalogQuery,
   useCreateCatalogMutation,
   useUpdateCatalogMutation,
   useDeleteCatalogMutation,
-  useAssignCatalogOutletMutation,
+  useUpdateOutletCatalogMutation,
   useActivateCatalogMutation,
   useDeactivateCatalogMutation,
 } = inventoryApi;

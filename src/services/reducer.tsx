@@ -2,23 +2,24 @@ import { combineReducers } from "@reduxjs/toolkit";
 import type { Reducer, UnknownAction } from "redux";
 
 import { authApi } from "./auth/api";
-import { userApi } from "./user/api";
-import { purchaseApi } from "./purchase/api";
 import { dashboardApi } from "./dashboard/api";
-import { salesApi } from "./sales/api";
-import { reportApi } from "./report/api";
-import { tableApi } from "./table/api";
 import { outletApi } from "./outlet/api";
+import { regionApi } from "./region/api";
+import { posApi } from "./pos/api";
+import { paymentMethodApi } from "./payment-method/api";
+import { memberTopupBonusApi } from "./member/api";
+import { purchaseApi } from "./purchase/api";
+import { supplierApi } from "./supplier/api";
+import { salesApi } from "./sales/api";
+import { productionApi } from "./production/api";
+import { demandApi } from "./demand/api";
+import { warehouseApi } from "./warehouse/api";
 import { authReducer, signout } from "./auth/slice";
 import { formReducer } from "./form/slice";
 import { tableReducer } from "./table/slice";
-
-// Split setting APIs
-import { franchiseApi } from "./franchise/api";
+import { tableApi } from "./table/api";
+import { reportApi } from "./report/api";
 import { inventoryApi } from "./inventory/api";
-import { catalogApi } from "./catalog/api";
-import { posApi } from "./pos/api";
-import { regionApi } from "./region/api";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -26,40 +27,42 @@ const appReducer = combineReducers({
   table: tableReducer,
 
   [authApi.reducerPath]: authApi.reducer,
-  [userApi.reducerPath]: userApi.reducer,
-  [dashboardApi.reducerPath]: dashboardApi.reducer,
-  [purchaseApi.reducerPath]: purchaseApi.reducer,
-  [salesApi.reducerPath]: salesApi.reducer,
-  [reportApi.reducerPath]: reportApi.reducer,
   [tableApi.reducerPath]: tableApi.reducer,
   [outletApi.reducerPath]: outletApi.reducer,
-
-  // Split setting APIs
-  [franchiseApi.reducerPath]: franchiseApi.reducer,
-  [inventoryApi.reducerPath]: inventoryApi.reducer,
-  [catalogApi.reducerPath]: catalogApi.reducer,
   [posApi.reducerPath]: posApi.reducer,
+  [dashboardApi.reducerPath]: dashboardApi.reducer,
+  [paymentMethodApi.reducerPath]: paymentMethodApi.reducer,
+  [memberTopupBonusApi.reducerPath]: memberTopupBonusApi.reducer,
+  [purchaseApi.reducerPath]: purchaseApi.reducer,
+  [supplierApi.reducerPath]: supplierApi.reducer,
+  [salesApi.reducerPath]: salesApi.reducer,
+  [productionApi.reducerPath]: productionApi.reducer,
+  [demandApi.reducerPath]: demandApi.reducer,
+  [warehouseApi.reducerPath]: warehouseApi.reducer,
+  [inventoryApi.reducerPath]: inventoryApi.reducer,
   [regionApi.reducerPath]: regionApi.reducer,
+  [reportApi.reducerPath]: reportApi.reducer,
 });
 
 type AppState = ReturnType<typeof appReducer>;
 
 export const apiMiddlewares = [
   authApi.middleware,
-  userApi.middleware,
-  dashboardApi.middleware,
   purchaseApi.middleware,
+  dashboardApi.middleware,
   salesApi.middleware,
-  reportApi.middleware,
+  productionApi.middleware,
+  demandApi.middleware,
+  warehouseApi.middleware,
   tableApi.middleware,
   outletApi.middleware,
-
-  // Split setting APIs
-  franchiseApi.middleware,
-  inventoryApi.middleware,
-  catalogApi.middleware,
   posApi.middleware,
+  paymentMethodApi.middleware,
+  memberTopupBonusApi.middleware,
+  inventoryApi.middleware,
   regionApi.middleware,
+  supplierApi.middleware,
+  reportApi.middleware,
 ];
 
 export const rootReducer: Reducer<AppState, UnknownAction> = (

@@ -1,0 +1,140 @@
+Franchisor
+auth
+signup
+login
+outlet
+outlet
+create
+update
+show
+delete
+get
+activate
+deactivate
+update pos channel
+outlet type
+create
+update
+activate
+delete
+deactivate
+show
+get
+pos
+channel
+create
+update
+show
+delete
+get
+activate
+deactivate
+category
+create
+update
+show
+delete
+get
+activate
+deactivate
+menu
+create
+update
+update types
+activate
+delete
+deactivate
+show
+get
+member topup schema
+create
+update
+activate
+delete
+show
+deactivate
+get
+warehouse
+get
+supplier
+create
+update
+activate
+delete
+show
+deactivate
+get
+payment method
+create
+update
+activate
+delete
+show
+deactivate
+get
+inventory
+item
+create raw material
+create finished_goods
+get
+show
+update
+update finished_goods
+delete
+activate
+deactivate
+catalog
+create
+create bundle
+update bundle
+update
+activate
+delete
+deactivate
+show
+get
+purchase
+order
+create
+get
+show
+update
+delete
+paid
+publish
+production
+plan
+create
+get
+show
+publish
+complete
+delete
+item
+update
+complete
+sales
+order
+create
+get
+show
+update
+delete
+publish
+paid
+cancel
+retur
+create
+get
+show
+update
+update finished_goods
+delete
+activate
+deactivate
+demand
+get production
+get item
+profile
+get
+perbaharui

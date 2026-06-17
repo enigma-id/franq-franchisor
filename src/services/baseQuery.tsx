@@ -11,7 +11,7 @@ const rawBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
-    const token = state?.auth?.session?.token;
+    const token = state?.auth?.session?.access_token;
 
     headers.set("Accept", "application/json");
     headers.set("Content-Type", "application/json");

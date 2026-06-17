@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
 
 import { DatePicker } from "@/components/ui";
 
@@ -9,7 +10,7 @@ interface TableFilterProps {
     State: {
       loading: boolean;
       filter: any;
-    };
+    } | undefined;
   };
 }
 
@@ -43,7 +44,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     date: Dayjs | [Dayjs | null, Dayjs | null] | null,
   ) => {
     let newRange: [Dayjs | null, Dayjs | null] = [null, null];
-    if (date && typeof date !== "string" && !("format" in date)) {
+    if (Array.isArray(date)) {
       newRange = date as [Dayjs | null, Dayjs | null];
     }
     setDateRange(newRange);

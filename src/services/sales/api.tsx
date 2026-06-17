@@ -6,15 +6,6 @@ export const salesApi = createApi({
   baseQuery,
   tagTypes: ["SalesOrder"],
   endpoints: (builder) => ({
-    /** GET /sales/order - List sales orders */
-    getSalesOrders: builder.query({
-      query: (params) => ({
-        url: "/sales/order",
-        method: "GET",
-        params,
-      }),
-    }),
-
     /** GET /sales/order/:id - Get sales order detail */
     getSalesOrder: builder.query({
       query: ({ id, ...params }) => ({
@@ -68,15 +59,87 @@ export const salesApi = createApi({
         body: payload,
       }),
     }),
+
+    /** PUT /sales/order/:id/paid - Cancel sales order */
+    cancelSalesOrder: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/order/${id}/cancel`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    // ===================================================
+
+    /** GET /sales/return/:id - Get sales return detail */
+    getSalesReturn: builder.query({
+      query: ({ id, ...params }) => ({
+        url: `/sales/return/${id}`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    /** POST /sales/return - Create sales return */
+    createSalesReturn: builder.mutation({
+      query: (payload) => ({
+        url: "/sales/return",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    /** PUT /sales/return/:id - Update sales return */
+    updateSalesReturn: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/return/${id}`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /** DELETE /sales/return/:id - Delete sales return */
+    deleteSalesReturn: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/return/${id}`,
+        method: "DELETE",
+        body: payload,
+      }),
+    }),
+
+    /** PUT /sales/return/:id - Activate sales return */
+    activateSalesReturn: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/return/${id}/activate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /** PUT /sales/return/:id - Deactivate sales return */
+    deactivateSalesReturn: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/return/${id}/deactivate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
   }),
 });
 
 export const {
-  useLazyGetSalesOrdersQuery,
   useLazyGetSalesOrderQuery,
   useCreateSalesOrderMutation,
   useUpdateSalesOrderMutation,
   useDeleteSalesOrderMutation,
   usePublishSalesOrderMutation,
   usePaidSalesOrderMutation,
+  useCancelSalesOrderMutation,
+  //
+  useLazyGetSalesReturnQuery,
+  useCreateSalesReturnMutation,
+  useUpdateSalesReturnMutation,
+  useDeleteSalesReturnMutation,
+  useActivateSalesReturnMutation,
+  useDeactivateSalesReturnMutation,
 } = salesApi;

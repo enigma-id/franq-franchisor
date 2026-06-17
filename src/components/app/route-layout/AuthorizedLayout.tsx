@@ -5,19 +5,20 @@ import { signout } from "@/services/auth/slice";
 import {
   LayoutDashboard,
   Package,
-  FileBarChart,
   ShoppingCart,
-  Settings,
   LogOut,
   Menu,
   X,
   ChevronDown,
-  User,
   Receipt,
   Users,
   Store,
   Grid,
   Building,
+  Factory,
+  RefreshCcw,
+  Monitor,
+  BarChart3,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -53,69 +54,98 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    label: "Operations",
+    label: "Sales",
     items: [
       {
         label: "Sales Order",
         path: "/sales/order",
-        icon: <Receipt size={18} />,
-      },
-      {
-        label: "POS Reports",
-        icon: <FileBarChart size={18} />,
-        children: [
-          { label: "POS Order", path: "/report/pos" },
-          { label: "Outstanding", path: "/report/outstanding" },
-          { label: "Settlement", path: "/report/payment" },
-          { label: "POS Order Item", path: "/report/item" },
-          { label: "POS Item Daily", path: "/report/daily" },
-        ],
-      },
-      {
-        label: "Purchase Order",
-        path: "/purchase/order",
         icon: <ShoppingCart size={18} />,
       },
+      {
+        label: "Sales Return",
+        path: "/sales/return",
+        icon: <RefreshCcw size={18} />,
+      },
+    ],
+  },
+  {
+    label: "Inventory & Warehouse",
+    items: [
+      {
+        label: "Warehouse",
+        path: "/inventory/warehouse",
+        icon: <Building size={18} />,
+      },
+      {
+        label: "Inventory Item",
+        path: "/inventory/item",
+        icon: <Package size={18} />,
+      },
+      {
+        label: "Inventory Catalog",
+        path: "/inventory/catalog",
+        icon: <Grid size={18} />,
+      },
+    ],
+  },
+  {
+    label: "Production",
+    items: [
+      {
+        label: "Production Plan",
+        path: "/production/plan",
+        icon: <Factory size={18} />,
+      },
+    ],
+  },
+  {
+    label: "Purchase",
+    items: [
       {
         label: "Supplier",
         path: "/purchase/supplier",
         icon: <Users size={18} />,
       },
       {
-        label: "Demand",
-        path: "/purchase/demand",
-        icon: <Package size={18} />,
+        label: "Purchase Order",
+        path: "/purchase/order",
+        icon: <Receipt size={18} />,
       },
     ],
   },
   {
-    label: "Inventory",
+    label: "Report",
     items: [
       {
-        label: "Master Item",
-        path: "/setting/inventory/item",
-        icon: <Package size={18} />,
+        label: "POS Report",
+        icon: <Monitor size={18} />,
+        children: [
+          { label: "Outstanding", path: "/report/outstanding" },
+          { label: "Settlement Monthly", path: "/report/payment" },
+        ],
       },
       {
-        label: "Master Catalog",
-        path: "/setting/inventory/catalog",
-        icon: <Grid size={18} />,
+        label: "B2B Report",
+        icon: <Building size={18} />,
+        children: [
+          { label: "Settlement B2B", path: "/report/payment/b2b" },
+          { label: "Product Sales B2B", path: "/report/sales/product/b2b" },
+        ],
       },
       {
-        label: "Stock Report",
-        path: "/report/stock",
-        icon: <FileBarChart size={18} />,
+        label: "Inventory & Sales",
+        icon: <BarChart3 size={18} />,
+        children: [
+          { label: "Product Sales", path: "/report/sales/product" },
+          { label: "Raw Material Sales", path: "/report/sales/material" },
+          { label: "Warehouse Stock", path: "/report/stock/warehouse" },
+        ],
       },
     ],
   },
   {
     label: "Settings",
     items: [
-      {
-        label: "Franchise",
-        path: "/setting/business",
-        icon: <Building size={18} />,
-      },
       {
         label: "Outlet",
         icon: <Store size={18} />,
@@ -125,25 +155,14 @@ const menuSections: MenuSection[] = [
         ],
       },
       {
-        label: "POS Setting",
-        icon: <Grid size={18} />,
+        label: "POS",
+        icon: <Monitor size={18} />,
         children: [
-          { label: "POS Channel", path: "/setting/pos/channel" },
-          { label: "POS Category", path: "/setting/pos/category" },
-          { label: "POS Catalog", path: "/setting/pos/catalog" },
-          { label: "POS Payment", path: "/setting/pos/payment" },
-          { label: "Topup Schema", path: "/setting/pos/topup-schema" },
+          { label: "Channel", path: "/setting/pos/channel" },
+          { label: "Category", path: "/setting/pos/category" },
+          { label: "Menu", path: "/setting/pos/menu" },
+          { label: "Payment", path: "/setting/pos/payment" },
         ],
-      },
-      {
-        label: "Manajemen User",
-        path: "/setting/user",
-        icon: <User size={18} />,
-      },
-      {
-        label: "Update Profile",
-        path: "/auth/me",
-        icon: <Settings size={18} />,
       },
     ],
   },

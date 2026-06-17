@@ -76,7 +76,5 @@ export const tableApi = createApi({
   }),
 });
 
-export const {
-  useLazyGetTableDataQuery,
-  useLazyDownloadTableDataQuery,
-} = tableApi;
+export const { useLazyGetTableDataQuery, useLazyDownloadTableDataQuery } =
+  tableApi;

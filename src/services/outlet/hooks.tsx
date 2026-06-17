@@ -1,33 +1,52 @@
 import { createCrudHook } from "../hooks/createCrudHook";
 import {
+  useLazyGetOutletsQuery,
   useLazyGetOutletQuery,
-  useLazyShowOutletQuery,
   useCreateOutletMutation,
   useUpdateOutletMutation,
-  useRemoveOutletMutation,
-  useLazyGetTypesQuery,
-  useLazyShowTypeQuery,
-  useCreateTypeMutation,
-  useUpdateTypeMutation,
-  useRemoveTypeMutation,
+  useActivateOutletMutation,
+  useDeactivateOutletMutation,
+  useUpdateChannelOutletMutation,
+  useDeleteOutletMutation,
+  useLazyGetOutletTypesQuery,
+  useCreateOutletTypeMutation,
+  useLazyGetOutletTypeQuery,
+  useUpdateOutletTypeMutation,
+  useDeleteOutletTypeMutation,
+  useActivateOutletTypeMutation,
+  useDeactivateOutletTypeMutation,
 } from "./api";
+import type { OutletDetail, OutletTypeDetail } from "../types/outlet";
 
-// Outlet
-export const useOutlet = createCrudHook({
-  useLazyGetQuery: useLazyGetOutletQuery,
-  useLazyShowQuery: useLazyShowOutletQuery,
+/**
+ * Hook for Outlet operations
+ */
+export const useOutlet = createCrudHook<OutletDetail>({
+  entityName: "outlet",
+  useLazyGetQuery: useLazyGetOutletsQuery,
+  useLazyShowQuery: useLazyGetOutletQuery,
   useCreateMutation: useCreateOutletMutation,
   useUpdateMutation: useUpdateOutletMutation,
-  useRemoveMutation: useRemoveOutletMutation,
-  entityName: "outlet",
+  useRemoveMutation: useDeleteOutletMutation,
+  customOperations: {
+    activate: { hook: useActivateOutletMutation },
+    deactivate: { hook: useDeactivateOutletMutation },
+    updateChannel: { hook: useUpdateChannelOutletMutation },
+  },
 });
 
-// Outlet Type
-export const useOutletType = createCrudHook({
-  useLazyGetQuery: useLazyGetTypesQuery,
-  useLazyShowQuery: useLazyShowTypeQuery,
-  useCreateMutation: useCreateTypeMutation,
-  useUpdateMutation: useUpdateTypeMutation,
-  useRemoveMutation: useRemoveTypeMutation,
+/**
+ * Hook for Outlet Type operations
+ */
+export const useOutletType = createCrudHook<OutletTypeDetail>({
   entityName: "outletType",
+  useLazyGetQuery: useLazyGetOutletTypesQuery,
+  useLazyShowQuery: useLazyGetOutletTypeQuery,
+  useCreateMutation: useCreateOutletTypeMutation,
+  useUpdateMutation: useUpdateOutletTypeMutation,
+  useRemoveMutation: useDeleteOutletTypeMutation,
+  customOperations: {
+    activate: { hook: useActivateOutletTypeMutation },
+    deactivate: { hook: useDeactivateOutletTypeMutation },
+  },
 });

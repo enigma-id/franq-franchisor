@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
 import { currencyFormat, dateFormat } from "@/utils";
+import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
   onRowClick,
@@ -7,9 +9,9 @@ const createTableConfig = ({
 }: {
   onRowClick?: (row: any) => void;
   filter?: Record<string, unknown>;
-}) => ({
+}): TableConfig<any> => ({
   ...config,
-  url: "/report/pos/order/outstanding",
+  url: "/report/outstanding",
   filter,
   onRowClick,
   columns: {

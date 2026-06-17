@@ -1,0 +1,1372 @@
+{
+  "info": {
+    "_postman_id": "509f597b-e21a-48ae-a916-d3c458e0f8dd",
+    "name": "POS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "6134171"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "postman.setEnvironmentVariable(\"token\", jsonData.data.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"identifier\": \"nurdin\",\n    \"password\": \"123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/auth/login",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "balance",
+      "item": [
+        {
+          "name": "cek saldo member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/balance?card_id=xxxxx&is_checkout=true&nominal=12990",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "balance"
+              ],
+              "query": [
+                {
+                  "key": "card_id",
+                  "value": "xxxxx"
+                },
+                {
+                  "key": "is_checkout",
+                  "value": "true"
+                },
+                {
+                  "key": "nominal",
+                  "value": "12990",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get log",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/balance/d53378ce-728a-4bc2-8c3f-1e3402db97a6/log",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "balance",
+                "d53378ce-728a-4bc2-8c3f-1e3402db97a6",
+                "log"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "topup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nominal\": 5000,\n    \"payment_type\": \"cash\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/balance/d53378ce-728a-4bc2-8c3f-1e3402db97a6/topup",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "balance",
+                "d53378ce-728a-4bc2-8c3f-1e3402db97a6",
+                "topup"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "catalog",
+      "item": [
+        {
+          "name": "get category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/category",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get catalog",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/catalog?sales_channel_id=d0d624e6-2bc7-4ba9-9ff9-1b1e3f261c10",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "catalog"
+              ],
+              "query": [
+                {
+                  "key": "sales_channel_id",
+                  "value": "d0d624e6-2bc7-4ba9-9ff9-1b1e3f261c10"
+                },
+                {
+                  "key": "category_id",
+                  "value": "e8a5e42b-3fb2-4ded-bd40-2f419afc93eb",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show catalog",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/catalog/0c6b5eae-1333-4d85-a1d7-d5dc481318a3?sales_channel_id=d0d624e6-2bc7-4ba9-9ff9-1b1e3f261c10",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "catalog",
+                "0c6b5eae-1333-4d85-a1d7-d5dc481318a3"
+              ],
+              "query": [
+                {
+                  "key": "sales_channel_id",
+                  "value": "d0d624e6-2bc7-4ba9-9ff9-1b1e3f261c10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"category_id\": \"e8a5e42b-3fb2-4ded-bd40-2f419afc93eb\",\n    \"name\": \"Nazami\",\n    \"price\": 2320\n}"
+            },
+            "url": {
+              "raw": "{{server}}/catalog",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "catalog"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "membership",
+      "item": [
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/membership",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "membership"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"card_id\": \"82739712\",\n    \"name\": \"Amari\",\n    \"reff_code\": \"127893\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/member",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"card_id\": \"82739712\",\n    \"name\": \"Amari\",\n    \"reff_code\": \"7263721\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/04efcac4-1cea-44f0-9b2e-00dcca810a58",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "04efcac4-1cea-44f0-9b2e-00dcca810a58"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \n}"
+            },
+            "url": {
+              "raw": "{{server}}/member/04efcac4-1cea-44f0-9b2e-00dcca810a58",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "member",
+                "04efcac4-1cea-44f0-9b2e-00dcca810a58"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "payment method",
+      "item": [
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/payment-method",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "payment-method"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "sales",
+      "item": [
+        {
+          "name": "channel",
+          "item": [
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/channel",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "channel"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "session",
+          "item": [
+            {
+              "name": "open",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"cash_started\": 23510\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/session",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "session"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "close",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"cash_finished\": 250000\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/session/close",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "session",
+                    "close"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/session",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "session"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/session/1135166f-392f-4a51-879c-2fb69c7cfdcb",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "session",
+                    "1135166f-392f-4a51-879c-2fb69c7cfdcb"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "summary",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/session/summary",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "session",
+                    "summary"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "order",
+          "item": [
+            {
+              "name": "create pending",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"sales_channel_id\": \"d0d624e6-2bc7-4ba9-9ff9-1b1e3f261c10\",\n    \"status\": \"pending\",\n    \"bill_name\": \"Jaka\",\n    // input pilihan salah satu percentage atau value\n    \"discount_percentage\": 20,\n    \"discount_value\": 0,\n    \"category_discounts\": [\n        {\n            // input pilihan salah satu percentage atau value\n            \"discount_value\": 0,\n            \"discount_percentage\": 100,\n            \"category_id\": \"e8a5e42b-3fb2-4ded-bd40-2f419afc93eb\"\n        }\n        // {\n        //     \"category_id\": \"5290e4f2-b03f-4142-bcc2-e4a7bf15802a\",\n        //     // input pilihan salah satu percentage atau value\n        //     \"discount_value\": 0,\n        //     \"discount_percentage\": 10\n        // }\n    ],\n    \"items\": [\n        {\n            \"catalog_id\": \"2fdb8691-ccf7-4e76-b803-ffb1330ea4a5\",\n            \"quantity\": 10\n        },\n        {\n            \"catalog_id\": \"2fdb8691-ccf7-4e76-b803-ffb1330ea4a5\",\n            \"quantity\": 10\n        },\n        {\n            \"catalog_id\": \"b64239e0-828f-4215-b51f-331413fc5179\",\n            \"quantity\": 20\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create complete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"sales_channel_id\": \"d0d624e6-2bc7-4ba9-9ff9-1b1e3f261c10\",\n    \"payment_method_id\": \"\",\n    \"status\": \"completed\",\n    // apabaila membership_id terisi berarti bill name tidak perlu\n    // apbaila pembayaran melalui member berarti membership terisi\n    \"membership_id\": \"d53378ce-728a-4bc2-8c3f-1e3402db97a6\",\n    \"bill_name\": \"\",\n    \"payment_ref\": \"\",\n    // input pilihan salah satu percentage atau value\n    \"discount_percentage\": 20,\n    \"discount_value\": 0,\n    \"total_payment\": 2320,\n    \"category_discountsx\": [\n        {\n            // input pilihan salah satu percentage atau value\n            \"discount_value\": 2000,\n            \"discount_percentage\": 0,\n            \"category_id\": \"e8a5e42b-3fb2-4ded-bd40-2f419afc93eb\"\n        },\n        {\n            \"category_id\": \"5290e4f2-b03f-4142-bcc2-e4a7bf15802a\",\n            // input pilihan salah satu percentage atau value\n            \"discount_value\": 0,\n            \"discount_percentage\": 10\n        }\n    ],\n    \"items\": [\n        {\n            \"catalog_id\": \"2fdb8691-ccf7-4e76-b803-ffb1330ea4a5\",\n            \"quantity\": 1\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "checkout",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"payment_method_id\": \"b3bfd54d-bd17-42ce-b8cd-4b5e8c6c5dc0\",\n    // apbaila pembayaran melalui member berarti membership terisi\n    \"membership_id\": \"\",\n    \"bill_name\": \"\",\n    \"payment_ref\": \"\",\n    // input pilihan salah satu percentage atau value\n    \"discount_percentage\": 20,\n    \"discount_value\": 0,\n    \"total_payment\": 1000000,\n    \"category_discountsx\": [\n        {\n            // input pilihan salah satu percentage atau value\n            \"discount_value\": 2000,\n            \"discount_percentage\": 0,\n            \"category_id\": \"e8a5e42b-3fb2-4ded-bd40-2f419afc93eb\"\n        },\n        {\n            \"category_id\": \"5290e4f2-b03f-4142-bcc2-e4a7bf15802a\",\n            // input pilihan salah satu percentage atau value\n            \"discount_value\": 0,\n            \"discount_percentage\": 10\n        }\n    ],\n    \"items\": [\n        {\n            \"id\": \"b7240f5d-d026-41d0-a644-2083d0fd3be5\",\n            \"catalog_id\": \"2fdb8691-ccf7-4e76-b803-ffb1330ea4a5\",\n            \"quantity\": 5\n        },\n        {\n            \"id\": \"f480fa05-56a8-495b-8903-2c3a41ead354\",\n            \"catalog_id\": \"2fdb8691-ccf7-4e76-b803-ffb1330ea4a5\",\n            \"quantity\": 2\n        },\n        {\n            \"id\": \"e48c0bb9-0c40-424f-b67f-4963b4b71fd5\",\n            \"catalog_id\": \"b64239e0-828f-4215-b51f-331413fc5179\",\n            \"quantity\": 10\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/aaa84487-5efd-4371-9e65-571e7bb9eb81/checkout",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "aaa84487-5efd-4371-9e65-571e7bb9eb81",
+                    "checkout"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "cancel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"cancelled_reason\": \"Males kirim\",\n    \"password\": \"123456789\"\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/bcb3e5ca-1148-4c36-bf0c-a4b83f47643d/cancel",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "bcb3e5ca-1148-4c36-bf0c-a4b83f47643d",
+                    "cancel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "put",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"bill_name\": \"Rohmat\",\n    // input pilihan salah satu percentage atau value\n    \"discount_percentage\": 20,\n    \"discount_value\": 0,\n    \"category_discounts\": [\n        {\n            // input pilihan salah satu percentage atau value\n            \"discount_value\": 750,\n            \"discount_percentage\": 0,\n            \"category_id\": \"e8a5e42b-3fb2-4ded-bd40-2f419afc93eb\"\n        }\n        // {\n        //     \"category_id\": \"5290e4f2-b03f-4142-bcc2-e4a7bf15802a\",\n        //     // input pilihan salah satu percentage atau value\n        //     \"discount_value\": 0,\n        //     \"discount_percentage\": 3\n        // }\n    ],\n    \"items\": [\n        {\n            \"id\": \"dc968370-9cfc-4b3e-8b40-7eca8836fab7\",\n            \"catalog_id\": \"2fdb8691-ccf7-4e76-b803-ffb1330ea4a5\",\n            \"quantity\": 10\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/76abb44c-7121-4943-b7f3-719edefe0c39",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "76abb44c-7121-4943-b7f3-719edefe0c39"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/aaa84487-5efd-4371-9e65-571e7bb9eb81",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "aaa84487-5efd-4371-9e65-571e7bb9eb81"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get open bill",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{server}}/sales/order/openbill",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "sales",
+                    "order",
+                    "openbill"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "item": [
+        {
+          "name": "get",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{server}}/profile/me",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "profile",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "perbaharui",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Super\",\n    \"password\": \"\",\n    \"confirm_password\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{server}}/profile/me",
+              "host": [
+                "{{server}}"
+              ],
+              "path": [
+                "profile",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

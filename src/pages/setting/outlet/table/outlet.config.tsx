@@ -1,6 +1,9 @@
-import { Dropdown } from "@/components";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { OutletDetail } from "@/services/types/outlet";
+import { Dropdown, Toggle } from "@/components/ui";
+import { Edit, MoreVertical, Power, Store, Trash } from "lucide-react";
 import config from "@/services/table/const";
-import { Edit, MoreVertical, Trash } from "lucide-react";
+import { formatDate } from "@/utils";
 
 const createTableConfig = ({
   onRowClick,
@@ -8,13 +11,15 @@ const createTableConfig = ({
   filter,
   onClick,
   onRemove,
+  onToggleActive,
 }: {
   onRowClick?: (row: any) => void;
   lockFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
   onRemove?: (row: any) => void;
-} = {}) => ({
+  onToggleActive?: (row: any) => void;
+}) => ({
   ...config,
   url: "/outlet",
   lockFilter,
@@ -22,11 +27,14 @@ const createTableConfig = ({
   onRowClick,
   columns: {
     name: {
-      title: "Outlet",
+      title: "Nama Outlet",
       sortable: true,
-      component: (row: any) => (
-        <div>
-          <div className="text-sm font-bold">{row?.alias ?? "-"}</div>
+      component: (row: OutletDetail) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+            <Store size={16} />
+          </div>
+          <span className="font-bold text-slate-700">{row.name}</span>
         </div>
       ),
     },
@@ -40,57 +48,62 @@ const createTableConfig = ({
       ),
       align: "center",
     },
+    recipient_name: {
+      title: "Penerima",
+      sortable: true,
+      component: (row: OutletDetail) => (
+        <span className="text-[13px] text-slate-600 font-medium">
+          {row.recipient_name}
+        </span>
+      ),
+    },
     phone: {
-      title: "Kontak",
+      title: "Telepon",
+      component: (row: OutletDetail) => (
+        <span className="text-[13px] text-slate-500 font-mono">
+          {row.phone}
+        </span>
+      ),
+    },
+    address: {
+      title: "Alamat",
+      class: "max-w-[200px]",
+      component: (row: OutletDetail) => (
+        <span className="text-[13px] text-slate-500 line-clamp-1 truncate">
+          {row.address}
+        </span>
+      ),
+    },
+    created_at: {
+      title: "Dibuat Pada",
+      class: "text-right",
+      align: "right",
+      component: (row: OutletDetail) => (
+        <span className="text-[13px] text-slate-500 font-medium">
+          {formatDate(row.created_at, "D MMMM YYYY")}
+        </span>
+      ),
+    },
+    is_active: {
+      title: "Status",
+      sortable: true,
       component: (row: any) => (
-        <div>
-          <div className="text-sm">{row?.phone ?? "-"}</div>
-          <div className="text-xs text-gray-400">
-            {row?.recipient_name ?? "-"}
-          </div>
+        <div className="flex justify-center items-center">
+          <Toggle
+            checked={!!row?.is_active}
+            onChange={() => onToggleActive?.(row)}
+            variant="success"
+            size="sm"
+          />
         </div>
       ),
-    },
-    regency: {
-      title: "Kabupaten",
-      sortable: true,
-      component: (row: any) => (
-        <span className="text-sm text-gray-600">
-          {row?.village?.district?.regency?.regency_alias ?? "-"}
-        </span>
-      ),
-    },
-    village: {
-      title: "Kecamatan",
-      sortable: true,
-      component: (row: any) => (
-        <span className="text-sm text-gray-600">
-          {row?.village?.city ?? "-"}
-        </span>
-      ),
-    },
-    shipping_time: {
-      title: "Jam Operasional",
-      sortable: true,
-      component: (row: any) => {
-        const time = row?.shipping_time;
-        const labels: Record<string, string> = {
-          morning: "Pagi",
-          afternoon: "Siang",
-          evening: "Sore",
-          night: "Malam",
-        };
-        return (
-          <span className="text-xs text-gray-500">
-            {time ? (labels[time] ?? time) : "-"}
-          </span>
-        );
-      },
       align: "center",
     },
-    actions: {
+    action: {
       title: "",
-      component: (row: any) => (
+      class: "text-right",
+      align: "right",
+      component: (row: OutletDetail) => (
         <Dropdown
           trigger={
             <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
@@ -116,7 +129,6 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          <div className="my-1 border-t border-slate-50"></div>
           <Dropdown.Item
             onSelect={() => onRemove?.(row)}
             className="hover:bg-red-50 hover:text-red-600"
@@ -129,6 +141,30 @@ const createTableConfig = ({
                 <span className="font-bold text-[13px]">Delete</span>
                 <span className="text-[11px] text-slate-400">
                   Remove outlet
+                </span>
+              </div>
+            </button>
+          </Dropdown.Item>
+          <Dropdown.Item
+            onSelect={() => onToggleActive?.(row)}
+            className={
+              row?.is_active
+                ? "hover:bg-amber-50 hover:text-amber-600"
+                : "hover:bg-emerald-50 hover:text-emerald-600"
+            }
+          >
+            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
+              <div
+                className={`w-8 h-8 rounded-lg ${row?.is_active ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"} flex items-center justify-center`}
+              >
+                <Power className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">
+                  {row?.is_active ? "Deactivate" : "Activate"}
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  {row?.is_active ? "Deactivate catalog" : "Activate catalog"}
                 </span>
               </div>
             </button>

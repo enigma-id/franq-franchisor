@@ -1,22 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import createTableConfig from "./table/settlement-monthly.config";
-import TableFilter from "./table/settlement-monthly.filter";
-import { useLazyGetSettlementSummaryQuery } from "@/services/report/api";
+import createTableConfig from "./table/settlement.config";
+import TableFilter from "./table/settlement.filter";
+import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
 
-export function SettlementMonthly() {
-  const navigate = useNavigate();
-
+export default function SettlementMonthlyPage() {
   const tableConfig = useMemo(() => {
-    return createTableConfig({
-      onRowClick: (row: any) =>
-        navigate(`/report/payment/daily?month=${row.periode}`),
-    });
-  }, [navigate]);
+    return createTableConfig({});
+  }, []);
 
   const Table = useTable(
     "settlement_monthly",
@@ -32,7 +28,7 @@ export function SettlementMonthly() {
 
   const currentFilterString = JSON.stringify(currentFilter);
   const [triggerSummary, { data: summaryResponse }] =
-    useLazyGetSettlementSummaryQuery();
+    useLazyGetPOSSettlementSummaryQuery();
 
   useEffect(() => {
     if (Table.State) {
@@ -77,7 +73,11 @@ export function SettlementMonthly() {
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-      <Page.Header category="Operations" title="Settlement Monthly" subtitle="" />
+      <Page.Header
+        category="Operations"
+        title="Settlement Monthly"
+        subtitle="Laporan penyelesaian pembayaran bulanan."
+      />
       <Page.Body className="flex-1 flex flex-col min-h-0 ">
         <SettlementSummaryCards summary={summary} />
 

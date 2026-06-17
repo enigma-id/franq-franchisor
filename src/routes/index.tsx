@@ -5,21 +5,48 @@ import { AuthorizedLayout } from "@/components/app/route-layout/AuthorizedLayout
 import { useAppSelector, useAppMetadata } from "@/hooks";
 
 import SignInPage from "@/pages/signin";
+import SignUpPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
-
-// Domain Subrouters
-import { purchaseRoutes } from "@/pages/purchase/routes";
-import { reportRoutes } from "@/pages/report/routes";
-import { salesRoutes } from "@/pages/sales/routes";
-import { settingRoutes } from "@/pages/setting/routes";
-
-// Combine all domain routes
-const allDomainRoutes = [
-  ...purchaseRoutes,
-  ...reportRoutes,
-  ...salesRoutes,
-  ...settingRoutes,
-];
+import OutletListPage from "@/pages/setting/outlet";
+import OutletCreatePage from "@/pages/setting/outlet/outletCreate";
+import OutletUpdatePage from "@/pages/setting/outlet/outletUpdate";
+import OutletTypePage from "@/pages/setting/type";
+import POSChannelListPage from "@/pages/setting/pos/channel";
+import POSCategoryListPage from "@/pages/setting/pos/category";
+import POSMenuListPage from "@/pages/setting/pos/menu";
+import POSMenuCreatePage from "@/pages/setting/pos/menu/menuCreate";
+import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
+import PaymentMethodListPage from "@/pages/setting/pos/payment";
+import InventoryItemListPage from "@/pages/inventory/item";
+import InventoryItemCreatePage from "@/pages/inventory/item/itemCreate";
+import InventoryItemUpdatePage from "@/pages/inventory/item/itemUpdate";
+import InventoryCatalogListPage from "@/pages/inventory/catalog";
+import InventoryCatalogCreatePage from "@/pages/inventory/catalog/catalogCreate";
+import InventoryCatalogUpdatePage from "@/pages/inventory/catalog/catalogUpdate";
+import WarehouseListPage from "@/pages/inventory/warehouse";
+import SupplierListPage from "@/pages/purchase/supplier";
+import SupplierCreatePage from "@/pages/purchase/supplier/supplierCreate";
+import SupplierUpdatePage from "@/pages/purchase/supplier/supplierUpdate";
+import PurchaseOrderListPage from "@/pages/purchase/order";
+import PurchaseOrderCreatePage from "@/pages/purchase/order/purchaseOrderCreate";
+import PurchaseOrderUpdatePage from "@/pages/purchase/order/purchaseOrderUpdate";
+import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
+import SalesOrderListPage from "@/pages/sales/order";
+import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
+import SalesReturnListPage from "@/pages/sales/return";
+import SalesReturnCreatePage from "@/pages/sales/return/salesReturnCreate";
+import SalesReturnDetailPage from "@/pages/sales/return/salesReturnDetail";
+import ProductionPlanListPage from "@/pages/production/plan";
+import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
+import ProductionPlanDetailPage from "@/pages/production/plan/productionPlanDetail";
+import ProductionPlanUpdatePage from "@/pages/production/plan/productionPlanUpdate";
+import OutstandingPage from "@/pages/report/outstanding";
+import POSSettlementPage from "@/pages/report/posSettlement";
+import B2BSettlementPage from "@/pages/report/b2bSettlement";
+import B2BProductSalesPage from "@/pages/report/b2bProductSales";
+import RawMaterialSalesPage from "@/pages/report/rawMaterialSales";
+import ProductSalesPage from "@/pages/report/productSales";
+import WarehouseStockPage from "@/pages/report/warehouseStock";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -31,6 +58,7 @@ export function AppRoutes() {
         {/* Public routes — wrapped in UnauthorizedLayout */}
         <Route element={<UnauthorizedLayout />}>
           <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route path="*" element={<Navigate to="/signin" replace />} />
         </Route>
       </Routes>
@@ -50,10 +78,138 @@ export function AppRoutes() {
         {/* Dashboard */}
         <Route path="/dashboard" element={<DashboardPage />} />
 
-        {/* Dynamically register all domain subroutes */}
-        {allDomainRoutes.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
-        ))}
+        {/* Setting - Outlet */}
+        <Route path="/setting/outlet" element={<OutletListPage />} />
+        <Route path="/setting/outlet/create" element={<OutletCreatePage />} />
+        <Route
+          path="/setting/outlet/update/:id"
+          element={<OutletUpdatePage />}
+        />
+        <Route path="/setting/type/outlet" element={<OutletTypePage />} />
+
+        {/* Setting - POS */}
+        <Route path="/setting/pos/channel" element={<POSChannelListPage />} />
+
+        {/* Setting - POS Category */}
+        <Route path="/setting/pos/category" element={<POSCategoryListPage />} />
+
+        {/* Setting - POS Menu */}
+        <Route path="/setting/pos/menu" element={<POSMenuListPage />} />
+        <Route
+          path="/setting/pos/menu/create"
+          element={<POSMenuCreatePage />}
+        />
+        <Route
+          path="/setting/pos/menu/update/:id"
+          element={<POSMenuUpdatePage />}
+        />
+
+        {/* Setting - POS Payment */}
+        <Route
+          path="/setting/pos/payment"
+          element={<PaymentMethodListPage />}
+        />
+
+        {/* Inventory - Item & Catalog */}
+        <Route path="/inventory/item" element={<InventoryItemListPage />} />
+        <Route
+          path="/inventory/item/create"
+          element={<InventoryItemCreatePage />}
+        />
+        <Route
+          path="/inventory/item/update/:id"
+          element={<InventoryItemUpdatePage />}
+        />
+
+        <Route
+          path="/inventory/catalog"
+          element={<InventoryCatalogListPage />}
+        />
+        <Route
+          path="/inventory/catalog/create"
+          element={<InventoryCatalogCreatePage />}
+        />
+        <Route
+          path="/inventory/catalog/update/:id"
+          element={<InventoryCatalogUpdatePage />}
+        />
+
+        {/* Inventory - Warehouse */}
+        <Route path="/inventory/warehouse" element={<WarehouseListPage />} />
+
+        {/* Production - Plan */}
+        <Route path="/production/plan" element={<ProductionPlanListPage />} />
+        <Route
+          path="/production/plan/create"
+          element={<ProductionPlanCreatePage />}
+        />
+        <Route
+          path="/production/plan/detail/:id"
+          element={<ProductionPlanDetailPage />}
+        />
+        <Route
+          path="/production/plan/update/:id"
+          element={<ProductionPlanUpdatePage />}
+        />
+
+        {/* Purchase - Supplier */}
+        <Route path="/purchase/supplier" element={<SupplierListPage />} />
+        <Route
+          path="/purchase/supplier/create"
+          element={<SupplierCreatePage />}
+        />
+        <Route
+          path="/purchase/supplier/update/:id"
+          element={<SupplierUpdatePage />}
+        />
+
+        {/* Purchase - Order */}
+        <Route path="/purchase/order" element={<PurchaseOrderListPage />} />
+        <Route
+          path="/purchase/order/create"
+          element={<PurchaseOrderCreatePage />}
+        />
+        <Route
+          path="/purchase/order/update/:id"
+          element={<PurchaseOrderUpdatePage />}
+        />
+
+        {/* Sales - Order */}
+        <Route path="/sales/order" element={<SalesOrderListPage />} />
+        <Route path="/sales/order/create" element={<SalesOrderCreatePage />} />
+        <Route
+          path="/sales/order/detail/:id"
+          element={<SalesOrderDetailPage />}
+        />
+
+        {/* Sales - Return */}
+        <Route path="/sales/return" element={<SalesReturnListPage />} />
+        <Route
+          path="/sales/return/create"
+          element={<SalesReturnCreatePage />}
+        />
+        <Route
+          path="/sales/return/detail/:id"
+          element={<SalesReturnDetailPage />}
+        />
+
+        {/* Report */}
+        <Route path="/report/outstanding" element={<OutstandingPage />} />
+        <Route path="/report/payment" element={<POSSettlementPage />} />
+        <Route path="/report/payment/b2b" element={<B2BSettlementPage />} />
+        <Route path="/report/sales/product" element={<ProductSalesPage />} />
+        <Route
+          path="/report/sales/product/b2b"
+          element={<B2BProductSalesPage />}
+        />
+        <Route
+          path="/report/sales/material"
+          element={<RawMaterialSalesPage />}
+        />
+        <Route
+          path="/report/stock/warehouse"
+          element={<WarehouseStockPage />}
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
