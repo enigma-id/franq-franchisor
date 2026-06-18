@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/return.config";
 import TableFilter from "./table/return.filter";
@@ -27,15 +25,6 @@ const SalesReturnListPage: React.FC = () => {
         category="Sales"
         title="Daftar Return Penjualan"
         subtitle="Kelola pengembalian barang dari transaksi penjualan."
-        action={
-          <Button
-            variant="primary"
-            onClick={() => navigate("/sales/return/create")}
-          >
-            <Plus size={18} />
-            Buat Return
-          </Button>
-        }
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0">

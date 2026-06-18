@@ -12,7 +12,7 @@ interface AssignOutletModalProps {
   onSuccess: () => void;
 }
 
-export function AssignOutletModal({
+export function AssignOutletTypeModal({
   catalog,
   onClose,
   onSuccess,
@@ -38,7 +38,7 @@ export function AssignOutletModal({
   useEffect(() => {
     if (catalogDetailResult?.isSuccess) {
       const catalogData = catalogDetailResult.data?.data as any;
-      const outlets = catalogData?.outlets;
+      const outlets = catalogData?.outlet_types;
       if (outlets) {
         const initialSelected: Record<number, any> = {};
         outlets.forEach((ot: any) => {
@@ -97,21 +97,21 @@ export function AssignOutletModal({
   return (
     <Modal.Wrapper open onClose={onClose} closeOnOutsideClick={false}>
       <Modal.Header>
-        <div className="font-bold leading-7">Atur Tipe Outlet</div>
-        <div className="text-xs text-slate-500 font-normal mt-1">
+        <div className='font-bold leading-7'>Atur Tipe Outlet</div>
+        <div className='text-xs text-slate-500 font-normal mt-1'>
           Pilih tipe outlet mana saja yang dapat menggunakan katalog{" "}
           <b>{catalog?.name}</b>
         </div>
       </Modal.Header>
-      <Modal.Body className="max-h-[60vh] overflow-y-auto p-5">
+      <Modal.Body className='max-h-[60vh] overflow-y-auto p-5'>
         {isLoading ? (
-          <div className="text-center py-10 text-sm text-slate-400">
+          <div className='text-center py-10 text-sm text-slate-400'>
             Loading...
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className='space-y-3'>
             {types.length === 0 ? (
-              <div className="text-center py-5 text-sm text-slate-400">
+              <div className='text-center py-5 text-sm text-slate-400'>
                 Tidak ada tipe outlet tersedia
               </div>
             ) : (
@@ -120,7 +120,7 @@ export function AssignOutletModal({
                 return (
                   <div
                     key={t.id}
-                    className="flex items-center gap-3 p-3 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors"
+                    className='flex items-center gap-3 p-3 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors'
                     onClick={() => toggleType(t, !isChecked)}
                   >
                     <Checkbox
@@ -128,8 +128,8 @@ export function AssignOutletModal({
                       onChange={(e) => toggleType(t, e.target.checked)}
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-slate-800">
+                    <div className='flex flex-col'>
+                      <span className='text-sm font-semibold text-slate-800'>
                         {t.name}
                       </span>
                     </div>
@@ -142,8 +142,8 @@ export function AssignOutletModal({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          className="flex-1 rounded-xl"
-          variant="primary"
+          className='flex-1 rounded-xl'
+          variant='primary'
           onClick={handleSave}
           isLoading={assignOutletResult?.isLoading}
           disabled={isLoading}
@@ -151,9 +151,9 @@ export function AssignOutletModal({
           Simpan
         </Button>
         <Button
-          className="flex-1 rounded-xl"
-          styleType="outline"
-          variant="secondary"
+          className='flex-1 rounded-xl'
+          styleType='outline'
+          variant='secondary'
           onClick={onClose}
           disabled={assignOutletResult?.isLoading}
         >

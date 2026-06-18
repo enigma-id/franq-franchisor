@@ -38,6 +38,7 @@ export interface InventoryItemBase {
   safety_stock: number;
   is_vatable: boolean;
   fractions: InventoryFraction[];
+  materials?: InventoryBOM[];
 }
 
 export interface InventoryItemCreateRequest extends InventoryItemBase {

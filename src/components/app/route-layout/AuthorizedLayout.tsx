@@ -121,7 +121,7 @@ const menuSections: MenuSection[] = [
         icon: <Monitor size={18} />,
         children: [
           { label: "Outstanding", path: "/report/outstanding" },
-          { label: "Settlement Monthly", path: "/report/payment" },
+          { label: "Settlement", path: "/report/payment" },
         ],
       },
       {

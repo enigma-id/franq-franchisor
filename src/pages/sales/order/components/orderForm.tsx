@@ -16,6 +16,7 @@ import { useAppSelector } from "@/hooks";
 import { useRegion } from "@/services/region/hooks";
 import { currencyFormat } from "@/utils";
 import type { OutletBase } from "@/services/types";
+import { formatRegion } from "@/utils/common";
 
 type SalesOrderItemForm = {
   catalogSelected: unknown;
@@ -33,7 +34,7 @@ type SalesOrderFormData = {
   recipient_address: string;
   note: string;
   shipping_date: string;
-  requires_shipping: boolean;
+  self_pickup: boolean;
   items: SalesOrderItemForm[];
 };
 
@@ -72,7 +73,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
     recipient_address: "",
     note: "",
     shipping_date: dayjs().format("YYYY-MM-DD"),
-    requires_shipping: false,
+    self_pickup: false,
     items: [
       {
         catalogSelected: null,
@@ -180,15 +181,15 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
-          <Truck size={16} className="text-primary" />
+    <form id={id} onSubmit={handleSubmit} className='space-y-6'>
+      <div className='bg-white border border-slate-200 rounded-xl p-6'>
+        <h3 className='text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2'>
+          <Truck size={16} className='text-primary' />
           Informasi Penjualan
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <RemoteSelect
-            label="Warehouse"
+            label='Warehouse'
             required
             hook={warehouseResult as any}
             fetchData={(page, search) => getWarehouse({ page, search })}
@@ -212,11 +213,11 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                       : "",
               })
             }
-            placeholder="Pilih warehouse"
+            placeholder='Pilih warehouse'
             error={FormState?.errors?.warehouse_id as string}
           />
           <RemoteSelect<OutletBase>
-            label="Outlet"
+            label='Outlet'
             required
             hook={outletsResult as any}
             fetchData={(page, search) => getOutlets({ page, search })}
@@ -240,11 +241,11 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                       : "",
               })
             }
-            placeholder="Pilih outlet"
+            placeholder='Pilih outlet'
             error={FormState?.errors?.outlet_id as string}
           />
           <DatePicker
-            label="Tanggal Transaksi"
+            label='Tanggal Transaksi'
             required
             value={shipping_date || undefined}
             onChange={(date: unknown) => {
@@ -258,8 +259,8 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             error={FormState?.errors?.shipping_date as string}
           />
           <Input
-            label="Nama Penerima"
-            placeholder="Contoh: Budi Santoso"
+            label='Nama Penerima'
+            placeholder='Contoh: Budi Santoso'
             value={formData.recipient_name}
             onChange={(e) =>
               setFormData({ ...formData, recipient_name: e.target.value })
@@ -267,8 +268,8 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             error={FormState?.errors?.recipient_name as string}
           />
           <Input
-            label="No. Telepon"
-            placeholder="Contoh: 081234567890"
+            label='No. Telepon'
+            placeholder='Contoh: 081234567890'
             value={formData.recipient_phone}
             onChange={(e) =>
               setFormData({ ...formData, recipient_phone: e.target.value })
@@ -276,12 +277,12 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             error={FormState?.errors?.recipient_phone as string}
           />
           <RemoteSelect
-            label="Provinsi"
+            label='Provinsi'
             required
             hook={provincesResult as any}
-            fetchData={(page, search) => getProvinces({ page, search })}
-            getLabel={(item: any) => item?.name}
-            renderItem={(item: any) => item?.name}
+            fetchData={(page, search) => getProvinces({ page, q: search })}
+            getLabel={(item) => formatRegion(item)}
+            renderItem={(item) => formatRegion(item)}
             value={
               formData.recipient_region_id
                 ? (provincesResult.data as any)?.data?.find(
@@ -296,14 +297,14 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             onClear={() =>
               setFormData({ ...formData, recipient_region_id: "" })
             }
-            placeholder="Pilih Provinsi"
+            placeholder='Pilih Provinsi'
             error={FormState?.errors?.recipient_region_id as string}
           />
 
           <Input
-            type="textarea"
-            label="Alamat Lengkap"
-            placeholder="Contoh: Jl. Diponegoro No. 22"
+            type='textarea'
+            label='Alamat Lengkap'
+            placeholder='Contoh: Jl. Diponegoro No. 22'
             value={formData.recipient_address}
             onChange={(e) =>
               setFormData({ ...formData, recipient_address: e.target.value })
@@ -311,67 +312,67 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             error={FormState?.errors?.recipient_address as string}
           />
           <Input
-            type="textarea"
-            label="Catatan"
-            placeholder="Tambahkan catatan transaksi..."
+            type='textarea'
+            label='Catatan'
+            placeholder='Tambahkan catatan transaksi...'
             value={formData.note}
             onChange={(e) => setFormData({ ...formData, note: e.target.value })}
           />
 
           <Checkbox
-            label="Perlu Dikirim ?"
-            checked={formData.requires_shipping}
+            label='Self Pickup'
+            checked={formData.self_pickup}
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
-                requires_shipping: e.target.checked,
+                self_pickup: e.target.checked,
               }))
             }
-            variant="primary"
+            variant='primary'
           />
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className='space-y-3'>
         <div
-          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+          className='card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm'
           style={{ overflow: "visible", zIndex: 10 }}
         >
-          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+            <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
               Daftar Barang (Catalog Items)
             </h2>
             <button
-              type="button"
+              type='button'
               onClick={addItemRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+              className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer'
             >
-              <Plus className="w-4 h-4" />
+              <Plus className='w-4 h-4' />
               Tambah Baris
             </button>
           </div>
           <div style={{ overflow: "visible" }}>
-            <table className="w-full text-left border-collapse">
+            <table className='w-full text-left border-collapse'>
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
-                  <th className="px-4 py-3 w-12 text-center">#</th>
-                  <th className="px-4 py-3 min-w-[320px]">Katalog Barang</th>
-                  <th className="px-4 py-3 w-28 text-center">Satuan (Qty)</th>
-                  <th className="px-4 py-3 w-12 text-center"></th>
+                <tr className='bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider'>
+                  <th className='px-4 py-3 w-12 text-center'>#</th>
+                  <th className='px-4 py-3 min-w-[320px]'>Katalog Barang</th>
+                  <th className='px-4 py-3 w-28 text-center'>Satuan (Qty)</th>
+                  <th className='px-4 py-3 w-12 text-center'></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className='divide-y divide-slate-100'>
                 {formData.items.map((item, idx) => (
                   <tr
                     key={idx}
-                    className="hover:bg-slate-50/30 transition-colors"
+                    className='hover:bg-slate-50/30 transition-colors'
                   >
-                    <td className="px-4 py-3 align-top text-center text-sm font-semibold text-slate-400 pt-5">
+                    <td className='px-4 py-3 align-top text-center text-sm font-semibold text-slate-400 pt-5'>
                       {idx + 1}
                     </td>
-                    <td className="px-4 py-3 align-top">
+                    <td className='px-4 py-3 align-top'>
                       <RemoteSelect
-                        placeholder="Pilih Catalog"
+                        placeholder='Pilih Catalog'
                         value={item.catalogSelected}
                         hook={catalogsResult as any}
                         fetchData={(page, search) =>
@@ -389,11 +390,11 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                         error={getErrorItem(idx, "catalog_id")}
                       />
                     </td>
-                    <td className="px-4 py-3 align-top">
+                    <td className='px-4 py-3 align-top'>
                       <Input
-                        type="number"
-                        variant="primary"
-                        className="text-center"
+                        type='number'
+                        variant='primary'
+                        className='text-center'
                         value={item.quantity_ordered}
                         onChange={(e) =>
                           handleQtyChange(idx, Number(e.target.value))
@@ -402,14 +403,14 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                         error={getErrorItem(idx, "quantity_ordered")}
                       />
                     </td>
-                    <td className="px-4 py-3 align-top text-center pt-4">
+                    <td className='px-4 py-3 align-top text-center pt-4'>
                       <Button
-                        variant="error"
-                        styleType="ghost"
+                        variant='error'
+                        styleType='ghost'
                         onClick={() => removeItemRow(idx)}
                         disabled={formData.items.length === 1}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className='w-4 h-4' />
                       </Button>
                     </td>
                   </tr>

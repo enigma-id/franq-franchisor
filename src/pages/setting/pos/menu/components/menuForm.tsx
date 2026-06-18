@@ -1,7 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Input, Button, RemoteSelect, Checkbox } from "@/components/ui";
-import { usePOSCategory, usePOSChannel } from "@/services/pos/hooks";
+import {
+  Input,
+  Button,
+  RemoteSelect,
+  Checkbox,
+  ImageUpload,
+} from "@/components/ui";
+import {
+  usePOSCategory,
+  usePOSChannel,
+  usePOSMenu,
+} from "@/services/pos/hooks";
 import type {
   POSMenuDetail,
   POSMenuCreateRequest,
@@ -62,8 +72,8 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const FormState = useAppSelector((s) => s.form);
   const { get: getCategories, getResult: categoriesResult } = usePOSCategory();
   const { get: getChannels, getResult: channelsResult } = usePOSChannel();
-  const { get: getCatalog, getResult: catalogResult } = useInventoryCatalog();
   const { get: getItem, getResult: itemResult } = useInventoryItem();
+  const { get: getMenus, getResult: menusResult } = usePOSMenu();
   const { showToast } = useEnigmaUI();
 
   const [formData, setFormData] = useState<POSMenuBase>({
@@ -77,9 +87,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
 
   const [channel, setChannel] = useState<POSFormChannelPrice[]>([]);
 
-  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([
-    { catalog: null, catalog_id: "", porsi: 0 },
-  ]);
+  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([]);
 
   const [addGroup, setAddGroup] = useState<POSAddonGroupForm[]>([
     { name: "", type: "", items: [{ addon_menu: null, addon_menu_id: "" }] },
@@ -305,29 +313,6 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
     });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        showToast({
-          message: "Ukuran file terlalu besar, maksimal 2MB",
-          type: "error",
-        });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData((prev) => ({ ...prev, image: base64String }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setFormData((prev) => ({ ...prev, image: "" }));
-  };
-
   const updateIngredient = (
     index: number,
     field: keyof POSIngredientForm,
@@ -378,21 +363,21 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
-            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-              <Layers size={16} className="text-slate-400" />
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+    <form id={id} onSubmit={handleSubmit} className='space-y-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+        <div className='lg:col-span-2 space-y-6'>
+          <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10'>
+            <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2'>
+              <Layers size={16} className='text-slate-400' />
+              <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
                 Informasi Dasar
               </h2>
             </div>
 
-            <div className="p-5 space-y-4">
+            <div className='p-5 space-y-4'>
               <Input
-                label="Nama Menu"
-                placeholder="Contoh: Nasi Goreng Spesial"
+                label='Nama Menu'
+                placeholder='Contoh: Nasi Goreng Spesial'
                 required
                 value={formData.name}
                 onChange={(e) =>
@@ -400,9 +385,9 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                 }
                 error={FormState?.errors?.name as string}
               />
-              <div className="grid grid-cols-2 gap-3">
+              <div className='grid grid-cols-2 gap-3'>
                 <RemoteSelect
-                  label="Kategori"
+                  label='Kategori'
                   required
                   hook={categoriesResult as any}
                   fetchData={(page, search) => getCategories({ page, search })}
@@ -419,12 +404,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                     setFormData({ ...formData, category_id: item?.id })
                   }
                   onClear={() => setFormData({ ...formData, category_id: "" })}
-                  placeholder="Pilih kategori"
+                  placeholder='Pilih kategori'
                   error={FormState?.errors?.category_id as string}
                 />
                 <Input
-                  label="Harga Dasar"
-                  type="currency"
+                  label='Harga Dasar'
+                  type='currency'
                   required
                   value={formData.base_price}
                   onChange={(e) =>
@@ -433,13 +418,13 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                       base_price: Number(e.target.value),
                     })
                   }
-                  prefix="Rp"
+                  prefix='Rp'
                   error={FormState?.errors?.base_price as string}
                 />
               </div>
 
               <Checkbox
-                label="Dikenakan PPN?"
+                label='Dikenakan PPN?'
                 checked={formData.is_vatable}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -447,10 +432,10 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                     is_vatable: e.target.checked,
                   }))
                 }
-                variant="primary"
+                variant='primary'
               />
               <Checkbox
-                label="Merupakan menu topping / tambahan?"
+                label='Merupakan menu topping / tambahan?'
                 checked={formData.is_additional}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -458,93 +443,54 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                     is_additional: e.target.checked,
                   }))
                 }
-                variant="primary"
+                variant='primary'
               />
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className='space-y-6'>
           {/* Section: Image */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
-            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-              <Info size={16} className="text-slate-400" />
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10'>
+            <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2'>
+              <Info size={16} className='text-slate-400' />
+              <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
                 Gambar Katalog
               </h2>
             </div>
 
-            <div className="flex flex-col items-center gap-3 p-6">
-              {formData.image ? (
-                <div className="relative group w-55 aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <label className="p-2 bg-white text-slate-600 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                      <Plus size={18} />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageChange}
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <label className="w-55 aspect-square border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 hover:bg-emerald-50/30 transition-all group">
-                  <Plus className="w-6 h-6 text-slate-300 group-hover:text-emerald-500 transition-colors" />
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-600">
-                    Upload Gambar
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </label>
-              )}
-              <p className="text-[10px] text-slate-400 text-center leading-tight">
-                Maks. 2MB (JPG, PNG, WEBP)
-              </p>
-            </div>
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) =>
+                setFormData((prev) => ({ ...prev, image: url }))
+              }
+            />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className='grid grid-cols-2 gap-5'>
         {/* Section 2: Channel Pricing Matrix */}
         <div
-          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+          className='card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm'
           style={{ overflow: "visible", zIndex: 15 }}
         >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl'>
+            <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
               Matriks Harga Penjualan POS Channel
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className='text-xs text-slate-400 mt-0.5'>
               Aktifkan channel dan tentukan harga khusus per channel jika
               berbeda dari harga dasar.
             </p>
           </div>
-          <div className="p-4" style={{ overflow: "visible" }}>
+          <div className='p-4' style={{ overflow: "visible" }}>
             {channel.length === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-400 italic">
+              <p className='py-6 text-center text-sm text-slate-400 italic'>
                 Memuat data channel penjualan...
               </p>
             ) : (
-              <div className="grid grid-cols-1 gap-3">
+              <div className='grid grid-cols-1 gap-3'>
                 {channel.map((row, idx) => (
                   <div
                     key={idx}
@@ -555,27 +501,27 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                     }`}
                   >
                     <Checkbox
-                      size="sm"
+                      size='sm'
                       checked={row.is_active}
                       onChange={(e) =>
                         handleChannelActiveToggle(idx, e.target.checked)
                       }
-                      variant="primary"
+                      variant='primary'
                     />
-                    <span className="flex-1 text-sm font-semibold text-slate-700 truncate">
+                    <span className='flex-1 text-sm font-semibold text-slate-700 truncate'>
                       {row.channel?.name}
                     </span>
-                    <div className="w-36 shrink-0">
+                    <div className='w-36 shrink-0'>
                       <Input
-                        prefix="Rp"
-                        type="currency"
+                        prefix='Rp'
+                        type='currency'
                         disabled={!row.is_active}
                         value={row.price}
                         onChange={(e) =>
                           handleChannelPriceChange(idx, Number(e.target.value))
                         }
-                        placeholder="Harga..."
-                        variant="primary"
+                        placeholder='Harga...'
+                        variant='primary'
                         error={getChannelError(idx)}
                       />
                     </div>
@@ -584,7 +530,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               </div>
             )}
             {FormState.errors?.channel_prices ? (
-              <div className="text-error text-xs font-medium leading-[1.66] pt-2">
+              <div className='text-error text-xs font-medium leading-[1.66] pt-2'>
                 {FormState.errors?.channel_prices as string}
               </div>
             ) : null}
@@ -594,51 +540,52 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
         {/* Section 3: Add-on Groups (Jika bukan menu tambahan itu sendiri) */}
         {formData.is_additional === false ? (
           <div
-            className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+            className='card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm'
             style={{ overflow: "visible", zIndex: 10 }}
           >
-            <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+            <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
               <div>
-                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
                   Pengaturan Menu Tambahan
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">Addon Menu</p>
+                <p className='text-xs text-slate-400 mt-0.5'>Addon Menu</p>
               </div>
               <Button
-                variant="success"
-                styleType="soft"
+                variant='success'
+                styleType='soft'
                 onClick={addAddonGroup}
-                size="sm"
+                size='sm'
+                type='button'
               >
-                <Plus className="w-4 h-4" />
+                <Plus className='w-4 h-4' />
                 Tambah Kelompok Add-on
               </Button>
             </div>
 
-            <div className="p-5 space-y-5" style={{ overflow: "visible" }}>
+            <div className='p-5 space-y-5' style={{ overflow: "visible" }}>
               {addGroup.map((group, groupIdx) => (
                 <div
                   key={groupIdx}
-                  className="bg-slate-50/50 border border-slate-200 rounded-xl p-5 relative space-y-4"
+                  className='bg-slate-50/50 border border-slate-200 rounded-xl p-5 relative space-y-4'
                   style={{ overflow: "visible" }}
                 >
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/60 pb-3">
-                    <div className="flex-1 max-w-md">
+                  <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/60 pb-3'>
+                    <div className='flex-1 max-w-md'>
                       <Input
-                        placeholder="Contoh: Pilih Topping, Tingkat Kemanisan"
+                        placeholder='Contoh: Pilih Topping, Tingkat Kemanisan'
                         value={group.name}
                         onChange={(e) =>
                           handleAddonGroupNameChange(groupIdx, e.target.value)
                         }
-                        variant="primary"
-                        className="font-semibold text-slate-700 bg-white"
+                        variant='primary'
+                        className='font-semibold text-slate-700 bg-white'
                         error={getAddonError(groupIdx, "name")}
                       />
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className='flex items-center gap-6'>
                       <div style={{ minWidth: 200 }}>
                         <RemoteSelect<SelectOptionValue>
-                          placeholder="Tipe Add-on"
+                          placeholder='Tipe Add-on'
                           data={addonTypeOptions}
                           value={
                             group.type
@@ -664,9 +611,10 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                         />
                       </div>
                       <Button
-                        variant="error"
-                        styleType="ghost"
+                        variant='error'
+                        styleType='ghost'
                         onClick={() => removeAddonGroup(groupIdx)}
+                        type='button'
                       >
                         <Trash2 size={18} />
                       </Button>
@@ -675,40 +623,41 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
 
                   {/* Addon Options Sub-table */}
                   <div
-                    className="space-y-3 pt-2"
+                    className='space-y-3 pt-2'
                     style={{ overflow: "visible" }}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <div className='flex items-center justify-between'>
+                      <span className='text-xs font-bold text-slate-500 uppercase tracking-wider'>
                         Opsi Pilihan Menu Tambahan
                       </span>
                       <Button
-                        variant="success"
-                        styleType="soft"
+                        variant='success'
+                        styleType='soft'
                         onClick={() => addAddonOptionRow(groupIdx)}
-                        size="sm"
+                        size='sm'
+                        type='button'
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className='w-4 h-4' />
                         Tambah Opsi
                       </Button>
                     </div>
 
                     <div
-                      className="grid grid-cols-1 gap-3"
+                      className='grid grid-cols-1 gap-3'
                       style={{ overflow: "visible" }}
                     >
                       {group.items.map((opt, optIdx) => (
-                        <div key={optIdx} className="flex items-center gap-2">
-                          <div className="flex-1">
+                        <div key={optIdx} className='flex items-center gap-2'>
+                          <div className='flex-1'>
                             <RemoteSelect
-                              placeholder="Pilih topping / menu tambahan..."
+                              placeholder='Pilih topping / menu tambahan...'
                               value={opt.addon_menu}
-                              hook={catalogResult as any}
+                              hook={menusResult as any}
                               fetchData={(page, search) =>
-                                getCatalog({
+                                getMenus({
                                   page,
                                   search,
-                                  is_additional: true,
+                                  addons: "yes",
                                   is_active: true,
                                 })
                               }
@@ -728,11 +677,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                             />
                           </div>
                           <Button
-                            variant="error"
-                            styleType="ghost"
+                            variant='error'
+                            styleType='ghost'
                             onClick={() =>
                               removeAddonOptionRow(groupIdx, optIdx)
                             }
+                            type='button'
                           >
                             <Trash2 size={18} />
                           </Button>
@@ -744,13 +694,13 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               ))}
 
               {FormState.errors?.addon_groups ? (
-                <div className="text-error text-xs font-medium leading-[1.66] pt-1">
+                <div className='text-error text-xs font-medium leading-[1.66] pt-1'>
                   {FormState.errors?.addon_groups as string}
                 </div>
               ) : null}
 
               {addGroup.length === 0 && (
-                <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-sm text-slate-400 italic">
+                <div className='border border-dashed border-slate-200 rounded-xl p-8 text-center text-sm text-slate-400 italic'>
                   Belum ada kelompok add-on yang ditambahkan. Menu ini akan
                   dijual tanpa menu tambahan.
                 </div>
@@ -763,27 +713,28 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
       </div>
       <div>
         <div
-          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+          className='card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm'
           style={{ overflow: "visible", zIndex: 15 }}
         >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl'>
+            <div className='flex items-center justify-between'>
+              <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
                 Bahan Baku
               </h2>
               <Button
-                variant="success"
-                styleType="soft"
-                size="sm"
+                variant='success'
+                styleType='soft'
+                size='sm'
                 onClick={addIngredient}
+                type='button'
               >
-                <Plus className="w-4 h-4" />
+                <Plus className='w-4 h-4' />
                 Tambah
               </Button>
             </div>
 
-            <div className="p-4">
-              <div className="space-y-3">
+            <div className='p-4'>
+              <div className='space-y-3'>
                 {ingredient.map((ig, index) => (
                   <div
                     key={index}
@@ -794,11 +745,11 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                         : "border-slate-200",
                     )}
                   >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                    <div className='flex-1'>
+                      <div className='flex items-center gap-2 mb-1'>
                         <RemoteSelect<InventoryItemDetail>
-                          label="Item"
-                          placeholder="Pilih item..."
+                          label='Item'
+                          placeholder='Pilih item...'
                           required
                           hook={itemResult as any}
                           fetchData={(page, search) =>
@@ -822,10 +773,10 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                         />
                       </div>
                     </div>
-                    <div className="w-28">
+                    <div className='w-28'>
                       <Input
-                        label="Porsi"
-                        type="number"
+                        label='Porsi'
+                        type='number'
                         value={ig.porsi}
                         onChange={(e) =>
                           updateIngredient(
@@ -834,7 +785,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                             Number(e.target.value),
                           )
                         }
-                        variant="primary"
+                        variant='primary'
                         error={
                           (typeof FormState?.errors?.[
                             `ingredients.${index}.porsi`
@@ -845,19 +796,19 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                       />
                     </div>
                     <Button
-                      variant="error"
-                      styleType="ghost"
+                      variant='error'
+                      styleType='ghost'
                       onClick={() => removeIngredient(index)}
-                      disabled={index === 0}
-                      className="mt-7"
+                      type='button'
+                      className='mt-7'
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className='w-4 h-4' />
                     </Button>
                   </div>
                 ))}
 
                 {FormState.errors?.boms ? (
-                  <div className="text-error text-xs font-medium leading-[1.66] pt-1">
+                  <div className='text-error text-xs font-medium leading-[1.66] pt-1'>
                     {FormState.errors?.boms as string}
                   </div>
                 ) : null}

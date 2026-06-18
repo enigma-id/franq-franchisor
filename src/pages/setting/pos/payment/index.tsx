@@ -80,7 +80,9 @@ const PaymentMethodListPage: React.FC = () => {
 
   useEffect(() => {
     if (!editingItem) {
+      setFormData((prev) => ({ ...prev, is_member_payment: false }));
       if (provider?.value === "cash") {
+        setType(getOptionByValue(typeOptions, "pos"));
         setFormData((prev) => ({
           ...prev,
           name: "Cash",
@@ -236,7 +238,7 @@ const PaymentMethodListPage: React.FC = () => {
     };
 
     if (editingItem) {
-      update({ id: editingItem.id, ...payload });
+      update({ id: editingItem.id, payload });
     } else {
       create(payload);
     }
@@ -252,29 +254,29 @@ const PaymentMethodListPage: React.FC = () => {
           closeOnOutsideClick={false}
         >
           <Modal.Header>
-            <div className="font-bold text-lg text-slate-900 leading-7">
+            <div className='font-bold text-lg text-slate-900 leading-7'>
               Hapus Metode Pembayaran
             </div>
           </Modal.Header>
-          <Modal.Body className="text-sm font-normal text-slate-600 leading-5">
+          <Modal.Body className='text-sm font-normal text-slate-600 leading-5'>
             <p>
               Apakah Anda yakin ingin menghapus metode pembayaran{" "}
               <strong>{row?.name}</strong>?
             </p>
           </Modal.Body>
-          <Modal.Footer className="flex gap-2">
+          <Modal.Footer className='flex gap-2'>
             <Button
-              className="flex-1 rounded-xl"
-              variant="error"
+              className='flex-1 rounded-xl'
+              variant='error'
               onClick={() => handleDelete(row)}
               isLoading={isDeleting}
             >
               Hapus
             </Button>
             <Button
-              className="flex-1 rounded-xl"
-              styleType="outline"
-              variant="secondary"
+              className='flex-1 rounded-xl'
+              styleType='outline'
+              variant='secondary'
               onClick={() => closeModal("delete-payment")}
               disabled={isDeleting}
             >
@@ -293,16 +295,16 @@ const PaymentMethodListPage: React.FC = () => {
   };
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Settings"
-        title="Metode Pembayaran"
-        subtitle="Kelola metode pembayaran yang tersedia di POS."
+        category='Settings'
+        title='Metode Pembayaran'
+        subtitle='Kelola metode pembayaran yang tersedia di POS.'
         action={
           <Button
-            variant="primary"
-            shape="wide"
-            size="md"
+            variant='primary'
+            shape='wide'
+            size='md'
             onClick={() => setModalOpen(true)}
           >
             <Plus size={18} />
@@ -311,12 +313,12 @@ const PaymentMethodListPage: React.FC = () => {
         }
       />
 
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools />
 
         <Table.Render
-          emptyTitle="Belum Ada Metode"
-          emptyDescription="Daftar metode pembayaran yang Anda buat akan muncul di sini."
+          emptyTitle='Belum Ada Metode'
+          emptyDescription='Daftar metode pembayaran yang Anda buat akan muncul di sini.'
         />
 
         <Table.Pagination />
@@ -324,11 +326,11 @@ const PaymentMethodListPage: React.FC = () => {
 
       <Modal.Wrapper open={modalOpen} onClose={handleCloseModal}>
         <Modal.Header>
-          <div className="flex flex-col text-left">
-            <span className="text-lg font-bold text-slate-900">
+          <div className='flex flex-col text-left'>
+            <span className='text-lg font-bold text-slate-900'>
               {editingItem ? "Ubah Metode" : "Tambah Metode"}
             </span>
-            <span className="text-xs text-slate-500 font-medium mt-0.5">
+            <span className='text-xs text-slate-500 font-medium mt-0.5'>
               {editingItem
                 ? "Ubah detail metode pembayaran."
                 : "Buat metode pembayaran baru."}
@@ -336,13 +338,13 @@ const PaymentMethodListPage: React.FC = () => {
           </div>
         </Modal.Header>
 
-        <Modal.Body className="pt-4 pb-2 text-left">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Modal.Body className='pt-4 pb-2 text-left'>
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <RemoteSelect<SelectOptionValue>
                 required
-                label="Provider"
-                suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+                label='Provider'
+                suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
                 data={providerOptions}
                 value={provider}
                 onChange={(val) => {
@@ -358,8 +360,8 @@ const PaymentMethodListPage: React.FC = () => {
               />
               <RemoteSelect<SelectOptionValue>
                 required
-                label="Type"
-                suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+                label='Type'
+                suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
                 data={typeOptions}
                 value={type}
                 onChange={(val) => {
@@ -370,14 +372,17 @@ const PaymentMethodListPage: React.FC = () => {
                 }}
                 getLabel={(item) => item.label ?? ""}
                 renderItem={(item) => item.label ?? ""}
+                disabled={
+                  provider?.value === "cash" || formData.is_member_payment
+                }
                 error={FormState?.errors?.type as string}
               />
               {provider?.value === "manual" ||
               provider?.value === "midtrans" ? (
                 <RemoteSelect<SelectOptionValue>
                   required
-                  label="Nama Metode"
-                  suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+                  label='Nama Metode'
+                  suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
                   data={bankOptions}
                   value={getOptionByValue(bankOptions, formData.name)}
                   onChange={(val) => {
@@ -395,7 +400,7 @@ const PaymentMethodListPage: React.FC = () => {
                 />
               ) : (
                 <Input
-                  label="Nama Metode"
+                  label='Nama Metode'
                   required
                   value={formData.name}
                   disabled={
@@ -409,16 +414,16 @@ const PaymentMethodListPage: React.FC = () => {
                       ? "Masukkan nama metode"
                       : "Auto-filled"
                   }
-                  variant="primary"
+                  variant='primary'
                   error={FormState?.errors?.name as string}
                 />
               )}
             </div>
 
             {provider?.value === "manual" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <Input
-                  label="Account Name"
+                  label='Account Name'
                   required
                   value={formData.account_name}
                   onChange={(e) =>
@@ -427,11 +432,11 @@ const PaymentMethodListPage: React.FC = () => {
                       account_name: e.target.value,
                     }))
                   }
-                  variant="primary"
+                  variant='primary'
                   error={FormState?.errors?.account_name as string}
                 />
                 <Input
-                  label="Account Number"
+                  label='Account Number'
                   required
                   value={formData.account_number}
                   onChange={(e) =>
@@ -440,30 +445,35 @@ const PaymentMethodListPage: React.FC = () => {
                       account_number: e.target.value,
                     }))
                   }
-                  variant="primary"
+                  variant='primary'
                   error={FormState?.errors?.account_number as string}
                 />
               </div>
             )}
 
-            <Checkbox
-              label="Member Payment ?"
-              checked={formData.is_member_payment}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  is_member_payment: e.target.checked,
-                }))
-              }
-              variant="primary"
-            />
+            {provider?.value === "other" && (
+              <Checkbox
+                label='Member Payment ?'
+                checked={formData.is_member_payment}
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    is_member_payment: e.target.checked,
+                  }));
+                  if (e.target.checked) {
+                    setType(getOptionByValue(typeOptions, "pos"));
+                  }
+                }}
+                variant='primary'
+              />
+            )}
           </form>
         </Modal.Body>
 
-        <Modal.Footer className="flex justify-end gap-2 pt-4">
+        <Modal.Footer className='flex justify-end gap-2 pt-4'>
           <Button
             onClick={handleCloseModal}
-            variant="secondary"
+            variant='secondary'
             disabled={isCreating || isUpdating}
           >
             Batal
@@ -471,13 +481,13 @@ const PaymentMethodListPage: React.FC = () => {
           <Button
             onClick={handleSubmit}
             disabled={isCreating || isUpdating}
-            variant="success"
+            variant='success'
           >
             {isCreating || isUpdating ? (
-              <Loading size="sm" variant="spinner" />
+              <Loading size='sm' variant='spinner' />
             ) : (
               <>
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className='w-4 h-4 mr-2' />
                 {editingItem ? "Simpan Perubahan" : "Simpan Metode"}
               </>
             )}

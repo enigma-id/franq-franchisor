@@ -155,7 +155,7 @@ const POSChannelListPage: React.FC = () => {
     };
 
     if (editingItem) {
-      update({ id: editingItem.id, ...payload });
+      update({ id: editingItem.id, payload });
     } else {
       create(payload);
     }
@@ -245,12 +245,12 @@ const POSChannelListPage: React.FC = () => {
         <Modal.Header>
           <div className="flex flex-col text-left">
             <span className="text-lg font-bold text-slate-900">
-              {editingItem ? "Ubah Tipe Outlet" : "Tambah Tipe Outlet"}
+              {editingItem ? "Ubah POS Channel" : "Tambah POS Channel"}
             </span>
             <span className="text-xs text-slate-500 font-medium mt-0.5">
               {editingItem
-                ? "Ubah detail klasifikasi tipe outlet."
-                : "Buat klasifikasi tipe outlet baru."}
+                ? "Ubah detail channel POS."
+                : "Buat channel POS baru."}
             </span>
           </div>
         </Modal.Header>

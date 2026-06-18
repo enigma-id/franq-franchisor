@@ -1,20 +1,19 @@
-export const orderStatusOptions = [
+export const documentStatusOptions = [
   { label: "Pending", value: "pending" },
-  { label: "Aktif", value: "active" },
-  { label: "Selesai", value: "finished" },
+  { label: "Aktif", value: "process" },
+  { label: "Selesai", value: "completed" },
   { label: "Batal", value: "cancelled" },
-  { label: "Expired", value: "void" },
 ];
 
 export const paymentStatusOptions = [
-  { label: "Belum Dibayar", value: "void" },
-  { label: "Sudah Dibayar", value: "finished" },
+  { label: "Belum Dibayar", value: "unpaid" },
+  { label: "Sudah Dibayar", value: "paid" },
 ];
 
-export const deliveryStatusOptions = [
-  { label: "Belum Dikirim", value: "void" },
-  { label: "Dalam Proses", value: "active" },
-  { label: "Sudah Dikirim", value: "finished" },
+export const fulfillmentStatusOptions = [
+  { label: "Belum Diprocess", value: "new" },
+  { label: "Disputed", value: "disputed" },
+  { label: "Selesai", value: "completed" },
 ];
 
 export const productionPlanStatusOptions = [

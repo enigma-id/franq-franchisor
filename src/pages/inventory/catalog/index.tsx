@@ -7,11 +7,12 @@ import { Button, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import useTable from "@/services/table/hooks";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
+import { useOutlet } from "@/services/outlet/hooks";
 import createTableConfig from "./table/catalog.config";
 import TableFilter from "./table/catalog.filter";
 import type { InventoryCatalogDetail } from "@/services/types/inventory";
 import type { TableConfig } from "@/services/table/const";
-import { AssignOutletModal } from "./components/AssignOutletModal";
+import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
 
 const InventoryCatalogListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,48 @@ const InventoryCatalogListPage: React.FC = () => {
     deactivate: deactivateCatalog,
     deactivateResult: deactivateCatalogResult,
   } = useInventoryCatalog();
+  const { get: getOutlets, getResult: outletsResult } = useOutlet();
+
+  const openOutletNames = async (row: any, outletType: any) => {
+    const typeId = outletType.outlet_type?.id || outletType.outlet_type_id;
+    if (!typeId) return;
+    const res = await getOutlets({ outlet_type_id: typeId, limit: 100 });
+    const outlets = (res as any)?.data ?? [];
+    openModal({
+      id: "outlet-names",
+      content: (
+        <Modal.Wrapper open onClose={() => closeModal("outlet-names")}>
+          <Modal.Header>
+            <div className="font-bold leading-7">{outletType.outlet_type?.name || "Outlet"}</div>
+            <div className="text-xs text-slate-500 font-normal mt-1">
+              Outlet dengan tipe ini
+            </div>
+          </Modal.Header>
+          <Modal.Body className="max-h-[60vh] overflow-y-auto p-5">
+            {outlets.length === 0 ? (
+              <div className="text-center py-10 text-sm text-slate-400">Tidak ada outlet</div>
+            ) : (
+              <div className="space-y-2">
+                {outlets.map((o: any) => (
+                  <div
+                    key={o.id}
+                    className="p-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700"
+                  >
+                    {o.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button className="flex-1 rounded-xl" styleType="outline" variant="secondary" onClick={() => closeModal("outlet-names")}>
+              Tutup
+            </Button>
+          </Modal.Footer>
+        </Modal.Wrapper>
+      ),
+    });
+  };
 
   const handleToggleActive = (v: InventoryCatalogDetail) => {
     if (v.is_active) {
@@ -38,7 +81,13 @@ const InventoryCatalogListPage: React.FC = () => {
       createTableConfig({
         onClick: (row) => navigate(`/inventory/catalog/update/${row.id}`),
         onRemove: (row) => openDelete(row),
-        onOutletType: (row) => openOutletType(row),
+        onOutletType: (row, ot) => {
+          if (ot) {
+            openOutletNames(row, ot);
+          } else {
+            openOutletType(row);
+          }
+        },
         onToggleActive: (row) => handleToggleActive(row),
       }),
     [navigate, activateCatalog, deactivateCatalog],
@@ -53,7 +102,7 @@ const InventoryCatalogListPage: React.FC = () => {
     openModal({
       id: "assign-outlet-catalog",
       content: (
-        <AssignOutletModal
+        <AssignOutletTypeModal
           catalog={row}
           onClose={() => closeModal("assign-outlet-catalog")}
           onSuccess={() => {

@@ -5,9 +5,9 @@ import dayjs, { Dayjs } from "dayjs";
 import { DatePicker, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import {
-  orderStatusOptions,
+  documentStatusOptions,
   paymentStatusOptions,
-  deliveryStatusOptions,
+  fulfillmentStatusOptions,
 } from "@/utils/options";
 import { ChevronDown } from "lucide-react";
 
@@ -27,14 +27,13 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  const [orderStatus, setOrderStatus] = useState<SelectOptionValue | null>(
-    () => {
-      const value = current.order_status;
+  const [docuemntStatus, setdocuemntStatus] =
+    useState<SelectOptionValue | null>(() => {
+      const value = current.document_status;
       return value
-        ? (orderStatusOptions.find((opt) => opt.value === value) ?? null)
+        ? (documentStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
-    },
-  );
+    });
 
   const [paymentStatus, setPaymentStatus] = useState<SelectOptionValue | null>(
     () => {
@@ -45,11 +44,11 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     },
   );
 
-  const [deliveryStatus, setDeliveryStatus] =
+  const [fulfillmentStatus, setfulfillmentStatus] =
     useState<SelectOptionValue | null>(() => {
-      const value = current.delivery_status;
+      const value = current.fulfillment_status;
       return value
-        ? (deliveryStatusOptions.find((opt) => opt.value === value) ?? null)
+        ? (fulfillmentStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
     });
 
@@ -68,9 +67,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     const filters = {
       start_at: dateRange ? dateRange[0]?.format("YYYY-MM-DD") : "",
       end_at: dateRange ? dateRange[1]?.format("YYYY-MM-DD") : "",
-      order_status: orderStatus?.value ?? "",
+      document_status: docuemntStatus?.value ?? "",
       payment_status: paymentStatus?.value ?? "",
-      delivery_status: deliveryStatus?.value ?? "",
+      fulfillment_status: fulfillmentStatus?.value ?? "",
       ...updates,
     };
     table.filter(filters);
@@ -98,31 +97,31 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
 
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
-      <div className="w-40 md:w-48">
+    <div className='flex flex-row items-center gap-3 w-full shrink-0 flex-wrap'>
+      <div className='w-40 md:w-48'>
         <RemoteSelect<SelectOptionValue>
-          placeholder="Order Status: All"
+          placeholder='Order Status: All'
           inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-          data={orderStatusOptions}
-          value={orderStatus}
+          suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
+          data={documentStatusOptions}
+          value={docuemntStatus}
           onChange={(val) => {
-            setOrderStatus(val);
-            applyFilters({ order_status: val?.value || "" });
+            setdocuemntStatus(val);
+            applyFilters({ document_status: val?.value || "" });
           }}
           onClear={() => {
-            setOrderStatus(null);
-            applyFilters({ order_status: "" });
+            setdocuemntStatus(null);
+            applyFilters({ document_status: "" });
           }}
           getLabel={(item) => (item ? `Status: ${item.label}` : "")}
           renderItem={(item) => item?.label}
         />
       </div>
-      <div className="w-40 md:w-48">
+      <div className='w-40 md:w-48'>
         <RemoteSelect<SelectOptionValue>
-          placeholder="Payment: All"
+          placeholder='Payment: All'
           inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
           data={paymentStatusOptions}
           value={paymentStatus}
           onChange={(val) => {
@@ -137,32 +136,32 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           renderItem={(item) => item?.label}
         />
       </div>
-      <div className="w-40 md:w-48">
+      <div className='w-40 md:w-48'>
         <RemoteSelect<SelectOptionValue>
-          placeholder="Delivery: All"
+          placeholder='Fulfillment: All'
           inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-          data={deliveryStatusOptions}
-          value={deliveryStatus}
+          suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
+          data={fulfillmentStatusOptions}
+          value={fulfillmentStatus}
           onChange={(val) => {
-            setDeliveryStatus(val);
-            applyFilters({ delivery_status: val?.value || "" });
+            setfulfillmentStatus(val);
+            applyFilters({ fulfillment_status: val?.value || "" });
           }}
           onClear={() => {
-            setDeliveryStatus(null);
-            applyFilters({ delivery_status: "" });
+            setfulfillmentStatus(null);
+            applyFilters({ fulfillment_status: "" });
           }}
           getLabel={(item) => (item ? `Delivery: ${item.label}` : "")}
           renderItem={(item) => item?.label}
         />
       </div>
-      <div className="w-40 md:w-60">
+      <div className='w-40 md:w-60'>
         <DatePicker
-          mode="range"
+          mode='range'
           value={dateRange}
           onChange={handleDateChange}
-          placeholder="Date: All Time"
-          inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
+          placeholder='Date: All Time'
+          inputClassName='!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium'
         />
       </div>
     </div>

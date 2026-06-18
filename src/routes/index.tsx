@@ -34,7 +34,6 @@ import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
 import SalesOrderListPage from "@/pages/sales/order";
 import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
 import SalesReturnListPage from "@/pages/sales/return";
-import SalesReturnCreatePage from "@/pages/sales/return/salesReturnCreate";
 import SalesReturnDetailPage from "@/pages/sales/return/salesReturnDetail";
 import ProductionPlanListPage from "@/pages/production/plan";
 import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
@@ -57,9 +56,9 @@ export function AppRoutes() {
       <Routes>
         {/* Public routes — wrapped in UnauthorizedLayout */}
         <Route element={<UnauthorizedLayout />}>
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="*" element={<Navigate to="/signin" replace />} />
+          <Route path='/signin' element={<SignInPage />} />
+          <Route path='/signup' element={<SignUpPage />} />
+          <Route path='*' element={<Navigate to='/signin' replace />} />
         </Route>
       </Routes>
     );
@@ -76,143 +75,136 @@ export function AppRoutes() {
         }
       >
         {/* Dashboard */}
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path='/dashboard' element={<DashboardPage />} />
 
         {/* Setting - Outlet */}
-        <Route path="/setting/outlet" element={<OutletListPage />} />
-        <Route path="/setting/outlet/create" element={<OutletCreatePage />} />
+        <Route path='/setting/outlet' element={<OutletListPage />} />
+        <Route path='/setting/outlet/create' element={<OutletCreatePage />} />
         <Route
-          path="/setting/outlet/update/:id"
+          path='/setting/outlet/update/:id'
           element={<OutletUpdatePage />}
         />
-        <Route path="/setting/type/outlet" element={<OutletTypePage />} />
+        <Route path='/setting/type/outlet' element={<OutletTypePage />} />
 
         {/* Setting - POS */}
-        <Route path="/setting/pos/channel" element={<POSChannelListPage />} />
+        <Route path='/setting/pos/channel' element={<POSChannelListPage />} />
 
         {/* Setting - POS Category */}
-        <Route path="/setting/pos/category" element={<POSCategoryListPage />} />
+        <Route path='/setting/pos/category' element={<POSCategoryListPage />} />
 
         {/* Setting - POS Menu */}
-        <Route path="/setting/pos/menu" element={<POSMenuListPage />} />
+        <Route path='/setting/pos/menu' element={<POSMenuListPage />} />
         <Route
-          path="/setting/pos/menu/create"
+          path='/setting/pos/menu/create'
           element={<POSMenuCreatePage />}
         />
         <Route
-          path="/setting/pos/menu/update/:id"
+          path='/setting/pos/menu/update/:id'
           element={<POSMenuUpdatePage />}
         />
 
         {/* Setting - POS Payment */}
         <Route
-          path="/setting/pos/payment"
+          path='/setting/pos/payment'
           element={<PaymentMethodListPage />}
         />
 
         {/* Inventory - Item & Catalog */}
-        <Route path="/inventory/item" element={<InventoryItemListPage />} />
+        <Route path='/inventory/item' element={<InventoryItemListPage />} />
         <Route
-          path="/inventory/item/create"
+          path='/inventory/item/create'
           element={<InventoryItemCreatePage />}
         />
         <Route
-          path="/inventory/item/update/:id"
+          path='/inventory/item/update/:id'
           element={<InventoryItemUpdatePage />}
         />
 
         <Route
-          path="/inventory/catalog"
+          path='/inventory/catalog'
           element={<InventoryCatalogListPage />}
         />
         <Route
-          path="/inventory/catalog/create"
+          path='/inventory/catalog/create'
           element={<InventoryCatalogCreatePage />}
         />
         <Route
-          path="/inventory/catalog/update/:id"
+          path='/inventory/catalog/update/:id'
           element={<InventoryCatalogUpdatePage />}
         />
 
         {/* Inventory - Warehouse */}
-        <Route path="/inventory/warehouse" element={<WarehouseListPage />} />
+        <Route path='/inventory/warehouse' element={<WarehouseListPage />} />
 
         {/* Production - Plan */}
-        <Route path="/production/plan" element={<ProductionPlanListPage />} />
+        <Route path='/production/plan' element={<ProductionPlanListPage />} />
         <Route
-          path="/production/plan/create"
+          path='/production/plan/create'
           element={<ProductionPlanCreatePage />}
         />
         <Route
-          path="/production/plan/detail/:id"
+          path='/production/plan/detail/:id'
           element={<ProductionPlanDetailPage />}
         />
         <Route
-          path="/production/plan/update/:id"
+          path='/production/plan/update/:id'
           element={<ProductionPlanUpdatePage />}
         />
 
         {/* Purchase - Supplier */}
-        <Route path="/purchase/supplier" element={<SupplierListPage />} />
+        <Route path='/purchase/supplier' element={<SupplierListPage />} />
         <Route
-          path="/purchase/supplier/create"
+          path='/purchase/supplier/create'
           element={<SupplierCreatePage />}
         />
         <Route
-          path="/purchase/supplier/update/:id"
+          path='/purchase/supplier/update/:id'
           element={<SupplierUpdatePage />}
         />
 
         {/* Purchase - Order */}
-        <Route path="/purchase/order" element={<PurchaseOrderListPage />} />
+        <Route path='/purchase/order' element={<PurchaseOrderListPage />} />
         <Route
-          path="/purchase/order/create"
+          path='/purchase/order/create'
           element={<PurchaseOrderCreatePage />}
         />
         <Route
-          path="/purchase/order/update/:id"
+          path='/purchase/order/update/:id'
           element={<PurchaseOrderUpdatePage />}
         />
 
         {/* Sales - Order */}
-        <Route path="/sales/order" element={<SalesOrderListPage />} />
-        <Route path="/sales/order/create" element={<SalesOrderCreatePage />} />
-        <Route
-          path="/sales/order/detail/:id"
-          element={<SalesOrderDetailPage />}
-        />
+        <Route path='/sales/order' element={<SalesOrderListPage />} />
+        <Route path='/sales/order/create' element={<SalesOrderCreatePage />} />
+        <Route path='/sales/order/:id' element={<SalesOrderDetailPage />} />
 
         {/* Sales - Return */}
-        <Route path="/sales/return" element={<SalesReturnListPage />} />
+        <Route path='/sales/return' element={<SalesReturnListPage />} />
         <Route
-          path="/sales/return/create"
-          element={<SalesReturnCreatePage />}
-        />
-        <Route
-          path="/sales/return/detail/:id"
+          path='/sales/return/detail/:id'
           element={<SalesReturnDetailPage />}
         />
 
         {/* Report */}
-        <Route path="/report/outstanding" element={<OutstandingPage />} />
-        <Route path="/report/payment" element={<POSSettlementPage />} />
-        <Route path="/report/payment/b2b" element={<B2BSettlementPage />} />
-        <Route path="/report/sales/product" element={<ProductSalesPage />} />
+        <Route path='/report/outstanding' element={<OutstandingPage />} />
+        <Route path='/report/payment' element={<POSSettlementPage />} />
+        <Route path='/report/payment/b2b' element={<B2BSettlementPage />} />
+        <Route path='/report/sales/product' element={<ProductSalesPage />} />
         <Route
-          path="/report/sales/product/b2b"
+          path='/report/sales/product/b2b'
           element={<B2BProductSalesPage />}
         />
         <Route
-          path="/report/sales/material"
+          path='/report/sales/material'
           element={<RawMaterialSalesPage />}
         />
         <Route
-          path="/report/stock/warehouse"
+          path='/report/stock/warehouse'
           element={<WarehouseStockPage />}
         />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path='*' element={<Navigate to='/dashboard' replace />} />
       </Route>
     </Routes>
   );

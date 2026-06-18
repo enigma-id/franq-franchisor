@@ -53,6 +53,7 @@ export interface POSMenuDetail extends POSMenuBase {
   channel_prices: POSChannelPrice[];
   ingredients: POSIngredient[];
   addon_groups?: POSAddonGroup[];
+  outlet_type_ids?: string[];
   is_active: boolean;
   created_at: string;
   updated_at: string;

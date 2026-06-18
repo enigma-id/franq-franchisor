@@ -9,3 +9,4 @@ export * from "./outlet";
 export * from "./production";
 export * from "./supplier";
 export * from "./dashboard";
+export * from "./region";

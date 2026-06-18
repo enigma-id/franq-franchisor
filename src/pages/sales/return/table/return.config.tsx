@@ -4,6 +4,18 @@ import { Badge, Button } from "@/components/ui";
 import { RefreshCcw } from "lucide-react";
 import dayjs from "dayjs";
 
+const statusVariant = (status: string) => {
+  if (status === "approved" || status === "active") return "success";
+  if (status === "rejected") return "error";
+  return "warning";
+};
+
+const statusLabel = (status: string) => {
+  if (status === "approved" || status === "active") return "Approved";
+  if (status === "rejected") return "Rejected";
+  return "Pending";
+};
+
 const createTableConfig = ({
   onView,
 }: {
@@ -37,6 +49,14 @@ const createTableConfig = ({
         <span className="text-slate-600 font-medium font-mono text-[12px]">
           {row.sales_order_id}
         </span>
+      ),
+    },
+    status: {
+      title: "Status",
+      component: (row: SalesReturnDetail) => (
+        <Badge variant={statusVariant(row.status)} className="px-3 py-1 rounded-full text-xs">
+          {statusLabel(row.status)}
+        </Badge>
       ),
     },
     items: {

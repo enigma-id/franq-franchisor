@@ -27,6 +27,7 @@ export * from "./select-remote";
 export * from "./steps";
 export * from "./tabs";
 export * from "./toast";
+export * from "./image-upload";
 export * from "./toggle";
 export * from "./tooltip";
 export * from "./skeleton";

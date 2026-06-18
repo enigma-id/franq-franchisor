@@ -107,19 +107,19 @@ export const salesApi = createApi({
       }),
     }),
 
-    /** PUT /sales/return/:id - Activate sales return */
-    activateSalesReturn: builder.mutation({
+    /** PUT /sales/return/:id/approve - Approve sales return */
+    approveSalesReturn: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}/activate`,
+        url: `/sales/return/${id}/approve`,
         method: "PUT",
         body: payload,
       }),
     }),
 
-    /** PUT /sales/return/:id - Deactivate sales return */
-    deactivateSalesReturn: builder.mutation({
+    /** PUT /sales/return/:id/reject - Reject sales return */
+    rejectSalesReturn: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}/deactivate`,
+        url: `/sales/return/${id}/reject`,
         method: "PUT",
         body: payload,
       }),
@@ -140,6 +140,6 @@ export const {
   useCreateSalesReturnMutation,
   useUpdateSalesReturnMutation,
   useDeleteSalesReturnMutation,
-  useActivateSalesReturnMutation,
-  useDeactivateSalesReturnMutation,
+  useApproveSalesReturnMutation,
+  useRejectSalesReturnMutation,
 } = salesApi;

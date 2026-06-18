@@ -51,28 +51,28 @@ export const OutletForm: React.FC<OutletFormProps> = ({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
+    <form id={id} onSubmit={handleSubmit} className='space-y-6'>
       {/* Section 1: Informasi Utama */}
       <div
-        className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
+        className='bg-white border border-slate-200 rounded-xl relative shadow-sm'
         style={{ overflow: "visible", zIndex: 20 }}
       >
-        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+        <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+          <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
             Informasi Utama
           </h2>
         </div>
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className='p-5 grid grid-cols-1 md:grid-cols-2 gap-5'>
           <Input
-            label="Nama Outlet"
+            label='Nama Outlet'
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Contoh: Suka Bread Express Bandung"
+            placeholder='Contoh: Suka Bread Express Bandung'
             error={FormState?.errors?.name as string}
           />
           <RemoteSelect<OutletTypeDetail>
-            label="Tipe Outlet"
+            label='Tipe Outlet'
             required
             hook={typesResult as any}
             fetchData={(page, search) => getTypes({ page, search })}
@@ -89,23 +89,23 @@ export const OutletForm: React.FC<OutletFormProps> = ({
               setFormData({ ...formData, outlet_type_id: item?.id })
             }
             onClear={() => setFormData({ ...formData, outlet_type_id: "" })}
-            placeholder="Pilih tipe outlet"
+            placeholder='Pilih tipe outlet'
             error={FormState?.errors?.outlet_type_id as string}
           />
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className='md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5'>
             <Input
-              label="No. Telepon Outlet"
+              label='No. Telepon Outlet'
               required
               value={formData.phone}
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
               }
-              placeholder="Contoh: 022123456"
+              placeholder='Contoh: 022123456'
               error={FormState?.errors?.phone as string}
             />
             <Input
-              label="Biaya Layanan (%)"
-              type="number"
+              label='Biaya Layanan (%)'
+              type='number'
               required
               value={formData.service_charges}
               onChange={(e) =>
@@ -121,80 +121,80 @@ export const OutletForm: React.FC<OutletFormProps> = ({
       </div>
 
       {/* Section 2: Informasi PIC & Kredensial Owner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <div
-          className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
+          className='bg-white border border-slate-200 rounded-xl relative shadow-sm'
           style={{ overflow: "visible", zIndex: 15 }}
         >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+            <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
               Person In Charge (PIC)
             </h2>
           </div>
-          <div className="p-5 space-y-4">
+          <div className='p-5 space-y-4'>
             <Input
-              label="Nama Penerima"
+              label='Nama Penerima'
               required
               value={formData.recipient_name}
               onChange={(e) =>
                 setFormData({ ...formData, recipient_name: e.target.value })
               }
-              placeholder="Contoh: Budi Santoso"
+              placeholder='Contoh: Budi Santoso'
               error={FormState?.errors?.recipient_name as string}
             />
             <Input
-              label="No. Telepon PIC"
+              label='No. Telepon PIC'
               required
               value={formData.phone}
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
               }
-              placeholder="Contoh: 081234567890"
+              placeholder='Contoh: 081234567890'
               error={FormState?.errors?.phone as string}
             />
           </div>
         </div>
 
         <div
-          className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
+          className='bg-white border border-slate-200 rounded-xl relative shadow-sm'
           style={{ overflow: "visible", zIndex: 15 }}
         >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+            <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
               Akun Pemilik (Owner Credentials)
             </h2>
           </div>
-          <div className="p-5 space-y-4">
+          <div className='p-5 space-y-4'>
             <Input
-              label="Nama Pemilik"
+              label='Nama Pemilik'
               required
               value={formData.owner_name}
               onChange={(e) =>
                 setFormData({ ...formData, owner_name: e.target.value })
               }
-              placeholder="Contoh: Budi Pemilik"
+              placeholder='Contoh: Budi Pemilik'
               error={FormState?.errors?.owner_name as string}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <Input
-                label="Username"
+                label='Username'
                 required
                 value={formData.owner_username}
                 onChange={(e) =>
                   setFormData({ ...formData, owner_username: e.target.value })
                 }
-                placeholder="Contoh: budi_sukabread"
+                placeholder='Contoh: budi_sukabread'
                 error={FormState?.errors?.owner_username as string}
               />
               <Input
-                label="Password"
-                type="password"
+                label='Password'
+                type='password'
                 required={!initialData}
                 value={formData.owner_password}
                 onChange={(e) =>
                   setFormData({ ...formData, owner_password: e.target.value })
                 }
-                placeholder="********"
+                placeholder='********'
                 error={FormState?.errors?.owner_password as string}
               />
             </div>
@@ -204,23 +204,23 @@ export const OutletForm: React.FC<OutletFormProps> = ({
 
       {/* Section 3: Regional & Alamat */}
       <div
-        className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
+        className='bg-white border border-slate-200 rounded-xl relative shadow-sm'
         style={{ overflow: "visible", zIndex: 10 }}
       >
-        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+        <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+          <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
             Regional & Lokasi
           </h2>
         </div>
-        <div className="p-5 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className='p-5 space-y-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <RemoteSelect
-              label="Provinsi"
+              label='Provinsi'
               required
               hook={provincesResult as any}
-              fetchData={(page, search) => getProvinces({ page, search })}
-              getLabel={(item: any) => item?.name}
-              renderItem={(item: any) => item?.name}
+              fetchData={(page, search) => getProvinces({ page, q: search })}
+              getLabel={(item) => formatRegion(item)}
+              renderItem={(item) => formatRegion(item)}
               value={
                 formData.region_id
                   ? (provincesResult.data as any)?.data?.find(
@@ -232,20 +232,20 @@ export const OutletForm: React.FC<OutletFormProps> = ({
                 setFormData({ ...formData, region_id: item?.id })
               }
               onClear={() => setFormData({ ...formData, region_id: "" })}
-              placeholder="Pilih Provinsi"
+              placeholder='Pilih Provinsi'
               error={FormState?.errors?.region_id as string}
             />
           </div>
-          <div className="space-y-1">
+          <div className='space-y-1'>
             <Input
-              type="textarea"
-              label="Alamat Lengkap"
+              type='textarea'
+              label='Alamat Lengkap'
               required
               value={formData.address}
               onChange={(e) =>
                 setFormData({ ...formData, address: e.target.value })
               }
-              placeholder="Contoh: Jl. Diponegoro No. 22"
+              placeholder='Contoh: Jl. Diponegoro No. 22'
               error={FormState?.errors?.address as string}
             />
           </div>
