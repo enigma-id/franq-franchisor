@@ -9,6 +9,7 @@ import type {
 import { Input, RemoteSelect } from "@/components";
 import { useRegion } from "@/services/region/hooks";
 import { useAppSelector } from "@/hooks";
+import { formatRegion } from "@/utils/common";
 
 interface OutletFormProps {
   id?: string;
