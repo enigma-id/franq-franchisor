@@ -15,7 +15,7 @@ import POSChannelListPage from "@/pages/setting/pos/channel";
 import POSCategoryListPage from "@/pages/setting/pos/category";
 import POSMenuListPage from "@/pages/setting/pos/menu";
 import POSMenuCreatePage from "@/pages/setting/pos/menu/menuCreate";
-import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
+import POSMenuDetailPage from "@/pages/setting/pos/menu/menuDetail";
 import PaymentMethodListPage from "@/pages/setting/pos/payment";
 import InventoryItemListPage from "@/pages/inventory/item";
 import InventoryItemCreatePage from "@/pages/inventory/item/itemCreate";
@@ -49,6 +49,7 @@ import RawMaterialSalesPage from "@/pages/report/rawMaterialSales";
 import ProductSalesPage from "@/pages/report/productSales";
 import WarehouseStockPage from "@/pages/report/warehouseStock";
 import PosOutstandingPage from "@/pages/report/outstanding";
+import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -105,6 +106,7 @@ export function AppRoutes() {
           path="/setting/pos/menu/update/:id"
           element={<POSMenuUpdatePage />}
         />
+        <Route path="/setting/pos/menu/:id" element={<POSMenuDetailPage />} />
 
         {/* Setting - POS Payment */}
         <Route
