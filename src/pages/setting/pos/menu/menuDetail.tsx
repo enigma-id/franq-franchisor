@@ -135,7 +135,7 @@ const POSMenuDetailPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {menu.ingredients.map((ing, index) => (
                   <div key={index} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <span className="font-medium text-xs text-slate-600">ID: {ing.catalog_id}</span>
+                    <span className="font-medium text-xs text-slate-600">{ing.catalog?.name || "Unknown"}</span>
                     <Badge variant="outline" className="font-bold text-xs text-indigo-600 px-2 py-0.5">
                       {ing.porsi} units
                     </Badge>
