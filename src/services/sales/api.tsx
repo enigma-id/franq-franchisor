@@ -80,10 +80,19 @@ export const salesApi = createApi({
       }),
     }),
 
-    /** PUT /sales/return/:id - approve sales return */
+    /** PUT /sales/return/:id/approve - Approve sales return */
     approveSalesReturn: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/sales/return/${id}/approve`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /** PUT /sales/return/:id/reject - Reject sales return */
+    rejectSalesReturn: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/return/${id}/reject`,
         method: "PUT",
         body: payload,
       }),
@@ -102,4 +111,5 @@ export const {
   //
   useLazyGetSalesReturnQuery,
   useApproveSalesReturnMutation,
+  useRejectSalesReturnMutation,
 } = salesApi;

@@ -1,8 +1,18 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Input, Button, RemoteSelect, Checkbox } from "@/components/ui";
-import { usePOSCategory, usePOSChannel } from "@/services/pos/hooks";
+import {
+  Input,
+  Button,
+  RemoteSelect,
+  Checkbox,
+  ImageUpload,
+} from "@/components/ui";
+import {
+  usePOSCategory,
+  usePOSChannel,
+  usePOSMenu,
+} from "@/services/pos/hooks";
 import type {
   POSMenuDetail,
   POSMenuCreateRequest,
@@ -14,10 +24,7 @@ import { Plus, Trash2, Layers, Info } from "lucide-react";
 import type { InventoryItemDetail } from "@/services/types";
 import { useAppSelector } from "@/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
-import {
-  useInventoryCatalog,
-  useInventoryItem,
-} from "@/services/inventory/hooks";
+import { useInventoryItem } from "@/services/inventory/hooks";
 import { useEnigmaUI } from "@/components";
 import clsx from "clsx";
 
@@ -66,8 +73,8 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const FormState = useAppSelector((s) => s.form);
   const { get: getCategories, getResult: categoriesResult } = usePOSCategory();
   const { get: getChannels, getResult: channelsResult } = usePOSChannel();
-  const { get: getCatalog, getResult: catalogResult } = useInventoryCatalog();
   const { get: getItem, getResult: itemResult } = useInventoryItem();
+  const { get: getMenus, getResult: menusResult } = usePOSMenu();
   const { showToast } = useEnigmaUI();
 
   const [formData, setFormData] = useState<POSMenuBase>({
@@ -82,9 +89,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const [channel, setChannel] = useState<POSFormChannelPrice[]>([]);
   const [category, setCategory] = useState<POSCategoryDetail | null>(null);
 
-  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([
-    { catalog: null, catalog_id: "", porsi: 0 },
-  ]);
+  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([]);
 
   const [addGroup, setAddGroup] = useState<POSAddonGroupForm[]>([
     { name: "", type: "", items: [{ addon_menu: null, addon_menu_id: "" }] },
@@ -319,29 +324,6 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
     });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        showToast({
-          message: "Ukuran file terlalu besar, maksimal 2MB",
-          type: "error",
-        });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData((prev) => ({ ...prev, image: base64String }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setFormData((prev) => ({ ...prev, image: "" }));
-  };
-
   const updateIngredient = (
     index: number,
     field: keyof POSIngredientForm,
@@ -486,51 +468,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               </h2>
             </div>
 
-            <div className="flex flex-col items-center gap-3 p-6">
-              {formData.image ? (
-                <div className="relative group w-55 aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <label className="p-2 bg-white text-slate-600 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                      <Plus size={18} />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageChange}
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <label className="w-55 aspect-square border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 hover:bg-emerald-50/30 transition-all group">
-                  <Plus className="w-6 h-6 text-slate-300 group-hover:text-emerald-500 transition-colors" />
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-600">
-                    Upload Gambar
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </label>
-              )}
-              <p className="text-[10px] text-slate-400 text-center leading-tight">
-                Maks. 2MB (JPG, PNG, WEBP)
-              </p>
-            </div>
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) =>
+                setFormData((prev) => ({ ...prev, image: url }))
+              }
+            />
           </div>
         </div>
       </div>
@@ -718,12 +661,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                             <RemoteSelect
                               placeholder="Pilih topping / menu tambahan..."
                               value={opt.addon_menu}
-                              hook={catalogResult as any}
+                              hook={menusResult as any}
                               fetchData={(page, search) =>
-                                getCatalog({
+                                getMenus({
                                   page,
                                   search,
-                                  is_additional: true,
+                                  addons: "yes",
                                   is_active: true,
                                 })
                               }

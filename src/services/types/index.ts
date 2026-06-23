@@ -11,3 +11,5 @@ export * from "./reports";
 export * from "./sales";
 export * from "./supplier";
 export * from "./warehouse";
+export * from "./dashboard";
+export * from "./region";

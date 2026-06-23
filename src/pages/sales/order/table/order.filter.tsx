@@ -5,9 +5,9 @@ import dayjs, { Dayjs } from "dayjs";
 import { DatePicker, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import {
-  orderStatusOptions,
+  documentStatusOptions,
   paymentStatusOptions,
-  deliveryStatusOptions,
+  fulfillmentStatusOptions,
 } from "@/utils/options";
 import { ChevronDown } from "lucide-react";
 
@@ -27,14 +27,13 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  const [orderStatus, setOrderStatus] = useState<SelectOptionValue | null>(
-    () => {
+  const [docuemntStatus, setdocuemntStatus] =
+    useState<SelectOptionValue | null>(() => {
       const value = current.document_status;
       return value
-        ? (orderStatusOptions.find((opt) => opt.value === value) ?? null)
+        ? (documentStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
-    },
-  );
+    });
 
   const [paymentStatus, setPaymentStatus] = useState<SelectOptionValue | null>(
     () => {
@@ -45,11 +44,11 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     },
   );
 
-  const [deliveryStatus, setDeliveryStatus] =
+  const [fulfillmentStatus, setfulfillmentStatus] =
     useState<SelectOptionValue | null>(() => {
       const value = current.fulfillment_status;
       return value
-        ? (deliveryStatusOptions.find((opt) => opt.value === value) ?? null)
+        ? (fulfillmentStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
     });
 
@@ -68,9 +67,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     const filters = {
       start_at: dateRange ? dateRange[0]?.format("YYYY-MM-DD") : "",
       end_at: dateRange ? dateRange[1]?.format("YYYY-MM-DD") : "",
-      document_status: orderStatus?.value ?? "",
+      document_status: docuemntStatus?.value ?? "",
       payment_status: paymentStatus?.value ?? "",
-      fulfillment_status: deliveryStatus?.value ?? "",
+      fulfillment_status: fulfillmentStatus?.value ?? "",
       ...updates,
     };
     table.filter(filters);
@@ -101,17 +100,17 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
       <div className="w-40 md:w-48">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Status: All"
+          placeholder="Order Status: All"
           inputClassName={selectClassName}
           suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-          data={orderStatusOptions}
-          value={orderStatus}
+          data={documentStatusOptions}
+          value={docuemntStatus}
           onChange={(val) => {
-            setOrderStatus(val);
+            setdocuemntStatus(val);
             applyFilters({ document_status: val?.value || "" });
           }}
           onClear={() => {
-            setOrderStatus(null);
+            setdocuemntStatus(null);
             applyFilters({ document_status: "" });
           }}
           getLabel={(item) => (item ? `Status: ${item.label}` : "")}
@@ -139,17 +138,17 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       </div>
       <div className="w-40 md:w-48">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Fulfilment: All"
+          placeholder="Fulfillment: All"
           inputClassName={selectClassName}
           suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-          data={deliveryStatusOptions}
-          value={deliveryStatus}
+          data={fulfillmentStatusOptions}
+          value={fulfillmentStatus}
           onChange={(val) => {
-            setDeliveryStatus(val);
+            setfulfillmentStatus(val);
             applyFilters({ fulfillment_status: val?.value || "" });
           }}
           onClear={() => {
-            setDeliveryStatus(null);
+            setfulfillmentStatus(null);
             applyFilters({ fulfillment_status: "" });
           }}
           getLabel={(item) => (item ? `Delivery: ${item.label}` : "")}

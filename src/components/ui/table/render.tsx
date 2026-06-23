@@ -204,7 +204,7 @@ function TableRender<T>({
           <tbody>
             {rowsData.map((row, rowIndex) => (
               <tr
-                className="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 hover:cursor-pointer transition-colors group"
+                className="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 hover:cursor-pointer transition-colors"
                 key={rowIndex}
                 onClick={() => onRowClick?.(row)}
               >

@@ -71,7 +71,7 @@ export function InventoryItemForm({
     safety_stock: initialData?.safety_stock || 0,
     is_vatable: initialData?.is_vatable || false,
     fractions: initialData?.fractions || initialFractions,
-    boms: initialData?.boms || [],
+    boms: initialData?.materials || [],
   });
 
   const [fractions, setFractions] = useState<InventoryFraction[]>(
@@ -114,7 +114,7 @@ export function InventoryItemForm({
         safety_stock: initialData?.safety_stock || 0,
         is_vatable: initialData?.is_vatable || false,
         fractions: initialData?.fractions || initialFractions,
-        boms: initialData?.boms || [],
+        boms: initialData?.materials || [],
       });
       setTypeSelected(getOptionByValue(TYPES, itemType));
       setStrategySelected(
@@ -123,7 +123,7 @@ export function InventoryItemForm({
 
       setFractions(initialData.fractions ?? initialFractions);
       setSupplier(initialData.supplier ?? null);
-      setBoms(initialData.boms ?? initialBoms);
+      setBoms(initialData.materials ?? initialBoms);
     }
   }, [initialData]);
 
@@ -189,9 +189,7 @@ export function InventoryItemForm({
     const payload: InventoryItemCreateRequest = {
       ...formData,
       supplier_id: supplier?.id,
-      picking_strategy:
-        (strategySelected?.value as InventoryItemPickingStrategy) ??
-        formData.picking_strategy,
+      picking_strategy: strategySelected?.value as InventoryItemPickingStrategy,
       fractions: fractions.map((f) => ({
         name: f.name,
         quantity: f.quantity,
@@ -210,14 +208,15 @@ export function InventoryItemForm({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
+    <form
+      id={id}
+      onSubmit={handleSubmit}
+      className="max-w-6xl mx-auto space-y-6"
+    >
       {/* Grid: Basic Info + Pricing */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Informasi Umum Item Card */}
-        <div
-          className="card-info card-animate p-6 bg-white border border-slate-200 rounded-xl shadow-sm"
-          style={{ zIndex: 15 }}
-        >
+        <div className="card-info card-animate p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
           <div className="card-section-header flex items-center gap-2 mb-4">
             <div className="card-section-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
               <Package size={18} />
@@ -299,27 +298,6 @@ export function InventoryItemForm({
                   : undefined
               }
             />
-            <RemoteSelect<SelectOptionValue>
-              label="Picking Strategy"
-              placeholder="Pilih..."
-              data={STRATEGY}
-              value={strategySelected}
-              getLabel={(item: any) => item?.label || ""}
-              getValue={(item: any) => item?.value}
-              onChange={(val) => {
-                setStrategySelected(val);
-                if (val?.value) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    picking_strategy: val.value as any,
-                  }));
-                }
-              }}
-              onClear={() => {
-                setStrategySelected(null);
-              }}
-              error={FormState?.errors?.picking_strategy as string}
-            />
             <Input
               label="Variant"
               value={formData.variant}
@@ -356,6 +334,37 @@ export function InventoryItemForm({
                   : undefined
               }
             />
+            <Checkbox
+              label="Batch Tracking"
+              checked={formData.is_batch_tracking}
+              onChange={(e) =>
+                handleCheckboxChange("is_batch_tracking", e.target.checked)
+              }
+              variant="primary"
+            />
+            {formData.is_batch_tracking && (
+              <RemoteSelect<SelectOptionValue>
+                label="Picking Strategy"
+                placeholder="Pilih..."
+                data={STRATEGY}
+                value={strategySelected}
+                getLabel={(item: any) => item?.label || ""}
+                getValue={(item: any) => item?.value}
+                onChange={(val) => {
+                  setStrategySelected(val);
+                  if (val?.value) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      picking_strategy: val.value as any,
+                    }));
+                  }
+                }}
+                onClear={() => {
+                  setStrategySelected(null);
+                }}
+                error={FormState?.errors?.picking_strategy as string}
+              />
+            )}
           </div>
         </div>
 
@@ -391,6 +400,7 @@ export function InventoryItemForm({
 
             <Input
               label="Berat"
+              required
               type="number"
               value={formData.weight}
               onChange={(e) =>
@@ -422,6 +432,21 @@ export function InventoryItemForm({
                   : undefined
               }
             />
+            <Input
+              label="Safety Stock"
+              type="number"
+              value={formData.safety_stock}
+              onChange={(e) =>
+                handleInputChange("safety_stock", Number(e.target.value))
+              }
+              placeholder="0"
+              variant="primary"
+              error={
+                typeof FormState?.errors?.safety_stock === "string"
+                  ? FormState.errors.safety_stock
+                  : undefined
+              }
+            />
           </div>
           <div className="flex gap-6 pt-4 mt-4 border-t border-slate-100">
             <Checkbox
@@ -429,15 +454,6 @@ export function InventoryItemForm({
               checked={formData.is_vatable}
               onChange={(e) =>
                 handleCheckboxChange("is_vatable", e.target.checked)
-              }
-              variant="primary"
-            />
-
-            <Checkbox
-              label="Batch Tracking"
-              checked={formData.is_batch_tracking}
-              onChange={(e) =>
-                handleCheckboxChange("is_batch_tracking", e.target.checked)
               }
               variant="primary"
             />

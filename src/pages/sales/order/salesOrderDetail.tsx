@@ -302,7 +302,7 @@ export default function SalesOrderDetailPage() {
                 </dd>
               </div>
               <div className="info-row">
-                <dt className="info-label">Order Status</dt>
+                <dt className="info-label">Document Status</dt>
                 <dd className="info-value">
                   <Badge
                     variant={getStatusVariant(order.document_status)}
@@ -326,7 +326,7 @@ export default function SalesOrderDetailPage() {
                 </dd>
               </div>
               <div className="info-row">
-                <dt className="info-label">Delivery Status</dt>
+                <dt className="info-label">Fulfillment Status</dt>
                 <dd className="info-value">
                   <Badge
                     variant={getStatusVariant(order.fulfillment_status)}

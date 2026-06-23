@@ -22,6 +22,7 @@ import type {
   WarehouseDetail,
 } from "@/services/types";
 import type { RegionDetail } from "@/services/types/region";
+import { formatRegion } from "@/utils/common";
 
 type SalesOrderItemForm = {
   catalogSelected: unknown;
@@ -39,7 +40,7 @@ type SalesOrderFormData = {
   recipient_address: string;
   note: string;
   shipping_date: string;
-  requires_shipping: boolean;
+  self_pickup: boolean;
   items: SalesOrderItemForm[];
 };
 
@@ -78,7 +79,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
     recipient_address: "",
     note: "",
     shipping_date: dayjs().format("YYYY-MM-DD"),
-    requires_shipping: false,
+    self_pickup: false,
     items: [
       {
         catalogSelected: null,
@@ -113,7 +114,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
         recipient_address: initialData?.recipient_address,
         note: initialData?.note,
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
-        requires_shipping: initialData?.self_pickup ? false : true,
+        self_pickup: initialData?.self_pickup ? false : true,
         items: newItems,
       });
       setShippingDate(dayjs(initialData?.shipping_date));
@@ -313,8 +314,8 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             required
             hook={regionResult as any}
             fetchData={(page, search) => getRegion({ page, search })}
-            getLabel={(item: any) => item?.name}
-            renderItem={(item: any) => item?.name}
+            getLabel={(item) => formatRegion(item)}
+            renderItem={(item) => formatRegion(item)}
             value={region}
             onChange={(item) => {
               setRegion(item);
@@ -347,12 +348,12 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
           />
 
           <Checkbox
-            label="Perlu Dikirim ?"
-            checked={formData.requires_shipping}
+            label="Self Pickup"
+            checked={formData.self_pickup}
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
-                requires_shipping: e.target.checked,
+                self_pickup: e.target.checked,
               }))
             }
             variant="primary"

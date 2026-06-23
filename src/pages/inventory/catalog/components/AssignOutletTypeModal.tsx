@@ -12,7 +12,7 @@ interface AssignOutletModalProps {
   onSuccess: () => void;
 }
 
-export function AssignOutletModal({
+export function AssignOutletTypeModal({
   catalog,
   onClose,
   onSuccess,
@@ -38,7 +38,7 @@ export function AssignOutletModal({
   useEffect(() => {
     if (catalogDetailResult?.isSuccess) {
       const catalogData = catalogDetailResult.data?.data as any;
-      const outlets = catalogData?.outlets;
+      const outlets = catalogData?.outlet_types;
       if (outlets) {
         const initialSelected: Record<number, any> = {};
         outlets.forEach((ot: any) => {

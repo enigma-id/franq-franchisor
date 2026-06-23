@@ -20,7 +20,6 @@ interface InventoryCatalogFormProps {
   id?: string;
   initialData?: InventoryCatalogDetail;
   onSubmit: (data: InventoryCatalogRequest) => void;
-  isLoading?: boolean;
 }
 
 interface BundleItemState extends InventoryCatalogItem {
@@ -38,7 +37,7 @@ export function InventoryCatalogForm({
 
   const { get: getInventoryItems, getResult: inventoryItemsResult } =
     useInventoryItem();
-  const { get: getItemFractions, getResult: itemFractionsResult } =
+  const { show: getItemFractions, showResult: itemFractionsResult } =
     useItemFractions();
 
   const [type, setType] = useState<"singular" | "bundle">("singular");
@@ -76,6 +75,7 @@ export function InventoryCatalogForm({
       item_id: "",
       fraction_id: "",
       unit_price: 0,
+      name: "",
     }));
     setBundleItems(
       newType === "bundle"
@@ -148,6 +148,7 @@ export function InventoryCatalogForm({
     setSingularFraction(null);
     setFormData((prev) => ({
       ...prev,
+      name: item?.alias_name || item?.name || prev.name,
       item_id: item?.id || "",
       fraction_id: "",
     }));
@@ -330,83 +331,88 @@ export function InventoryCatalogForm({
 
       <div className="grid grid-cols-1 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Section: Informasi Utama */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
-            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-              <Info size={16} className="text-slate-400" />
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                Informasi Utama
-              </h2>
-            </div>
-            <div className="p-5 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Nama Katalog"
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  placeholder="Contoh: Tepung Terigu Segitiga Biru 10kg"
-                  variant="primary"
-                  error={FormState?.errors?.name as string}
-                />
-
-                <Input
-                  label="Harga Jual"
-                  required
-                  type="currency"
-                  value={formData.unit_price}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      unit_price: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="Contoh: 15000"
-                  variant="primary"
-                  min={0}
-                  error={FormState?.errors?.unit_price as string}
-                />
-
-                <Input
-                  label="Unit"
-                  required
-                  type="number"
-                  value={formData.unit}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      unit: Number(e.target.value),
-                    }))
-                  }
-                  variant="primary"
-                  error={FormState?.errors?.unit as string}
-                />
-                <Input
-                  label="Satuan"
-                  required
-                  value={formData.measurement}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      measurement: e.target.value,
-                    }))
-                  }
-                  placeholder="kg, pcs, box"
-                  variant="primary"
-                  error={FormState?.errors?.measurement as string}
-                />
+          {/* Section: Informasi Utama (bundle only) */}
+          {type === "bundle" && (
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
+              <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+                <Info size={16} className="text-slate-400" />
+                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                  Informasi Utama
+                </h2>
               </div>
-              <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
-                <Ruler className="text-indigo-500 shrink-0 mt-0.5" size={16} />
-                <p className="text-[11px] text-indigo-700 leading-relaxed">
-                  <strong>Unit & Satuan:</strong> Deskripsikan porsi terkecil
-                  katalog ini. Misal: Beras 5kg, Unit = 5, Satuan = kg.
-                </p>
+              <div className="p-5 space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Nama Katalog"
+                    required
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    placeholder="Contoh: Tepung Terigu Segitiga Biru 10kg"
+                    variant="primary"
+                    error={FormState?.errors?.name as string}
+                  />
+
+                  <Input
+                    label="Harga Jual"
+                    required
+                    type="currency"
+                    value={formData.unit_price}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        unit_price: Number(e.target.value),
+                      }))
+                    }
+                    placeholder="Contoh: 15000"
+                    variant="primary"
+                    min={0}
+                    error={FormState?.errors?.unit_price as string}
+                  />
+
+                  <Input
+                    label="Unit"
+                    required
+                    type="number"
+                    value={formData.unit}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        unit: Number(e.target.value),
+                      }))
+                    }
+                    variant="primary"
+                    error={FormState?.errors?.unit as string}
+                  />
+                  <Input
+                    label="Satuan"
+                    required
+                    value={formData.measurement}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        measurement: e.target.value,
+                      }))
+                    }
+                    placeholder="kg, pcs, box"
+                    variant="primary"
+                    error={FormState?.errors?.measurement as string}
+                  />
+                </div>
+                <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
+                  <Ruler
+                    className="text-indigo-500 shrink-0 mt-0.5"
+                    size={16}
+                  />
+                  <p className="text-[11px] text-indigo-700 leading-relaxed">
+                    <strong>Unit & Satuan:</strong> Deskripsikan porsi terkecil
+                    katalog ini. Misal: Beras 5kg, Unit = 5, Satuan = kg.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Section: Items Selection */}
           <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-20">
@@ -425,6 +431,7 @@ export function InventoryCatalogForm({
                   onClick={addBundleRow}
                   styleType="soft"
                   size="sm"
+                  type="button"
                 >
                   <Plus className="w-4 h-4" />
                   Tambah
@@ -445,7 +452,7 @@ export function InventoryCatalogForm({
                     }
                     getLabel={(item: any) =>
                       item
-                        ? `${item.name} [${currencyFormat(item.base_price)}]`
+                        ? `${item.alias_name || item.name} [${currencyFormat(item.base_price)}]`
                         : ""
                     }
                     getValue={(item: any) => item?.id}
@@ -463,8 +470,7 @@ export function InventoryCatalogForm({
                       if (formData.item_id) {
                         getItemFractions({
                           id: formData.item_id,
-                          page,
-                          search,
+                          params: { page, search },
                         });
                       }
                     }}
@@ -489,6 +495,50 @@ export function InventoryCatalogForm({
                     disabled={!formData.item_id}
                     error={FormState?.errors?.fraction_id as string}
                     watchKey={formData.item_id}
+                  />
+                  <Input
+                    label="Harga Jual"
+                    required
+                    type="currency"
+                    value={formData.unit_price}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        unit_price: Number(e.target.value),
+                      }))
+                    }
+                    placeholder="Contoh: 15000"
+                    variant="primary"
+                    min={0}
+                    error={FormState?.errors?.unit_price as string}
+                  />
+                  <Input
+                    label="Unit"
+                    required
+                    type="number"
+                    value={formData.unit}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        unit: Number(e.target.value),
+                      }))
+                    }
+                    variant="primary"
+                    error={FormState?.errors?.unit as string}
+                  />
+                  <Input
+                    label="Satuan"
+                    required
+                    value={formData.measurement}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        measurement: e.target.value,
+                      }))
+                    }
+                    placeholder="kg, pcs, box"
+                    variant="primary"
+                    error={FormState?.errors?.measurement as string}
                   />
                 </div>
               ) : (
@@ -522,7 +572,7 @@ export function InventoryCatalogForm({
                                   status: "active",
                                 })
                               }
-                              getLabel={(it: any) => it?.name}
+                              getLabel={(it: any) => it?.alias_name || it?.name}
                               getValue={(it: any) => it?.id}
                               onChange={(it: any) =>
                                 handleBundleItemChange(idx, it)
@@ -591,6 +641,7 @@ export function InventoryCatalogForm({
                               styleType="ghost"
                               onClick={() => removeBundleRow(idx)}
                               disabled={bundleItems.length === 1}
+                              type="button"
                             >
                               <Trash2 size={14} />
                             </Button>

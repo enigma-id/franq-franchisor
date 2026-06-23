@@ -28,8 +28,8 @@
   --color-primary: oklch(0.701 0.233 49.71);
   --color-primary-shadow: oklch(0.701 0.233 49.71/0.12);
   --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(0.975 0.003 0);
-  --color-secondary-shadow: oklch(0.975 0.003 0/0.08);
+  --color-secondary: oklch(0.92 0.01 264.91);
+  --color-secondary-shadow: oklch(0.92 0.01 264.91/0.12);
   --color-secondary-content: oklch(35% 0.01 0);
   --color-accent: oklch(0.975 0.006 227.17);
   --color-accent-shadow: oklch(0.975 0.006 227.17/0.08);

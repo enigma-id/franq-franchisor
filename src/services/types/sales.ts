@@ -105,6 +105,7 @@ export interface SalesReturnDetail {
   sales_order_id: string;
   number: string;
   date: string;
+  status: string;
   items: (SalesReturnItem & { id: string; unit_price: number })[];
   created_at: string;
   updated_at: string;

@@ -9,6 +9,7 @@ import {
   useCancelSalesOrderMutation,
   useLazyGetSalesReturnQuery,
   useApproveSalesReturnMutation,
+  useRejectSalesReturnMutation,
 } from "./api";
 
 // Sales Order
@@ -31,5 +32,6 @@ export const useSalesReturn = createCrudHook({
   useLazyShowQuery: useLazyGetSalesReturnQuery,
   customOperations: {
     approve: { hook: useApproveSalesReturnMutation },
+    reject: { hook: useRejectSalesReturnMutation },
   },
 });

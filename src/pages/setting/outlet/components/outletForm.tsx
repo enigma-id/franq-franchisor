@@ -9,6 +9,7 @@ import type {
 import { Input, RemoteSelect } from "@/components";
 import { useRegion } from "@/services/region/hooks";
 import { useAppSelector } from "@/hooks";
+import { formatRegion } from "@/utils/common";
 
 interface OutletFormProps {
   id?: string;
@@ -23,7 +24,7 @@ export const OutletForm: React.FC<OutletFormProps> = ({
 }) => {
   const FormState = useAppSelector((s) => s.form);
   const { get: getTypes, getResult: typesResult } = useOutletType();
-  const { get: getProvinces, getResult: provincesResult } = useRegion();
+  const { get: getRegion, getResult: regionResult } = useRegion();
 
   const [formData, setFormData] = useState<OutletCreateRequest>({
     outlet_type_id: "",
@@ -39,9 +40,12 @@ export const OutletForm: React.FC<OutletFormProps> = ({
     channels: [],
   });
 
+  const [reg, setReg] = useState();
+
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
+      setReg(initialData?.region);
     }
   }, [initialData]);
 
@@ -217,29 +221,22 @@ export const OutletForm: React.FC<OutletFormProps> = ({
           </h2>
         </div>
         <div className="p-5 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <RemoteSelect
-              label="Provinsi"
-              required
-              hook={provincesResult as any}
-              fetchData={(page, search) => getProvinces({ page, search })}
-              getLabel={(item: any) => item?.name}
-              renderItem={(item: any) => item?.name}
-              value={
-                formData.region_id
-                  ? (provincesResult.data as any)?.data?.find(
-                      (p: any) => p.id === formData.region_id,
-                    )
-                  : null
-              }
-              onChange={(item: any) =>
-                setFormData({ ...formData, region_id: item?.id })
-              }
-              onClear={() => setFormData({ ...formData, region_id: "" })}
-              placeholder="Pilih Provinsi"
-              error={FormState?.errors?.region_id as string}
-            />
-          </div>
+          <RemoteSelect
+            label="Region"
+            required
+            hook={regionResult as any}
+            fetchData={(page, search) => getRegion({ page, q: search })}
+            getLabel={(item) => formatRegion(item)}
+            renderItem={(item) => formatRegion(item)}
+            value={reg}
+            onChange={(item: any) => {
+              setReg(item);
+              setFormData({ ...formData, region_id: item?.id });
+            }}
+            onClear={() => setFormData({ ...formData, region_id: "" })}
+            placeholder="Pilih Provinsi"
+            error={FormState?.errors?.region_id as string}
+          />
           <div className="space-y-1">
             <Input
               type="textarea"

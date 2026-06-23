@@ -54,7 +54,6 @@ const InventoryCatalogCreatePage: React.FC = () => {
           <InventoryCatalogForm
             id="inventory-catalog-form"
             onSubmit={(data) => create(data as any)}
-            isLoading={isCreating}
           />
         </div>
       </Page.Body>

@@ -3,6 +3,7 @@ import config from "@/services/table/const";
 import { Edit, MoreVertical, Trash, Power } from "lucide-react";
 import { Toggle } from "@/components/ui";
 import type { InventoryItemDetail } from "@/services/types/inventory";
+import { formatCurrency } from "@/utils";
 
 const createTableConfig = ({
   lockFilter,
@@ -29,13 +30,17 @@ const createTableConfig = ({
       title: "Nama",
       sortable: true,
       component: (row: InventoryItemDetail) => (
-        <div>
-          <div className="text-sm font-semibold uppercase">
-            {row?.name ?? "-"}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold uppercase truncate">
+              {row?.alias_name ?? "-"}
+            </div>
+            {row?.code && (
+              <div className="text-xs text-gray-400">{row.code}</div>
+            )}
           </div>
-          {row?.code && <div className="text-xs text-gray-400">{row.code}</div>}
           {row?.category && (
-            <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded mt-0.5 inline-block">
+            <span className="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded shrink-0 mt-0.5">
               {row.category}
             </span>
           )}
@@ -46,14 +51,14 @@ const createTableConfig = ({
       title: "Base Price",
       sortable: true,
       align: "right",
-      format_number: true,
-    },
-    fraction: {
-      title: "",
-      sortable: false,
       component: (row: InventoryItemDetail) => (
-        <span className="text-xs text-gray-500">
-          {row?.default_fraction ?? "-"}
+        <span className="text-sm text-gray-600">
+          {formatCurrency(row.base_price)}
+          {row?.default_fraction && (
+            <span className="text-xs text-gray-400 ml-1">
+              /{row.default_fraction}
+            </span>
+          )}
         </span>
       ),
     },

@@ -68,7 +68,7 @@ const META_MAP: Record<string, RouteMeta> = {
     description: "Laporan piutang outstanding.",
   },
   "/report/payment": {
-    title: "Settlement Monthly - Franchisor Portal",
+    title: "Settlement - Franchisor Portal",
     description: "Laporan penyelesaian bulanan pembayaran POS.",
   },
   "/report/payment/daily": {

@@ -76,7 +76,6 @@ const InventoryCatalogUpdatePage: React.FC = () => {
             id="inventory-catalog-form"
             initialData={data}
             onSubmit={(data) => update({ id: id!, payload: data as any })}
-            isLoading={isUpdating}
           />
         )}
       </Page.Body>

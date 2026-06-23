@@ -28,7 +28,7 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
   onRemove?: (row: any) => void;
-  onOutletType?: (row: any) => void;
+  onOutletType?: (row: any, outletType?: any) => void;
   onToggleActive?: (row: any) => void;
 }) => {
   return {
@@ -131,9 +131,30 @@ const createTableConfig = ({
       outlet_type_count: {
         title: "Outlet Type",
         sortable: false,
-        component: (row: any) => (
-          <span className="text-sm">{row?.outlets?.length ?? 0} type</span>
-        ),
+        component: (row: any) => {
+          const types = row?.outlet_types ?? [];
+          return types.length > 0 ? (
+            <div className="group relative inline-block">
+              <span className="text-sm cursor-pointer hover:text-indigo-600 transition-colors">
+                {types.length === 1
+                  ? types[0]?.outlet_type?.name || "-"
+                  : `${types.length} Type`}
+              </span>
+              <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col gap-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 min-w-44 z-50 pointer-events-none">
+                {types.map((ot: any) => (
+                  <span
+                    key={ot.outlet_type?.id || ot.outlet_type_id}
+                    className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg whitespace-nowrap"
+                  >
+                    {ot.outlet_type?.name || "-"}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <span className="text-[11px] text-slate-300 italic">None</span>
+          );
+        },
         align: "center",
       },
       is_active: {

@@ -1,8 +1,15 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
-import { Badge } from "@/components/ui";
-import { RefreshCcw, Calendar, Hash } from "lucide-react";
+import { Badge, Button } from "@/components/ui";
+import {
+  RefreshCcw,
+  ShoppingBag,
+  Calendar,
+  Hash,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { useSalesReturn } from "@/services/sales/hooks";
 import dayjs from "dayjs";
 import type { SalesReturnDetail } from "@/services/types";
@@ -10,13 +17,50 @@ import type { SalesReturnDetail } from "@/services/types";
 const SalesReturnDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { show, showResult } = useSalesReturn();
+  const { show, showResult, approve, approveResult, reject, rejectResult } =
+    useSalesReturn();
 
   useEffect(() => {
     if (id) show(id);
-  }, [id]);
+  }, [id, show]);
 
   const data = showResult.data?.data as SalesReturnDetail;
+  const isPending =
+    data?.status === "pending" || data?.status === "awaiting_approval";
+  const isApproved = data?.status === "approved" || data?.status === "active";
+
+  const handleApprove = async () => {
+    if (!id) return;
+    await approve({ id });
+    show(id);
+  };
+
+  const handleReject = async () => {
+    if (!id) return;
+    await reject({ id });
+    show(id);
+  };
+
+  const statusBadge = () => {
+    if (!data) return null;
+    if (isApproved)
+      return (
+        <Badge variant="success" className="px-4 py-1.5 rounded-full text-xs">
+          Approved
+        </Badge>
+      );
+    if (data.status === "rejected")
+      return (
+        <Badge variant="error" className="px-4 py-1.5 rounded-full text-xs">
+          Rejected
+        </Badge>
+      );
+    return (
+      <Badge variant="warning" className="px-4 py-1.5 rounded-full text-xs">
+        Pending
+      </Badge>
+    );
+  };
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -25,6 +69,39 @@ const SalesReturnDetailPage: React.FC = () => {
         title="Detail Return Penjualan"
         subtitle="Informasi lengkap pengembalian barang."
         backTo={() => navigate(-1)}
+        action={
+          data && (
+            <div className="flex items-center gap-2">
+              {isPending && (
+                <>
+                  <Button
+                    variant="success"
+                    onClick={handleApprove}
+                    disabled={approveResult.isLoading}
+                  >
+                    <CheckCircle2 size={18} />
+                    Approve
+                  </Button>
+                  <Button
+                    variant="error"
+                    onClick={handleReject}
+                    disabled={rejectResult.isLoading}
+                  >
+                    <XCircle size={18} />
+                    Reject
+                  </Button>
+                </>
+              )}
+              <Button
+                className="text-primary hover:bg-primary/5"
+                onClick={() => navigate(`/sales/order/${data.sales_order_id}`)}
+              >
+                <ShoppingBag size={18} />
+                Lihat Transaksi Asal
+              </Button>
+            </div>
+          )
+        }
       />
 
       <Page.Body className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -38,19 +115,14 @@ const SalesReturnDetailPage: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-black text-slate-800 tracking-tight">
-                    {data.number}
+                    {data?.number}
                   </h2>
                   <p className="text-sm text-slate-500 font-medium">
-                    ID Transaksi: {data.sales_order_id}
+                    ID Transaksi: {data?.sales_order_id}
                   </p>
                 </div>
               </div>
-              <Badge
-                variant="warning"
-                className="px-4 py-1.5 rounded-full text-xs"
-              >
-                Returned
-              </Badge>
+              {statusBadge()}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
@@ -62,7 +134,7 @@ const SalesReturnDetailPage: React.FC = () => {
                   </span>
                 </div>
                 <p className="font-bold text-slate-700">
-                  {dayjs(data.date).format("DD MMMM YYYY")}
+                  {dayjs(data?.date).format("DD MMMM YYYY")}
                 </p>
               </div>
               <div className="px-8 py-6 space-y-1">
@@ -73,7 +145,7 @@ const SalesReturnDetailPage: React.FC = () => {
                   </span>
                 </div>
                 <p className="font-bold text-slate-700">
-                  {data.items.length} Barang
+                  {data?.items.length || 0} Barang
                 </p>
               </div>
               <div className="px-8 py-6 space-y-1">
@@ -84,7 +156,7 @@ const SalesReturnDetailPage: React.FC = () => {
                   </span>
                 </div>
                 <p className="font-bold text-slate-700">
-                  {dayjs(data.created_at).format("DD MMM YYYY, HH:mm")}
+                  {dayjs(data?.created_at).format("DD MMM YYYY, HH:mm")}
                 </p>
               </div>
             </div>
@@ -107,7 +179,7 @@ const SalesReturnDetailPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {data.items.map((item, index) => (
+                  {data?.items.map((item, index) => (
                     <tr
                       key={index}
                       className="hover:bg-slate-50/50 transition-colors"

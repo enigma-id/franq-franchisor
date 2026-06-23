@@ -3,13 +3,12 @@ import React, { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/menu.config";
 import type { TableConfig } from "@/services/table/const";
 import { usePOSMenu } from "@/services/pos/hooks";
 import type { POSMenuDetail } from "@/services/types";
-import { Modal, useEnigmaUI } from "@/components";
+import { Button, Modal, useEnigmaUI } from "@/components";
 
 const POSMenuListPage: React.FC = () => {
   const navigate = useNavigate();

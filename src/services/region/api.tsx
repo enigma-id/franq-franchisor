@@ -7,7 +7,7 @@ export const regionApi = createApi({
   endpoints: (builder) => ({
     getRegion: builder.query({
       query: (params) => ({
-        url: `/region`,
+        url: `/regions/search`,
         method: "GET",
         params,
       }),

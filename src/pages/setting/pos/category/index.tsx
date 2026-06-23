@@ -153,7 +153,7 @@ const POSCategoryListPage: React.FC = () => {
     };
 
     if (editingItem) {
-      update({ id: editingItem.id, ...payload });
+      update({ id: editingItem.id, payload });
     } else {
       create(payload);
     }
@@ -169,29 +169,29 @@ const POSCategoryListPage: React.FC = () => {
           closeOnOutsideClick={false}
         >
           <Modal.Header>
-            <div className="font-bold text-lg text-slate-900 leading-7">
+            <div className='font-bold text-lg text-slate-900 leading-7'>
               Hapus Kategori POS
             </div>
           </Modal.Header>
-          <Modal.Body className="text-sm font-normal text-slate-600 leading-5">
+          <Modal.Body className='text-sm font-normal text-slate-600 leading-5'>
             <p>
               Apakah Anda yakin ingin menghapus kategori POS{" "}
               <strong>{row?.name}</strong>?
             </p>
           </Modal.Body>
-          <Modal.Footer className="flex gap-2">
+          <Modal.Footer className='flex gap-2'>
             <Button
-              className="flex-1 rounded-xl"
-              variant="error"
+              className='flex-1 rounded-xl'
+              variant='error'
               onClick={() => handleDelete(row)}
               isLoading={isDeleting}
             >
               Hapus
             </Button>
             <Button
-              className="flex-1 rounded-xl"
-              styleType="outline"
-              variant="secondary"
+              className='flex-1 rounded-xl'
+              styleType='outline'
+              variant='secondary'
               onClick={() => closeModal("delete-category")}
               disabled={isDeleting}
             >
@@ -210,16 +210,16 @@ const POSCategoryListPage: React.FC = () => {
   };
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Settings"
-        title="Kategori POS"
-        subtitle="Kelola kategori menu untuk pengaturan POS."
+        category='Settings'
+        title='Kategori POS'
+        subtitle='Kelola kategori menu untuk pengaturan POS.'
         action={
           <Button
-            variant="primary"
-            shape="wide"
-            size="md"
+            variant='primary'
+            shape='wide'
+            size='md'
             onClick={() => setModalOpen(true)}
           >
             <Plus size={18} />
@@ -228,12 +228,12 @@ const POSCategoryListPage: React.FC = () => {
         }
       />
 
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools />
 
         <Table.Render
-          emptyTitle="Belum Ada Kategori"
-          emptyDescription="Daftar kategori POS yang Anda buat akan muncul di sini."
+          emptyTitle='Belum Ada Kategori'
+          emptyDescription='Daftar kategori POS yang Anda buat akan muncul di sini.'
         />
 
         <Table.Pagination />
@@ -241,11 +241,11 @@ const POSCategoryListPage: React.FC = () => {
 
       <Modal.Wrapper open={modalOpen} onClose={handleCloseModal}>
         <Modal.Header>
-          <div className="flex flex-col text-left">
-            <span className="text-lg font-bold text-slate-900">
+          <div className='flex flex-col text-left'>
+            <span className='text-lg font-bold text-slate-900'>
               {editingItem ? "Ubah Kategori" : "Tambah Kategori"}
             </span>
-            <span className="text-xs text-slate-500 font-medium mt-0.5">
+            <span className='text-xs text-slate-500 font-medium mt-0.5'>
               {editingItem
                 ? "Ubah detail kategori menu POS."
                 : "Buat kategori menu POS baru."}
@@ -253,26 +253,27 @@ const POSCategoryListPage: React.FC = () => {
           </div>
         </Modal.Header>
 
-        <Modal.Body className="pt-4 pb-2 text-left">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <Modal.Body className='pt-4 pb-2 text-left'>
+          <form onSubmit={handleSubmit} className='space-y-4'>
             <Input
-              label="Nama Kategori"
+              label='Nama Kategori'
               required
               value={formData.name}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, name: e.target.value }))
               }
-              placeholder="Contoh: Makanan, Minuman"
-              variant="primary"
+              placeholder='Contoh: Makanan, Minuman'
+              variant='primary'
               error={FormState?.errors?.name as string}
             />
           </form>
         </Modal.Body>
 
-        <Modal.Footer className="flex justify-end gap-2 pt-4">
+        <Modal.Footer className='flex justify-end gap-2 pt-4'>
           <Button
             onClick={handleCloseModal}
-            variant="secondary"
+            variant='secondary'
+            styleType='outline'
             disabled={isCreating || isUpdating}
           >
             Batal
@@ -280,13 +281,13 @@ const POSCategoryListPage: React.FC = () => {
           <Button
             onClick={handleSubmit}
             disabled={isCreating || isUpdating}
-            variant="success"
+            variant='success'
           >
             {isCreating || isUpdating ? (
-              <Loading size="sm" variant="spinner" />
+              <Loading size='sm' variant='spinner' />
             ) : (
               <>
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className='w-4 h-4 mr-2' />
                 {editingItem ? "Simpan Perubahan" : "Simpan Kategori"}
               </>
             )}

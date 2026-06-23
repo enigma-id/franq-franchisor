@@ -55,6 +55,10 @@ export interface POSMenuDetail extends POSMenuBase {
   image: string;
   is_vatable: boolean;
   is_additional: boolean;
+  channel_prices: POSChannelPrice[];
+  ingredients: POSIngredient[];
+  addon_groups?: POSAddonGroup[];
+  outlet_type_ids?: string[];
   is_active: boolean;
   is_custom: boolean;
   created_by: string;
@@ -69,12 +73,6 @@ export interface POSMenuDetail extends POSMenuBase {
     created_at: string;
     updated_at: string;
   };
-  channel_prices: {
-    id: string;
-    menu_id: string;
-    pos_channel_id: string;
-    price: number;
-  }[];
   outlet_types: {
     id: string;
     menu_id: string;
@@ -89,7 +87,6 @@ export interface POSMenuDetail extends POSMenuBase {
     };
   }[];
 }
-
 
 // ── POS Category ──
 
@@ -109,7 +106,6 @@ export interface POSCategoryDetail extends POSCategoryBase {
   created_at: string;
   updated_at: string;
 }
-
 
 // ── POS Channel ──
 

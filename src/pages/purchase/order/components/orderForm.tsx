@@ -336,7 +336,7 @@ export function PurchaseOrderForm({
     e.preventDefault();
     const payload = {
       supplier_id: formData.supplier_id,
-      warehouse_id: warehouseSelected?.id,
+      warehouse_id: warehouseSelected?.id ?? "",
       ref_code: formData.ref_code,
       eta_date: formData.eta_date,
       address: formData.address,
@@ -557,7 +557,9 @@ export function PurchaseOrderForm({
                         }) as any
                       }
                       getLabel={(it: any) =>
-                        it ? `${it.name || "-"} [${it.barcode || "-"}]` : ""
+                        it
+                          ? `${it.alias_name || it.name || "-"} [${it.barcode || "-"}]`
+                          : ""
                       }
                       getValue={(it: any) => it?.id}
                       onChange={(val) => handleItemChange(idx, val)}

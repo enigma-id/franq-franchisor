@@ -49,8 +49,11 @@ const createTableConfig = ({
     },
     total_charges: {
       title: "Total (Rp)",
+      headerClass: "text-end!",
+      class: "text-end!",
       sortable: true,
       format_number: true,
+      width: 200,
     },
     shipping_date: {
       title: "Shipment Date",
@@ -58,7 +61,9 @@ const createTableConfig = ({
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
-        <span className="font-medium">{dateFormat(row.shipping_date)}</span>
+        <span className="font-medium">
+          {dateFormat(row.shipping_date, "DD/MM/YYYY")}
+        </span>
       ),
     },
     document_status: {
