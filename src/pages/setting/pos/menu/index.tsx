@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { useOutlet } from "@/services/outlet/hooks";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/menu.config";
@@ -9,6 +9,8 @@ import type { TableConfig } from "@/services/table/const";
 import { usePOSMenu } from "@/services/pos/hooks";
 import type { POSMenuDetail } from "@/services/types";
 import { Button, Modal, useEnigmaUI } from "@/components";
+import { Plus } from "lucide-react";
+import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
 
 const POSMenuListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,10 +34,87 @@ const POSMenuListPage: React.FC = () => {
         onRemove: (v) => {
           openDelete(v);
         },
+        onOutletType: (row, ot) => {
+          if (ot) {
+            openOutletNames(row, ot);
+          } else {
+            openOutletType(row);
+          }
+        },
         onToggleActive: (row) => handleToggleActive(row),
       }),
-    [navigate],
+    [navigate, activate, deactivate],
   );
+
+  const { get: getOutlets } = useOutlet();
+
+  const openOutletNames = async (_row: any, outletType: any) => {
+    const typeId = outletType.outlet_type?.id || outletType.outlet_type_id;
+    if (!typeId) return;
+
+    const res = await getOutlets({ outlet_type_id: typeId, limit: 100 });
+    const outlets = (res as any)?.data ?? [];
+
+    openModal({
+      id: "outlet-names",
+      content: (
+        <Modal.Wrapper open onClose={() => closeModal("outlet-names")}>
+          <Modal.Header>
+            <div className="font-bold leading-7">
+              {outletType.outlet_type?.name || "Outlet"}
+            </div>
+            <div className="text-xs text-slate-500 font-normal mt-1">
+              Outlet dengan tipe ini
+            </div>
+          </Modal.Header>
+          <Modal.Body className="max-h-[60vh] overflow-y-auto p-5">
+            {outlets.length === 0 ? (
+              <div className="text-center py-10 text-sm text-slate-400">
+                Tidak ada outlet
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {outlets.map((o: any) => (
+                  <div
+                    key={o.id}
+                    className="p-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700"
+                  >
+                    {o.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              className="flex-1 rounded-xl"
+              styleType="outline"
+              variant="secondary"
+              onClick={() => closeModal("outlet-names")}
+            >
+              Tutup
+            </Button>
+          </Modal.Footer>
+        </Modal.Wrapper>
+      ),
+    });
+  };
+
+  const openOutletType = (row: POSMenuDetail) => {
+    openModal({
+      id: "assign-outlet-catalog",
+      content: (
+        <AssignOutletTypeModal
+          catalog={row}
+          onClose={() => closeModal("assign-outlet-menu")}
+          onSuccess={() => {
+            closeModal("assign-outlet-menu");
+            Table.boot();
+          }}
+        />
+      ),
+    });
+  };
 
   const handleToggleActive = (v: any) => {
     if (v.is_active) {

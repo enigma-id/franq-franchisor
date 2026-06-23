@@ -6,20 +6,76 @@
 // ── POS Menu ──
 
 export interface POSChannelPrice {
+  id: string;
+  menu_id: string;
   pos_channel_id: string;
   price: number;
+  pos_channel: {
+    id: string;
+    franchisor_id: string;
+    name: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 export interface POSIngredient {
+  id: string;
+  menu_id: string;
   catalog_id: string;
   porsi: number;
+  quantity: number;
+  base_price: number;
+  catalog: {
+    id: string;
+    franchisor_id: string;
+    code: string;
+    name: string;
+    is_bundle: boolean;
+    item_id: string;
+    fraction_id: string;
+    base_price: number;
+    unit_price: number;
+    weight: number;
+    volume: number;
+    measurement: string;
+    unit: number;
+    is_active: boolean;
+    is_vatable: boolean;
+    created_by: string;
+    updated_by: string;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 export interface POSAddonItem {
+  id: string;
+  addon_group_id: string;
   addon_menu_id: string;
+  addon_menu: {
+    id: string;
+    franchisor_id: string;
+    code: string;
+    category_id: string;
+    name: string;
+    base_price: number;
+    image: string;
+    is_vatable: boolean;
+    is_additional: boolean;
+    is_active: boolean;
+    is_custom: boolean;
+    created_by: string;
+    updated_by: string;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 export interface POSAddonGroup {
+  id: string;
+  menu_id: string;
   name: string;
   type: "options" | "checkbox" | "quantity";
   items: POSAddonItem[];

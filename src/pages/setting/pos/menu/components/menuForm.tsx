@@ -24,7 +24,7 @@ import { Plus, Trash2, Layers, Info } from "lucide-react";
 import type { InventoryItemDetail } from "@/services/types";
 import { useAppSelector } from "@/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
-import { useInventoryItem } from "@/services/inventory/hooks";
+import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { useEnigmaUI } from "@/components";
 import clsx from "clsx";
 
@@ -73,7 +73,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const FormState = useAppSelector((s) => s.form);
   const { get: getCategories, getResult: categoriesResult } = usePOSCategory();
   const { get: getChannels, getResult: channelsResult } = usePOSChannel();
-  const { get: getItem, getResult: itemResult } = useInventoryItem();
+  const { get: getCatalog, getResult: catalogResult } = useInventoryCatalog();
   const { get: getMenus, getResult: menusResult } = usePOSMenu();
   const { showToast } = useEnigmaUI();
 
@@ -89,7 +89,13 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const [channel, setChannel] = useState<POSFormChannelPrice[]>([]);
   const [category, setCategory] = useState<POSCategoryDetail | null>(null);
 
-  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([]);
+  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([
+    {
+      catalog: null,
+      catalog_id: "",
+      porsi: 0,
+    },
+  ]);
 
   const [addGroup, setAddGroup] = useState<POSAddonGroupForm[]>([
     { name: "", type: "", items: [{ addon_menu: null, addon_menu_id: "" }] },
@@ -116,6 +122,16 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
 
   useEffect(() => {
     if (initialData) {
+      const newIng = (initialData.ingredients || []).map((item: any) => {
+        return {
+          catalog: item?.catalog,
+          catalog_id: item?.catalog_id,
+          porsi: item?.porsi,
+        };
+      });
+
+      setIngredient(newIng);
+
       setFormData({
         category_id: initialData.category_id ?? "",
         name: initialData.name ?? "",
@@ -173,7 +189,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
         : [],
     };
 
-    onSubmit(payload);
+    onSubmit(payload as unknown as POSMenuCreateRequest);
   };
 
   const handleChannelActiveToggle = (index: number, active: boolean) => {
@@ -760,11 +776,11 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                           label="Item"
                           placeholder="Pilih item..."
                           required
-                          hook={itemResult as any}
+                          hook={catalogResult as any}
                           fetchData={(page, search) =>
-                            getItem({ page, search, type: "raw_material" })
+                            getCatalog({ page, search })
                           }
-                          getLabel={(it: any) => it?.alias_name}
+                          getLabel={(it: any) => it?.name}
                           getValue={(cat: any) => cat?.id}
                           value={ig.catalog} // Simplification for now
                           onChange={(it: any) => {

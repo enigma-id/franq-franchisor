@@ -1,7 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
 import type { POSMenuDetail } from "@/services/types/pos";
 import { Dropdown, Toggle } from "@/components/ui";
-import { UtensilsCrossed, Edit, Eye, MoreVertical, Trash } from "lucide-react";
+import {
+  UtensilsCrossed,
+  Edit,
+  Eye,
+  MoreVertical,
+  Trash,
+  Store,
+} from "lucide-react";
 import { formatCurrency } from "@/utils";
 
 const createTableConfig = ({
@@ -9,11 +17,13 @@ const createTableConfig = ({
   onEdit,
   onRemove,
   onToggleActive,
+  onOutletType,
 }: {
   onClick?: (row: POSMenuDetail) => void;
   onEdit: (row: POSMenuDetail) => void;
   onRemove: (row: POSMenuDetail) => void;
   onToggleActive: (row: POSMenuDetail) => void;
+  onOutletType?: (row: POSMenuDetail, outletType?: any) => void;
 }) => ({
   ...config,
   url: "/pos/menu",
@@ -80,14 +90,34 @@ const createTableConfig = ({
         </div>
       ),
     },
-    outlet_types: {
-      title: "Jenis Outlet",
-      component: (row: POSMenuDetail) => (
-        <span className="text-slate-600 font-medium">
-          {row.outlet_types?.map((ot) => ot.outlet_type?.name).join(", ") ||
-            "-"}
-        </span>
-      ),
+    outlet_type_count: {
+      title: "Outlet Type",
+      sortable: false,
+      component: (row: any) => {
+        const types = row?.outlet_types ?? [];
+        return types.length > 0 ? (
+          <div className="group relative inline-block">
+            <span className="text-sm cursor-pointer hover:text-indigo-600 transition-colors">
+              {types.length === 1
+                ? types[0]?.outlet_type?.name || "-"
+                : `${types.length} Type`}
+            </span>
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col gap-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 min-w-44 z-50 pointer-events-none">
+              {types.map((ot: any) => (
+                <span
+                  key={ot.outlet_type?.id || ot.outlet_type_id}
+                  className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg whitespace-nowrap"
+                >
+                  {ot.outlet_type?.name || "-"}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <span className="text-[11px] text-slate-300 italic">None</span>
+        );
+      },
+      align: "center",
     },
     action: {
       title: "",
@@ -135,7 +165,24 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          <div className="my-1 border-t border-slate-50"></div>
+          {!row?.is_additional && (
+            <Dropdown.Item
+              onSelect={() => onOutletType?.(row)}
+              className="hover:bg-blue-50 hover:text-blue-600"
+            >
+              <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                  <Store className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">Outlet Type</span>
+                  <span className="text-[11px] text-slate-400">
+                    Manage availability
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          )}
           <Dropdown.Item
             onSelect={() => onRemove?.(row)}
             className="hover:bg-red-50 hover:text-red-600"
