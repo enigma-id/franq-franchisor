@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
-import { Loading, Button, Badge, Modal } from "@/components/ui";
+import { Loading, Button, Badge, Modal, Input } from "@/components/ui";
 import { useSalesOrder } from "@/services/sales/hooks";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import type { SalesOrderDetail } from "@/services/types/sales";
-import { useSalesOrderGuards } from "@/hooks";
+import { useAppSelector, useSalesOrderGuards } from "@/hooks";
 import { GuardedButton } from "@/components/app";
 import {
   ArrowLeft,
@@ -17,11 +19,15 @@ import {
   Check,
   CreditCard,
   Trash2,
+  CornerDownRight,
+  X,
 } from "lucide-react";
 
 export default function SalesOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const FormState = useAppSelector((s) => s.form);
+
   const {
     show,
     showResult,
@@ -31,14 +37,20 @@ export default function SalesOrderDetailPage() {
     paidResult,
     remove,
     removeResult,
+    cancel,
+    cancelResult,
   } = useSalesOrder();
   const order = showResult?.data?.data as SalesOrderDetail | undefined;
+  // API returns items as "items", not "sales_order_items"
+  const orderItems = (order as any)?.items ?? order?.items ?? [];
   const isLoading = showResult?.isLoading || showResult?.isFetching;
 
+  const [note, setNote] = useState("");
   const [confirmModal, setConfirmModal] = useState<{
+    type: "publish" | "cancel" | "paid" | "delete";
     title: string;
     message: string;
-    onConfirm: () => void;
+    onConfirm: (v?: any) => void;
     variant: "primary" | "error";
   } | null>(null);
 
@@ -64,6 +76,14 @@ export default function SalesOrderDetailPage() {
     }
   }, [removeResult.isSuccess, navigate, removeResult]);
 
+  useEffect(() => {
+    if (cancelResult.isSuccess) {
+      setConfirmModal(null);
+      if (id) show({ id });
+      cancelResult.reset?.();
+    }
+  }, [cancelResult.isSuccess, id, show, cancelResult]);
+
   const handlePublish = async () => {
     if (id) {
       await publish({ id });
@@ -71,8 +91,26 @@ export default function SalesOrderDetailPage() {
     }
   };
 
+  const handleCancel = () => {
+    setConfirmModal({
+      type: "cancel",
+      title: "Konfirmasi Pembatalan",
+      message:
+        "Apakah Anda yakin ingin memproses pembatalan untuk Sales Order ini?",
+      variant: "primary",
+      onConfirm: (v) => {
+        const payload = { note: v };
+
+        if (id) {
+          cancel({ id, payload });
+        }
+      },
+    });
+  };
+
   const handlePaid = () => {
     setConfirmModal({
+      type: "paid",
       title: "Konfirmasi Pembayaran",
       message:
         "Apakah Anda yakin ingin memproses pembayaran untuk Sales Order ini?",
@@ -85,6 +123,7 @@ export default function SalesOrderDetailPage() {
 
   const handleDelete = () => {
     setConfirmModal({
+      type: "delete",
       title: "Hapus Sales Order",
       message:
         "Apakah Anda yakin ingin menghapus Sales Order ini? Tindakan ini tidak dapat dibatalkan.",
@@ -134,8 +173,8 @@ export default function SalesOrderDetailPage() {
   }
 
   const totalQty =
-    order.sales_order_items?.reduce(
-      (sum, item) => sum + (item.quantity_ordered || 0),
+    orderItems?.reduce(
+      (sum: number, item: any) => sum + (item.quantity_ordered || 0),
       0,
     ) || 0;
 
@@ -143,7 +182,7 @@ export default function SalesOrderDetailPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Operations"
-        title={`Order #${order.id}`}
+        title={`Order #${order.code}`}
         backTo={() => navigate(-1)}
         action={
           <div className="flex gap-2">
@@ -156,6 +195,16 @@ export default function SalesOrderDetailPage() {
               title="Setujui (Approve)"
             >
               <Check className="w-4 h-4" />
+            </GuardedButton>
+            <GuardedButton
+              allowed={guards.canCancel}
+              reason="Hanya order dengan status pembayaran unpaid yang dapat dibatalkan."
+              variant="error"
+              onClick={handleCancel}
+              isLoading={cancelResult.isLoading}
+              title="Batalkan"
+            >
+              <X className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canPay}
@@ -197,28 +246,24 @@ export default function SalesOrderDetailPage() {
                   <dd className="info-value">{order.outlet?.name}</dd>
                 </div>
                 <div className="info-row">
-                  <dt className="info-label">Tipe</dt>
-                  <dd className="info-value">{order.outlet?.type?.name}</dd>
-                </div>
-                <div className="info-row">
                   <dt className="info-label">Penerima</dt>
-                  <dd className="info-value">{order.outlet?.recipient_name}</dd>
+                  <dd className="info-value">{order.recipient_name}</dd>
                 </div>
                 <div className="info-row">
                   <dt className="info-label">Telepon</dt>
-                  <dd className="info-value">{order.outlet?.phone}</dd>
+                  <dd className="info-value">{order.recipient_phone}</dd>
                 </div>
                 <div className="info-row flex-col items-start gap-1">
                   <dt className="info-label">Alamat</dt>
                   <dd className="info-value text-left w-full wrap-break-words mt-0.5">
-                    {[order.outlet?.address, order.outlet?.village?.city]
+                    {[order.recipient_address, order.region?.name]
                       .filter(Boolean)
                       .join(", ")}
                   </dd>
                 </div>
                 <div className="info-row">
-                  <dt className="info-label">Expedisi</dt>
-                  <dd className="info-value">{order.expedisi}</dd>
+                  <dt className="info-label">Warehouse</dt>
+                  <dd className="info-value">{order.warehouse_name}</dd>
                 </div>
               </dl>
             </div>
@@ -247,7 +292,7 @@ export default function SalesOrderDetailPage() {
               <div className="info-row">
                 <dt className="info-label">Tanggal Order</dt>
                 <dd className="info-value">
-                  {formatDate(order.ordered_at, "DD MMM YYYY, HH:mm")}
+                  {formatDate(order.created_at, "DD MMM YYYY, HH:mm")}
                 </dd>
               </div>
               <div className="info-row">
@@ -260,11 +305,11 @@ export default function SalesOrderDetailPage() {
                 <dt className="info-label">Order Status</dt>
                 <dd className="info-value">
                   <Badge
-                    variant={getStatusVariant(order.order_status)}
+                    variant={getStatusVariant(order.document_status)}
                     size="xs"
                     className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
                   >
-                    {order.order_status?.toLowerCase()}
+                    {order.document_status?.toLowerCase()}
                   </Badge>
                 </dd>
               </div>
@@ -284,11 +329,11 @@ export default function SalesOrderDetailPage() {
                 <dt className="info-label">Delivery Status</dt>
                 <dd className="info-value">
                   <Badge
-                    variant={getStatusVariant(order.delivery_status)}
+                    variant={getStatusVariant(order.fulfillment_status)}
                     size="xs"
                     className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
                   >
-                    {order.delivery_status?.toLowerCase()}
+                    {order.fulfillment_status?.toLowerCase()}
                   </Badge>
                 </dd>
               </div>
@@ -305,13 +350,12 @@ export default function SalesOrderDetailPage() {
             </div>
             <dl className="space-y-1">
               <div className="info-row">
-                <dt className="info-label">Bank</dt>
-                <dd className="info-value">{order.bank?.name}</dd>
-              </div>
-              <div className="info-row">
                 <dt className="info-label">Jatuh Tempo</dt>
                 <dd className="info-value">
-                  {formatDate(order.payment_expired_at, "DD MMM YYYY, HH:mm")}
+                  {order.payment_expired_at &&
+                  order.payment_expired_at !== "0001-01-01T00:00:00Z"
+                    ? formatDate(order.payment_expired_at, "DD MMM YYYY, HH:mm")
+                    : "-"}
                 </dd>
               </div>
               {order.paid_at && order.paid_at !== "0001-01-01T00:00:00Z" && (
@@ -333,7 +377,7 @@ export default function SalesOrderDetailPage() {
               <ListOrdered size={16} />
             </div>
             <h2 className="table-header-title">
-              Order Items ({order.sales_order_items?.length || 0})
+              Order Items ({orderItems?.length || 0})
             </h2>
           </div>
           <div className="flex-1 overflow-auto">
@@ -356,6 +400,9 @@ export default function SalesOrderDetailPage() {
                     Qty
                   </th>
                   <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                    Qty Fulfil
+                  </th>
+                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
                     Harga
                   </th>
                   <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
@@ -364,7 +411,7 @@ export default function SalesOrderDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {order.sales_order_items?.length === 0 ? (
+                {orderItems?.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
@@ -374,37 +421,92 @@ export default function SalesOrderDetailPage() {
                     </td>
                   </tr>
                 ) : (
-                  order.sales_order_items?.map((item: any, idx: number) => (
-                    <tr
-                      key={idx}
-                      className="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors"
-                    >
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
-                        {idx + 1}
-                      </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
-                        {item.catalog?.name || item.item?.name}
-                      </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
-                        {item.catalog ? "Bundle" : item.item?.default_fraction}
-                      </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
-                        {item.quantity_ordered}
-                      </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
-                        {formatCurrency(item.unit_nett || 0)}
-                      </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
-                        {formatCurrency(item.total_nett || 0)}
-                      </td>
-                    </tr>
+                  orderItems?.map((item: any, idx: number) => (
+                    <React.Fragment key={item.id || idx}>
+                      {/* Main item row */}
+                      <tr className="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors">
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
+                          {idx + 1}
+                        </td>
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
+                          {item.catalog?.name || item.item?.name || "-"}
+                        </td>
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
+                          {item.catalog?.is_bundle ? (
+                            <Badge
+                              variant="info"
+                              size="xs"
+                              className="rounded-full px-2 font-semibold text-[10px]"
+                            >
+                              Bundle
+                            </Badge>
+                          ) : (
+                            item.fraction?.name ||
+                            item.item?.default_fraction ||
+                            "-"
+                          )}
+                        </td>
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                          {item.quantity_ordered}
+                        </td>
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                          {item.quantity_fulfilled}
+                        </td>
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                          {formatCurrency(item.unit_nett || 0)}
+                        </td>
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                          {formatCurrency(
+                            (item.unit_nett || 0) *
+                              (item.quantity_ordered || 0),
+                          )}
+                        </td>
+                      </tr>
+                      {/* Bundle sub-items */}
+                      {item.catalog?.is_bundle &&
+                        item.bundles?.map((bundle: any, bIdx: number) => (
+                          <tr
+                            key={bundle.id || `bundle-${bIdx}`}
+                            className="bg-slate-50/30 border-b border-gray-50 last:border-0"
+                          >
+                            <td className="px-4 py-2 align-middle" />
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500">
+                              <div className="flex items-center gap-1.5 pl-2">
+                                <CornerDownRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                <span>
+                                  {bundle.item?.alias_name ||
+                                    bundle.item?.name ||
+                                    "-"}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500">
+                              {bundle.fraction?.name ||
+                                bundle.item?.default_fraction ||
+                                "-"}
+                            </td>
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500 text-right">
+                              {bundle.quantity_ordered}
+                            </td>
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500 text-right">
+                              {bundle.quantity_fulfilled}
+                            </td>
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-400 text-right">
+                              -
+                            </td>
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-400 text-right">
+                              -
+                            </td>
+                          </tr>
+                        ))}
+                    </React.Fragment>
                   ))
                 )}
               </tbody>
               <tfoot className="border-t border-slate-200">
                 {/* Subtotal */}
                 <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td className="px-4 py-3 text-slate-600" colSpan={3}>
+                  <td className="px-4 py-3 text-slate-600" colSpan={4}>
                     Subtotal
                   </td>
                   <td className="px-4 py-3 text-right text-slate-700">
@@ -419,7 +521,7 @@ export default function SalesOrderDetailPage() {
                 <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
                   <td
                     className="px-4 py-3 text-slate-600 text-right"
-                    colSpan={5}
+                    colSpan={6}
                   >
                     Shipping Charges
                   </td>
@@ -431,7 +533,7 @@ export default function SalesOrderDetailPage() {
                 <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
                   <td
                     className="px-4 py-3 text-slate-600 text-right"
-                    colSpan={5}
+                    colSpan={6}
                   >
                     Tax
                   </td>
@@ -443,12 +545,12 @@ export default function SalesOrderDetailPage() {
                 <tr className="bg-slate-100 font-bold border-t border-slate-200">
                   <td
                     className="px-4 py-3.5 text-slate-800 text-right text-[14px]"
-                    colSpan={5}
+                    colSpan={6}
                   >
                     Total Bill
                   </td>
                   <td className="px-4 py-3.5 text-right text-slate-900 text-[14px] mono">
-                    {formatCurrency(order.total_bill || 0)}
+                    {formatCurrency(order.total_charges || 0)}
                   </td>
                 </tr>
               </tfoot>
@@ -459,10 +561,27 @@ export default function SalesOrderDetailPage() {
 
       <Modal.Wrapper
         open={!!confirmModal}
-        onClose={() => setConfirmModal(null)}
+        onClose={() => {
+          setConfirmModal(null);
+          setNote("");
+        }}
       >
         <Modal.Header>{confirmModal?.title}</Modal.Header>
-        <Modal.Body>{confirmModal?.message}</Modal.Body>
+        <Modal.Body>
+          {confirmModal?.message}
+          {confirmModal?.type === "cancel" && (
+            <div className="mt-4">
+              <Input
+                type="textarea"
+                label="Alasan"
+                placeholder="Contoh: Batalkan"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                error={FormState?.errors?.note as string}
+              />
+            </div>
+          )}
+        </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setConfirmModal(null)} variant="default">
             Batal
@@ -470,7 +589,7 @@ export default function SalesOrderDetailPage() {
           <Button
             onClick={() => {
               if (confirmModal) {
-                confirmModal.onConfirm();
+                confirmModal.onConfirm(note);
               }
             }}
             variant={confirmModal?.variant === "error" ? "error" : "primary"}

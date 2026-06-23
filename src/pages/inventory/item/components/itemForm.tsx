@@ -11,6 +11,7 @@ import type {
   InventoryFraction,
   InventoryItemCreateRequest,
   InventoryItemDetail,
+  InventoryItemPickingStrategy,
   SupplierDetail,
 } from "@/services/types";
 import type { SelectOptionValue } from "@/services/types/table";
@@ -124,8 +125,6 @@ export function InventoryItemForm({
       setSupplier(initialData.supplier ?? null);
       setBoms(initialData.boms ?? initialBoms);
     }
-
-    console.log(initialData);
   }, [initialData]);
 
   const handleInputChange = (field: string, value: any) => {
@@ -190,7 +189,9 @@ export function InventoryItemForm({
     const payload: InventoryItemCreateRequest = {
       ...formData,
       supplier_id: supplier?.id,
-      picking_strategy: strategySelected?.value,
+      picking_strategy:
+        (strategySelected?.value as InventoryItemPickingStrategy) ??
+        formData.picking_strategy,
       fractions: fractions.map((f) => ({
         name: f.name,
         quantity: f.quantity,
@@ -209,15 +210,14 @@ export function InventoryItemForm({
   };
 
   return (
-    <form
-      id={id}
-      onSubmit={handleSubmit}
-      className="max-w-6xl mx-auto space-y-6"
-    >
+    <form id={id} onSubmit={handleSubmit} className="space-y-6">
       {/* Grid: Basic Info + Pricing */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Informasi Umum Item Card */}
-        <div className="card-info card-animate p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div
+          className="card-info card-animate p-6 bg-white border border-slate-200 rounded-xl shadow-sm"
+          style={{ zIndex: 15 }}
+        >
           <div className="card-section-header flex items-center gap-2 mb-4">
             <div className="card-section-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
               <Package size={18} />

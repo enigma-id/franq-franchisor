@@ -1,20 +1,26 @@
 import type { ProductionPlanDetail } from "@/services/types/production";
 import { Badge, Dropdown } from "@/components/ui";
-import { Factory, Eye, Edit, Trash, MoreVertical } from "lucide-react";
+import { Factory, Eye, Trash, MoreVertical } from "lucide-react";
 import config from "@/services/table/const";
 import { getStatusVariant, formatDate } from "@/utils";
 
 const createTableConfig = ({
   onView,
-  onEdit,
   onRemove,
 }: {
   onView: (id: string) => void;
-  onEdit: (id: string) => void;
   onRemove: (v: ProductionPlanDetail) => void;
 }) => ({
   ...config,
+  url: "/production/plan",
   columns: {
+    code: {
+      title: "Code",
+      sortable: true,
+      component: (row: ProductionPlanDetail) => (
+        <span className="font-bold text-slate-700">{row.code}</span>
+      ),
+    },
     date: {
       title: "Tanggal Rencana",
       sortable: true,
@@ -25,10 +31,7 @@ const createTableConfig = ({
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-slate-700">
-              {formatDate(row.date, "DD MMM YYYY")}
-            </span>
-            <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
-              {row.number}
+              {formatDate(row.production_date, "DD MMM YYYY")}
             </span>
           </div>
         </div>
@@ -38,21 +41,21 @@ const createTableConfig = ({
       title: "Gudang",
       component: (row: ProductionPlanDetail) => (
         <span className="text-slate-600 font-medium">
-          {row.warehouse?.name || "-"}
+          {row.warehouse_name || "-"}
         </span>
       ),
     },
     status: {
       title: "Status",
-      class: "text-center",
-      align: "center",
+      class: "text-center!",
+      align: "text-center!",
       component: (row: ProductionPlanDetail) => (
         <Badge
-          variant={getStatusVariant(row.status)}
+          variant={getStatusVariant(row.document_status)}
           size="xs"
           className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
         >
-          {row.status?.toLowerCase()}
+          {row.document_status}
         </Badge>
       ),
     },
@@ -60,6 +63,7 @@ const createTableConfig = ({
       title: "",
       class: "text-right",
       align: "right",
+      sortable: false,
       component: (row: ProductionPlanDetail) => (
         <Dropdown
           trigger={
@@ -87,40 +91,43 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
-          {row.status === "draft" && (
-            <Dropdown.Item
-              onSelect={() => onEdit(row.id)}
-              className="hover:bg-amber-50 hover:text-amber-600"
-            >
-              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
-                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-                  <Edit className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Edit</span>
-                  <span className="text-[11px] text-slate-400">
-                    Modify draft plan
-                  </span>
-                </div>
-              </button>
-            </Dropdown.Item>
-          )}
+          {row.document_status === "pending" && (
+            <>
+              {/* <Dropdown.Item
+                onSelect={() => onEdit(row.id)}
+                className="hover:bg-amber-50 hover:text-amber-600"
+              >
+                <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                    <Edit className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="font-bold text-[13px]">Edit</span>
+                    <span className="text-[11px] text-slate-400">
+                      Modify draft plan
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item> */}
 
-          <div className="my-1 border-t border-slate-50"></div>
-          <Dropdown.Item
-            onSelect={() => onRemove(row)}
-            className="hover:bg-red-50 hover:text-red-600"
-          >
-            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
-              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                <Trash className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">Delete</span>
-                <span className="text-[11px] text-slate-400">Remove plan</span>
-              </div>
-            </button>
-          </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() => onRemove(row)}
+                className="hover:bg-red-50 hover:text-red-600"
+              >
+                <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                    <Trash className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="font-bold text-[13px]">Delete</span>
+                    <span className="text-[11px] text-slate-400">
+                      Remove plan
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+            </>
+          )}
         </Dropdown>
       ),
     },

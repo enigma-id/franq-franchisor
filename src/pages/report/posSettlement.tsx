@@ -14,10 +14,7 @@ export default function SettlementMonthlyPage() {
     return createTableConfig({});
   }, []);
 
-  const Table = useTable(
-    "settlement_monthly",
-    tableConfig as TableConfig<unknown>,
-  );
+  const Table = useTable("settlement", tableConfig as TableConfig<unknown>);
 
   const currentFilter = useMemo(() => {
     return {
@@ -74,9 +71,9 @@ export default function SettlementMonthlyPage() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
-        title="Settlement Monthly"
-        subtitle="Laporan penyelesaian pembayaran bulanan."
+        category="Report"
+        title="Settlement"
+        subtitle="Laporan penyelesaian pembayaran."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0 ">
         <SettlementSummaryCards summary={summary} />

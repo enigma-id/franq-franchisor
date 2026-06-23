@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Sales Types
  */
+
+import type { RegionDetail } from "./region";
+import type { OutletDetail } from "./outlet";
 
 export interface SalesOrderItem {
   catalog_id: string;
@@ -10,46 +14,74 @@ export interface SalesOrderItem {
 }
 
 export interface SalesOrderBase {
+  ref_code: string;
   outlet_id: string;
-  customer_name?: string;
-  customer_phone?: string;
-  transaction_date: string;
-  note?: string;
-  discount: number;
-  tax: number;
-  service_charge: number;
+  warehouse_id: string;
+  recipient_name: string;
+  recipient_phone: string;
+  recipient_address: string;
+  recipient_region_id: string;
+  payment_method_id: string;
+  shipping_date: string;
+  self_pickup: boolean;
+  note: string;
 }
 
 export interface SalesOrderRequest extends SalesOrderBase {
   items: SalesOrderItem[];
-  payment_method_id: string;
-  pos_channel_id: string;
+}
+
+export interface SalesOrderItemDetail {
+  id: string;
+  order_id: string;
+  parent_id: string;
+  catalog_id: string;
+  item_id: string;
+  fraction_id: string;
+  quantity_ordered: number;
+  quantity_fulfilled: number;
+  unit_base: number;
+  unit_gross: number;
+  unit_taxed: number;
+  unit_tax: number;
+  unit_nett: number;
+  catalog?: any;
+  item?: any;
+  fraction?: any;
+  bundles?: SalesOrderItemDetail[];
 }
 
 export interface SalesOrderDetail extends SalesOrderBase {
   id: string;
-  number: string;
+  franchisor_id: string;
   code: string;
-  ordered_at: string;
-  shipping_date: string;
-  order_status: string;
+  warehouse_name: string;
+  /** API field: the order type, e.g. "default" */
+  order_type: string;
+  /** API field: document/approval status, e.g. "pending" | "active" | "void" */
+  document_status: string;
+  /** API field: fulfillment/delivery status, e.g. "new" | "partial" | "fulfilled" */
+  fulfillment_status: string;
   payment_status: string;
-  delivery_status: string;
-  payment_expired_at: string;
-  paid_at?: string;
-  void_note?: string;
-  subtotal_nett: number;
+  subtotal_base: number;
+  subtotal_gross: number;
+  subtotal_taxed: number;
   subtotal_tax: number;
+  subtotal_nett: number;
   shipping_charges: number;
-  total_bill: number;
-  outlet: any;
-  bank?: any;
-  expedisi: string;
-  status: string;
-  type: string;
-  sales_order_items: (SalesOrderItem & { id: string; name: string; quantity_ordered: number; unit_nett: number; total_nett: number; catalog?: any; item?: any })[];
+  total_charges: number;
+  void_note: string;
+  fulfilled_at: string;
+  paid_at: string;
+  payment_expired_at: string;
+  created_by: string;
+  updated_by: string;
   created_at: string;
   updated_at: string;
+  outlet: OutletDetail;
+  region: RegionDetail;
+  /** API returns this field as "items" */
+  items: SalesOrderItemDetail[];
 }
 
 /**

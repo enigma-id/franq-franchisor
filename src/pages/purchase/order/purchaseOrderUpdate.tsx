@@ -20,7 +20,7 @@ const PurchaseOrderUpdatePage: React.FC = () => {
     if (id) {
       show({ id });
     }
-  }, [id, show]);
+  }, [id]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -38,11 +38,7 @@ const PurchaseOrderUpdatePage: React.FC = () => {
       <Page.Header
         category="Purchase Order"
         title="Update PO"
-        subtitle={
-          showResult.data?.data
-            ? `Perbarui PO: ${showResult.data.data.number}`
-            : "Perbarui informasi pesanan pembelian."
-        }
+        subtitle="Perbarui informasi pesanan pembelian"
         backTo={() => navigate(-1)}
         action={
           <Button

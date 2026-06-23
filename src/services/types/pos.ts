@@ -50,13 +50,46 @@ export interface POSMenuTypesUpdateRequest {
 
 export interface POSMenuDetail extends POSMenuBase {
   id: string;
-  channel_prices: POSChannelPrice[];
-  ingredients: POSIngredient[];
-  addon_groups?: POSAddonGroup[];
+  code: string;
+  category_id: string;
+  image: string;
+  is_vatable: boolean;
+  is_additional: boolean;
   is_active: boolean;
+  is_custom: boolean;
+  created_by: string;
+  updated_by: string;
   created_at: string;
   updated_at: string;
+  category: {
+    id: string;
+    franchisor_id: string;
+    name: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  channel_prices: {
+    id: string;
+    menu_id: string;
+    pos_channel_id: string;
+    price: number;
+  }[];
+  outlet_types: {
+    id: string;
+    menu_id: string;
+    outlet_type_id: string;
+    outlet_type: {
+      id: string;
+      franchisor_id: string;
+      name: string;
+      is_active: boolean;
+      created_at: string;
+      updated_at: string;
+    };
+  }[];
 }
+
 
 // ── POS Category ──
 
@@ -65,16 +98,18 @@ export interface POSCategoryBase {
   image?: string;
 }
 
-export interface POSCategoryCreateRequest extends POSCategoryBase {}
+export type POSCategoryCreateRequest = POSCategoryBase;
 
-export interface POSCategoryUpdateRequest extends Partial<POSCategoryBase> {}
+export type POSCategoryUpdateRequest = Partial<POSCategoryBase>;
 
 export interface POSCategoryDetail extends POSCategoryBase {
   id: string;
+  franchisor_id: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
+
 
 // ── POS Channel ──
 
@@ -87,7 +122,7 @@ export interface POSChannelCreateRequest extends POSChannelBase {
   is_active: boolean;
 }
 
-export interface POSChannelUpdateRequest extends Partial<POSChannelCreateRequest> {}
+export type POSChannelUpdateRequest = Partial<POSChannelCreateRequest>;
 
 export interface POSChannelDetail extends POSChannelBase {
   id: string;
@@ -104,9 +139,9 @@ export interface PaymentMethodBase {
   type: string;
 }
 
-export interface PaymentMethodCreateRequest extends PaymentMethodBase {}
+export type PaymentMethodCreateRequest = PaymentMethodBase;
 
-export interface PaymentMethodUpdateRequest extends Partial<PaymentMethodBase> {}
+export type PaymentMethodUpdateRequest = Partial<PaymentMethodBase>;
 
 export interface PaymentMethodDetail extends PaymentMethodBase {
   id: string;
@@ -123,9 +158,9 @@ export interface TopupBonusBase {
   bonus: number;
 }
 
-export interface TopupBonusCreateRequest extends TopupBonusBase {}
+export type TopupBonusCreateRequest = TopupBonusBase;
 
-export interface TopupBonusUpdateRequest extends Partial<TopupBonusBase> {}
+export type TopupBonusUpdateRequest = Partial<TopupBonusBase>;
 
 export interface TopupBonusDetail extends TopupBonusBase {
   id: string;

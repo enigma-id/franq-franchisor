@@ -1,6 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
-import { Input, Button, Toggle } from "@/components/ui";
-import type { POSCategoryDetail, POSCategoryCreateRequest } from "@/services/types/pos";
+import { Input, Button } from "@/components/ui";
+import type {
+  POSCategoryDetail,
+  POSCategoryCreateRequest,
+} from "@/services/types/pos";
 
 interface POSCategoryFormProps {
   initialData?: POSCategoryDetail;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
@@ -65,11 +66,10 @@ const SupplierUpdatePage: React.FC = () => {
           ) : (
             <SupplierForm
               id="supplier-form"
-              initialData={showResult.data?.data}
+              initialData={showResult.data?.data as any}
               onSubmit={(data) =>
                 update({ id: id!, payload: data as SupplierFormData })
               }
-              isLoading={isUpdating}
             />
           )}
         </div>

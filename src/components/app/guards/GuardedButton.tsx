@@ -7,7 +7,10 @@ import type {
 } from "@/components/ui/button/types";
 import { Tooltip } from "@/components/ui";
 
-interface GuardedButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "title"> {
+interface GuardedButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "title"
+> {
   allowed: boolean;
   reason: string;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -59,14 +62,17 @@ export const GuardedButton: React.FC<GuardedButtonProps> = ({
     </Button>
   );
 
-  const tooltipLabel = allowed
-    ? title
-    : `${title}\n\n⚠️ ${reason}`;
+  const tooltipLabel = allowed ? title : `${title}\n\n⚠️ ${reason}`;
 
   const tooltipVariant = allowed ? "neutral" : "error";
 
   return (
-    <Tooltip label={tooltipLabel} position="bottom" variant={tooltipVariant} size="sm">
+    <Tooltip
+      label={tooltipLabel}
+      position="bottom"
+      variant={tooltipVariant}
+      size="sm"
+    >
       {buttonElement}
     </Tooltip>
   );

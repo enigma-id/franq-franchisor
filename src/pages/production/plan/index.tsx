@@ -19,8 +19,8 @@ const ProductionPlanListPage: React.FC = () => {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onView: (id) => navigate(`/production/plan/detail/${id}`),
-        onEdit: (id) => navigate(`/production/plan/update/${id}`),
+        onView: (id) => navigate(`/production/plan/${id}`),
+        // onEdit: (id) => navigate(`/production/plan/update/${id}`),
         onRemove: (v) => openDelete(v),
       }),
     [navigate],
@@ -45,7 +45,7 @@ const ProductionPlanListPage: React.FC = () => {
           </Modal.Header>
           <Modal.Body className="text-sm font-normal leading-5">
             <p>
-              Are you sure you want to delete plan <strong>{v.number}</strong>?
+              Are you sure you want to delete plan <strong>{v.code}</strong>?
             </p>
             <p className="text-slate-400 mt-1">This action cannot be undone.</p>
           </Modal.Body>

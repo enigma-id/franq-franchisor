@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { Trash2, Truck, Plus } from "lucide-react";
@@ -15,7 +16,12 @@ import { useWarehouse } from "@/services/warehouse/hooks";
 import { useAppSelector } from "@/hooks";
 import { useRegion } from "@/services/region/hooks";
 import { currencyFormat } from "@/utils";
-import type { OutletBase } from "@/services/types";
+import type {
+  OutletDetail,
+  SalesOrderDetail,
+  WarehouseDetail,
+} from "@/services/types";
+import type { RegionDetail } from "@/services/types/region";
 
 type SalesOrderItemForm = {
   catalogSelected: unknown;
@@ -45,7 +51,7 @@ type RemoteOption = {
 
 interface SalesOrderFormProps {
   id?: string;
-  initialData?: unknown;
+  initialData?: SalesOrderDetail;
   onSubmit: (data: SalesOrderFormData) => void;
 }
 
@@ -59,7 +65,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   const { get: getOutlets, getResult: outletsResult } = useOutlet();
   const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
-  const { get: getProvinces, getResult: provincesResult } = useRegion();
+  const { get: getRegion, getResult: regionResult } = useRegion();
 
   // Keep runtime shape as-is; fix TS to match the existing formData fields
   const [formData, setFormData] = useState<SalesOrderFormData>({
@@ -83,10 +89,52 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   });
 
   const [shipping_date, setShippingDate] = useState<Dayjs | null>(dayjs());
+  const [region, setRegion] = useState<RegionDetail | null>(null);
+  const [outlet, setOutlet] = useState<OutletDetail | null>(null);
+  const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
 
   useEffect(() => {
-    console.log(initialData);
-  }, []);
+    if (initialData) {
+      const newItems = (initialData.items || []).map((item: any) => {
+        return {
+          catalogSelected: item?.catalog,
+          catalog_id: item?.catalog_id,
+          quantity_ordered: item?.quantity_ordered,
+        };
+      });
+
+      setFormData({
+        warehouse_id: initialData?.warehouse_id,
+        ref_code: initialData?.ref_code,
+        outlet_id: initialData?.outlet_id,
+        recipient_name: initialData?.recipient_name,
+        recipient_phone: initialData?.recipient_phone,
+        recipient_region_id: initialData?.recipient_region_id,
+        recipient_address: initialData?.recipient_address,
+        note: initialData?.note,
+        shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
+        requires_shipping: initialData?.self_pickup ? false : true,
+        items: newItems,
+      });
+      setShippingDate(dayjs(initialData?.shipping_date));
+
+      setRegion(initialData?.region);
+      setWarehouse({
+        id: initialData?.warehouse_id,
+        brand_id: "",
+        type: "",
+        name: initialData?.warehouse_name,
+        address: "",
+        region_id: "",
+        is_default: false,
+        is_active: false,
+        has_area: false,
+        created_by: "",
+        created_at: "0001-01-01T00:00:00Z",
+      });
+      setOutlet(initialData?.outlet);
+    }
+  }, [initialData]);
 
   const addItemRow = () => {
     setFormData((prev) => ({
@@ -187,59 +235,42 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
           Informasi Penjualan
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RemoteSelect
+          <RemoteSelect<WarehouseDetail>
             label="Warehouse"
             required
             hook={warehouseResult as any}
             fetchData={(page, search) => getWarehouse({ page, search })}
             getLabel={(item: any) => item?.name}
-            value={
-              formData.warehouse_id
-                ? (warehouseResult.data as any)?.data?.find(
-                    (o: RemoteOption) =>
-                      String(o?.id ?? "") === formData.warehouse_id,
-                  )
-                : null
-            }
-            onChange={(item: RemoteOption | null) =>
+            value={warehouse}
+            onChange={(item: WarehouseDetail) => {
               setFormData({
                 ...formData,
-                warehouse_id:
-                  typeof item?.id === "string"
-                    ? item.id
-                    : typeof item?.id === "number"
-                      ? String(item.id)
-                      : "",
-              })
-            }
+                warehouse_id: item.id,
+              });
+              setWarehouse(item);
+            }}
             placeholder="Pilih warehouse"
             error={FormState?.errors?.warehouse_id as string}
           />
-          <RemoteSelect<OutletBase>
+          <RemoteSelect<OutletDetail>
             label="Outlet"
             required
             hook={outletsResult as any}
             fetchData={(page, search) => getOutlets({ page, search })}
             getLabel={(item: any) => item?.name}
-            value={
-              formData.outlet_id
-                ? (outletsResult.data as any)?.data?.find(
-                    (o: RemoteOption) =>
-                      String(o?.id ?? "") === formData.outlet_id,
-                  )
-                : null
-            }
-            onChange={(item: any) =>
+            value={outlet}
+            onChange={(item: OutletDetail) => {
+              const selectedOutlet = item;
               setFormData({
                 ...formData,
-                outlet_id:
-                  typeof item?.id === "string"
-                    ? item.id
-                    : typeof item?.id === "number"
-                      ? String(item.id)
-                      : "",
-              })
-            }
+                outlet_id: item.id,
+                recipient_name: selectedOutlet?.recipient_name,
+                recipient_region_id: selectedOutlet?.region_id,
+                recipient_phone: selectedOutlet?.phone,
+                recipient_address: selectedOutlet?.address,
+              });
+              setRegion(selectedOutlet?.region ?? null);
+            }}
             placeholder="Pilih outlet"
             error={FormState?.errors?.outlet_id as string}
           />
@@ -259,6 +290,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
           />
           <Input
             label="Nama Penerima"
+            required
             placeholder="Contoh: Budi Santoso"
             value={formData.recipient_name}
             onChange={(e) =>
@@ -267,6 +299,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             error={FormState?.errors?.recipient_name as string}
           />
           <Input
+            required
             label="No. Telepon"
             placeholder="Contoh: 081234567890"
             value={formData.recipient_phone}
@@ -275,28 +308,23 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             }
             error={FormState?.errors?.recipient_phone as string}
           />
-          <RemoteSelect
-            label="Provinsi"
+          <RemoteSelect<RegionDetail>
+            label="Region"
             required
-            hook={provincesResult as any}
-            fetchData={(page, search) => getProvinces({ page, search })}
+            hook={regionResult as any}
+            fetchData={(page, search) => getRegion({ page, search })}
             getLabel={(item: any) => item?.name}
             renderItem={(item: any) => item?.name}
-            value={
-              formData.recipient_region_id
-                ? (provincesResult.data as any)?.data?.find(
-                    (p: { id?: string }) =>
-                      p.id === formData.recipient_region_id,
-                  )
-                : null
-            }
-            onChange={(item: { id?: string } | null) =>
-              setFormData({ ...formData, recipient_region_id: item?.id || "" })
-            }
-            onClear={() =>
-              setFormData({ ...formData, recipient_region_id: "" })
-            }
-            placeholder="Pilih Provinsi"
+            value={region}
+            onChange={(item) => {
+              setRegion(item);
+              setFormData({ ...formData, recipient_region_id: item?.id || "" });
+            }}
+            onClear={() => {
+              setRegion(null);
+              setFormData({ ...formData, recipient_region_id: "" });
+            }}
+            placeholder="Pilih Region"
             error={FormState?.errors?.recipient_region_id as string}
           />
 
@@ -379,7 +407,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                         }
                         getLabel={(item: any) =>
                           item
-                            ? `${item.name} [${currencyFormat(item.base_price)}]`
+                            ? `${item.name} [${currencyFormat(item.unit_price)}]`
                             : ""
                         }
                         getValue={(item: any) => item?.id}

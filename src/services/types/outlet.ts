@@ -3,6 +3,8 @@
  * Synchronized with Postman Collection
  */
 
+import type { RegionDetail } from "./region";
+
 export interface OutletBase {
   outlet_type_id: string;
   name: string;
@@ -25,7 +27,7 @@ export interface OutletCreateRequest extends OutletBase {
   channels: OutletChannel[];
 }
 
-export interface OutletUpdateRequest extends Partial<OutletCreateRequest> {}
+export type OutletUpdateRequest = Partial<OutletCreateRequest>;
 
 export interface OutletChannelsUpdateRequest {
   channels: OutletChannel[];
@@ -33,17 +35,20 @@ export interface OutletChannelsUpdateRequest {
 
 export interface OutletDetail extends OutletBase {
   id: string;
+  franchisor_id?: string;
   channels: OutletChannel[];
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  saldo?: number;
+  region?: RegionDetail;
 }
 
 export interface OutletTypeBase {
   name: string;
 }
 
-export interface OutletTypeRequest extends OutletTypeBase {}
+export type OutletTypeRequest = OutletTypeBase;
 
 export interface OutletTypeDetail extends OutletTypeBase {
   id: string;

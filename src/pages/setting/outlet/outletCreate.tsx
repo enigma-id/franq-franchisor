@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { Page } from "@/components/app/layout";
 import { OutletForm } from "./components/outletForm";
@@ -55,7 +56,6 @@ const OutletCreatePage: React.FC = () => {
           <OutletForm
             id="outlet-form"
             onSubmit={(data) => create(data as any)}
-            isLoading={isCreating}
           />
         </div>
       </Page.Body>

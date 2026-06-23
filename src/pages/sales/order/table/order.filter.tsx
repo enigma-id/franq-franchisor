@@ -29,7 +29,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
   const [orderStatus, setOrderStatus] = useState<SelectOptionValue | null>(
     () => {
-      const value = current.order_status;
+      const value = current.document_status;
       return value
         ? (orderStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
@@ -47,7 +47,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
   const [deliveryStatus, setDeliveryStatus] =
     useState<SelectOptionValue | null>(() => {
-      const value = current.delivery_status;
+      const value = current.fulfillment_status;
       return value
         ? (deliveryStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
@@ -68,9 +68,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     const filters = {
       start_at: dateRange ? dateRange[0]?.format("YYYY-MM-DD") : "",
       end_at: dateRange ? dateRange[1]?.format("YYYY-MM-DD") : "",
-      order_status: orderStatus?.value ?? "",
+      document_status: orderStatus?.value ?? "",
       payment_status: paymentStatus?.value ?? "",
-      delivery_status: deliveryStatus?.value ?? "",
+      fulfillment_status: deliveryStatus?.value ?? "",
       ...updates,
     };
     table.filter(filters);
@@ -101,18 +101,18 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
       <div className="w-40 md:w-48">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Order Status: All"
+          placeholder="Status: All"
           inputClassName={selectClassName}
           suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
           data={orderStatusOptions}
           value={orderStatus}
           onChange={(val) => {
             setOrderStatus(val);
-            applyFilters({ order_status: val?.value || "" });
+            applyFilters({ document_status: val?.value || "" });
           }}
           onClear={() => {
             setOrderStatus(null);
-            applyFilters({ order_status: "" });
+            applyFilters({ document_status: "" });
           }}
           getLabel={(item) => (item ? `Status: ${item.label}` : "")}
           renderItem={(item) => item?.label}
@@ -139,18 +139,18 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       </div>
       <div className="w-40 md:w-48">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Delivery: All"
+          placeholder="Fulfilment: All"
           inputClassName={selectClassName}
           suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
           data={deliveryStatusOptions}
           value={deliveryStatus}
           onChange={(val) => {
             setDeliveryStatus(val);
-            applyFilters({ delivery_status: val?.value || "" });
+            applyFilters({ fulfillment_status: val?.value || "" });
           }}
           onClear={() => {
             setDeliveryStatus(null);
-            applyFilters({ delivery_status: "" });
+            applyFilters({ fulfillment_status: "" });
           }}
           getLabel={(item) => (item ? `Delivery: ${item.label}` : "")}
           renderItem={(item) => item?.label}

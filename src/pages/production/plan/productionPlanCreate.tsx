@@ -55,7 +55,6 @@ const ProductionPlanCreatePage: React.FC = () => {
           <ProductionPlanForm
             id="production-plan-form"
             onSubmit={(data) => create(data)}
-            isLoading={isCreating}
           />
         </div>
       </Page.Body>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from "react";
 import {
   Banknote,
@@ -95,7 +96,7 @@ export function SettlementSummaryCards({ summary }: { summary: any[] }) {
                 <SummaryCard
                   key={i}
                   variant="primary"
-                  label={item.method}
+                  label={item.method.replaceAll("_", " ")}
                   value={currencyFormat(item.total)}
                   icon={item.icon}
                   theme={theme}
@@ -117,7 +118,7 @@ export function SettlementSummaryCards({ summary }: { summary: any[] }) {
               return (
                 <SummaryCard
                   key={i}
-                  label={item.method}
+                  label={item.method.replaceAll("_", " ")}
                   value={currencyFormat(item.total)}
                   icon={item.icon}
                   theme={theme}
@@ -139,7 +140,7 @@ export function SettlementSummaryCards({ summary }: { summary: any[] }) {
               return (
                 <SummaryCard
                   key={i}
-                  label={item.method}
+                  label={item.method.replaceAll("_", " ")}
                   value={currencyFormat(item.total)}
                   icon={item.icon}
                   theme={theme}

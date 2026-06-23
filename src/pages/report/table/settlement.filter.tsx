@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { RemoteSelect, Select } from "@/components/ui";
+import { RemoteSelect } from "@/components/ui";
 import { ChevronDown } from "lucide-react";
 import { useOutlet } from "@/services/outlet/hooks";
 
@@ -43,32 +43,12 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_id, getResult?.data?.data]);
 
-  const [year, setYear] = useState<number>(() => {
-    const currentYear = current.periode as number | undefined;
-    return currentYear ?? new Date().getFullYear();
-  });
-
-  const yearOptions = Array.from(
-    { length: 5 },
-    (_, i) => new Date().getFullYear() - i,
-  ).map((y) => ({
-    label: String(y),
-    value: y,
-  }));
-
   const applyFilters = (updates: any) => {
     const filters = {
       outlet_id: outlet?.id ?? "",
-      periode: year,
       ...updates,
     };
     table.filter(filters);
-  };
-
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newYear = Number(e.target.value);
-    setYear(newYear);
-    applyFilters({ periode: newYear });
   };
 
   return (
@@ -95,17 +75,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
             })
           }
           hook={getResult as any}
-          getLabel={(item: any) => (item ? item.alias : "")}
-          renderItem={(item: any) => item?.alias}
+          getLabel={(item: any) => (item ? item.name : "")}
+          renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
-        />
-      </div>
-      <div className="w-32">
-        <Select
-          options={yearOptions}
-          value={year}
-          onChange={handleYearChange}
-          size="sm"
         />
       </div>
     </div>

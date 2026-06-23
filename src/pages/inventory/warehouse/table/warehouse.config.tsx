@@ -1,5 +1,5 @@
 import config from "@/services/table/const";
-import type { WarehouseDetail } from "@/services/types/purchase";
+import type { WarehouseDetail } from "@/services/types";
 import { Building } from "lucide-react";
 
 const createTableConfig = () => ({

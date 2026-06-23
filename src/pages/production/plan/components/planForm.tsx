@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { Input, DatePicker, RemoteSelect } from "@/components/ui";
@@ -6,6 +7,8 @@ import dayjs, { Dayjs } from "dayjs";
 import { Button } from "@/components";
 import { Plus, Trash2 } from "lucide-react";
 import { useWarehouse } from "@/services/warehouse/hooks";
+import type { ProductionPlanDetail, WarehouseDetail } from "@/services/types";
+import { useAppSelector } from "@/hooks";
 
 type ProductionPlanFormItem = {
   item_id: string;
@@ -26,23 +29,25 @@ type ProductionPlanFormRequest = {
 
 interface ProductionPlanFormProps {
   id: string;
-  initialData?: unknown;
+  initialData?: ProductionPlanDetail;
   onSubmit: (data: ProductionPlanFormRequest) => void;
-  isLoading?: boolean;
 }
 
 export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
   id = "production-plan-form",
   initialData,
   onSubmit,
-  isLoading,
 }) => {
+  const FormState = useAppSelector((s) => s.form);
+
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
   const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
 
-  const [formData, setFormData] = useState<
-    ProductionPlanFormItem & { items: any[] }
-  >({
+  const [formData, setFormData] = useState<{
+    warehouse_id: string;
+    production_date: string;
+    items: ProductionPlanFormItem[];
+  }>({
     warehouse_id: "",
     production_date: new Date().toISOString(),
     items: [
@@ -54,22 +59,46 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
     ],
   });
 
-  const [production_date, setProductionDate] = useState<Dayjs | null>(
-    initialData?.production_date ? dayjs(initialData.production_date) : null,
-  );
+  const [production_date, setProductionDate] = useState<Dayjs | null>(dayjs());
+  const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
 
   useEffect(() => {
     if (initialData) {
-      setFormData({
-        warehouse_id: initialData.warehouse_id,
-        production_date: initialData.production_date,
-        items: initialData.items.map((item: any) => ({
-          item_id: item.item_id,
-          itemSelected: item.item,
-          quantity: item.quantity,
-        })),
+      const newItems = (initialData.items || []).map((data: any) => {
+        return {
+          itemSelected: data?.item,
+          item_id: data?.item_id,
+          quantity: data?.quantity_planned,
+        };
       });
+
+      setFormData({
+        warehouse_id:
+          initialData?.warehouse_id !== "00000000-0000-0000-0000-000000000000"
+            ? initialData?.warehouse_id
+            : "",
+        production_date: initialData.production_date,
+        items: newItems,
+      });
+
       setProductionDate(dayjs(initialData.production_date));
+
+      setWarehouse({
+        id:
+          initialData?.warehouse_id !== "00000000-0000-0000-0000-000000000000"
+            ? initialData?.warehouse_id
+            : "",
+        brand_id: "",
+        type: "",
+        name: initialData?.warehouse_name,
+        address: "",
+        region_id: "",
+        is_default: false,
+        is_active: false,
+        has_area: false,
+        created_by: "",
+        created_at: "0001-01-01T00:00:00Z",
+      });
     }
   }, [initialData]);
 
@@ -95,7 +124,23 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    const payload = {
+      ...formData,
+      items: formData?.items.map((data) => ({
+        item_id: data?.item_id,
+        quantity: data?.quantity,
+      })),
+    };
+    onSubmit(payload);
+  };
+
+  // Helper to get nested validation errors
+  const getErrorItem = (index: number, field: string) => {
+    const errorKey = `items.${index}.${field}`;
+    return typeof FormState?.errors?.[errorKey] === "string"
+      ? FormState.errors[errorKey]
+      : undefined;
   };
 
   return (
@@ -108,14 +153,16 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             hook={warehouseResult as any}
             fetchData={(page, search) => getWarehouse({ page, search })}
             getLabel={(item: any) => item?.name}
-            value={warehouseResult.data?.data?.find(
-              (o: any) => o.id === formData.warehouse_id,
-            )}
-            onChange={(item: any) =>
-              setFormData((prev) => ({ ...prev, warehouse_id: item?.id || "" }))
-            }
-            disabled={isLoading}
+            value={warehouse}
+            onChange={(item: any) => {
+              setWarehouse(item);
+              setFormData((prev) => ({
+                ...prev,
+                warehouse_id: item?.id || "",
+              }));
+            }}
             required
+            error={FormState?.errors?.warehouse_id as string}
           />
         </div>
 
@@ -130,8 +177,8 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                 production_date: date ? (date as Dayjs).toISOString() : "",
               }));
             }}
-            disabled={isLoading}
             required
+            error={FormState?.errors?.production_date as string}
           />
         </div>
       </div>
@@ -143,7 +190,6 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             <Button
               variant="success"
               onClick={addItem}
-              disabled={isLoading}
               size="sm"
               styleType="soft"
             >
@@ -174,7 +220,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                   <RemoteSelect
                     placeholder="Pilih Produk Catalog..."
                     value={item.itemSelected}
-                    hook={catalogsResult}
+                    hook={catalogsResult as any}
                     fetchData={(page, search) =>
                       getCatalogs({
                         page,
@@ -202,7 +248,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                       };
                       setFormData((prev) => ({ ...prev, items: newItems }));
                     }}
-                    disabled={isLoading}
+                    error={getErrorItem(index, "item_id")}
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -217,7 +263,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                         parseInt(e.target.value) || 0,
                       )
                     }
-                    disabled={isLoading}
+                    error={getErrorItem(index, "quantity")}
                   />
                 </td>
                 <td className="px-6 py-4 text-center">
@@ -225,7 +271,6 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                     variant="error"
                     styleType="ghost"
                     onClick={() => removeItem(index)}
-                    disabled={isLoading}
                   >
                     <Trash2 size={18} />
                   </Button>

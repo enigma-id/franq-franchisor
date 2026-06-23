@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { Input, Button, RemoteSelect, Checkbox } from "@/components/ui";
@@ -7,6 +8,7 @@ import type {
   POSMenuCreateRequest,
   POSMenuBase,
   POSChannelDetail,
+  POSCategoryDetail,
 } from "@/services/types/pos";
 import { Plus, Trash2, Layers, Info } from "lucide-react";
 import type { InventoryItemDetail } from "@/services/types";
@@ -43,6 +45,8 @@ interface POSIngredientForm {
   porsi: number;
 }
 
+type POSAddonGroupType = "options" | "checkbox" | "quantity";
+
 interface POSAddonItemForm {
   addon_menu: InventoryItemDetail | null;
   addon_menu_id: string;
@@ -50,7 +54,7 @@ interface POSAddonItemForm {
 
 interface POSAddonGroupForm {
   name: string;
-  type: string;
+  type: POSAddonGroupType | "";
   items: POSAddonItemForm[] | [];
 }
 
@@ -76,6 +80,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   });
 
   const [channel, setChannel] = useState<POSFormChannelPrice[]>([]);
+  const [category, setCategory] = useState<POSCategoryDetail | null>(null);
 
   const [ingredient, setIngredient] = useState<POSIngredientForm[]>([
     { catalog: null, catalog_id: "", porsi: 0 },
@@ -107,19 +112,19 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   useEffect(() => {
     if (initialData) {
       setFormData({
-        category_id: initialData.category_id,
-        name: initialData.name,
-        base_price: initialData.base_price,
-        image: initialData.image || "",
-        is_vatable: initialData.is_vatable,
-        is_additional: initialData.is_additional,
+        category_id: initialData.category_id ?? "",
+        name: initialData.name ?? "",
+        base_price: initialData.base_price ?? 0,
+        image: initialData.image ?? "",
+        is_vatable: initialData.is_vatable ?? false,
+        is_additional: initialData.is_additional ?? false,
       });
 
       if (initialData.channel_prices) {
         setChannel((prev) =>
           prev.map((chan) => {
             const match = initialData.channel_prices?.find(
-              (c) => c.channel_id === chan.channel_id,
+              (c) => c.pos_channel_id === chan.channel?.id,
             );
             return match
               ? {
@@ -127,33 +132,39 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                   is_active: true,
                   price: match.price,
                 }
-              : chan;
+              : {
+                  ...chan,
+                  is_active: false,
+                };
           }),
         );
       }
+      setCategory(initialData?.category ?? null);
     }
-  }, [initialData]);
+  }, [initialData, channelsResult]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
       ...formData,
       channel_prices: channel.map((c) => ({
-        pos_channel_id: c?.channel?.id,
-        price: c?.price,
+        pos_channel_id: c.channel?.id ?? "",
+        price: c.price,
       })),
       ingredients: ingredient.map((c) => ({
-        catalog_id: c?.catalog?.id,
-        porsi: c?.porsi,
+        catalog_id: c.catalog?.id ?? "",
+        porsi: c.porsi,
       })),
       addon_groups: !formData.is_additional
-        ? addGroup.map((group) => ({
-            name: group?.name,
-            type: group?.type,
-            items: group.items.map((item) => ({
-              addon_menu_id: item?.addon_menu?.id,
-            })),
-          }))
+        ? addGroup
+            .filter((group) => group.type !== "")
+            .map((group) => ({
+              name: group.name,
+              type: group.type as POSAddonGroupType,
+              items: group.items.map((item) => ({
+                addon_menu_id: item.addon_menu?.id ?? "",
+              })),
+            }))
         : [],
     };
 
@@ -212,7 +223,10 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
     });
   };
 
-  const handleAddonGroupTypeChange = (groupIndex: number, type: string) => {
+  const handleAddonGroupTypeChange = (
+    groupIndex: number,
+    type: POSAddonGroupType | "",
+  ) => {
     setAddGroup((prev) => {
       const updated = [...prev];
       updated[groupIndex] = {
@@ -401,24 +415,22 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                 error={FormState?.errors?.name as string}
               />
               <div className="grid grid-cols-2 gap-3">
-                <RemoteSelect
+                <RemoteSelect<POSCategoryDetail>
                   label="Kategori"
                   required
                   hook={categoriesResult as any}
                   fetchData={(page, search) => getCategories({ page, search })}
                   getLabel={(item: any) => item?.name}
                   renderItem={(item: any) => item?.name}
-                  value={
-                    formData.category_id
-                      ? (categoriesResult.data as any)?.data?.find(
-                          (c: any) => c.id === formData.category_id,
-                        )
-                      : null
-                  }
-                  onChange={(item: any) =>
-                    setFormData({ ...formData, category_id: item?.id })
-                  }
-                  onClear={() => setFormData({ ...formData, category_id: "" })}
+                  value={category}
+                  onChange={(item: any) => {
+                    setCategory(item);
+                    setFormData({ ...formData, category_id: item?.id });
+                  }}
+                  onClear={() => {
+                    setCategory(null);
+                    setFormData({ ...formData, category_id: "" });
+                  }}
                   placeholder="Pilih kategori"
                   error={FormState?.errors?.category_id as string}
                 />
@@ -527,7 +539,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
         {/* Section 2: Channel Pricing Matrix */}
         <div
           className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-          style={{ overflow: "visible", zIndex: 15 }}
+          style={{ overflow: "visible", zIndex: 10 }}
         >
           <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
             <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
@@ -595,7 +607,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
         {formData.is_additional === false ? (
           <div
             className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-            style={{ overflow: "visible", zIndex: 10 }}
+            style={{ overflow: "visible", zIndex: 15 }}
           >
             <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
               <div>
@@ -609,6 +621,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                 styleType="soft"
                 onClick={addAddonGroup}
                 size="sm"
+                type="button"
               >
                 <Plus className="w-4 h-4" />
                 Tambah Kelompok Add-on
@@ -654,7 +667,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                           onChange={(val) =>
                             handleAddonGroupTypeChange(
                               groupIdx,
-                              (val?.value as string) ?? "",
+                              (val?.value as POSAddonGroupType) ?? "",
                             )
                           }
                           onClear={() =>
@@ -667,6 +680,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                         variant="error"
                         styleType="ghost"
                         onClick={() => removeAddonGroup(groupIdx)}
+                        type="button"
                       >
                         <Trash2 size={18} />
                       </Button>
@@ -687,6 +701,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                         styleType="soft"
                         onClick={() => addAddonOptionRow(groupIdx)}
                         size="sm"
+                        type="button"
                       >
                         <Plus className="w-4 h-4" />
                         Tambah Opsi
@@ -733,6 +748,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                             onClick={() =>
                               removeAddonOptionRow(groupIdx, optIdx)
                             }
+                            type="button"
                           >
                             <Trash2 size={18} />
                           </Button>
@@ -764,7 +780,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
       <div>
         <div
           className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-          style={{ overflow: "visible", zIndex: 15 }}
+          style={{ overflow: "visible", zIndex: 10 }}
         >
           <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
             <div className="flex items-center justify-between">
@@ -776,6 +792,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                 styleType="soft"
                 size="sm"
                 onClick={addIngredient}
+                type="button"
               >
                 <Plus className="w-4 h-4" />
                 Tambah
@@ -850,6 +867,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                       onClick={() => removeIngredient(index)}
                       disabled={index === 0}
                       className="mt-7"
+                      type="button"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

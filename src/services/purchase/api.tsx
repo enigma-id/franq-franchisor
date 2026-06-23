@@ -15,9 +15,10 @@ export const purchaseApi = createApi({
     }),
 
     getPurchaseOrder: builder.query({
-      query: (id) => ({
+      query: ({ id, ...params }) => ({
         url: `/purchase/order/${id}`,
         method: "GET",
+        params,
       }),
     }),
 
@@ -63,9 +64,8 @@ export const purchaseApi = createApi({
 });
 
 export const {
-  useGetPurchaseOrdersQuery,
   useLazyGetPurchaseOrdersQuery,
-  useGetPurchaseOrderQuery,
+  useLazyGetPurchaseOrderQuery,
   useCreatePurchaseOrderMutation,
   useUpdatePurchaseOrderMutation,
   useDeletePurchaseOrderMutation,

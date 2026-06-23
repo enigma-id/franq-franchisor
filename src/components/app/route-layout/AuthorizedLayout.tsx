@@ -92,6 +92,14 @@ const menuSections: MenuSection[] = [
     label: "Production",
     items: [
       {
+        label: "Demand",
+        icon: <Factory size={18} />,
+        children: [
+          { label: "Demand Production", path: "/production/demand/production" },
+          { label: "Demand Item", path: "/production/demand/item" },
+        ],
+      },
+      {
         label: "Production Plan",
         path: "/production/plan",
         icon: <Factory size={18} />,
@@ -120,25 +128,31 @@ const menuSections: MenuSection[] = [
         label: "POS Report",
         icon: <Monitor size={18} />,
         children: [
-          { label: "Outstanding", path: "/report/outstanding" },
-          { label: "Settlement Monthly", path: "/report/payment" },
+          { label: "Outstanding", path: "/report/pos/outstanding" },
+          { label: "Settlement", path: "/report/pos/settlement" },
         ],
       },
       {
         label: "B2B Report",
         icon: <Building size={18} />,
         children: [
-          { label: "Settlement B2B", path: "/report/payment/b2b" },
-          { label: "Product Sales B2B", path: "/report/sales/product/b2b" },
+          { label: "Settlement B2B", path: "/report/b2b/settlement" },
+          { label: "Product Sales B2B", path: "/report/b2b/product-sales" },
         ],
       },
       {
         label: "Inventory & Sales",
         icon: <BarChart3 size={18} />,
         children: [
-          { label: "Product Sales", path: "/report/sales/product" },
-          { label: "Raw Material Sales", path: "/report/sales/material" },
-          { label: "Warehouse Stock", path: "/report/stock/warehouse" },
+          { label: "Product Sales", path: "/report/inventory/product-sales" },
+          {
+            label: "Raw Material Sales",
+            path: "/report/inventory/material-sales",
+          },
+          {
+            label: "Warehouse Stock",
+            path: "/report/inventory/warehouse-stock",
+          },
         ],
       },
     ],
@@ -206,7 +220,9 @@ function NavItem({
   onNavigate: () => void;
 }) {
   const location = useLocation();
-  const isActive = location.pathname.startsWith(item.path!);
+  const isActive =
+    location.pathname === item.path ||
+    location.pathname.startsWith(item.path + "/");
 
   return (
     <NavLink
@@ -243,7 +259,11 @@ function ParentItem({
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const isChildActive =
-    item.children?.some((c) => location.pathname.startsWith(c.path)) ?? false;
+    item.children?.some(
+      (c) =>
+        location.pathname === c.path ||
+        location.pathname.startsWith(c.path + "/"),
+    ) ?? false;
 
   return (
     <div className="mb-1">
@@ -254,15 +274,17 @@ function ParentItem({
           flex items-center gap-4 px-4 py-3 rounded-xl text-[14px] mx-3 w-[calc(100%-24px)]
           transition-all duration-150 cursor-pointer group relative overflow-hidden
           ${
-            isChildActive || expanded
-              ? "bg-base-200 text-base--content font-bold"
-              : "text-base-content hover:text-primary hover:bg-base-200/60 font-medium"
+            isChildActive
+              ? "bg-primary text-primary-content font-bold"
+              : expanded
+                ? "bg-base-200 text-primary font-semibold"
+                : "text-base-content hover:text-primary hover:bg-base-200/60 font-medium"
           }
         `}
         aria-expanded={expanded}
       >
         <span
-          className={`flex-shrink-0 transition-colors ${isChildActive || expanded ? "text-primary" : "text-base-content/60 group-hover:text-primary"}`}
+          className={`shrink-0 transition-colors ${isChildActive ? "text-white" : expanded ? "text-primary" : "text-base-content/60 group-hover:text-primary"}`}
         >
           {item.icon}
         </span>
@@ -271,7 +293,7 @@ function ParentItem({
         </span>
         <ChevronDown
           size={14}
-          className={`flex-shrink-0 transition-all duration-200 ${isChildActive || expanded ? "text-primary" : "text-base-content/50"} ${expanded ? "rotate-180" : ""}`}
+          className={`shrink-0 transition-all duration-200 ${isChildActive ? "text-white" : expanded ? "text-primary" : "text-base-content/50"} ${expanded ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -283,7 +305,9 @@ function ParentItem({
       >
         <div className="ml-9 pl-5 border-l border-base-300 space-y-1 py-1 mr-4">
           {item.children!.map((child) => {
-            const isActive = location.pathname.startsWith(child.path);
+            const isActive =
+              location.pathname === child.path ||
+              location.pathname.startsWith(child.path + "/");
             return (
               <NavLink
                 key={child.path}

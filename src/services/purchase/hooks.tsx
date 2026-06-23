@@ -1,4 +1,5 @@
 import { createCrudHook } from "../hooks/createCrudHook";
+import type { PurchaseOrderDetail } from "../types";
 import {
   useLazyGetPurchaseOrdersQuery,
   useCreatePurchaseOrderMutation,
@@ -6,12 +7,13 @@ import {
   useDeletePurchaseOrderMutation,
   useApprovePurchaseOrderMutation,
   usePaymentPurchaseOrderMutation,
+  useLazyGetPurchaseOrderQuery,
 } from "./api";
-import type { PurchaseOrderDetail } from "../types/purchase";
 
 export const usePurchaseOrder = createCrudHook<PurchaseOrderDetail>({
   entityName: "purchaseOrder",
   useLazyGetQuery: useLazyGetPurchaseOrdersQuery,
+  useLazyShowQuery: useLazyGetPurchaseOrderQuery,
   useCreateMutation: useCreatePurchaseOrderMutation,
   useUpdateMutation: useUpdatePurchaseOrderMutation,
   useRemoveMutation: useDeletePurchaseOrderMutation,

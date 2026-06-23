@@ -1,14 +1,10 @@
 import config from "@/services/table/const";
 import type { SalesReturnDetail } from "@/services/types/sales";
-import { Badge, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { RefreshCcw } from "lucide-react";
-import dayjs from "dayjs";
+import { formatDate } from "@/utils";
 
-const createTableConfig = ({
-  onView,
-}: {
-  onView: (id: string) => void;
-}) => ({
+const createTableConfig = ({ onView }: { onView: (id: string) => void }) => ({
   ...config,
   url: "/sales/return",
   columns: {
@@ -22,7 +18,7 @@ const createTableConfig = ({
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-slate-700">
-              {dayjs(row.date).format("DD MMM YYYY")}
+              {formatDate(row.date)}
             </span>
             <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
               {row.number}
@@ -47,13 +43,12 @@ const createTableConfig = ({
         </span>
       ),
     },
-    id: {
+    action: {
       title: "Aksi",
       headerClass: "text-right",
       class: "text-right",
       component: (row: SalesReturnDetail) => (
         <Button
-          variant="ghost"
           size="sm"
           className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-bold"
           onClick={() => onView(row.id)}

@@ -1,9 +1,9 @@
+import { useAppSelector } from "@/hooks";
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../../../../temp/services/auth/hook";
 
 const AuthGuard: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAppSelector((s) => s.auth.authenticated);
   const location = useLocation();
 
   if (!isAuthenticated) {

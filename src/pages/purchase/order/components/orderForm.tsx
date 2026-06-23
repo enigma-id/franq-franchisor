@@ -93,8 +93,14 @@ export function PurchaseOrderForm({
         },
       );
       setEtaAt(dayjs(initialData.eta_date || initialData.eta_at));
+      setWarehouseSelected(
+        initialData.warehouse || {
+          id: initialData.warehouse_id,
+          name: initialData.warehouse_name,
+        },
+      );
 
-      const newItems = (initialData.purchase_order_items || []).map(
+      const newItems = (initialData.items || []).map(
         (item: any, idx: number) => {
           if (item.item?.id) {
             getItemFractions({ id: item.item?.id })
@@ -157,9 +163,6 @@ export function PurchaseOrderForm({
     setFormData((prev) => ({
       ...prev,
       supplier_id: val?.id || 0,
-      address: val?.address || "",
-      recipient_name: val?.name || "",
-      recipient_phone: val?.phone || "",
     }));
   };
 
@@ -168,9 +171,6 @@ export function PurchaseOrderForm({
     setFormData((prev) => ({
       ...prev,
       supplier_id: "",
-      address: "",
-      recipient_name: "",
-      recipient_phone: "",
     }));
   };
 
@@ -336,7 +336,7 @@ export function PurchaseOrderForm({
     e.preventDefault();
     const payload = {
       supplier_id: formData.supplier_id,
-      warehouse_id: formData.warehouse_id,
+      warehouse_id: warehouseSelected?.id,
       ref_code: formData.ref_code,
       eta_date: formData.eta_date,
       address: formData.address,
@@ -549,7 +549,12 @@ export function PurchaseOrderForm({
                       value={item.itemSelected}
                       hook={itemsResult as any}
                       fetchData={(page, search) =>
-                        getItems({ page, search, status: "active" }) as any
+                        getItems({
+                          page,
+                          search,
+                          status: "active",
+                          type: "raw_material",
+                        }) as any
                       }
                       getLabel={(it: any) =>
                         it ? `${it.name || "-"} [${it.barcode || "-"}]` : ""

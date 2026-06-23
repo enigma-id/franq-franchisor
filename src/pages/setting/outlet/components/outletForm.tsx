@@ -47,7 +47,11 @@ export const OutletForm: React.FC<OutletFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const payload = {
+      ...formData,
+      region_id: "d0acf30b-e55f-4ee8-a47b-434e438b8d74",
+    };
+    onSubmit(payload);
   };
 
   return (

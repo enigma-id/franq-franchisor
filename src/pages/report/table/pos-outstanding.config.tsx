@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
-import { currencyFormat, dateFormat } from "@/utils";
+import { dateFormat } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
@@ -22,17 +22,17 @@ const createTableConfig = ({
         <span className="font-semibold text-sm">{row?.code ?? "-"}</span>
       ),
     },
-    ordered_at: {
+    date: {
       title: "Tanggal",
       sortable: true,
-      component: (row: any) => dateFormat(row?.ordered_at, "DD/MM/YYYY HH:mm"),
+      component: (row: any) => dateFormat(row?.date, "DD/MM/YYYY HH:mm"),
     },
     outlet: {
       title: "Outlet",
       sortable: true,
       component: (row: any) => (
         <span className="font-semibold uppercase text-sm">
-          {row?.session?.outlet?.name ?? "-"}
+          {row?.outlet ?? "-"}
         </span>
       ),
     },
@@ -41,16 +41,16 @@ const createTableConfig = ({
       sortable: true,
       component: (row: any) => (
         <span className="font-semibold uppercase text-sm">
-          {row?.session?.cashier?.name ?? "-"}
+          {row?.cashier ?? "-"}
         </span>
       ),
     },
-    ticket: {
+    bill_name: {
       title: "Bill Name",
       sortable: true,
       component: (row: any) => (
         <span className="font-semibold uppercase text-sm">
-          {row?.ticket ?? "-"}
+          {row?.bill_name ?? "-"}
         </span>
       ),
     },
@@ -66,8 +66,8 @@ const createTableConfig = ({
     total_charges: {
       title: "Total Charges",
       align: "right",
-      class: "text-right font-mono font-medium",
-      component: (row: any) => currencyFormat(row?.total_charges),
+      class: "text-right",
+      format_number: true,
     },
   },
 });

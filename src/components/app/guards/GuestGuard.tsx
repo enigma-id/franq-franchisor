@@ -1,9 +1,9 @@
+import { useAppSelector } from "@/hooks";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../../../temp/services/auth/hook";
 
 const GuestGuard: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAppSelector((s) => s.auth.authenticated);
 
   if (isAuthenticated) {
     // If logged in, redirect to dashboard

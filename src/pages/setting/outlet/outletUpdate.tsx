@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
@@ -75,7 +76,6 @@ const OutletUpdatePage: React.FC = () => {
               id="outlet-form"
               initialData={showResult.data?.data}
               onSubmit={(data) => update({ id: id!, payload: data as any })}
-              isLoading={isUpdating}
             />
           )}
         </div>

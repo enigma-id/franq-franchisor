@@ -19,8 +19,6 @@ import {
 export const useReport = createCrudHook<any>({
   entityName: "report",
   additionalQueries: {
-    outstanding: useLazyGetOutstandingQuery,
-    outstandingSummary: useLazyGetOutstandingSummaryQuery,
     productSales: useLazyGetProductSalesQuery,
     productSalesSummary: useLazyGetProductSalesSummaryQuery,
     rawMaterial: useLazyGetRawMaterialSalesQuery,
@@ -32,6 +30,8 @@ export const useReport = createCrudHook<any>({
 export const usePOSReport = createCrudHook<any>({
   entityName: "pos-report",
   additionalQueries: {
+    outstanding: useLazyGetOutstandingQuery,
+    outstandingSummary: useLazyGetOutstandingSummaryQuery,
     settlement: useLazyGetPOSSettlementQuery,
     settlementSummary: useLazyGetPOSSettlementSummaryQuery,
   },

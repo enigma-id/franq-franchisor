@@ -1,14 +1,14 @@
 export const orderStatusOptions = [
   { label: "Pending", value: "pending" },
-  { label: "Aktif", value: "active" },
+  { label: "Published", value: "published" },
   { label: "Selesai", value: "finished" },
   { label: "Batal", value: "cancelled" },
   { label: "Expired", value: "void" },
 ];
 
 export const paymentStatusOptions = [
-  { label: "Belum Dibayar", value: "void" },
-  { label: "Sudah Dibayar", value: "finished" },
+  { label: "Belum Dibayar", value: "unpaid" },
+  { label: "Sudah Dibayar", value: "paid" },
 ];
 
 export const deliveryStatusOptions = [

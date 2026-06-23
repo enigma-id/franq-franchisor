@@ -228,7 +228,7 @@ export const SalesChart: React.FC<SalesChartProps> = ({
               margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
             >
               <defs>
-                {data.series.map((s, i) => (
+                {data.series.map((_s, i) => (
                   <React.Fragment key={i}>
                     <linearGradient
                       id={`gradient-${i}`}

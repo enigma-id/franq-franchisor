@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
@@ -13,7 +14,9 @@ const ProductionPlanUpdatePage: React.FC = () => {
   const { isLoading: isSaving, isSuccess } = updateResult;
   const { showToast } = useEnigmaUI();
 
-  const { data: plan, isLoading } = showResult;
+  const { data, isLoading } = showResult;
+
+  const plan = data?.data;
 
   useEffect(() => {
     if (id) {
@@ -37,11 +40,7 @@ const ProductionPlanUpdatePage: React.FC = () => {
       <Page.Header
         category="Production"
         title="Edit Rencana Produksi"
-        subtitle={
-          plan
-            ? `Perbarui rencana: ${plan.number}`
-            : "Perbarui data rencana produksi harian."
-        }
+        subtitle={"Perbarui data rencana produksi."}
         backTo={() => navigate(-1)}
         action={
           <Button
@@ -75,9 +74,8 @@ const ProductionPlanUpdatePage: React.FC = () => {
           ) : (
             <ProductionPlanForm
               id="production-plan-form"
-              initialData={plan}
+              initialData={plan as any}
               onSubmit={(data) => update({ id: id!, payload: data })}
-              isLoading={isSaving}
             />
           )}
         </div>

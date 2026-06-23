@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
-import { Badge, Button } from "@/components/ui";
-import { RefreshCcw, ShoppingBag, Calendar, Hash } from "lucide-react";
+import { Badge } from "@/components/ui";
+import { RefreshCcw, Calendar, Hash } from "lucide-react";
 import { useSalesReturn } from "@/services/sales/hooks";
 import dayjs from "dayjs";
 import type { SalesReturnDetail } from "@/services/types";
@@ -14,7 +14,7 @@ const SalesReturnDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (id) show(id);
-  }, [id, show]);
+  }, [id]);
 
   const data = showResult.data?.data as SalesReturnDetail;
 
@@ -25,17 +25,6 @@ const SalesReturnDetailPage: React.FC = () => {
         title="Detail Return Penjualan"
         subtitle="Informasi lengkap pengembalian barang."
         backTo={() => navigate(-1)}
-        action={
-          <Button
-            className="text-primary hover:bg-primary/5"
-            onClick={() =>
-              navigate(`/sales/order/detail/${data.sales_order_id}`)
-            }
-          >
-            <ShoppingBag size={18} />
-            Lihat Transaksi Asal
-          </Button>
-        }
       />
 
       <Page.Body className="flex-1 overflow-y-auto p-6 space-y-6">

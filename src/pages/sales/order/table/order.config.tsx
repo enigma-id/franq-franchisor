@@ -1,20 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
-import { currencyFormat, dateFormat, getStatusVariant, formatDateTime } from "@/utils";
-import { Badge } from "@/components/ui";
+import { dateFormat, getStatusVariant, formatDateTime } from "@/utils";
+import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
+import { Edit, Eye, MoreVertical, Trash } from "lucide-react";
 
 const createTableConfig = ({
-  onRowClick,
+  onClick,
+  onRemove,
+  onEdit,
   filter,
 }: {
-  onRowClick?: (row: SalesOrderDetail) => void;
+  onClick?: (row: SalesOrderDetail) => void;
+  onRemove?: (row: SalesOrderDetail) => void;
+  onEdit?: (row: SalesOrderDetail) => void;
   filter?: Record<string, unknown>;
 }) => ({
   ...config,
   url: "/sales/order",
   filter,
-  onRowClick,
   columns: {
     code: {
       title: "Code",
@@ -24,18 +27,9 @@ const createTableConfig = ({
           <div>
             <span className="font-medium block">{row.code}</span>
             <span className="text-xs text-gray-500 block">
-              {formatDateTime(row.ordered_at)} WIB
+              {formatDateTime(row.created_at)} WIB
             </span>
           </div>
-          {row.type && (
-            <Badge
-              variant={getStatusVariant(row.type)}
-              size="xs"
-              className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
-            >
-              {row.type?.toLowerCase()}
-            </Badge>
-          )}
         </div>
       ),
     },
@@ -45,7 +39,7 @@ const createTableConfig = ({
       component: (row: SalesOrderDetail) => (
         <div>
           <span className="font-medium block">
-            {row.outlet?.alias?.toUpperCase() ?? "-"}
+            {row.outlet?.name?.toUpperCase() ?? "-"}
           </span>
           <span className="text-xs text-gray-500 block">
             {row.outlet?.phone ?? ""}
@@ -53,12 +47,10 @@ const createTableConfig = ({
         </div>
       ),
     },
-    total_bill: {
+    total_charges: {
       title: "Total (Rp)",
       sortable: true,
-      align: "right",
-      class: "text-right font-mono font-medium",
-      component: (row: SalesOrderDetail) => currencyFormat(row.total_bill),
+      format_number: true,
     },
     shipping_date: {
       title: "Shipment Date",
@@ -69,31 +61,31 @@ const createTableConfig = ({
         <span className="font-medium">{dateFormat(row.shipping_date)}</span>
       ),
     },
-    order_status: {
-      title: "Status",
+    document_status: {
+      title: "Document Status",
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
         <Badge
-          variant={getStatusVariant(row.order_status)}
+          variant={getStatusVariant(row.document_status)}
           size="xs"
           className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
         >
-          {row.order_status?.toLowerCase()}
+          {row.document_status?.toLowerCase()}
         </Badge>
       ),
     },
-    delivery_status: {
-      title: "Delivery",
+    fulfillment_status: {
+      title: "Fulfillment Status",
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
         <Badge
-          variant={getStatusVariant(row.delivery_status)}
+          variant={getStatusVariant(row.fulfillment_status)}
           size="xs"
           className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
         >
-          {row.delivery_status?.toLowerCase()}
+          {row.fulfillment_status?.toLowerCase()}
         </Badge>
       ),
     },
@@ -109,6 +101,76 @@ const createTableConfig = ({
         >
           {row.payment_status?.toLowerCase()}
         </Badge>
+      ),
+    },
+    action: {
+      title: "",
+      class: "text-right",
+      sortable: false,
+      align: "right",
+      component: (row: SalesOrderDetail) => (
+        <Dropdown
+          trigger={
+            <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
+              <MoreVertical className="w-5 h-5 text-slate-600" />
+            </button>
+          }
+          position="end"
+          contentClassName="dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2"
+        >
+          <Dropdown.Item
+            onSelect={() => onClick?.(row)}
+            className="hover:bg-green-50 hover:text-green-600"
+          >
+            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
+              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-success">
+                <Eye className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">See Detail</span>
+                <span className="text-[11px] text-slate-400">
+                  See sales order info
+                </span>
+              </div>
+            </button>
+          </Dropdown.Item>
+          {row?.document_status === "pending" && (
+            <>
+              <Dropdown.Item
+                onSelect={() => onEdit?.(row)}
+                className="hover:bg-indigo-50 hover:text-indigo-600"
+              >
+                <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                    <Edit className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="font-bold text-[13px]">Edit</span>
+                    <span className="text-[11px] text-slate-400">
+                      Modify sales order info
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() => onRemove?.(row)}
+                className="hover:bg-red-50 hover:text-red-600"
+              >
+                <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
+                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                    <Trash className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="font-bold text-[13px]">Delete</span>
+                    <span className="text-[11px] text-slate-400">
+                      Remove sales order
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+            </>
+          )}
+        </Dropdown>
       ),
     },
   },

@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/warehouse.config";
-import TableFilter from "./table/warehouse.filter";
 import type { TableConfig } from "@/services/table/const";
 
 const WarehouseListPage: React.FC = () => {
@@ -19,9 +18,7 @@ const WarehouseListPage: React.FC = () => {
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0">
-        <Table.Tools>
-          <TableFilter table={Table} />
-        </Table.Tools>
+        <Table.Tools />
 
         <Table.Render
           emptyTitle="Belum Ada Gudang"

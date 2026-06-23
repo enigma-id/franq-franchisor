@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
 import { currencyFormat } from "@/utils";
-import { ChevronRight } from "lucide-react";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
@@ -13,6 +12,7 @@ const createTableConfig = ({
 }): TableConfig<any> => ({
   ...config,
   url: "/report/pos-settlement",
+  dataKey: "datas",
   filter,
   onRowClick,
   dynamicColumns: (rows: any[]) => {
@@ -28,7 +28,8 @@ const createTableConfig = ({
         title: method,
         align: "right",
         headerClass: "text-right",
-        class: "text-right",
+        class: "text-left",
+        sortable: false,
         component: (row: any) => {
           const vals = row.nominals ?? [];
           return vals[index] !== undefined ? currencyFormat(vals[index]) : "-";
@@ -37,18 +38,11 @@ const createTableConfig = ({
     });
 
     return {
-      periode: {
+      date: {
         title: "Date",
-        component: (row: any) => row.periode,
+        component: (row: any) => row.date,
       },
       ...dynamic,
-      action: {
-        title: "",
-        width: 40,
-        component: () => (
-          <ChevronRight size={16} className="text-base-content/30" />
-        ),
-      },
     };
   },
 });

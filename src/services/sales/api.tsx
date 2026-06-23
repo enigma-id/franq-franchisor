@@ -80,46 +80,10 @@ export const salesApi = createApi({
       }),
     }),
 
-    /** POST /sales/return - Create sales return */
-    createSalesReturn: builder.mutation({
-      query: (payload) => ({
-        url: "/sales/return",
-        method: "POST",
-        body: payload,
-      }),
-    }),
-
-    /** PUT /sales/return/:id - Update sales return */
-    updateSalesReturn: builder.mutation({
+    /** PUT /sales/return/:id - approve sales return */
+    approveSalesReturn: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    /** DELETE /sales/return/:id - Delete sales return */
-    deleteSalesReturn: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}`,
-        method: "DELETE",
-        body: payload,
-      }),
-    }),
-
-    /** PUT /sales/return/:id - Activate sales return */
-    activateSalesReturn: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}/activate`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    /** PUT /sales/return/:id - Deactivate sales return */
-    deactivateSalesReturn: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}/deactivate`,
+        url: `/sales/return/${id}/approve`,
         method: "PUT",
         body: payload,
       }),
@@ -137,9 +101,5 @@ export const {
   useCancelSalesOrderMutation,
   //
   useLazyGetSalesReturnQuery,
-  useCreateSalesReturnMutation,
-  useUpdateSalesReturnMutation,
-  useDeleteSalesReturnMutation,
-  useActivateSalesReturnMutation,
-  useDeactivateSalesReturnMutation,
+  useApproveSalesReturnMutation,
 } = salesApi;

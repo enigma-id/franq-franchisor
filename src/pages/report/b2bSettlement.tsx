@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import createTableConfig from "./table/b2b-settlement.config";
 import TableFilter from "./table/settlement.filter"; // Reuse monthly filter pattern
-import { useLazyGetB2BSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
+import { useB2BReport } from "@/services/report/hooks";
 
 export default function B2BSettlementPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
@@ -20,22 +21,28 @@ export default function B2BSettlementPage() {
   }, [Table.State?.lockedFilter, Table.State?.filter]);
 
   const currentFilterString = JSON.stringify(currentFilter);
-  const [triggerSummary, { data: summaryResponse }] =
-    useLazyGetB2BSettlementSummaryQuery();
+  const { settlementSummary, settlementSummaryResult } = useB2BReport();
+  const { data: summaryResult, isLoading } = settlementSummaryResult;
 
   useEffect(() => {
     if (Table.State) {
-      triggerSummary(JSON.parse(currentFilterString));
+      settlementSummary(JSON.parse(currentFilterString));
     }
-  }, [currentFilterString, triggerSummary, Table.State !== undefined]);
+  }, [currentFilterString, Table.State !== undefined]);
 
   const summary = useMemo(() => {
-    if (!summaryResponse?.data) return [];
-    const d = summaryResponse.data;
+    if (isLoading) return [];
+    const d = summaryResult?.data;
 
     if (Array.isArray(d)) {
       if (d.length > 0 && d[0].payment_methods && d[0].nominals) {
         return d[0].payment_methods.map((m: string, i: number) => ({
+          method: m,
+          total: d[0].nominals[i] || 0,
+        }));
+      }
+      if (d.length > 0 && d[0].payment_statuses && d[0].nominals) {
+        return d[0].payment_statuses.map((m: string, i: number) => ({
           method: m,
           total: d[0].nominals[i] || 0,
         }));
@@ -53,6 +60,12 @@ export default function B2BSettlementPage() {
           total: d.nominals[i] || 0,
         }));
       }
+      if (d.payment_statuses && d.nominals) {
+        return d.payment_statuses.map((m: string, i: number) => ({
+          method: m,
+          total: d.nominals[i] || 0,
+        }));
+      }
       return Object.entries(d).map(([method, total]) => ({
         method,
         total: Number(total) || 0,
@@ -60,7 +73,7 @@ export default function B2BSettlementPage() {
     }
 
     return [];
-  }, [summaryResponse]);
+  }, [settlementSummaryResult]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">

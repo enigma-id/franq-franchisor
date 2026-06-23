@@ -17,9 +17,10 @@ export const posApi = createApi({
     }),
 
     getMenu: builder.query({
-      query: (id) => ({
+      query: ({ id, ...params }) => ({
         url: `/pos/menu/${id}`,
         method: "GET",
+        params,
       }),
     }),
 
@@ -171,23 +172,20 @@ export const posApi = createApi({
 });
 
 export const {
-  useGetMenusQuery,
   useLazyGetMenusQuery,
-  useGetMenuQuery,
+  useLazyGetMenuQuery,
   useCreateMenuMutation,
   useUpdateMenuMutation,
   useDeleteMenuMutation,
   useActivateMenuMutation,
   useDeactivateMenuMutation,
   useUpdateMenuTypesMutation,
-  useGetCategoriesQuery,
   useLazyGetCategoriesQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
   useActivateCategoryMutation,
   useDeactivateCategoryMutation,
-  useGetChannelsQuery,
   useLazyGetChannelsQuery,
   useCreateChannelMutation,
   useUpdateChannelMutation,

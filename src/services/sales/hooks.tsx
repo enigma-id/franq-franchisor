@@ -8,11 +8,7 @@ import {
   usePaidSalesOrderMutation,
   useCancelSalesOrderMutation,
   useLazyGetSalesReturnQuery,
-  useActivateSalesReturnMutation,
-  useDeactivateSalesReturnMutation,
-  useCreateSalesReturnMutation,
-  useUpdateSalesReturnMutation,
-  useDeleteSalesReturnMutation,
+  useApproveSalesReturnMutation,
 } from "./api";
 
 // Sales Order
@@ -33,11 +29,7 @@ export const useSalesOrder = createCrudHook({
 export const useSalesReturn = createCrudHook({
   entityName: "salesReturn",
   useLazyShowQuery: useLazyGetSalesReturnQuery,
-  useCreateMutation: useCreateSalesReturnMutation,
-  useUpdateMutation: useUpdateSalesReturnMutation,
-  useRemoveMutation: useDeleteSalesReturnMutation,
   customOperations: {
-    active: { hook: useActivateSalesReturnMutation },
-    deactive: { hook: useDeactivateSalesReturnMutation },
+    approve: { hook: useApproveSalesReturnMutation },
   },
 });

@@ -31,22 +31,24 @@ import PurchaseOrderListPage from "@/pages/purchase/order";
 import PurchaseOrderCreatePage from "@/pages/purchase/order/purchaseOrderCreate";
 import PurchaseOrderUpdatePage from "@/pages/purchase/order/purchaseOrderUpdate";
 import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
+import SalesOrderUpdatePage from "@/pages/sales/order/salesOrderUpdate";
 import SalesOrderListPage from "@/pages/sales/order";
 import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
 import SalesReturnListPage from "@/pages/sales/return";
-import SalesReturnCreatePage from "@/pages/sales/return/salesReturnCreate";
 import SalesReturnDetailPage from "@/pages/sales/return/salesReturnDetail";
 import ProductionPlanListPage from "@/pages/production/plan";
 import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
 import ProductionPlanDetailPage from "@/pages/production/plan/productionPlanDetail";
 import ProductionPlanUpdatePage from "@/pages/production/plan/productionPlanUpdate";
-import OutstandingPage from "@/pages/report/outstanding";
+import DemandProductionPage from "@/pages/production/demand/demandProduction";
+import DemandItemPage from "@/pages/production/demand/demandItem";
 import POSSettlementPage from "@/pages/report/posSettlement";
 import B2BSettlementPage from "@/pages/report/b2bSettlement";
 import B2BProductSalesPage from "@/pages/report/b2bProductSales";
 import RawMaterialSalesPage from "@/pages/report/rawMaterialSales";
 import ProductSalesPage from "@/pages/report/productSales";
 import WarehouseStockPage from "@/pages/report/warehouseStock";
+import PosOutstandingPage from "@/pages/report/outstanding";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -144,13 +146,20 @@ export function AppRoutes() {
           element={<ProductionPlanCreatePage />}
         />
         <Route
-          path="/production/plan/detail/:id"
+          path="/production/plan/:id"
           element={<ProductionPlanDetailPage />}
         />
         <Route
           path="/production/plan/update/:id"
           element={<ProductionPlanUpdatePage />}
         />
+
+        {/* Production - Demand */}
+        <Route
+          path="/production/demand/production"
+          element={<DemandProductionPage />}
+        />
+        <Route path="/production/demand/item" element={<DemandItemPage />} />
 
         {/* Purchase - Supplier */}
         <Route path="/purchase/supplier" element={<SupplierListPage />} />
@@ -178,36 +187,36 @@ export function AppRoutes() {
         <Route path="/sales/order" element={<SalesOrderListPage />} />
         <Route path="/sales/order/create" element={<SalesOrderCreatePage />} />
         <Route
-          path="/sales/order/detail/:id"
-          element={<SalesOrderDetailPage />}
+          path="/sales/order/update/:id"
+          element={<SalesOrderUpdatePage />}
         />
+        <Route path="/sales/order/:id" element={<SalesOrderDetailPage />} />
 
         {/* Sales - Return */}
         <Route path="/sales/return" element={<SalesReturnListPage />} />
-        <Route
-          path="/sales/return/create"
-          element={<SalesReturnCreatePage />}
-        />
-        <Route
-          path="/sales/return/detail/:id"
-          element={<SalesReturnDetailPage />}
-        />
+        <Route path="/sales/return/:id" element={<SalesReturnDetailPage />} />
 
         {/* Report */}
-        <Route path="/report/outstanding" element={<OutstandingPage />} />
-        <Route path="/report/payment" element={<POSSettlementPage />} />
-        <Route path="/report/payment/b2b" element={<B2BSettlementPage />} />
-        <Route path="/report/sales/product" element={<ProductSalesPage />} />
         <Route
-          path="/report/sales/product/b2b"
+          path="/report/pos/outstanding"
+          element={<PosOutstandingPage />}
+        />
+        <Route path="/report/pos/settlement" element={<POSSettlementPage />} />
+        <Route path="/report/b2b/settlement" element={<B2BSettlementPage />} />
+        <Route
+          path="/report/inventory/product-sales"
+          element={<ProductSalesPage />}
+        />
+        <Route
+          path="/report/b2b/product-sales"
           element={<B2BProductSalesPage />}
         />
         <Route
-          path="/report/sales/material"
+          path="/report/inventory/material-sales"
           element={<RawMaterialSalesPage />}
         />
         <Route
-          path="/report/stock/warehouse"
+          path="/report/inventory/warehouse-stock"
           element={<WarehouseStockPage />}
         />
 

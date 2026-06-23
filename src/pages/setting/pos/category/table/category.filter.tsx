@@ -1,16 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { Input } from "@/components/ui";
-import type { UseTableReturn } from "@/services/table/hooks";
-import type { POSCategoryDetail } from "@/services/types/pos";
 
 interface TableFilterProps {
-  table: UseTableReturn<POSCategoryDetail>;
+  table: {
+    filter: (params: any) => void;
+    State: {
+      loading: boolean;
+      filter: any;
+    };
+  };
 }
 
-const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
+const TableFilter: React.FC<TableFilterProps> = () => {
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0">
-      {/* Search is handled by Table.Tools */}
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="w-48"></div>
     </div>
   );
 };
