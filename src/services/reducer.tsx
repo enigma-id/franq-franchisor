@@ -21,6 +21,7 @@ import { tableApi } from "./table/api";
 import { reportApi } from "./report/api";
 import { inventoryApi } from "./inventory/api";
 import { uploadApi } from "./upload/api";
+import { withdrawalApi } from "./withdrawal/api";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -44,6 +45,7 @@ const appReducer = combineReducers({
   [regionApi.reducerPath]: regionApi.reducer,
   [reportApi.reducerPath]: reportApi.reducer,
   [uploadApi.reducerPath]: uploadApi.reducer,
+  [withdrawalApi.reducerPath]: withdrawalApi.reducer,
 });
 
 type AppState = ReturnType<typeof appReducer>;
@@ -66,6 +68,7 @@ export const apiMiddlewares = [
   supplierApi.middleware,
   reportApi.middleware,
   uploadApi.middleware,
+  withdrawalApi.middleware,
 ];
 
 export const rootReducer: Reducer<AppState, UnknownAction> = (

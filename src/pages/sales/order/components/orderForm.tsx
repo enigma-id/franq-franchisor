@@ -313,7 +313,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             label="Region"
             required
             hook={regionResult as any}
-            fetchData={(page, search) => getRegion({ page, search })}
+            fetchData={(page, search) => getRegion({ page, q: search })}
             getLabel={(item) => formatRegion(item)}
             renderItem={(item) => formatRegion(item)}
             value={region}

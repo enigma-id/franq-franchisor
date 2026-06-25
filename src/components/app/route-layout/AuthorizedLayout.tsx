@@ -19,6 +19,7 @@ import {
   RefreshCcw,
   Monitor,
   BarChart3,
+  ArrowDownLeft,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -56,6 +57,11 @@ const menuSections: MenuSection[] = [
   {
     label: "Sales",
     items: [
+      {
+        label: "Withdrawal",
+        path: "/withdrawal",
+        icon: <ArrowDownLeft size={18} />,
+      },
       {
         label: "Sales Order",
         path: "/sales/order",

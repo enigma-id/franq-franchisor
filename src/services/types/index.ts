@@ -13,3 +13,4 @@ export * from "./supplier";
 export * from "./warehouse";
 export * from "./dashboard";
 export * from "./region";
+export * from "./withdrawal";

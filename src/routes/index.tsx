@@ -50,6 +50,8 @@ import ProductSalesPage from "@/pages/report/productSales";
 import WarehouseStockPage from "@/pages/report/warehouseStock";
 import PosOutstandingPage from "@/pages/report/outstanding";
 import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
+import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
+import { WithdrawalDetail } from "@/pages/withdrawal/WithdrawalDetail";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -221,6 +223,9 @@ export function AppRoutes() {
           path="/report/inventory/warehouse-stock"
           element={<WarehouseStockPage />}
         />
+
+        <Route path="/withdrawal" element={<WithdrawalList />} />
+        <Route path="/withdrawal/:id" element={<WithdrawalDetail />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

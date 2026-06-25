@@ -48,7 +48,7 @@ const persistConfig = {
     "supplierApi",
     "inventoryApi",
     "regionApi",
-    "reportApi",
+    "withdrawalApi",
   ],
 };
 
