@@ -29,5 +29,5 @@ export const canDeletePo = (po: PurchaseOrder): boolean => {
  * In legacy Vue client: `this.purchaseOrder.document_status !== 'pending' && this.purchaseOrder.payment_status === 'void'`
  */
 export const canPayPo = (po: PurchaseOrder): boolean => {
-  return po.document_status !== "pending" && po.payment_status === "void";
+  return po.document_status !== "pending" && po.payment_status === "unpaid";
 };

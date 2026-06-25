@@ -9,14 +9,14 @@ export function usePurchaseOrderGuards(po?: PurchaseOrder) {
         canPublish: false,
         canEdit: false,
         canDelete: false,
-        canPay: false,
+        canPaid: false,
       };
     }
     return {
       canPublish: poGuards.canPublishPo(po),
       canEdit: poGuards.canEditPo(po),
       canDelete: poGuards.canDeletePo(po),
-      canPay: poGuards.canPayPo(po),
+      canPaid: poGuards.canPayPo(po),
     };
   }, [po]);
 }

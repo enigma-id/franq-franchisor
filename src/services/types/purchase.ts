@@ -17,9 +17,51 @@
 import type { SupplierDetail } from "./supplier";
 
 export interface PurchaseOrderItem {
-  catalog_id: string;
-  quantity: number;
-  unit_price: number;
+  id: string;
+  order_id: string;
+  item_id: string;
+  fraction_id: string;
+  quantity_ordered: number;
+  quantity_received: number;
+  unit_nett: number;
+  unit_tax: number;
+  item: {
+    id: string;
+    franchisor_id: string;
+    supplier_id: string;
+    type: string;
+    code: string;
+    barcode: string;
+    name: string;
+    variant: string;
+    packaging: string;
+    size: string;
+    picking_strategy: string;
+    is_batch_tracking: boolean;
+    default_fraction: string;
+    base_price: number;
+    weight: number;
+    volume: number;
+    category: string;
+    safety_stock: number;
+    stock_available: number;
+    stock_defect: number;
+    in_catalog: boolean;
+    is_vatable: boolean;
+    is_active: boolean;
+    created_by: string;
+    updated_by: string;
+    created_at: string;
+    updated_at: string;
+    alias_name: string;
+  };
+  fraction: {
+    id: string;
+    item_id: string;
+    name: string;
+    quantity: number;
+    is_smallest: boolean;
+  };
 }
 
 export interface PurchaseOrderBase {
@@ -75,9 +117,7 @@ export interface PurchaseOrder extends PurchaseOrderBase {
 
 export interface PurchaseOrderDetail extends PurchaseOrderBase {
   id: string;
-
-  items?: (PurchaseOrderItem & { id: string })[];
-
+  items?: PurchaseOrderItem[];
   status?: string;
   total_price?: number; // backward-compat if any older API still returns this
 }

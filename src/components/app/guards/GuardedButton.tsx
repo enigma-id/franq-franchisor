@@ -15,7 +15,7 @@ interface GuardedButtonProps extends Omit<
   reason: string;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   title: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   isLoading?: boolean;
   variant?: ButtonVariant;
   size?: ButtonSize;

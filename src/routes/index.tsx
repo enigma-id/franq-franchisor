@@ -52,6 +52,7 @@ import PosOutstandingPage from "@/pages/report/outstanding";
 import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
 import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
 import { WithdrawalDetail } from "@/pages/withdrawal/WithdrawalDetail";
+import { PurchaseOrderDetailPage } from "@/pages/purchase/order/purchaseOrderDetail";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -181,6 +182,10 @@ export function AppRoutes() {
         <Route
           path="/purchase/order/create"
           element={<PurchaseOrderCreatePage />}
+        />
+        <Route
+          path="/purchase/order/:id"
+          element={<PurchaseOrderDetailPage />}
         />
         <Route
           path="/purchase/order/update/:id"

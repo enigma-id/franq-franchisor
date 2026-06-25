@@ -6,7 +6,7 @@ export const purchaseApi = createApi({
   baseQuery,
   tagTypes: ["PurchaseOrder"],
   endpoints: (builder) => ({
-    getPurchaseOrders: builder.query({
+    get: builder.query({
       query: (params) => ({
         url: "/purchase/order",
         method: "GET",
@@ -14,7 +14,7 @@ export const purchaseApi = createApi({
       }),
     }),
 
-    getPurchaseOrder: builder.query({
+    show: builder.query({
       query: ({ id, ...params }) => ({
         url: `/purchase/order/${id}`,
         method: "GET",
@@ -22,7 +22,7 @@ export const purchaseApi = createApi({
       }),
     }),
 
-    createPurchaseOrder: builder.mutation({
+    create: builder.mutation({
       query: (payload) => ({
         url: "/purchase/order",
         method: "POST",
@@ -30,7 +30,7 @@ export const purchaseApi = createApi({
       }),
     }),
 
-    updatePurchaseOrder: builder.mutation({
+    update: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/purchase/order/${id}`,
         method: "PUT",
@@ -38,14 +38,15 @@ export const purchaseApi = createApi({
       }),
     }),
 
-    deletePurchaseOrder: builder.mutation({
-      query: (id) => ({
+    delete: builder.mutation({
+      query: ({ id, ...payload }) => ({
         url: `/purchase/order/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 
-    approvePurchaseOrder: builder.mutation({
+    publish: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/purchase/order/${id}/publish`,
         method: "PUT",
@@ -53,9 +54,9 @@ export const purchaseApi = createApi({
       }),
     }),
 
-    paymentPurchaseOrder: builder.mutation({
+    paid: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/purchase/order/${id}/payment`,
+        url: `/purchase/order/${id}/paid`,
         method: "PUT",
         body: payload,
       }),
@@ -64,11 +65,11 @@ export const purchaseApi = createApi({
 });
 
 export const {
-  useLazyGetPurchaseOrdersQuery,
-  useLazyGetPurchaseOrderQuery,
-  useCreatePurchaseOrderMutation,
-  useUpdatePurchaseOrderMutation,
-  useDeletePurchaseOrderMutation,
-  useApprovePurchaseOrderMutation,
-  usePaymentPurchaseOrderMutation,
+  useLazyGetQuery,
+  useLazyShowQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  usePublishMutation,
+  usePaidMutation,
 } = purchaseApi;
