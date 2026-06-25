@@ -212,7 +212,7 @@ const POSCategoryListPage: React.FC = () => {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Settings'
+        category="Settings"
         title='Kategori POS'
         subtitle='Kelola kategori menu untuk pengaturan POS.'
         action={

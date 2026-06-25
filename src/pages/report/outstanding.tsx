@@ -69,7 +69,7 @@ export default function PosOutstandingPage() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
+        category="Report"
         title="Outstanding"
         subtitle="Laporan transaksi outstanding yang belum diselesaikan."
       />

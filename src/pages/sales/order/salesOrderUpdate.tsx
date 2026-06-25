@@ -41,7 +41,7 @@ export function SalesOrderUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
+        category="Sales"
         title="Edit Sales Order"
         subtitle="Perbarui transaksi penjualan untuk outlet waralaba."
         backTo={() => navigate(-1)}

@@ -137,7 +137,6 @@ export default function SalesOrderDetailPage() {
   if (isLoading) {
     return (
       <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-        <Page.Header category="Operations" title="Sales Order Detail" />
         <Page.Body>
           <div className="flex-1 flex items-center justify-center min-h-64">
             <Loading size="lg" variant="spinner" />
@@ -150,7 +149,6 @@ export default function SalesOrderDetailPage() {
   if (!order) {
     return (
       <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-        <Page.Header category="Operations" title="Sales Order Detail" />
         <Page.Body>
           <div className="flex-1 flex items-center justify-center min-h-64">
             <div className="text-center">
@@ -181,8 +179,8 @@ export default function SalesOrderDetailPage() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
-        title={`Order #${order.code}`}
+        category="Sales"
+        title="Sales Order Detail"
         backTo={() => navigate(-1)}
         action={
           <div className="flex gap-2">

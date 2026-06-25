@@ -29,7 +29,7 @@ const OutletCreatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Outlet"
+        category="Settings"
         title="Tambah Outlet Baru"
         subtitle="Daftarkan outlet baru ke dalam sistem Franchisor."
         backTo={() => navigate(-1)}

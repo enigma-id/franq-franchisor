@@ -35,7 +35,7 @@ const POSMenuUpdatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="POS Menu"
+        category="Settings"
         title="Update Menu"
         subtitle="Perbarui informasi menu makanan atau minuman."
         backTo={() => navigate(-1)}

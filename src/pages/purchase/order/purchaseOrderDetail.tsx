@@ -236,7 +236,9 @@ export function PurchaseOrderDetailPage() {
               <div className="info-row">
                 <dt className="info-label">ETA Date</dt>
                 <dd className="info-value">
-                  {data?.eta_date ? new Date(data.eta_date).toLocaleDateString() : '-'}
+                  {data?.eta_date
+                    ? new Date(data.eta_date).toLocaleDateString()
+                    : "-"}
                 </dd>
               </div>
             </dl>
@@ -252,15 +254,21 @@ export function PurchaseOrderDetailPage() {
             <dl className="space-y-1">
               <div className="info-row">
                 <dt className="info-label">Subtotal Nett</dt>
-                <dd className="info-value">{formatCurrency(data?.subtotal_nett)}</dd>
+                <dd className="info-value">
+                  {formatCurrency(data?.subtotal_nett)}
+                </dd>
               </div>
               <div className="info-row">
                 <dt className="info-label">Subtotal Tax</dt>
-                <dd className="info-value">{formatCurrency(data?.subtotal_tax)}</dd>
+                <dd className="info-value">
+                  {formatCurrency(data?.subtotal_tax)}
+                </dd>
               </div>
               <div className="info-row">
                 <dt className="info-label">Biaya Kirim</dt>
-                <dd className="info-value">{formatCurrency(data?.shipping_charges)}</dd>
+                <dd className="info-value">
+                  {formatCurrency(data?.shipping_charges)}
+                </dd>
               </div>
               <div className="info-row">
                 <dt className="info-label">Total</dt>

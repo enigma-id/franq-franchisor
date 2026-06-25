@@ -297,7 +297,7 @@ const PaymentMethodListPage: React.FC = () => {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Settings'
+        category="Settings"
         title='Metode Pembayaran'
         subtitle='Kelola metode pembayaran yang tersedia di POS.'
         action={

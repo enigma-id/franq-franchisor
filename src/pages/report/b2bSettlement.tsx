@@ -78,7 +78,7 @@ export default function B2BSettlementPage() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
+        category="Report"
         title="B2B Settlement"
         subtitle="Laporan penyelesaian pembayaran B2B."
       />

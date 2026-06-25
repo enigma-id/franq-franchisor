@@ -27,7 +27,7 @@ const InventoryItemCreatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Inventory Item"
+        category="Inventory"
         title="Tambah Barang Baru"
         subtitle="Daftarkan barang inventaris baru."
         backTo={() => navigate(-1)}

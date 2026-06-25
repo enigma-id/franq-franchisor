@@ -143,7 +143,7 @@ const SupplierListPage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
+        category="Purchase"
         title="Supplier"
         subtitle="Kelola data supplier untuk pembelian stok."
         action={

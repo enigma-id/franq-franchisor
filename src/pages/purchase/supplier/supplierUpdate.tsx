@@ -35,7 +35,7 @@ const SupplierUpdatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Supplier"
+        category="Purchase"
         title="Update Supplier"
         subtitle="Perbarui informasi mitra penyuplai."
         backTo={() => navigate(-1)}

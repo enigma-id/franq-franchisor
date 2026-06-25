@@ -32,7 +32,7 @@ export function SalesOrderCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Operations"
+        category="Sales"
         title="Tambah Sales Order"
         subtitle="Buat transaksi penjualan baru untuk outlet waralaba."
         backTo={() => navigate(-1)}
