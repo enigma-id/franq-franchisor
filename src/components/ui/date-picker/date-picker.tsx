@@ -20,6 +20,7 @@ export const DatePicker = ({
   error,
   required,
   disabled = false,
+  clearable = true,
   dropdownAlign = "left",
 }: DatePickerProps) => {
   const isRange = mode === "range";
@@ -280,24 +281,24 @@ export const DatePicker = ({
           />
         }
         suffix={
-          internalValue && !disabled ? (
-            <Button
-              onClick={() => {
-                setInternalValue(null);
-                onChange?.(null);
-              }}
-              variant="error"
-              shape="circle"
-              size="xs"
-              styleType="soft"
-              className="text-error hover:text-base-100"
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              &times;
-            </Button>
-          ) : (
-            suffix
-          )
+          internalValue && !disabled
+            ? clearable && (
+                <Button
+                  onClick={() => {
+                    setInternalValue(null);
+                    onChange?.(null);
+                  }}
+                  variant="error"
+                  shape="circle"
+                  size="xs"
+                  styleType="soft"
+                  className="text-error hover:text-base-100"
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  &times;
+                </Button>
+              )
+            : suffix
         }
         className={clsx("flex-1", inputClassName)}
         error={error}
@@ -435,18 +436,20 @@ export const DatePicker = ({
             })}
           </div>
 
-          <div className="flex place-content-end gap-2 pt-2">
-            <div
-              onClick={() => {
-                setInternalValue(null);
-                onChange?.(null);
-                setShow(false);
-              }}
-              className="btn btn-sm btn-error hover:btn-error-content text-base-100"
-            >
-              Clear
+          {clearable && (
+            <div className="flex place-content-end gap-2 pt-2">
+              <div
+                onClick={() => {
+                  setInternalValue(null);
+                  onChange?.(null);
+                  setShow(false);
+                }}
+                className="btn btn-sm btn-error hover:btn-error-content text-base-100"
+              >
+                Clear
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

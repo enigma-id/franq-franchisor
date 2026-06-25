@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatePicker } from "@/components/ui";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -14,7 +16,9 @@ interface TableFilterProps {
 }
 
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
-  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const currentDate = table.State?.filter?.production_date ?? "";
+
+  const [date, setDate] = useState<Dayjs | null>(dayjs(currentDate));
 
   const applyFilters = (updates: any) => {
     const filters = {
@@ -23,6 +27,14 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     };
     table.filter(filters);
   };
+
+  useEffect(() => {
+    if (currentDate === "") {
+      setDate(dayjs());
+
+      applyFilters({ production_date: dayjs().format("YYYY-MM-DD") });
+    }
+  }, [table]);
 
   return (
     <div className="flex flex-wrap items-center gap-3">

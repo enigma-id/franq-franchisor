@@ -38,3 +38,17 @@ export interface ItemSalesRow {
   name: string
   quantity: number
 }
+
+// Product Sales
+export interface ProductSalesRow {
+  date: string
+  channel: string
+  payment: string
+  outlet: string
+  code: string
+  menu: string
+  quantity: number
+  unit_nett: number
+  discount: number
+  total_nett: number
+}

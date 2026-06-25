@@ -9,6 +9,8 @@ import createTableConfig from "./table/outlet.config";
 import { Modal, useEnigmaUI } from "@/components";
 import { useOutlet } from "@/services/outlet/hooks";
 import type { TableConfig } from "@/services/table/const";
+import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal.tsx";
+import type { OutletDetail } from "@/services/types/outlet.ts";
 
 const OutletListPage: React.FC = () => {
   const { openModal, closeModal, showToast } = useEnigmaUI();
@@ -43,12 +45,29 @@ const OutletListPage: React.FC = () => {
         onRemove: (row: any) => {
           openDelete(row);
         },
+        onChangeChannel: (row) => openOutletType(row),
         onToggleActive: (row: any) => handleToggleActive(row),
       }),
     [],
   );
 
   const Table = useTable("outlet-list", tableConfig as TableConfig<unknown>);
+
+  const openOutletType = (row: OutletDetail) => {
+    openModal({
+      id: "assign-pos-channel",
+      content: (
+        <AssignPOSChannelModal
+          data={row}
+          onClose={() => closeModal("assign-pos-channel")}
+          onSuccess={() => {
+            closeModal("assign-pos-channel");
+            Table.boot();
+          }}
+        />
+      ),
+    });
+  };
 
   // Handle Delete Success
   useEffect(() => {

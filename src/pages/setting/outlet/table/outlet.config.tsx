@@ -11,6 +11,7 @@ const createTableConfig = ({
   filter,
   onClick,
   onRemove,
+  onChangeChannel,
   onToggleActive,
 }: {
   onRowClick?: (row: any) => void;
@@ -19,6 +20,7 @@ const createTableConfig = ({
   onClick?: (row: any) => void;
   onRemove?: (row: any) => void;
   onToggleActive?: (row: any) => void;
+  onChangeChannel?: (row: any, channel?: any) => void;
 }) => ({
   ...config,
   url: "/outlet",
@@ -41,9 +43,9 @@ const createTableConfig = ({
     type: {
       title: "Type",
       sortable: true,
-      component: (row: any) => (
+      component: (row: OutletDetail) => (
         <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-medium">
-          {row?.type?.name ?? "-"}
+          {row?.outlet_type?.name ?? "-"}
         </span>
       ),
       align: "center",
@@ -73,6 +75,35 @@ const createTableConfig = ({
           {row.address}
         </span>
       ),
+    },
+    pos_channels_count: {
+      title: "POS Channel",
+      sortable: false,
+      align: "center",
+      component: (row: any) => {
+        const types = row?.pos_channels ?? [];
+        return types.length > 0 ? (
+          <div className="group relative inline-block">
+            <span className="text-sm cursor-pointer hover:text-indigo-600 transition-colors">
+              {types.length === 1
+                ? types[0]?.pos_channel?.name || "-"
+                : `${types.length} Channel`}
+            </span>
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col gap-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 min-w-44 z-50 pointer-events-none">
+              {types.map((ot: any) => (
+                <span
+                  key={ot.pos_channel?.id || ot.pos_channel_id}
+                  className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg whitespace-nowrap"
+                >
+                  {ot.pos_channel?.name || "-"}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <span className="text-[11px] text-slate-300 italic">None</span>
+        );
+      },
     },
     created_at: {
       title: "Dibuat Pada",
@@ -165,6 +196,22 @@ const createTableConfig = ({
                 </span>
                 <span className="text-[11px] text-slate-400">
                   {row?.is_active ? "Deactivate catalog" : "Activate catalog"}
+                </span>
+              </div>
+            </button>
+          </Dropdown.Item>
+          <Dropdown.Item
+            onSelect={() => onChangeChannel?.(row)}
+            className="hover:bg-blue-50 hover:text-blue-600"
+          >
+            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <Store className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">POS Channel</span>
+                <span className="text-[11px] text-slate-400">
+                  Manage availability
                 </span>
               </div>
             </button>

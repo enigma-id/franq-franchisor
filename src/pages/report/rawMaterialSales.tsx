@@ -6,7 +6,50 @@ import type { TableConfig } from "@/services/table/const";
 import TableFilter from "./table/product-sales.filter"; // Reuse product sales filter pattern
 import { useReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
-import { SettlementSummaryCards } from "@/components/app";
+import { SummaryCard } from "@/components/app";
+import { currencyFormat } from "@/utils";
+import { ArrowUpCircle, Banknote, Landmark } from "lucide-react";
+
+const THEMES: Record<string, any> = {
+  blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
+  green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
+  red: { text: "text-red-500", iconBg: "#fee2e2", wave: "#ef4444" },
+  purple: { text: "text-purple-500", iconBg: "#f3e8ff", wave: "#a855f7" },
+  orange: { text: "text-orange-500", iconBg: "#ffedd5", wave: "#f97316" },
+};
+
+const OverviewCards = ({ data }: { data: any | null }) => {
+  if (!data) return null;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <SummaryCard
+        label="Total Nett"
+        value={currencyFormat(data.total_nett)}
+        icon={ArrowUpCircle}
+        theme={THEMES.purple}
+      />
+      <SummaryCard
+        label="Total Qty"
+        value={data.total_quantity_fulfilled}
+        icon={Landmark}
+        theme={THEMES.orange}
+      />
+      <SummaryCard
+        label="Total Discount"
+        value={data.total_quantity_ordered}
+        icon={Banknote}
+        theme={THEMES.blue}
+      />
+      <SummaryCard
+        label="Total Nett"
+        value={data.total_orders}
+        icon={ArrowUpCircle}
+        theme={THEMES.red}
+      />
+    </div>
+  );
+};
 
 export default function RawMaterialSalesPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
@@ -25,56 +68,13 @@ export default function RawMaterialSalesPage() {
   const currentFilterString = JSON.stringify(currentFilter);
 
   const { rawMaterialSummary, rawMaterialSummaryResult } = useReport();
-  const { data: summaryResult, isLoading } = rawMaterialSummaryResult;
+  const { data: summaryResult } = rawMaterialSummaryResult;
 
   useEffect(() => {
     rawMaterialSummary(JSON.parse(currentFilterString));
   }, [currentFilterString, Table.State !== undefined]);
 
-  const summary = useMemo(() => {
-    if (isLoading) return [];
-    const d = summaryResult?.data;
-
-    if (Array.isArray(d)) {
-      if (d.length > 0 && d[0].payment_methods && d[0].nominals) {
-        return d[0].payment_methods.map((m: string, i: number) => ({
-          method: m,
-          total: d[0].nominals[i] || 0,
-        }));
-      }
-      if (d.length > 0 && d[0].payment_statuses && d[0].nominals) {
-        return d[0].payment_statuses.map((m: string, i: number) => ({
-          method: m,
-          total: d[0].nominals[i] || 0,
-        }));
-      }
-      return d.map((item: any) => ({
-        method: item.payment_method || item.method || item.name || "Unknown",
-        total: item.nominal || item.total || item.amount || 0,
-      }));
-    }
-
-    if (typeof d === "object" && d !== null) {
-      if (d.payment_methods && d.nominals) {
-        return d.payment_methods.map((m: string, i: number) => ({
-          method: m,
-          total: d.nominals[i] || 0,
-        }));
-      }
-      if (d.payment_statuses && d.nominals) {
-        return d.payment_statuses.map((m: string, i: number) => ({
-          method: m,
-          total: d.nominals[i] || 0,
-        }));
-      }
-      return Object.entries(d).map(([method, total]) => ({
-        method,
-        total: Number(total) || 0,
-      }));
-    }
-
-    return [];
-  }, [rawMaterialSummaryResult]);
+  const summary = summaryResult?.data;
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -84,7 +84,7 @@ export default function RawMaterialSalesPage() {
         subtitle="Laporan pemakaian bahan baku."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
-        <SettlementSummaryCards summary={summary} />
+        <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
           <TableFilter table={Table} />

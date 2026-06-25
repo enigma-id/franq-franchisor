@@ -1,101 +1,83 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Modal, Button, Checkbox } from "@/components/ui";
-import { useInventoryCatalog } from "@/services/inventory/hooks";
-import { useOutletType } from "@/services/outlet/hooks";
+import { useOutlet } from "@/services/outlet/hooks";
 import { useEnigmaUI } from "@/components";
+import { usePOSChannel } from "@/services/pos/hooks";
 
-interface AssignOutletModalProps {
-  catalog: any;
+interface AssignPOSChannelModalProps {
+  data: any;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export function AssignOutletModal({
-  catalog,
+export function AssignPOSChannelModal({
+  data,
   onClose,
   onSuccess,
-}: AssignOutletModalProps) {
-  const {
-    assignOutlet,
-    assignOutletResult,
-    show: getCatalogDetail,
-    showResult: catalogDetailResult,
-  } = useInventoryCatalog();
-  const { get: getOutletTypes, getResult: outletTypesResult } = useOutletType();
+}: AssignPOSChannelModalProps) {
+  const { updateChannel, updateChannelResult, show, showResult } = useOutlet();
+  const { get, getResult } = usePOSChannel();
   const { showToast } = useEnigmaUI();
 
   const [selectedTypes, setSelectedTypes] = useState<Record<number, any>>({});
 
   useEffect(() => {
-    getOutletTypes({ limit: 100, page: 1, status: "active" });
-    if (catalog?.id) {
-      getCatalogDetail({ id: catalog.id });
+    get({ limit: 100, page: 1, status: "active" });
+    if (data?.id) {
+      show({ id: data.id });
     }
-  }, [catalog]);
+  }, [data]);
 
   useEffect(() => {
-    if (catalogDetailResult?.isSuccess) {
-      const catalogData = catalogDetailResult.data?.data as any;
-      const outlets = catalogData?.outlets;
-      if (outlets) {
+    if (showResult?.isSuccess) {
+      const catalogData = showResult.data?.data as any;
+      const channels = catalogData?.pos_channels;
+      if (channels) {
         const initialSelected: Record<number, any> = {};
-        outlets.forEach((ot: any) => {
-          const key = ot.outlet_type?.id;
-          initialSelected[key] = ot;
+        channels.forEach((ot: any) => {
+          const key = ot.pos_channel?.id;
+          initialSelected[key] = { ...ot, channel_id: key };
         });
         setSelectedTypes(initialSelected);
       }
     }
-  }, [catalogDetailResult]);
+  }, [showResult]);
 
   const handleSave = () => {
-    const types = outletTypesResult?.data?.data || [];
-    const payload = types
-      .filter((t: any) => !!selectedTypes[t.id])
-      .map((t: any) => {
-        const existing = selectedTypes[t.id];
-        const data: any = {
-          type_id: t.id,
-          name: t.name,
-          is_selected: true,
-        };
-        if (existing?.id && existing.type_id) {
-          // Only pass id if it was already assigned (pivot id)
-          data.id = existing.id;
-        }
-        return data;
-      });
+    const payload = Object.values(selectedTypes);
 
-    assignOutlet({
-      id: catalog.id,
-      payload: { types: [...payload] },
+    updateChannel({
+      id: data?.id,
+      payload: { channels: payload?.map((p: any) => p.channel_id) },
     });
   };
 
   useEffect(() => {
-    if (assignOutletResult?.isSuccess) {
+    if (updateChannelResult?.isSuccess) {
       showToast({
-        message: "Berhasil mengatur tipe outlet",
+        message: "Berhasil mengatur pos channel",
         type: "success",
         position: "bottom-center",
         duration: 3000,
       });
       onSuccess();
-    } else if (assignOutletResult?.isError) {
+    } else if (updateChannelResult?.isError) {
       showToast({
-        message: "Gagal mengatur tipe outlet",
+        message: "Gagal mengatur pos channel",
         type: "error",
         position: "bottom-center",
         duration: 3000,
       });
     }
-  }, [assignOutletResult]);
+  }, [updateChannelResult]);
 
   const toggleType = (t: any, checked: boolean) => {
     setSelectedTypes((prev) => {
       const next = { ...prev };
       if (checked) {
-        next[t.id] = { ...t, type_id: t.id }; // Mark as selected
+        next[t.id] = { ...t, channel_id: t.id }; // Mark as selected
       } else {
         delete next[t.id];
       }
@@ -103,17 +85,16 @@ export function AssignOutletModal({
     });
   };
 
-  const types = outletTypesResult?.data?.data || [];
-  const isLoading =
-    outletTypesResult?.isLoading || catalogDetailResult?.isLoading;
+  const types = getResult?.data?.data || [];
+  const isLoading = getResult?.isLoading || showResult?.isLoading;
 
   return (
     <Modal.Wrapper open onClose={onClose} closeOnOutsideClick={false}>
       <Modal.Header>
-        <div className="font-bold leading-7">Atur Tipe Outlet</div>
+        <div className="font-bold leading-7">Atur POS Channel</div>
         <div className="text-xs text-slate-500 font-normal mt-1">
-          Pilih tipe outlet mana saja yang dapat menggunakan katalog{" "}
-          <b>{catalog?.name}</b>
+          Pilih channel mana saja yang akan dimasukkan ke
+          <b>{data?.name}</b>
         </div>
       </Modal.Header>
       <Modal.Body className="max-h-[60vh] overflow-y-auto p-5">
@@ -158,7 +139,7 @@ export function AssignOutletModal({
           className="flex-1 rounded-xl"
           variant="primary"
           onClick={handleSave}
-          isLoading={assignOutletResult?.isLoading}
+          isLoading={updateChannelResult?.isLoading}
           disabled={isLoading}
         >
           Simpan
@@ -168,7 +149,7 @@ export function AssignOutletModal({
           styleType="outline"
           variant="secondary"
           onClick={onClose}
-          disabled={assignOutletResult?.isLoading}
+          disabled={updateChannelResult?.isLoading}
         >
           Batal
         </Button>

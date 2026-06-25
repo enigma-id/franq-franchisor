@@ -18,5 +18,6 @@ export type DatePickerProps = {
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  clearable?: boolean;
   dropdownAlign?: "left" | "right";
 };

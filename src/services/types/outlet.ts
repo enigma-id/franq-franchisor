@@ -36,12 +36,20 @@ export interface OutletChannelsUpdateRequest {
 export interface OutletDetail extends OutletBase {
   id: string;
   franchisor_id?: string;
-  channels: OutletChannel[];
+  pos_channels: {
+    id: string;
+    pos_channel: {
+      name: string;
+    };
+  }[];
   is_active: boolean;
   created_at: string;
   updated_at: string;
   saldo?: number;
   region?: RegionDetail;
+  outlet_type?: {
+    name: string;
+  };
 }
 
 export interface OutletTypeBase {
