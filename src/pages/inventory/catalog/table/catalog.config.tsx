@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dropdown } from "@/components";
+import { Dropdown, Tooltip } from "@/components";
 import config from "@/services/table/const";
 import type { InventoryCatalogDetail } from "@/services/types/inventory";
 import {
@@ -9,8 +9,8 @@ import {
   Package,
   Power,
   Trash,
-  Scale,
   Store,
+  Eye,
 } from "lucide-react";
 import { Toggle } from "@/components/ui";
 
@@ -19,6 +19,7 @@ const createTableConfig = ({
   lockFilter,
   filter,
   onClick,
+  onEdit,
   onRemove,
   onOutletType,
   onToggleActive,
@@ -27,6 +28,7 @@ const createTableConfig = ({
   lockFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
+  onEdit?: (row: any) => void;
   onRemove?: (row: any) => void;
   onOutletType?: (row: any, outletType?: any) => void;
   onToggleActive?: (row: any) => void;
@@ -103,54 +105,60 @@ const createTableConfig = ({
         },
         align: "center",
       },
+      unit: {
+        title: "Takaran",
+        headerClass: "text-xs uppercase!",
+        class: "p-4!",
+        sortable: false,
+        component: (row: InventoryCatalogDetail) => {
+          if (row?.is_bundle) {
+            return <span className="text-[12px] text-gray-500 italic">-</span>;
+          }
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[12px] font-semibold text-gray-700">
+                {row?.unit || "-"}
+                {row?.measurement || "-"}/porsi
+              </span>
+            </div>
+          );
+        },
+        align: "center",
+      },
       base_price: {
         title: "Base Price",
         sortable: true,
         format_number: true,
       },
-      unit_price: {
-        title: "Unit Price",
-        sortable: true,
-        format_number: true,
-      },
-      weight: {
-        title: "Weight",
-        headerClass: "text-xs uppercase!",
-        class: "p-4!",
-        component: (row: InventoryCatalogDetail) => (
-          <div className="flex items-center gap-1.5">
-            <Scale className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-[12px] font-medium text-gray-600">
-              {row?.weight ? `${row.weight} g` : "-"}
-            </span>
-          </div>
-        ),
-        align: "center",
-      },
-
       outlet_type_count: {
         title: "Outlet Type",
         sortable: false,
         component: (row: any) => {
           const types = row?.outlet_types ?? [];
           return types.length > 0 ? (
-            <div className="group relative inline-block">
+            <Tooltip
+              label={
+                <div className="flex flex-col items-start gap-2 p-2">
+                  {types.map((ot: any) => (
+                    <span
+                      key={ot.outlet_type?.id || ot.outlet_type_id}
+                      className="text-md whitespace-nowrap"
+                    >
+                      {ot.outlet_type?.name || "-"}
+                    </span>
+                  ))}
+                </div>
+              }
+              position="left"
+              size="sm"
+              className="bg-white shadow-sm border border-slate-200"
+            >
               <span className="text-sm cursor-pointer hover:text-indigo-600 transition-colors">
                 {types.length === 1
                   ? types[0]?.outlet_type?.name || "-"
                   : `${types.length} Type`}
               </span>
-              <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col gap-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 min-w-44 z-50 pointer-events-none">
-                {types.map((ot: any) => (
-                  <span
-                    key={ot.outlet_type?.id || ot.outlet_type_id}
-                    className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg whitespace-nowrap"
-                  >
-                    {ot.outlet_type?.name || "-"}
-                  </span>
-                ))}
-              </div>
-            </div>
+            </Tooltip>
           ) : (
             <span className="text-[11px] text-slate-300 italic">None</span>
           );
@@ -159,8 +167,7 @@ const createTableConfig = ({
       },
       is_active: {
         title: "Status",
-        headerClass: "text-xs uppercase!",
-        class: "p-4!",
+        class: "text-center",
         align: "center",
         component: (row: InventoryCatalogDetail) => (
           <div className="flex justify-center items-center">
@@ -190,6 +197,23 @@ const createTableConfig = ({
           >
             <Dropdown.Item
               onSelect={() => onClick?.(row)}
+              className="hover:bg-green-50 hover:text-green-600"
+            >
+              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-success">
+                  <Eye className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">See Detail</span>
+                  <span className="text-[11px] text-slate-400">
+                    See purchase order info
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+
+            <Dropdown.Item
+              onSelect={() => onEdit?.(row)}
               className="hover:bg-indigo-50 hover:text-indigo-600"
             >
               <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">

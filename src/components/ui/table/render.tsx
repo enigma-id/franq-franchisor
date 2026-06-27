@@ -191,7 +191,7 @@ function TableRender<T>({
     <div className="flex h-[calc(100vh-390px)] flex-col bg-white border border-gray-200">
       <div className="flex-1 overflow-auto">
         <table
-          className="table-hover table-vcenter datatable table"
+          className="table-hover table-vcenter datatable table relative"
           width="100%"
         >
           <thead>

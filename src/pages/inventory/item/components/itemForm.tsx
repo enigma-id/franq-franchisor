@@ -216,16 +216,16 @@ export function InventoryItemForm({
       {/* Grid: Basic Info + Pricing */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Informasi Umum Item Card */}
-        <div className="card-info card-animate p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-          <div className="card-section-header flex items-center gap-2 mb-4">
-            <div className="card-section-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
-              <Package size={18} />
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-20">
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-orange-50 text-orange-600 rounded-lg">
+                <Package size={18} />
+              </div>
+              <h2 className="font-bold text-slate-700">Informasi Umum Item</h2>
             </div>
-            <h2 className="card-section-title font-bold text-slate-700">
-              Informasi Umum Item
-            </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
             <RemoteSelect<SelectOptionValue>
               label="Tipe"
               placeholder="Pilih Tipe..."
@@ -369,16 +369,16 @@ export function InventoryItemForm({
         </div>
 
         {/* Harga, Berat & Pajak Card */}
-        <div className="card-info card-animate p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-          <div className="card-section-header flex items-center gap-2 mb-4">
-            <div className="card-section-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
-              <Package size={18} />
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-violet-50 text-violet-600 rounded-lg">
+                <Package size={18} />
+              </div>
+              <h2 className="font-bold text-slate-700">Harga, Berat & Pajak</h2>
             </div>
-            <h2 className="card-section-title font-bold text-slate-700">
-              Harga, Berat & Pajak
-            </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
             <Input
               label="Base Price"
               type="currency"
@@ -447,8 +447,7 @@ export function InventoryItemForm({
                   : undefined
               }
             />
-          </div>
-          <div className="flex gap-6 pt-4 mt-4 border-t border-slate-100">
+
             <Checkbox
               label="Vatable (PPN)"
               checked={formData.is_vatable}
@@ -462,15 +461,13 @@ export function InventoryItemForm({
       </div>
 
       {/* Fractions Card */}
-      <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="table-header px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
+        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="table-header-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
+            <div className="p-1.5 bg-orange-50 text-orange-600 rounded-lg">
               <Package size={16} />
             </div>
-            <h2 className="table-header-title font-bold text-slate-700">
-              Satuan (Fractions)
-            </h2>
+            <h2 className="font-bold text-slate-700">Satuan (Fractions)</h2>
           </div>
           <button
             type="button"
@@ -555,7 +552,7 @@ export function InventoryItemForm({
 
       {/* BOMS Card */}
       {typeSelected?.value === "finished_goods" && (
-        <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! relative z-20">
           <div className="table-header px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="table-header-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
@@ -637,7 +634,7 @@ export function InventoryItemForm({
                       onChange={(e) =>
                         updateBoms(index, "measurement", e.target.value)
                       }
-                      placeholder="Contoh: PCS, Box, Lusin"
+                      placeholder="Contoh: ml, gram, pcs"
                       required
                       variant="primary"
                       error={

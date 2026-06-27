@@ -89,7 +89,8 @@ const InventoryCatalogListPage: React.FC = () => {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onClick: (row) => navigate(`/inventory/catalog/update/${row.id}`),
+        onClick: (row) => navigate(`/inventory/catalog/${row.id}`),
+        onEdit: (row) => navigate(`/inventory/catalog/update/${row.id}`),
         onRemove: (row) => openDelete(row),
         onOutletType: (row, ot) => {
           if (ot) {

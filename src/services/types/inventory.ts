@@ -117,22 +117,75 @@ export interface InventoryCatalogRequest extends InventoryCatalogBase {
   weight?: number; // Added based on table
 }
 
-export interface InventoryCatalogDetail extends InventoryCatalogBase {
+export interface InventoryCatalogDetailBase extends InventoryCatalogBase {
   id: string;
+  franchisor_id: string;
   code: string;
+
   base_price: number;
   weight: number;
+  volume: number;
+
+  unit: number;
+  measurement: string;
+
   is_active: boolean;
-  bundle_items?: BundleItemDetail[];
-  item?: ItemDetail;
-  item_id?: string;
-  fraction_id?: string;
-  item_fraction?: {
-    is_smallest: boolean;
-    item_id: string;
-    name: string;
-    quantity: number;
-  };
+  is_vatable: boolean;
+
+  created_by: string;
+  updated_by: string;
   created_at: string;
   updated_at: string;
+
+  outlet_types: {
+    id: string;
+    outlet_type_id: string;
+    catalog_id: string;
+    outlet_type: {
+      id: string;
+      franchisor_id: string;
+      name: string;
+      is_active: boolean;
+      created_at: string;
+      updated_at: string;
+    };
+  }[];
 }
+
+export interface BundleCatalogItem {
+  id: string;
+  catalog_id: string;
+
+  item_id: string;
+  fraction_id: string;
+
+  quantity: number;
+  base_price: number;
+  margin: number;
+
+  item: InventoryItemDetail;
+  fraction: InventoryFractionDetail;
+}
+
+export interface InventoryCatalogStandard extends InventoryCatalogDetailBase {
+  is_bundle: false;
+
+  item_id: string;
+  fraction_id: string;
+
+  item: InventoryItemDetail;
+  item_fraction: InventoryFractionDetail;
+}
+
+export interface InventoryCatalogBundle extends InventoryCatalogDetailBase {
+  is_bundle: true;
+
+  item_id: string;
+  fraction_id: string;
+
+  bundle_items: BundleCatalogItem[];
+}
+
+export type InventoryCatalogDetail =
+  | InventoryCatalogStandard
+  | InventoryCatalogBundle;

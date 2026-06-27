@@ -13,7 +13,7 @@ table td:last-child {
 }
 
 .table thead th {
-  @apply bg-[#FCFDFE] sticky top-0 py-5 px-4 text-[11px] font-bold tracking-[0.05em] text-gray-400 uppercase border-b border-gray-200 shadow-none align-middle;
+  @apply bg-[#FCFDFE] sticky top-0 py-5 px-4 text-[11px] font-bold tracking-[0.05em] text-gray-400 uppercase border-b border-gray-200 shadow-none align-middle z-5!;
 }
 
 @media print {
@@ -80,17 +80,17 @@ table td:last-child {
 }
 
 /* No wrap */
-.table-nowrap> :not(caption)>*>* {
+.table-nowrap > :not(caption) > * > * {
   @apply whitespace-nowrap;
 }
 
 /* Vertically center */
-.table-vcenter> :not(caption)>*>* {
+.table-vcenter > :not(caption) > * > * {
   @apply align-middle;
 }
 
 /* Text center */
-.table-center> :not(caption)>*>* {
+.table-center > :not(caption) > * > * {
   @apply text-center;
 }
 

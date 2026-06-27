@@ -40,6 +40,8 @@ export function InventoryItem() {
           Table.boot();
         },
         onClick: (row: InventoryItemDetail) =>
+          navigate(`/inventory/item/${row.id}`),
+        onEdit: (row: InventoryItemDetail) =>
           navigate(`/inventory/item/update/${row.id}`),
         onRemove: (v: InventoryItemDetail) => {
           openDelete(v);

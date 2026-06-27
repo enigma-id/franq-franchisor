@@ -120,9 +120,11 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.625rem;
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     oklch(0.701 0.233 49.71 / 0.1),
-    oklch(0.701 0.233 49.71 / 0.04));
+    oklch(0.701 0.233 49.71 / 0.04)
+  );
   color: oklch(0.701 0.233 49.71);
   flex-shrink: 0;
 }
@@ -175,7 +177,7 @@
 }
 
 .card-info .info-value.mono {
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }
 
 .card-info .info-row-total {
@@ -224,7 +226,11 @@
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid oklch(0.94 0.005 264.91);
-  background: linear-gradient(180deg, oklch(0.995 0.001 264.91), oklch(0.985 0.002 264.91));
+  background: linear-gradient(
+    180deg,
+    oklch(0.995 0.001 264.91),
+    oklch(0.985 0.002 264.91)
+  );
 }
 
 .card-table .table-header-icon {
@@ -234,9 +240,11 @@
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     oklch(0.701 0.233 49.71 / 0.1),
-    oklch(0.701 0.233 49.71 / 0.04));
+    oklch(0.701 0.233 49.71 / 0.04)
+  );
   color: oklch(0.701 0.233 49.71);
   flex-shrink: 0;
 }
@@ -268,16 +276,18 @@
 }
 
 .card-form::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     oklch(0.701 0.233 49.71),
     oklch(0.78 0.18 60),
-    oklch(0.85 0.15 70));
+    oklch(0.85 0.15 70)
+  );
   opacity: 0.8;
 }
 
@@ -298,10 +308,12 @@
   position: relative;
   border-radius: 1rem;
   overflow: hidden;
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     oklch(0.701 0.233 49.71),
     oklch(0.62 0.24 42),
-    oklch(0.58 0.22 35));
+    oklch(0.58 0.22 35)
+  );
   box-shadow:
     0 4px 12px oklch(0.701 0.233 49.71 / 0.2),
     0 16px 40px oklch(0.701 0.233 49.71 / 0.12);
@@ -309,7 +321,7 @@
 }
 
 .card-hero::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -30%;
   right: -10%;
@@ -324,7 +336,7 @@
 }
 
 .card-hero::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -40%;
   left: -15%;
@@ -380,7 +392,7 @@
 .card-hero .hero-value {
   font-size: 2rem;
   font-weight: 800;
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
   color: oklch(1 0 0);
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -397,9 +409,11 @@
   font-size: 0.7rem;
   font-weight: 700;
   color: oklch(1 0 0);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     oklch(0.701 0.233 49.71),
-    oklch(0.62 0.24 42));
+    oklch(0.62 0.24 42)
+  );
   box-shadow: 0 2px 6px oklch(0.701 0.233 49.71 / 0.3);
 }
 
@@ -410,7 +424,11 @@
   justify-content: space-between;
   padding: 0.75rem 1.5rem;
   border-top: 1px solid oklch(0.94 0.005 264.91);
-  background: linear-gradient(180deg, oklch(0.995 0.001 264.91), oklch(0.99 0.002 264.91));
+  background: linear-gradient(
+    180deg,
+    oklch(0.995 0.001 264.91),
+    oklch(0.99 0.002 264.91)
+  );
 }
 
 .card-footer-text {
@@ -434,10 +452,24 @@
   animation: cardFadeIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.card-animate:nth-child(1) { animation-delay: 0ms; }
-.card-animate:nth-child(2) { animation-delay: 80ms; }
-.card-animate:nth-child(3) { animation-delay: 160ms; }
-.card-animate:nth-child(4) { animation-delay: 240ms; }
-.card-animate:nth-child(5) { animation-delay: 320ms; }
-.card-animate:nth-child(6) { animation-delay: 400ms; }
-.card-animate:nth-child(7) { animation-delay: 480ms; }
+.card-animate:nth-child(1) {
+  animation-delay: 0ms;
+}
+.card-animate:nth-child(2) {
+  animation-delay: 80ms;
+}
+.card-animate:nth-child(3) {
+  animation-delay: 160ms;
+}
+.card-animate:nth-child(4) {
+  animation-delay: 240ms;
+}
+.card-animate:nth-child(5) {
+  animation-delay: 320ms;
+}
+.card-animate:nth-child(6) {
+  animation-delay: 400ms;
+}
+.card-animate:nth-child(7) {
+  animation-delay: 480ms;
+}

@@ -2,13 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { Input, DatePicker, RemoteSelect } from "@/components/ui";
-import { useInventoryCatalog } from "@/services/inventory/hooks";
+import { useInventoryItem } from "@/services/inventory/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { Button } from "@/components";
 import { Plus, Trash2 } from "lucide-react";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import type { ProductionPlanDetail, WarehouseDetail } from "@/services/types";
 import { useAppSelector } from "@/hooks";
+import { dateFormat } from "@/utils";
 
 type ProductionPlanFormItem = {
   item_id: string;
@@ -41,7 +42,8 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
   const FormState = useAppSelector((s) => s.form);
 
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
-  const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
+  // const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
+  const { get: getCatalogs, getResult: catalogsResult } = useInventoryItem();
 
   const [formData, setFormData] = useState<{
     warehouse_id: string;
@@ -127,6 +129,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
 
     const payload = {
       ...formData,
+      production_date: dateFormat(formData.production_date, "YYYY-MM-DD"),
       items: formData?.items.map((data) => ({
         item_id: data?.item_id,
         quantity: data?.quantity,
@@ -149,7 +152,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
         <div className="space-y-2">
           <RemoteSelect
             label="Pilih Warehouse"
-            placeholder="Cari outlet..."
+            placeholder="Cari warehouse..."
             hook={warehouseResult as any}
             fetchData={(page, search) => getWarehouse({ page, search })}
             getLabel={(item: any) => item?.name}
@@ -174,11 +177,11 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
               setProductionDate(date as Dayjs);
               setFormData((prev) => ({
                 ...prev,
-                production_date: date ? (date as Dayjs).toISOString() : "",
+                production_date: date ? date : "",
               }));
             }}
             required
-            error={FormState?.errors?.production_date as string}
+            error={FormState?.errors?.eta_date as string}
           />
         </div>
       </div>

@@ -20,9 +20,11 @@ import PaymentMethodListPage from "@/pages/setting/pos/payment";
 import InventoryItemListPage from "@/pages/inventory/item";
 import InventoryItemCreatePage from "@/pages/inventory/item/itemCreate";
 import InventoryItemUpdatePage from "@/pages/inventory/item/itemUpdate";
+import InventoryItemDetailPage from "@/pages/inventory/item/itemDetail";
 import InventoryCatalogListPage from "@/pages/inventory/catalog";
 import InventoryCatalogCreatePage from "@/pages/inventory/catalog/catalogCreate";
 import InventoryCatalogUpdatePage from "@/pages/inventory/catalog/catalogUpdate";
+import InventoryCatalogDetailPage from "@/pages/inventory/catalog/catalogDetail";
 import WarehouseListPage from "@/pages/inventory/warehouse";
 import SupplierListPage from "@/pages/purchase/supplier";
 import SupplierCreatePage from "@/pages/purchase/supplier/supplierCreate";
@@ -124,6 +126,10 @@ export function AppRoutes() {
           element={<InventoryItemCreatePage />}
         />
         <Route
+          path="/inventory/item/:id"
+          element={<InventoryItemDetailPage />}
+        />
+        <Route
           path="/inventory/item/update/:id"
           element={<InventoryItemUpdatePage />}
         />
@@ -139,6 +145,10 @@ export function AppRoutes() {
         <Route
           path="/inventory/catalog/update/:id"
           element={<InventoryCatalogUpdatePage />}
+        />
+        <Route
+          path="/inventory/catalog/:id"
+          element={<InventoryCatalogDetailPage />}
         />
 
         {/* Inventory - Warehouse */}

@@ -1,6 +1,6 @@
 import { Dropdown } from "@/components";
 import config from "@/services/table/const";
-import { Edit, MoreVertical, Trash, Power } from "lucide-react";
+import { Edit, MoreVertical, Trash, Power, Eye } from "lucide-react";
 import { Toggle } from "@/components/ui";
 import type { InventoryItemDetail } from "@/services/types/inventory";
 import { formatCurrency } from "@/utils";
@@ -9,6 +9,7 @@ const createTableConfig = ({
   lockFilter,
   filter,
   onClick,
+  onEdit,
   onReload,
   onRemove,
   onToggleActive,
@@ -17,6 +18,7 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
   onReload: () => void;
   onClick: (v: InventoryItemDetail) => void;
+  onEdit: (v: InventoryItemDetail) => void;
   onRemove: (v: InventoryItemDetail) => void;
   onToggleActive?: (row: InventoryItemDetail) => void;
 }) => ({
@@ -130,7 +132,24 @@ const createTableConfig = ({
           contentClassName="dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2"
         >
           <Dropdown.Item
-            onSelect={() => onClick(row)}
+            onSelect={() => onClick?.(row)}
+            className="hover:bg-green-50 hover:text-green-600"
+          >
+            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
+              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-success">
+                <Eye className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">See Detail</span>
+                <span className="text-[11px] text-slate-400">
+                  See item info
+                </span>
+              </div>
+            </button>
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            onSelect={() => onEdit?.(row)}
             className="hover:bg-indigo-50 hover:text-indigo-600"
           >
             <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">

@@ -9,6 +9,7 @@ import {
   FileText,
   Check,
   Trash2,
+  Printer,
 } from "lucide-react";
 import dayjs from "dayjs";
 import type { ProductionPlanDetail, WarehouseDetail } from "@/services/types";
@@ -19,11 +20,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import { useAppSelector } from "@/hooks";
+import { usePrintWindow } from "@/utils/usePrintWindow";
+import Plan from "@/components/app/print/plan";
 
 const ProductionPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const FormState = useAppSelector((s) => s.form);
+  const { open: openPrint } = usePrintWindow({
+    title: "Print Preview",
+    autoClose: true,
+  });
 
   const {
     show,
@@ -119,6 +126,10 @@ const ProductionPlanDetailPage: React.FC = () => {
         if (id) remove({ id });
       },
     });
+  };
+
+  const handleOpenPrint = (item: any) => {
+    openPrint(<Plan data={item} plan={plan} />);
   };
 
   if (isLoading) {
@@ -269,6 +280,7 @@ const ProductionPlanDetailPage: React.FC = () => {
                   <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
                     Qty Produced
                   </th>
+                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none"></th>
                 </tr>
               </thead>
               <tbody>
@@ -322,6 +334,14 @@ const ProductionPlanDetailPage: React.FC = () => {
                       </td>
                       <td className="px-4 py-3 text-[15px] font-bold text-slate-600 text-right align-text-top!">
                         {item.quantity_produced}
+                      </td>
+                      <td className="px-4 py-3 text-[15px] font-bold text-slate-600 text-right align-text-top!">
+                        <Button
+                          styleType="ghost"
+                          onClick={() => handleOpenPrint(item)}
+                        >
+                          <Printer size={16} />
+                        </Button>
                       </td>
                     </tr>
                   ))

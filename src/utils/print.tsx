@@ -309,7 +309,7 @@ const Print = ({
     document.write(
       `<!DOCTYPE html><html><head><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"><style>${stylesHtml}</style><title>${title}</title></head><body class="${size}">${content}</body></html>`
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"><style>${stylesHtml}</style><title>${title}</title></head><body class="${size}">${content}</body></html>`,
     );
   };
 
