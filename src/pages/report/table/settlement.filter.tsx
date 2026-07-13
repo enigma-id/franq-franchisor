@@ -60,11 +60,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     },
   );
 
-  // Periode (month picker via simple month/year string)
-  const [periode, setPeriode] = useState<string>(
-    (current.periode as string) || "",
-  );
-
   const selectClassName =
     "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
 
@@ -72,7 +67,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     const filters = {
       outlet_id: outlet?.id ?? "",
       periode_type: periodeType?.value ?? "",
-      periode: periode || "",
       ...updates,
     };
     table.filter(filters);

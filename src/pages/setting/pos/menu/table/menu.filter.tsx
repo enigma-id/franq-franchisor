@@ -1,16 +1,19 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-import { Input, RemoteSelect } from "@/components/ui";
+import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import { usePOSCategory } from "@/services/pos/hooks";
 
 interface TableFilterProps {
   table: {
-    filter: { search: string };
-    handleSearch: (value: string) => void;
-    State: any;
+    filter: (params: any) => void;
+    State: {
+      loading: boolean;
+      filter: any;
+    };
   };
 }
 
@@ -57,19 +60,11 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       is_active: isActive?.value ?? "",
       ...updates,
     };
-    table.State?.filter
-      ? table.filter(filters)
-      : table.handleSearch(table.filter.search || "");
+    table.filter(filters);
   };
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Input
-        placeholder="Cari menu..."
-        className="w-full md:w-48"
-        value={table.filter.search || ""}
-        onChange={(e) => table.handleSearch(e.target.value)}
-      />
       <div className="w-40 md:w-48">
         <RemoteSelect
           placeholder="Category: All"

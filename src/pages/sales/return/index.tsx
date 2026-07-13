@@ -1,11 +1,17 @@
-import React, { useMemo, useEffect, useState, useRef, useCallback } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Button, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/return.config";
-import TableFilter from "./table/return.filter";
 import type { TableConfig } from "@/services/table/const";
 import type { SalesReturnDetail } from "@/services/types";
 import { useSalesReturn } from "@/services/sales/hooks";
@@ -14,7 +20,9 @@ const SalesReturnListPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
   const { approve, approveResult } = useSalesReturn();
-  const [selectedRow, setSelectedRow] = useState<SalesReturnDetail | null>(null);
+  const [selectedRow, setSelectedRow] = useState<SalesReturnDetail | null>(
+    null,
+  );
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(
@@ -28,7 +36,9 @@ const SalesReturnListPage: React.FC = () => {
 
   const Table = useTable("sales_return", tableConfig as TableConfig<unknown>);
 
-  useEffect(() => { tableRef.current = Table; }, [Table]);
+  useEffect(() => {
+    tableRef.current = Table;
+  }, [Table]);
 
   const closeConfirmModal = useCallback(() => {
     setSelectedRow(null);
@@ -41,7 +51,11 @@ const SalesReturnListPage: React.FC = () => {
 
   useEffect(() => {
     if (approveResult?.isSuccess) {
-      showToast({ message: "Return berhasil disetujui", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Return berhasil disetujui",
+        type: "success",
+        position: "bottom-center",
+      });
       closeConfirmModal();
       approveResult.reset?.();
       tableRef.current?.boot();
@@ -57,9 +71,7 @@ const SalesReturnListPage: React.FC = () => {
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0">
-        <Table.Tools>
-          <TableFilter table={Table} />
-        </Table.Tools>
+        <Table.Tools />
 
         <Table.Render
           emptyTitle="Belum Ada Return"

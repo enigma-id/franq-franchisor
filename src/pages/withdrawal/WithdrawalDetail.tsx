@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
@@ -12,7 +13,8 @@ export function WithdrawalDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
-  const { show, showResult, approve, approveResult, reject, rejectResult } = useWithdrawal();
+  const { show, showResult, approve, approveResult, reject, rejectResult } =
+    useWithdrawal();
 
   useEffect(() => {
     if (id) show({ id });
@@ -27,12 +29,18 @@ export function WithdrawalDetail() {
   } | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  const refetch = () => { if (id) show({ id }); };
+  const refetch = () => {
+    if (id) show({ id });
+  };
 
   // Success effects
   useEffect(() => {
     if (approveResult.isSuccess && confirmModal?.type === "approve") {
-      showToast({ message: "Penarikan disetujui", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Penarikan disetujui",
+        type: "success",
+        position: "bottom-center",
+      });
       setConfirmModal(null);
       refetch();
       approveResult.reset?.();
@@ -41,7 +49,11 @@ export function WithdrawalDetail() {
 
   useEffect(() => {
     if (rejectResult.isSuccess && confirmModal?.type === "reject") {
-      showToast({ message: "Penarikan ditolak", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Penarikan ditolak",
+        type: "success",
+        position: "bottom-center",
+      });
       setConfirmModal(null);
       setRejectReason("");
       refetch();
@@ -109,7 +121,7 @@ export function WithdrawalDetail() {
                 <CheckCircle2 size={18} /> Approve
               </Button>
               <Button
-                variant="danger"
+                variant="error"
                 onClick={() => setConfirmModal({ type: "reject" })}
                 disabled={rejectResult.isLoading}
               >
@@ -123,7 +135,9 @@ export function WithdrawalDetail() {
         <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
           <div className="flex justify-between">
             <span className="text-base-content/60">Kode</span>
-            <span className="font-semibold font-mono text-sm">{data?.code || "-"}</span>
+            <span className="font-semibold font-mono text-sm">
+              {data?.code || "-"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">Outlet</span>
@@ -131,7 +145,9 @@ export function WithdrawalDetail() {
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">Jumlah</span>
-            <span className="font-bold text-lg">{currencyFormat(data?.amount || 0)}</span>
+            <span className="font-bold text-lg">
+              {currencyFormat(data?.amount || 0)}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">Saldo Saat Pengajuan</span>
@@ -143,7 +159,9 @@ export function WithdrawalDetail() {
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">No. Rekening</span>
-            <span className="font-mono">{data?.bank_account_number || "-"}</span>
+            <span className="font-mono">
+              {data?.bank_account_number || "-"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">Atas Nama</span>
@@ -151,7 +169,15 @@ export function WithdrawalDetail() {
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">Status</span>
-            <Badge variant={data?.document_status === "approved" ? "success" : data?.document_status === "rejected" ? "error" : "warning"}>
+            <Badge
+              variant={
+                data?.document_status === "approved"
+                  ? "success"
+                  : data?.document_status === "rejected"
+                    ? "error"
+                    : "warning"
+              }
+            >
               {data?.document_status}
             </Badge>
           </div>
@@ -170,13 +196,18 @@ export function WithdrawalDetail() {
       >
         <Modal.Header>Konfirmasi Approval</Modal.Header>
         <Modal.Body>
-          Apakah Anda yakin ingin menyetujui penarikan sebesar {currencyFormat(data?.amount || 0)}?
+          Apakah Anda yakin ingin menyetujui penarikan sebesar{" "}
+          {currencyFormat(data?.amount || 0)}?
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setConfirmModal(null)} variant="default">
             Batal
           </Button>
-          <Button onClick={handleApprove} variant="primary" isLoading={approveResult.isLoading}>
+          <Button
+            onClick={handleApprove}
+            variant="primary"
+            isLoading={approveResult.isLoading}
+          >
             Setujui
           </Button>
         </Modal.Footer>
@@ -193,7 +224,8 @@ export function WithdrawalDetail() {
         <Modal.Header>Konfirmasi Penolakan</Modal.Header>
         <Modal.Body>
           <p className="mb-4">
-            Apakah Anda yakin ingin menolak penarikan sebesar {currencyFormat(data?.amount || 0)}?
+            Apakah Anda yakin ingin menolak penarikan sebesar{" "}
+            {currencyFormat(data?.amount || 0)}?
           </p>
           <Input
             type="textarea"
@@ -204,10 +236,21 @@ export function WithdrawalDetail() {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => { setConfirmModal(null); setRejectReason(""); }} variant="default">
+          <Button
+            onClick={() => {
+              setConfirmModal(null);
+              setRejectReason("");
+            }}
+            variant="default"
+          >
             Batal
           </Button>
-          <Button onClick={handleReject} variant="error" isLoading={rejectResult.isLoading} disabled={!rejectReason.trim()}>
+          <Button
+            onClick={handleReject}
+            variant="error"
+            isLoading={rejectResult.isLoading}
+            disabled={!rejectReason.trim()}
+          >
             Tolak
           </Button>
         </Modal.Footer>

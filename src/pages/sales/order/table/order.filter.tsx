@@ -1,13 +1,11 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 import { DatePicker, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
-import {
-  documentStatusOptions,
-  paymentStatusOptions,
-} from "@/utils/options";
+import { documentStatusOptions, paymentStatusOptions } from "@/utils/options";
 import { ChevronDown } from "lucide-react";
 import { useOutlet } from "@/services/outlet/hooks";
 import { useWarehouse } from "@/services/warehouse/hooks";
@@ -45,7 +43,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     },
   );
 
-
   // Outlet filter
   const { get: getOutlet, getResult: getOutletResult } = useOutlet();
   const [outlet, setOutlet] = useState<any | null>(null);
@@ -81,7 +78,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       setWarehouse(null);
     }
   }, [current.warehouse_id, getWarehouseResult?.data?.data]);
-
 
   const [dateRange, setDateRange] = useState<
     [Dayjs | null, Dayjs | null] | undefined

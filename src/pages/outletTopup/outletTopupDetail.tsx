@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
@@ -12,7 +13,8 @@ const OutletTopupDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
-  const { show, showResult, approve, approveResult, reject, rejectResult } = useOutletTopup();
+  const { show, showResult, approve, approveResult, reject, rejectResult } =
+    useOutletTopup();
 
   useEffect(() => {
     if (id) show({ id });
@@ -27,12 +29,18 @@ const OutletTopupDetailPage: React.FC = () => {
   } | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  const refetch = () => { if (id) show({ id }); };
+  const refetch = () => {
+    if (id) show({ id });
+  };
 
   // Reset modal on success
   useEffect(() => {
     if (approveResult.isSuccess && confirmModal?.type === "approve") {
-      showToast({ message: "Topup outlet disetujui", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Topup outlet disetujui",
+        type: "success",
+        position: "bottom-center",
+      });
       setConfirmModal(null);
       refetch();
       approveResult.reset?.();
@@ -41,7 +49,11 @@ const OutletTopupDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (rejectResult.isSuccess && confirmModal?.type === "reject") {
-      showToast({ message: "Topup outlet ditolak", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Topup outlet ditolak",
+        type: "success",
+        position: "bottom-center",
+      });
       setConfirmModal(null);
       setRejectReason("");
       refetch();
@@ -108,7 +120,7 @@ const OutletTopupDetailPage: React.FC = () => {
                 <CheckCircle2 size={18} /> Approve
               </Button>
               <Button
-                variant="danger"
+                variant="error"
                 onClick={() => setConfirmModal({ type: "reject" })}
                 disabled={rejectResult.isLoading}
               >
@@ -126,17 +138,31 @@ const OutletTopupDetailPage: React.FC = () => {
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">Jumlah</span>
-            <span className="font-bold text-lg">{currencyFormat(data.amount || 0)}</span>
+            <span className="font-bold text-lg">
+              {currencyFormat(data.amount || 0)}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">Status</span>
-            <Badge variant={data?.document_status === "approved" ? "success" : data?.document_status === "rejected" ? "error" : "warning"}>
+            <Badge
+              variant={
+                data?.document_status === "approved"
+                  ? "success"
+                  : data?.document_status === "rejected"
+                    ? "error"
+                    : "warning"
+              }
+            >
               {data?.document_status}
             </Badge>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">Tanggal</span>
-            <span>{data?.created_at ? dayjs(data.created_at).format("DD MMM YYYY, HH:mm") : "-"}</span>
+            <span>
+              {data?.created_at
+                ? dayjs(data.created_at).format("DD MMM YYYY, HH:mm")
+                : "-"}
+            </span>
           </div>
           {data?.rejected_reason && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
@@ -153,7 +179,8 @@ const OutletTopupDetailPage: React.FC = () => {
       >
         <Modal.Header>Konfirmasi Approval</Modal.Header>
         <Modal.Body>
-          Apakah Anda yakin ingin menyetujui topup outlet sebesar {currencyFormat(data.amount || 0)}?
+          Apakah Anda yakin ingin menyetujui topup outlet sebesar{" "}
+          {currencyFormat(data.amount || 0)}?
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setConfirmModal(null)} variant="default">
@@ -180,7 +207,8 @@ const OutletTopupDetailPage: React.FC = () => {
         <Modal.Header>Konfirmasi Penolakan</Modal.Header>
         <Modal.Body>
           <p className="mb-4">
-            Apakah Anda yakin ingin menolak topup outlet sebesar {currencyFormat(data.amount || 0)}?
+            Apakah Anda yakin ingin menolak topup outlet sebesar{" "}
+            {currencyFormat(data.amount || 0)}?
           </p>
           <Input
             type="textarea"
@@ -191,10 +219,13 @@ const OutletTopupDetailPage: React.FC = () => {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => {
-            setConfirmModal(null);
-            setRejectReason("");
-          }} variant="default">
+          <Button
+            onClick={() => {
+              setConfirmModal(null);
+              setRejectReason("");
+            }}
+            variant="default"
+          >
             Batal
           </Button>
           <Button

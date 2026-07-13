@@ -1,7 +1,16 @@
 import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
 import type { B2BOrderDetail } from "@/services/types";
-import { Eye, MoreVertical, Trash, Truck, PackageCheck, FileText, Wallet, Edit } from "lucide-react";
+import {
+  Eye,
+  MoreVertical,
+  Trash,
+  Truck,
+  PackageCheck,
+  FileText,
+  Wallet,
+  Edit,
+} from "lucide-react";
 
 const createTableConfig = ({
   onClick,
@@ -41,7 +50,15 @@ const createTableConfig = ({
       class: "text-center",
       headerClass: "text-center",
       component: (row: B2BOrderDetail) => {
-        let variant: "default" | "success" | "error" | "warning" = "default";
+        let variant:
+          | "default"
+          | "primary"
+          | "secondary"
+          | "accent"
+          | "info"
+          | "success"
+          | "warning"
+          | "error" = "default";
         if (row.document_status === "pending") variant = "warning";
         if (row.document_status === "shipped") variant = "info";
         if (row.document_status === "received") variant = "primary";
@@ -76,7 +93,9 @@ const createTableConfig = ({
       class: "font-mono text-right",
       headerClass: "text-right",
       component: (row: B2BOrderDetail) => (
-        <span className="font-semibold">{row.total_charges?.toLocaleString("id-ID")}</span>
+        <span className="font-semibold">
+          {row.total_charges?.toLocaleString("id-ID")}
+        </span>
       ),
     },
     shipping_date: {
@@ -111,7 +130,9 @@ const createTableConfig = ({
               </div>
               <div className="flex flex-col items-start leading-tight">
                 <span className="font-bold text-[13px]">See Detail</span>
-                <span className="text-[11px] text-slate-400">View order info</span>
+                <span className="text-[11px] text-slate-400">
+                  View order info
+                </span>
               </div>
             </button>
           </Dropdown.Item>
@@ -128,7 +149,9 @@ const createTableConfig = ({
                   </div>
                   <div className="flex flex-col items-start leading-tight">
                     <span className="font-bold text-[13px]">Edit</span>
-                    <span className="text-[11px] text-slate-400">Modify order</span>
+                    <span className="text-[11px] text-slate-400">
+                      Modify order
+                    </span>
                   </div>
                 </button>
               </Dropdown.Item>
@@ -142,7 +165,9 @@ const createTableConfig = ({
                   </div>
                   <div className="flex flex-col items-start leading-tight">
                     <span className="font-bold text-[13px]">Ship</span>
-                    <span className="text-[11px] text-slate-400">Mark as shipped</span>
+                    <span className="text-[11px] text-slate-400">
+                      Mark as shipped
+                    </span>
                   </div>
                 </button>
               </Dropdown.Item>
@@ -156,7 +181,9 @@ const createTableConfig = ({
                   </div>
                   <div className="flex flex-col items-start leading-tight">
                     <span className="font-bold text-[13px]">Delete</span>
-                    <span className="text-[11px] text-slate-400">Remove order</span>
+                    <span className="text-[11px] text-slate-400">
+                      Remove order
+                    </span>
                   </div>
                 </button>
               </Dropdown.Item>
@@ -174,7 +201,9 @@ const createTableConfig = ({
                 </div>
                 <div className="flex flex-col items-start leading-tight">
                   <span className="font-bold text-[13px]">Receive</span>
-                  <span className="text-[11px] text-slate-400">Mark as received</span>
+                  <span className="text-[11px] text-slate-400">
+                    Mark as received
+                  </span>
                 </div>
               </button>
             </Dropdown.Item>
@@ -191,7 +220,9 @@ const createTableConfig = ({
                 </div>
                 <div className="flex flex-col items-start leading-tight">
                   <span className="font-bold text-[13px]">Invoice</span>
-                  <span className="text-[11px] text-slate-400">Generate invoice</span>
+                  <span className="text-[11px] text-slate-400">
+                    Generate invoice
+                  </span>
                 </div>
               </button>
             </Dropdown.Item>
@@ -208,7 +239,9 @@ const createTableConfig = ({
                 </div>
                 <div className="flex flex-col items-start leading-tight">
                   <span className="font-bold text-[13px]">Pay</span>
-                  <span className="text-[11px] text-slate-400">Mark as paid</span>
+                  <span className="text-[11px] text-slate-400">
+                    Mark as paid
+                  </span>
                 </div>
               </button>
             </Dropdown.Item>

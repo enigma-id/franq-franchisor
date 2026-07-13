@@ -2,16 +2,16 @@
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-import { Input, RemoteSelect } from "@/components/ui";
+import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 
 interface TableFilterProps {
   table: {
-    filter: {
-      search?: string;
+    filter: (params: any) => void;
+    State: {
+      loading: boolean;
+      filter: any;
     };
-    handleSearch: (value: string) => void;
-    State: any;
   };
 }
 
@@ -43,12 +43,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Input
-        placeholder="Cari metode pembayaran..."
-        className="w-full md:w-48"
-        value={table.filter.search || ""}
-        onChange={(e) => table.handleSearch(e.target.value)}
-      />
       <div className="w-44">
         <RemoteSelect<SelectOptionValue>
           placeholder="Status: All"

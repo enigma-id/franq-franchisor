@@ -41,7 +41,7 @@ type SalesOrderFormData = {
   note: string;
   shipping_date: string;
   self_pickup: boolean;
-  shipping_charges: number;
+  shipping_charges?: number;
   items: SalesOrderItemForm[];
 };
 

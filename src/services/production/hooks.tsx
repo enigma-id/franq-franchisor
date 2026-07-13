@@ -19,6 +19,9 @@ export const useProductionPlan = createCrudHook<ProductionPlanDetail>({
   customOperations: {
     publish: { hook: usePublishPlanMutation },
     complete: { hook: useCompletePlanMutation },
+    updateItem: { hook: useUpdateProductionItemMutation },
+    completeItem: { hook: useCompleteProductionItemMutation },
   },
+
   entityName: "productionPlan",
 });

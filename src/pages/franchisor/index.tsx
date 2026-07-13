@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
-import { Button } from "@/components/ui";
 import { useFranchisor } from "@/services/franchisor/hooks";
 
 const FranchisorProfilePage: React.FC = () => {
@@ -43,7 +42,11 @@ const FranchisorProfilePage: React.FC = () => {
           {data?.logo_url && (
             <div>
               <span className="text-slate-500 block mb-2">Logo</span>
-              <img src={data.logo_url} alt="Logo" className="h-20 w-20 object-contain rounded-lg border" />
+              <img
+                src={data.logo_url}
+                alt="Logo"
+                className="h-20 w-20 object-contain rounded-lg border"
+              />
             </div>
           )}
         </div>
