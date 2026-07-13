@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
@@ -14,10 +21,19 @@ import type { PurchaseOrderDetail } from "@/services/types";
 const PurchaseOrderListPage: React.FC = () => {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
-  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, paid: paidItem, paidResult } =
-    usePurchaseOrder();
-  const [selectedRow, setSelectedRow] = useState<PurchaseOrderDetail | null>(null);
+  const {
+    remove: removeItem,
+    removeResult: removeItemResult,
+    publish: publishItem,
+    publishResult,
+    paid: paidItem,
+    paidResult,
+  } = usePurchaseOrder();
+  const [selectedRow, setSelectedRow] = useState<PurchaseOrderDetail | null>(
+    null,
+  );
   const [actionType, setActionType] = useState<"publish" | "paid" | null>(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(
@@ -34,32 +50,46 @@ const PurchaseOrderListPage: React.FC = () => {
 
   const Table = useTable("purchase-order", tableConfig as TableConfig<unknown>);
 
-  useEffect(() => { tableRef.current = Table; }, [Table]);
+  useEffect(() => {
+    tableRef.current = Table;
+  }, [Table]);
 
-  const openConfirmModal = useCallback((row: PurchaseOrderDetail, type: "publish" | "paid") => {
-    setSelectedRow(row);
-    setActionType(type);
-  }, []);
+  const openConfirmModal = useCallback(
+    (row: PurchaseOrderDetail, type: "publish" | "paid") => {
+      setSelectedRow(row);
+      setActionType(type);
+      setConfirmModalOpen(true);
+    },
+    [],
+  );
 
   const closeConfirmModal = useCallback(() => {
     setSelectedRow(null);
     setActionType(null);
+    setConfirmModalOpen(false);
   }, []);
 
   const handleConfirmAction = useCallback(async () => {
     if (!selectedRow) return;
     const id = selectedRow.id;
     switch (actionType) {
-      case "publish": await publishItem({ id }); break;
-      case "paid": await paidItem({ id }); break;
+      case "publish":
+        await publishItem({ id });
+        break;
+      case "paid":
+        await paidItem({ id });
+        break;
     }
   }, [selectedRow, actionType, publishItem, paidItem]);
 
   const activeResult = useMemo(() => {
     switch (actionType) {
-      case "publish": return publishResult;
-      case "paid": return paidResult;
-      default: return null;
+      case "publish":
+        return publishResult;
+      case "paid":
+        return paidResult;
+      default:
+        return null;
     }
   }, [actionType, publishResult, paidResult]);
 
@@ -111,14 +141,22 @@ const PurchaseOrderListPage: React.FC = () => {
   useEffect(() => {
     if (removeItemResult?.isSuccess) {
       closeModal("delete-item");
-      showToast({ message: "Purchase order berhasil dihapus", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Purchase order berhasil dihapus",
+        type: "success",
+        position: "bottom-center",
+      });
       Table.boot();
     }
   }, [removeItemResult]);
 
   useEffect(() => {
     if (activeResult?.isSuccess) {
-      showToast({ message: "Berhasil", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Berhasil",
+        type: "success",
+        position: "bottom-center",
+      });
       closeConfirmModal();
       activeResult.reset?.();
       tableRef.current?.boot();
@@ -154,6 +192,48 @@ const PurchaseOrderListPage: React.FC = () => {
 
         <Table.Pagination />
       </Page.Body>
+
+      {confirmModalOpen && selectedRow && (
+        <Modal.Wrapper
+          open
+          onClose={closeConfirmModal}
+          closeOnOutsideClick={false}
+        >
+          <Modal.Header>
+            <div className="font-bold! leading-7">
+              {actionType === "publish" ? "Publish PO" : "Mark as Paid"}
+            </div>
+          </Modal.Header>
+          <Modal.Body className="text-sm font-normal leading-5">
+            <p>
+              Apakah Anda yakin ingin{" "}
+              {actionType === "publish"
+                ? "mempublikasikan"
+                : "menandai sebagai Lunas"}{" "}
+              purchase order ini?
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              className="flex-1 rounded-xl"
+              variant={actionType === "paid" ? "success" : "primary"}
+              onClick={handleConfirmAction}
+              isLoading={activeResult?.isLoading}
+            >
+              Ya, {actionType === "publish" ? "Publikasikan" : "Tandai Lunas"}
+            </Button>
+            <Button
+              className="flex-1 rounded-xl"
+              styleType="outline"
+              variant="secondary"
+              onClick={closeConfirmModal}
+              disabled={activeResult?.isLoading}
+            >
+              Batal
+            </Button>
+          </Modal.Footer>
+        </Modal.Wrapper>
+      )}
     </Page>
   );
 };

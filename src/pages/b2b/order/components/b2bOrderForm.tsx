@@ -393,12 +393,9 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         </div>
       </div>
 
-      {FormState?.errors?.items &&
-        typeof FormState.errors.items === "string" && (
-          <p className="text-xs text-red-500 -mt-3">
-            {FormState.errors.items as string}
-          </p>
-        )}
+      {typeof FormState?.errors?.items === "string" ? (
+        <p className="text-xs text-red-500 -mt-3">{FormState.errors.items}</p>
+      ) : null}
     </form>
   );
 };
