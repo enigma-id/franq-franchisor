@@ -41,6 +41,7 @@ type SalesOrderFormData = {
   note: string;
   shipping_date: string;
   self_pickup: boolean;
+  shipping_charges: number;
   items: SalesOrderItemForm[];
 };
 
@@ -209,15 +210,15 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload: SalesOrderFormData = {
+    const payload = {
       ...formData,
+      shipping_charges: formData.shipping_charges ?? 0,
       items: formData.items.map((item) => ({
-        catalogSelected: item.catalogSelected,
         catalog_id: item.catalog_id,
         quantity_ordered: item.quantity_ordered,
       })),
     };
-    onSubmit(payload);
+    onSubmit(payload as any);
   };
 
   // Helper to get nested validation errors

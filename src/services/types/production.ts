@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { DocumentStatusProductionPlan, DocumentStatusProductionItem } from "./api";
+
 export interface ProductionPlanMaterial {
   id: string;
   plan_id: string;
@@ -21,7 +23,7 @@ export interface ProductionPlanItem {
   item_id: string;
   dest_warehouse_id: string;
   dest_warehouse_name: string;
-  document_status: string;
+  document_status: DocumentStatusProductionItem;
   quantity_planned: number;
   quantity_produced: number;
   item: {
@@ -46,14 +48,14 @@ export interface ProductionPlanBase {
 export interface ProductionPlanRequest extends ProductionPlanBase {
   items: Array<{
     item_id: string;
-    quantity_planned: number;
+    quantity: number;
   }>;
 }
 
 export interface ProductionPlanDetail extends ProductionPlanBase {
   id: string;
   code: string;
-  document_status: "pending" | "process" | "completed" | "cancelled";
+  document_status: DocumentStatusProductionPlan;
   items: ProductionPlanItem[];
   created_by: string;
   updated_by: string;
@@ -62,8 +64,7 @@ export interface ProductionPlanDetail extends ProductionPlanBase {
 }
 
 export interface ProductionItemUpdateRequest {
-  quantity_planned: number;
-  note?: string;
+  quantity: number;
 }
 
 /**

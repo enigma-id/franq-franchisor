@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
 import { Loading, Button, Badge, Modal, Input } from "@/components/ui";
 import { useSalesOrder } from "@/services/sales/hooks";
+import { useEnigmaUI } from "@/components";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { useAppSelector, useSalesOrderGuards } from "@/hooks";
@@ -27,6 +28,7 @@ export default function SalesOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const FormState = useAppSelector((s) => s.form);
+  const { showToast } = useEnigmaUI();
 
   const {
     show,
@@ -62,27 +64,39 @@ export default function SalesOrderDetailPage() {
 
   useEffect(() => {
     if (paidResult.isSuccess) {
+      showToast({ message: "Pembayaran berhasil", type: "success", position: "bottom-center" });
       setConfirmModal(null);
       if (id) show({ id });
       paidResult.reset?.();
     }
-  }, [paidResult.isSuccess, id, show, paidResult]);
+  }, [paidResult.isSuccess, id, show, paidResult, showToast]);
 
   useEffect(() => {
     if (removeResult.isSuccess) {
+      showToast({ message: "Sales order berhasil dihapus", type: "success", position: "bottom-center" });
       setConfirmModal(null);
       removeResult.reset?.();
       navigate("/sales/order");
     }
-  }, [removeResult.isSuccess, navigate, removeResult]);
+  }, [removeResult.isSuccess, navigate, removeResult, showToast]);
 
   useEffect(() => {
     if (cancelResult.isSuccess) {
+      showToast({ message: "Pembatalan berhasil", type: "success", position: "bottom-center" });
       setConfirmModal(null);
       if (id) show({ id });
       cancelResult.reset?.();
     }
-  }, [cancelResult.isSuccess, id, show, cancelResult]);
+  }, [cancelResult.isSuccess, id, show, cancelResult, showToast]);
+
+  useEffect(() => {
+    if (publishResult.isSuccess) {
+      showToast({ message: "Sales order berhasil diterbitkan", type: "success", position: "bottom-center" });
+      setConfirmModal(null);
+      if (id) show({ id });
+      publishResult.reset?.();
+    }
+  }, [publishResult.isSuccess, id, show, publishResult, showToast]);
 
   const handlePublish = async () => {
     if (id) {

@@ -1,6 +1,8 @@
 export * from "./api";
 export * from "./auth";
+export * from "./b2b";
 export * from "./dashboard";
+export * from "./franchisor";
 export * from "./inventory";
 export * from "./outlet";
 export * from "./pos";
@@ -10,6 +12,7 @@ export * from "./region";
 export * from "./reports";
 export * from "./sales";
 export * from "./supplier";
+export * from "./user";
 export * from "./warehouse";
 export * from "./dashboard";
 export * from "./region";

@@ -55,6 +55,17 @@ import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
 import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
 import { WithdrawalDetail } from "@/pages/withdrawal/WithdrawalDetail";
 import { PurchaseOrderDetailPage } from "@/pages/purchase/order/purchaseOrderDetail";
+import B2BOrderListPage from "@/pages/b2b/order";
+import B2BOrderCreatePage from "@/pages/b2b/order/b2bOrderCreate";
+import B2BOrderDetailPage from "@/pages/b2b/order/b2bOrderDetail";
+import B2BOrderUpdatePage from "@/pages/b2b/order/b2bOrderUpdate";
+import OutletTopupListPage from "@/pages/outletTopup";
+import OutletTopupDetailPage from "@/pages/outletTopup/outletTopupDetail";
+import UserListPage from "@/pages/user";
+import UserCreatePage from "@/pages/user/userCreate";
+import UserUpdatePage from "@/pages/user/userUpdate";
+import UserGroupListPage from "@/pages/user/usergroup";
+import FranchisorProfilePage from "@/pages/franchisor";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -241,6 +252,25 @@ export function AppRoutes() {
 
         <Route path="/withdrawal" element={<WithdrawalList />} />
         <Route path="/withdrawal/:id" element={<WithdrawalDetail />} />
+
+        {/* B2B Order */}
+        <Route path="/b2b/order" element={<B2BOrderListPage />} />
+        <Route path="/b2b/order/create" element={<B2BOrderCreatePage />} />
+        <Route path="/b2b/order/:id" element={<B2BOrderDetailPage />} />
+        <Route path="/b2b/order/update/:id" element={<B2BOrderUpdatePage />} />
+
+        {/* Outlet Topup */}
+        <Route path="/outlet-topup" element={<OutletTopupListPage />} />
+        <Route path="/outlet-topup/:id" element={<OutletTopupDetailPage />} />
+
+        {/* User Management */}
+        <Route path="/user" element={<UserListPage />} />
+        <Route path="/user/create" element={<UserCreatePage />} />
+        <Route path="/user/update/:id" element={<UserUpdatePage />} />
+        <Route path="/user/group" element={<UserGroupListPage />} />
+
+        {/* Franchisor Profile */}
+        <Route path="/franchisor" element={<FranchisorProfilePage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

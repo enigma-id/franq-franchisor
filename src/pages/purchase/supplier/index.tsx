@@ -8,6 +8,7 @@ import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/supplier.config";
 import type { SupplierDetail } from "@/services/types/supplier";
+import TableFilter from "./table/supplier.filter";
 import { Modal, useEnigmaUI } from "@/components";
 import { useSupplier } from "@/services/supplier/hooks";
 
@@ -158,7 +159,9 @@ const SupplierListPage: React.FC = () => {
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0">
-        <Table.Tools downloadable />
+        <Table.Tools downloadable>
+          <TableFilter table={Table} />
+        </Table.Tools>
 
         <Table.Render
           emptyTitle="Belum Ada Data Supplier"

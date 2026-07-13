@@ -20,6 +20,10 @@ import {
   Monitor,
   BarChart3,
   ArrowDownLeft,
+  ShoppingBag,
+  Wallet,
+  UserCog,
+  UserCircle,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -58,9 +62,9 @@ const menuSections: MenuSection[] = [
     label: "Sales",
     items: [
       {
-        label: "Withdrawal",
-        path: "/withdrawal",
-        icon: <ArrowDownLeft size={18} />,
+        label: "B2B Order",
+        path: "/b2b/order",
+        icon: <ShoppingBag size={18} />,
       },
       {
         label: "Sales Order",
@@ -71,6 +75,16 @@ const menuSections: MenuSection[] = [
         label: "Sales Return",
         path: "/sales/return",
         icon: <RefreshCcw size={18} />,
+      },
+      {
+        label: "Withdrawal",
+        path: "/withdrawal",
+        icon: <ArrowDownLeft size={18} />,
+      },
+      {
+        label: "Outlet Topup",
+        path: "/outlet-topup",
+        icon: <Wallet size={18} />,
       },
     ],
   },
@@ -166,6 +180,19 @@ const menuSections: MenuSection[] = [
   {
     label: "Settings",
     items: [
+      {
+        label: "Pengguna",
+        icon: <UserCog size={18} />,
+        children: [
+          { label: "User", path: "/user" },
+          { label: "User Group", path: "/user/group" },
+        ],
+      },
+      {
+        label: "Profil Franchisor",
+        path: "/franchisor",
+        icon: <UserCircle size={18} />,
+      },
       {
         label: "Outlet",
         icon: <Store size={18} />,
@@ -389,7 +416,7 @@ export function AuthorizedLayout() {
 
           {/* Brand text */}
           <div className="min-w-0">
-            <span className="font-1black text-base-content text-[18px] leading-tight whitespace-nowrap tracking-wider uppercase">
+            <span className="font-black text-base-content text-[18px] leading-tight whitespace-nowrap tracking-wider uppercase">
               Franchisor
             </span>
             <span className="block text-[10px] text-base-content/60 whitespace-nowrap font-bold tracking-widest mt-0.5 uppercase">

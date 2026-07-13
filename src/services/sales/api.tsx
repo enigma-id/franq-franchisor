@@ -89,15 +89,7 @@ export const salesApi = createApi({
       }),
     }),
 
-    /** PUT /sales/return/:id/reject - Reject sales return */
-    rejectSalesReturn: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}/reject`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-  }),
+}),
 });
 
 export const {
@@ -111,5 +103,4 @@ export const {
   //
   useLazyGetSalesReturnQuery,
   useApproveSalesReturnMutation,
-  useRejectSalesReturnMutation,
 } = salesApi;

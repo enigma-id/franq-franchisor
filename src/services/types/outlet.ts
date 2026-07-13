@@ -18,19 +18,14 @@ export interface OutletBase {
   owner_password: string;
 }
 
-export interface OutletChannel {
-  pos_channel_id: string;
-  is_active: boolean;
-}
-
 export interface OutletCreateRequest extends OutletBase {
-  channels: OutletChannel[];
+  channels: string[];
 }
 
 export type OutletUpdateRequest = Partial<OutletCreateRequest>;
 
 export interface OutletChannelsUpdateRequest {
-  channels: OutletChannel[];
+  channels: string[];
 }
 
 export interface OutletDetail extends OutletBase {

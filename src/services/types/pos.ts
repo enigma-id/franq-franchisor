@@ -5,6 +5,26 @@
 
 // ── POS Menu ──
 
+export interface POSChannelPriceRequest {
+  pos_channel_id: string;
+  price: number;
+}
+
+export interface POSIngredientRequest {
+  catalog_id: string;
+  porsi: number;
+}
+
+export interface POSAddonItemRequest {
+  addon_menu_id: string;
+}
+
+export interface POSAddonGroupRequest {
+  name: string;
+  type: "options" | "checkbox" | "quantity";
+  items: POSAddonItemRequest[];
+}
+
 export interface POSChannelPrice {
   id: string;
   menu_id: string;
@@ -91,9 +111,9 @@ export interface POSMenuBase {
 }
 
 export interface POSMenuCreateRequest extends POSMenuBase {
-  channel_prices: POSChannelPrice[];
-  ingredients: POSIngredient[];
-  addon_groups?: POSAddonGroup[];
+  channel_prices: POSChannelPriceRequest[];
+  ingredients: POSIngredientRequest[];
+  addon_groups?: POSAddonGroupRequest[];
 }
 
 export interface POSMenuUpdateRequest extends Partial<POSMenuCreateRequest> {
@@ -205,9 +225,8 @@ export interface PaymentMethodDetail extends PaymentMethodBase {
 // ── Member Topup Bonus ──
 
 export interface TopupBonusBase {
-  name: string;
-  amount: number;
-  bonus: number;
+  min_amount: number;
+  bonus_percentage: number;
 }
 
 export type TopupBonusCreateRequest = TopupBonusBase;

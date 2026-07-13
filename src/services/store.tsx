@@ -49,6 +49,11 @@ const persistConfig = {
     "inventoryApi",
     "regionApi",
     "withdrawalApi",
+    "b2bApi",
+    "franchisorApi",
+    "outletTopupApi",
+    "userApi",
+    "userGroupApi",
   ],
 };
 

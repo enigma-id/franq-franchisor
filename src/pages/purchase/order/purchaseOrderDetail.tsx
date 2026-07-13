@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
 import { Button, Badge, Modal } from "@/components/ui";
+import { useEnigmaUI } from "@/components";
 import { usePurchaseOrder } from "@/services/purchase/hooks";
 import { formatCurrency, getStatusVariant } from "@/utils";
 import type { PurchaseOrderDetail } from "@/services/types/purchase";
@@ -22,6 +23,7 @@ import { GuardedButton } from "@/components/app";
 export function PurchaseOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showToast } = useEnigmaUI();
 
   const {
     show,
@@ -92,21 +94,26 @@ export function PurchaseOrderDetailPage() {
 
   useEffect(() => {
     if (publishResult?.isSuccess) {
+      showToast({ message: "Purchase order berhasil diterbitkan", type: "success", position: "bottom-center" });
+      publishResult.reset?.();
       show({ id });
     }
-  }, [publishResult]);
+  }, [publishResult?.isSuccess]);
 
   useEffect(() => {
     if (paidResult?.isSuccess) {
+      showToast({ message: "Pembayaran berhasil diproses", type: "success", position: "bottom-center" });
+      paidResult.reset?.();
       show({ id });
     }
-  }, [paidResult]);
+  }, [paidResult?.isSuccess]);
 
   useEffect(() => {
     if (removeResult?.isSuccess) {
+      showToast({ message: "Purchase order berhasil dihapus", type: "success", position: "bottom-center" });
       navigate(-1);
     }
-  }, [removeResult]);
+  }, [removeResult?.isSuccess]);
 
   const data = detail?.data as PurchaseOrderDetail;
   const guards = usePurchaseOrderGuards(data);

@@ -71,6 +71,15 @@ export const posApi = createApi({
       }),
     }),
 
+    /** GET /pos/menu/price - Get menu items with channel pricing */
+    getMenuPrices: builder.query({
+      query: (params) => ({
+        url: "/pos/menu/price",
+        method: "GET",
+        params,
+      }),
+    }),
+
     // ── /pos/category ──
 
     getCategories: builder.query({
@@ -192,4 +201,5 @@ export const {
   useDeleteChannelMutation,
   useActivateChannelMutation,
   useDeactivateChannelMutation,
+  useLazyGetMenuPricesQuery,
 } = posApi;

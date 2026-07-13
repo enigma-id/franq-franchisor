@@ -2,7 +2,7 @@
  * Supplier Types
  */
 
-export type SupplierType = "factory" | "distributor" | "wholesaler" | "retailer";
+export type SupplierType = "factory" | "distributor" | "store";
 
 export interface SupplierBase {
   name: string;

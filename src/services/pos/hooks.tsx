@@ -20,6 +20,7 @@ import {
   useDeleteChannelMutation,
   useActivateChannelMutation,
   useDeactivateChannelMutation,
+  useLazyGetMenuPricesQuery,
 } from "./api";
 import type {
   POSMenuDetail,
@@ -38,6 +39,9 @@ export const usePOSMenu = createCrudHook<POSMenuDetail>({
     activate: { hook: useActivateMenuMutation },
     deactivate: { hook: useDeactivateMenuMutation },
     updateTypes: { hook: useUpdateMenuTypesMutation },
+  },
+  additionalQueries: {
+    getPrices: useLazyGetMenuPricesQuery,
   },
 });
 

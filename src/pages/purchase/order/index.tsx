@@ -1,35 +1,67 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button } from "@/components/ui";
+import { Button, Modal } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/order.config";
 import TableFilter from "./table/order.filter";
 import type { TableConfig } from "@/services/table/const";
 import { usePurchaseOrder } from "@/services/purchase/hooks";
-import { Modal, useEnigmaUI } from "@/components";
+import { useEnigmaUI } from "@/components";
 import type { PurchaseOrderDetail } from "@/services/types";
 
 const PurchaseOrderListPage: React.FC = () => {
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
-  const { remove: removeItem, removeResult: removeItemResult } =
+  const { openModal, closeModal, showToast } = useEnigmaUI();
+  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, paid: paidItem, paidResult } =
     usePurchaseOrder();
+  const [selectedRow, setSelectedRow] = useState<PurchaseOrderDetail | null>(null);
+  const [actionType, setActionType] = useState<"publish" | "paid" | null>(null);
+  const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
         onClick: (row) => navigate(`/purchase/order/${row.id}`),
         onEdit: (row) => navigate(`/purchase/order/update/${row.id}`),
-        onRemove: (v) => {
-          openDelete(v);
-        },
+        onRemove: (v) => openDelete(v),
+        onPublish: (row) => openConfirmModal(row, "publish"),
+        onPaid: (row) => openConfirmModal(row, "paid"),
       }),
     [navigate],
   );
 
   const Table = useTable("purchase-order", tableConfig as TableConfig<unknown>);
+
+  useEffect(() => { tableRef.current = Table; }, [Table]);
+
+  const openConfirmModal = useCallback((row: PurchaseOrderDetail, type: "publish" | "paid") => {
+    setSelectedRow(row);
+    setActionType(type);
+  }, []);
+
+  const closeConfirmModal = useCallback(() => {
+    setSelectedRow(null);
+    setActionType(null);
+  }, []);
+
+  const handleConfirmAction = useCallback(async () => {
+    if (!selectedRow) return;
+    const id = selectedRow.id;
+    switch (actionType) {
+      case "publish": await publishItem({ id }); break;
+      case "paid": await paidItem({ id }); break;
+    }
+  }, [selectedRow, actionType, publishItem, paidItem]);
+
+  const activeResult = useMemo(() => {
+    switch (actionType) {
+      case "publish": return publishResult;
+      case "paid": return paidResult;
+      default: return null;
+    }
+  }, [actionType, publishResult, paidResult]);
 
   const openDelete = (v: PurchaseOrderDetail) => {
     openModal({
@@ -79,9 +111,19 @@ const PurchaseOrderListPage: React.FC = () => {
   useEffect(() => {
     if (removeItemResult?.isSuccess) {
       closeModal("delete-item");
+      showToast({ message: "Purchase order berhasil dihapus", type: "success", position: "bottom-center" });
       Table.boot();
     }
   }, [removeItemResult]);
+
+  useEffect(() => {
+    if (activeResult?.isSuccess) {
+      showToast({ message: "Berhasil", type: "success", position: "bottom-center" });
+      closeConfirmModal();
+      activeResult.reset?.();
+      tableRef.current?.boot();
+    }
+  }, [activeResult?.isSuccess]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">

@@ -1,15 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
-import { Badge, Button } from "@/components/ui";
-import {
-  RefreshCcw,
-  ShoppingBag,
-  Calendar,
-  Hash,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
+import { Badge, Button, Modal } from "@/components/ui";
+import { RefreshCcw, ShoppingBag, Calendar, Hash, CheckCircle2 } from "lucide-react";
+import { useEnigmaUI } from "@/components";
 import { useSalesReturn } from "@/services/sales/hooks";
 import dayjs from "dayjs";
 import type { SalesReturnDetail } from "@/services/types";
@@ -17,8 +11,11 @@ import type { SalesReturnDetail } from "@/services/types";
 const SalesReturnDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { show, showResult, approve, approveResult, reject, rejectResult } =
+  const { showToast } = useEnigmaUI();
+  const { show, showResult, approve, approveResult } =
     useSalesReturn();
+
+  const [showApproveModal, setShowApproveModal] = useState(false);
 
   useEffect(() => {
     if (id) show(id);
@@ -32,14 +29,16 @@ const SalesReturnDetailPage: React.FC = () => {
   const handleApprove = async () => {
     if (!id) return;
     await approve({ id });
+    setShowApproveModal(false);
     show(id);
   };
 
-  const handleReject = async () => {
-    if (!id) return;
-    await reject({ id });
-    show(id);
-  };
+  useEffect(() => {
+    if (approveResult?.isSuccess) {
+      showToast({ message: "Return berhasil disetujui", type: "success", position: "bottom-center" });
+      approveResult.reset?.();
+    }
+  }, [approveResult?.isSuccess]);
 
   const statusBadge = () => {
     if (!data) return null;
@@ -76,19 +75,11 @@ const SalesReturnDetailPage: React.FC = () => {
                 <>
                   <Button
                     variant="success"
-                    onClick={handleApprove}
+                    onClick={() => setShowApproveModal(true)}
                     disabled={approveResult.isLoading}
                   >
                     <CheckCircle2 size={18} />
                     Approve
-                  </Button>
-                  <Button
-                    variant="error"
-                    onClick={handleReject}
-                    disabled={rejectResult.isLoading}
-                  >
-                    <XCircle size={18} />
-                    Reject
                   </Button>
                 </>
               )}
@@ -207,6 +198,41 @@ const SalesReturnDetailPage: React.FC = () => {
           </div>
         </div>
       </Page.Body>
+
+      <Modal.Wrapper
+        open={showApproveModal}
+        onClose={() => setShowApproveModal(false)}
+        closeOnOutsideClick={false}
+      >
+        <Modal.Header>
+          <div className="font-bold leading-7">Konfirmasi Approve</div>
+        </Modal.Header>
+        <Modal.Body className="text-sm font-normal leading-5">
+          <p>
+            Apakah Anda yakin ingin menyetujui return{" "}
+            <strong>{data?.number}</strong>?
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="flex-1 rounded-xl"
+            variant="primary"
+            onClick={handleApprove}
+            isLoading={approveResult?.isLoading}
+          >
+            Konfirmasi
+          </Button>
+          <Button
+            className="flex-1 rounded-xl"
+            styleType="outline"
+            variant="secondary"
+            onClick={() => setShowApproveModal(false)}
+            disabled={approveResult?.isLoading}
+          >
+            Batal
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
     </Page>
   );
 };

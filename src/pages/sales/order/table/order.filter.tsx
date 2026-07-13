@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 import { DatePicker, RemoteSelect } from "@/components/ui";
@@ -7,9 +7,10 @@ import type { SelectOptionValue } from "@/services/types/table";
 import {
   documentStatusOptions,
   paymentStatusOptions,
-  fulfillmentStatusOptions,
 } from "@/utils/options";
 import { ChevronDown } from "lucide-react";
+import { useOutlet } from "@/services/outlet/hooks";
+import { useWarehouse } from "@/services/warehouse/hooks";
 
 interface TableFilterProps {
   table: {
@@ -44,19 +45,49 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     },
   );
 
-  const [fulfillmentStatus, setfulfillmentStatus] =
-    useState<SelectOptionValue | null>(() => {
-      const value = current.fulfillment_status;
-      return value
-        ? (fulfillmentStatusOptions.find((opt) => opt.value === value) ?? null)
-        : null;
-    });
+
+  // Outlet filter
+  const { get: getOutlet, getResult: getOutletResult } = useOutlet();
+  const [outlet, setOutlet] = useState<any | null>(null);
+
+  useEffect(() => {
+    getOutlet({ page: 1, limit: 20, status: "active" });
+  }, []);
+
+  useEffect(() => {
+    if (current.outlet_id && getOutletResult?.data?.data) {
+      const outlets = getOutletResult.data.data as any[];
+      const found = outlets.find((c: any) => c.id === current.outlet_id);
+      if (found) setOutlet(found);
+    } else if (!current.outlet_id) {
+      setOutlet(null);
+    }
+  }, [current.outlet_id, getOutletResult?.data?.data]);
+
+  // Warehouse filter
+  const { get: getWarehouse, getResult: getWarehouseResult } = useWarehouse();
+  const [warehouse, setWarehouse] = useState<any | null>(null);
+
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    if (current.warehouse_id && getWarehouseResult?.data?.data) {
+      const warehouses = getWarehouseResult.data.data as any[];
+      const found = warehouses.find((c: any) => c.id === current.warehouse_id);
+      if (found) setWarehouse(found);
+    } else if (!current.warehouse_id) {
+      setWarehouse(null);
+    }
+  }, [current.warehouse_id, getWarehouseResult?.data?.data]);
+
 
   const [dateRange, setDateRange] = useState<
     [Dayjs | null, Dayjs | null] | undefined
   >(() => {
-    const start = current.start_at as string | undefined;
-    const end = current.end_at as string | undefined;
+    const start = current.start_date as string | undefined;
+    const end = current.end_date as string | undefined;
     if (start && end) {
       return [dayjs(start), dayjs(end)];
     }
@@ -65,11 +96,12 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
   const applyFilters = (updates: any) => {
     const filters = {
-      start_at: dateRange ? dateRange[0]?.format("YYYY-MM-DD") : "",
-      end_at: dateRange ? dateRange[1]?.format("YYYY-MM-DD") : "",
+      start_date: dateRange ? dateRange[0]?.format("YYYY-MM-DD") : "",
+      end_date: dateRange ? dateRange[1]?.format("YYYY-MM-DD") : "",
       document_status: docuemntStatus?.value ?? "",
       payment_status: paymentStatus?.value ?? "",
-      fulfillment_status: fulfillmentStatus?.value ?? "",
+      outlet_id: outlet?.id ?? "",
+      warehouse_id: warehouse?.id ?? "",
       ...updates,
     };
     table.filter(filters);
@@ -87,8 +119,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
     if ((newRange[0] && newRange[1]) || (!newRange[0] && !newRange[1])) {
       applyFilters({
-        start_at: newRange[0]?.format("YYYY-MM-DD") || "",
-        end_at: newRange[1]?.format("YYYY-MM-DD") || "",
+        start_date: newRange[0]?.format("YYYY-MM-DD") || "",
+        end_date: newRange[1]?.format("YYYY-MM-DD") || "",
       });
     }
   };
@@ -136,23 +168,50 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           renderItem={(item) => item?.label}
         />
       </div>
-      <div className="w-40 md:w-48">
-        <RemoteSelect<SelectOptionValue>
-          placeholder="Fulfillment: All"
+      <div className="w-40 md:w-56">
+        <RemoteSelect
+          placeholder="Outlet: All"
           inputClassName={selectClassName}
           suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-          data={fulfillmentStatusOptions}
-          value={fulfillmentStatus}
+          value={outlet}
           onChange={(val) => {
-            setfulfillmentStatus(val);
-            applyFilters({ fulfillment_status: val?.value || "" });
+            setOutlet(val);
+            applyFilters({ outlet_id: val?.id || "" });
           }}
           onClear={() => {
-            setfulfillmentStatus(null);
-            applyFilters({ fulfillment_status: "" });
+            setOutlet(null);
+            applyFilters({ outlet_id: "" });
           }}
-          getLabel={(item) => (item ? `Delivery: ${item.label}` : "")}
-          renderItem={(item) => item?.label}
+          fetchData={(page, search) =>
+            getOutlet({ page: page || 1, limit: 20, search })
+          }
+          hook={getOutletResult as any}
+          getLabel={(item: any) => (item ? item.name : "")}
+          renderItem={(item: any) => item?.name}
+          getValue={(item: any) => item.id}
+        />
+      </div>
+      <div className="w-40 md:w-56">
+        <RemoteSelect
+          placeholder="Warehouse: All"
+          inputClassName={selectClassName}
+          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          value={warehouse}
+          onChange={(val) => {
+            setWarehouse(val);
+            applyFilters({ warehouse_id: val?.id || "" });
+          }}
+          onClear={() => {
+            setWarehouse(null);
+            applyFilters({ warehouse_id: "" });
+          }}
+          fetchData={(page, search) =>
+            getWarehouse({ page: page || 1, limit: 20, search })
+          }
+          hook={getWarehouseResult as any}
+          getLabel={(item: any) => (item ? item.name : "")}
+          renderItem={(item: any) => item?.name}
+          getValue={(item: any) => item.id}
         />
       </div>
       <div className="w-40 md:w-60">

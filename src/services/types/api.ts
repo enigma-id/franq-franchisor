@@ -46,6 +46,7 @@ export interface ApiResponse<T = unknown> {
 export interface PaginationMeta {
   page?: number;
   limit?: number;
+  page_size?: number;
   total?: number;
   total_pages?: number;
   has_next?: boolean;
@@ -60,6 +61,18 @@ export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
   data: T[];
   meta: PaginationMeta;
 }
+
+// ── Shared Status Union Types ──
+
+export type PaymentStatus = "unpaid" | "paid";
+export type DocumentStatusSalesOrder = "pending" | "published" | "cancelled";
+export type DocumentStatusPurchaseOrder = "pending" | "published";
+export type DocumentStatusB2B = "pending" | "shipped" | "received" | "invoiced";
+export type DocumentStatusProductionPlan = "pending" | "process" | "completed" | "cancelled";
+export type DocumentStatusProductionItem = "new" | "completed";
+export type FulfillmentStatus = "new" | "partial" | "fulfilled";
+export type ApprovalStatus = "pending" | "approved" | "rejected";
+export type SalesReturnStatus = "pending" | "approved";
 
 /**
  * Type guard to check if an error is an ApiError

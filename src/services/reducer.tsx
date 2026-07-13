@@ -22,6 +22,11 @@ import { reportApi } from "./report/api";
 import { inventoryApi } from "./inventory/api";
 import { uploadApi } from "./upload/api";
 import { withdrawalApi } from "./withdrawal/api";
+import { b2bApi } from "./b2b/api";
+import { franchisorApi } from "./franchisor/api";
+import { outletTopupApi } from "./outletTopup/api";
+import { userApi } from "./user/api";
+import { userGroupApi } from "./usergroup/api";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -46,6 +51,11 @@ const appReducer = combineReducers({
   [reportApi.reducerPath]: reportApi.reducer,
   [uploadApi.reducerPath]: uploadApi.reducer,
   [withdrawalApi.reducerPath]: withdrawalApi.reducer,
+  [b2bApi.reducerPath]: b2bApi.reducer,
+  [franchisorApi.reducerPath]: franchisorApi.reducer,
+  [outletTopupApi.reducerPath]: outletTopupApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
+  [userGroupApi.reducerPath]: userGroupApi.reducer,
 });
 
 type AppState = ReturnType<typeof appReducer>;
@@ -69,6 +79,11 @@ export const apiMiddlewares = [
   reportApi.middleware,
   uploadApi.middleware,
   withdrawalApi.middleware,
+  b2bApi.middleware,
+  franchisorApi.middleware,
+  outletTopupApi.middleware,
+  userApi.middleware,
+  userGroupApi.middleware,
 ];
 
 export const rootReducer: Reducer<AppState, UnknownAction> = (

@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import createTableConfig from "./table/warehouse-stock.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
+import TableFilter from "./table/warehouse-stock.filter";
 
 export default function WarehouseStockPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
@@ -19,7 +20,9 @@ export default function WarehouseStockPage() {
         subtitle="Laporan stok barang di gudang."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
-        <Table.Tools downloadable />
+        <Table.Tools downloadable>
+          <TableFilter table={Table} />
+        </Table.Tools>
         <Table.Render
           emptyTitle="Belum Ada Data"
           emptyDescription="Data stok gudang akan muncul di sini."

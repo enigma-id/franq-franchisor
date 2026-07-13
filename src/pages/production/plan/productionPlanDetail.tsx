@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge, Button, Modal, RemoteSelect } from "@/components/ui";
+import { useEnigmaUI } from "@/components";
 import { useProductionPlan } from "@/services/production/hooks";
 import {
   Loader2,
@@ -31,6 +32,7 @@ const ProductionPlanDetailPage: React.FC = () => {
     title: "Print Preview",
     autoClose: true,
   });
+  const { showToast } = useEnigmaUI();
 
   const {
     show,
@@ -71,11 +73,21 @@ const ProductionPlanDetailPage: React.FC = () => {
       removeResult.isSuccess
     ) {
       setConfirmModal(null);
-      if (id) show({ id });
-      publishResult.reset?.();
-      completeResult.reset?.();
-      removeResult.reset?.();
-      if (removeResult.isSuccess) navigate("/production/plan");
+      if (publishResult.isSuccess) {
+        showToast({ message: "Rencana produksi berhasil diterbitkan", type: "success", position: "bottom-center" });
+        publishResult.reset?.();
+      }
+      if (completeResult.isSuccess) {
+        showToast({ message: "Rencana produksi berhasil diselesaikan", type: "success", position: "bottom-center" });
+        completeResult.reset?.();
+      }
+      if (removeResult.isSuccess) {
+        showToast({ message: "Rencana produksi berhasil dihapus", type: "success", position: "bottom-center" });
+        removeResult.reset?.();
+        navigate("/production/plan");
+      } else if (id) {
+        show({ id });
+      }
     }
   }, [
     publishResult.isSuccess,
@@ -84,9 +96,7 @@ const ProductionPlanDetailPage: React.FC = () => {
     id,
     show,
     navigate,
-    publishResult,
-    completeResult,
-    removeResult,
+    showToast,
   ]);
 
   const handlePublish = () => {

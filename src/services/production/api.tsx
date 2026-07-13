@@ -45,18 +45,6 @@ export const productionApi = createApi({
     }),
 
     /**
-     * PUT /production/plan/:id
-     * Update production plan
-     */
-    updatePlan: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/production/plan/${id}`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    /**
      * DELETE /production/plan/:id
      * Delete production plan
      */
@@ -81,24 +69,38 @@ export const productionApi = createApi({
     }),
 
     /**
-     * PUT /production/plan/:id/cancel
-     * Cancel production plan
-     */
-    cancelPlan: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/production/plan/${id}/cancel`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    /**
      * PUT /production/plan/:id/complete
      * Complete production plan
      */
     completePlan: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/production/plan/${id}/complete`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    // ── /production/item ──
+
+    /**
+     * PUT /production/item/:id
+     * Update production item quantity
+     */
+    updateProductionItem: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/production/item/${id}`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /**
+     * PUT /production/item/:id/complete
+     * Complete production item
+     */
+    completeProductionItem: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/production/item/${id}/complete`,
         method: "PUT",
         body: payload,
       }),
@@ -110,9 +112,9 @@ export const {
   useLazyGetPlansQuery,
   useLazyGetPlanQuery,
   useCreatePlanMutation,
-  useUpdatePlanMutation,
   useDeletePlanMutation,
   usePublishPlanMutation,
-  useCancelPlanMutation,
   useCompletePlanMutation,
+  useUpdateProductionItemMutation,
+  useCompleteProductionItemMutation,
 } = productionApi;

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/outlet.config";
 import { Modal, useEnigmaUI } from "@/components";
+import TableFilter from "./table/outlet.filter";
 import { useOutlet } from "@/services/outlet/hooks";
 import type { TableConfig } from "@/services/table/const";
 import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal.tsx";
@@ -179,7 +180,9 @@ const OutletListPage: React.FC = () => {
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0 bg-white border-t border-slate-200">
-        <Table.Tools />
+        <Table.Tools>
+          <TableFilter table={Table} />
+        </Table.Tools>
 
         <Table.Render
           emptyTitle="Belum Ada Outlet"

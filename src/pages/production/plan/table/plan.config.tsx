@@ -1,15 +1,19 @@
 import type { ProductionPlanDetail } from "@/services/types/production";
 import { Badge, Dropdown } from "@/components/ui";
-import { Factory, Eye, Trash, MoreVertical } from "lucide-react";
+import { Factory, Eye, Trash, MoreVertical, Send, Check } from "lucide-react";
 import config from "@/services/table/const";
 import { getStatusVariant, formatDate } from "@/utils";
 
 const createTableConfig = ({
   onView,
   onRemove,
+  onPublish,
+  onComplete,
 }: {
   onView: (id: string) => void;
   onRemove: (v: ProductionPlanDetail) => void;
+  onPublish?: (row: ProductionPlanDetail) => void;
+  onComplete?: (row: ProductionPlanDetail) => void;
 }) => ({
   ...config,
   url: "/production/plan",
@@ -93,22 +97,22 @@ const createTableConfig = ({
 
           {row.document_status === "pending" && (
             <>
-              {/* <Dropdown.Item
-                onSelect={() => onEdit(row.id)}
-                className="hover:bg-amber-50 hover:text-amber-600"
+              <Dropdown.Item
+                onSelect={() => onPublish?.(row)}
+                className="hover:bg-emerald-50 hover:text-emerald-600"
               >
                 <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-                    <Edit className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                    <Send className="w-4 h-4" />
                   </div>
                   <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Edit</span>
+                    <span className="font-bold text-[13px]">Publish</span>
                     <span className="text-[11px] text-slate-400">
-                      Modify draft plan
+                      Approve production plan
                     </span>
                   </div>
                 </button>
-              </Dropdown.Item> */}
+              </Dropdown.Item>
 
               <Dropdown.Item
                 onSelect={() => onRemove(row)}
@@ -127,6 +131,25 @@ const createTableConfig = ({
                 </button>
               </Dropdown.Item>
             </>
+          )}
+
+          {row.document_status === "published" && (
+            <Dropdown.Item
+              onSelect={() => onComplete?.(row)}
+              className="hover:bg-blue-50 hover:text-blue-600"
+            >
+              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                  <Check className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">Complete</span>
+                  <span className="text-[11px] text-slate-400">
+                    Mark production as complete
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
           )}
         </Dropdown>
       ),

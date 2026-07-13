@@ -1,9 +1,9 @@
 import { Page } from "@/components/app/layout";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import { Button, Modal } from "@/components/ui";
+import { Button, Modal, Input } from "@/components/ui";
 import { Plus } from "lucide-react";
 import createTableConfig from "./table/order.config";
 import TableFilter from "./table/order.filter";
@@ -13,21 +13,59 @@ import { useSalesOrder } from "@/services/sales/hooks";
 
 export default function SalesOrder() {
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
-  const { remove: removeItem, removeResult: removeItemResult } =
+  const { openModal, closeModal, showToast } = useEnigmaUI();
+  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, cancel: cancelItem, cancelResult, paid: paidItem, paidResult } =
     useSalesOrder();
+  const [selectedRow, setSelectedRow] = useState<SalesOrderDetail | null>(null);
+  const [actionType, setActionType] = useState<"publish" | "cancel" | "paid" | null>(null);
+  const [cancelNote, setCancelNote] = useState("");
+  const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
       onClick: (row) => navigate(`/sales/order/${row.id}`),
-      onRemove: (v) => {
-        openDelete(v);
-      },
+      onRemove: (v) => openDelete(v),
       onEdit: (row) => navigate(`/sales/order/update/${row.id}`),
+      onPublish: (row) => openConfirmModal(row, "publish"),
+      onCancel: (row) => openConfirmModal(row, "cancel"),
+      onPaid: (row) => openConfirmModal(row, "paid"),
     });
   }, [navigate]);
 
   const Table = useTable("sales_order", tableConfig as TableConfig<unknown>);
+
+  useEffect(() => { tableRef.current = Table; }, [Table]);
+
+  const openConfirmModal = useCallback((row: SalesOrderDetail, type: "publish" | "cancel" | "paid") => {
+    setSelectedRow(row);
+    setActionType(type);
+    setCancelNote("");
+  }, []);
+
+  const closeConfirmModal = useCallback(() => {
+    setSelectedRow(null);
+    setActionType(null);
+    setCancelNote("");
+  }, []);
+
+  const handleConfirmAction = useCallback(async () => {
+    if (!selectedRow) return;
+    const id = selectedRow.id;
+    switch (actionType) {
+      case "publish": await publishItem({ id }); break;
+      case "cancel": await cancelItem({ id, payload: { note: cancelNote } }); break;
+      case "paid": await paidItem({ id }); break;
+    }
+  }, [selectedRow, actionType, cancelNote, publishItem, cancelItem, paidItem]);
+
+  const activeResult = useMemo(() => {
+    switch (actionType) {
+      case "publish": return publishResult;
+      case "cancel": return cancelResult;
+      case "paid": return paidResult;
+      default: return null;
+    }
+  }, [actionType, publishResult, cancelResult, paidResult]);
 
   const openDelete = (v: SalesOrderDetail) => {
     openModal({
@@ -77,9 +115,19 @@ export default function SalesOrder() {
   useEffect(() => {
     if (removeItemResult?.isSuccess) {
       closeModal("delete-item");
+      showToast({ message: "Sales order berhasil dihapus", type: "success", position: "bottom-center" });
       Table.boot();
     }
   }, [removeItemResult]);
+
+  useEffect(() => {
+    if (activeResult?.isSuccess) {
+      showToast({ message: "Berhasil", type: "success", position: "bottom-center" });
+      closeConfirmModal();
+      activeResult.reset?.();
+      tableRef.current?.boot();
+    }
+  }, [activeResult?.isSuccess]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -110,6 +158,53 @@ export default function SalesOrder() {
         />
         <Table.Pagination />
       </Page.Body>
+
+      <Modal.Wrapper
+        open={!!selectedRow && !!actionType}
+        onClose={closeConfirmModal}
+        closeOnOutsideClick={false}
+      >
+        <Modal.Header>
+          <div className="font-bold leading-7">
+            Konfirmasi {actionType === "publish" ? "Publish" : actionType === "cancel" ? "Pembatalan" : "Pembayaran"}
+          </div>
+        </Modal.Header>
+        <Modal.Body className="text-sm font-normal leading-5 space-y-4">
+          <p>
+            Apakah Anda yakin ingin {actionType === "publish" ? "menerbitkan" : actionType === "cancel" ? "membatalkan" : "membayar"}{" "}
+            sales order <strong>{selectedRow?.code}</strong>?
+          </p>
+          {actionType === "cancel" && (
+            <Input
+              type="textarea"
+              label="Alasan Pembatalan"
+              placeholder="Masukkan alasan pembatalan..."
+              value={cancelNote}
+              onChange={(e) => setCancelNote(e.target.value)}
+            />
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="flex-1 rounded-xl"
+            variant={actionType === "cancel" ? "error" : "primary"}
+            onClick={handleConfirmAction}
+            isLoading={activeResult?.isLoading}
+            disabled={actionType === "cancel" && !cancelNote.trim()}
+          >
+            Konfirmasi
+          </Button>
+          <Button
+            className="flex-1 rounded-xl"
+            styleType="outline"
+            variant="secondary"
+            onClick={closeConfirmModal}
+            disabled={activeResult?.isLoading}
+          >
+            Batal
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
     </Page>
   );
 }

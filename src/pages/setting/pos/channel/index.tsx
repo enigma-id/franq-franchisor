@@ -8,6 +8,7 @@ import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/channel.config";
 import type { TableConfig } from "@/services/table/const";
+import TableFilter from "./table/channel.filter";
 import { useAppSelector } from "@/hooks";
 import { Input, Loading, Modal, useEnigmaUI } from "@/components";
 import { usePOSChannel } from "@/services/pos/hooks";
@@ -231,7 +232,9 @@ const POSChannelListPage: React.FC = () => {
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0">
-        <Table.Tools />
+        <Table.Tools>
+          <TableFilter table={Table} />
+        </Table.Tools>
 
         <Table.Render
           emptyTitle="Belum Ada Channel"

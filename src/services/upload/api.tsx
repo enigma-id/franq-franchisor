@@ -14,7 +14,7 @@ export const uploadApi = createApi({
      * Generate presigned URL untuk upload langsung ke S3
      */
     getPresignedURL: builder.mutation({
-      query: (params: { filename: string; contentType: string }) => ({
+      query: (params: { filename: string; content_type: string }) => ({
         url: "/upload",
         method: "POST",
         body: params,

@@ -8,6 +8,7 @@ import { Button, Input, Modal } from "@/components/ui";
 import { useOutletType } from "@/services/outlet/hooks";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/type.config";
+import TableFilter from "./table/type.filter";
 import { Loading, useEnigmaUI } from "@/components";
 import type { TableConfig } from "@/services/table/const";
 import { useAppSelector } from "@/hooks";
@@ -232,7 +233,9 @@ const OutletTypePage: React.FC = () => {
       />
 
       <Page.Body className="flex-1 flex flex-col min-h-0 bg-white border-t border-slate-200">
-        <Table.Tools />
+        <Table.Tools>
+          <TableFilter table={Table} />
+        </Table.Tools>
 
         <Table.Render
           emptyTitle="Belum Ada Tipe Outlet"

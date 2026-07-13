@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { RemoteSelect } from "@/components/ui";
 import { ChevronDown } from "lucide-react";
+import type { SelectOptionValue } from "@/services/types/table";
 import { useOutlet } from "@/services/outlet/hooks";
 
 interface TableFilterProps {
@@ -17,24 +18,30 @@ interface TableFilterProps {
   };
 }
 
+const periodeTypeOptions: SelectOptionValue[] = [
+  { label: "Daily", value: "daily" },
+  { label: "Monthly", value: "monthly" },
+  { label: "Yearly", value: "yearly" },
+];
+
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   const current = useMemo(
     () => table.State?.filter ?? {},
     [table.State?.filter],
   );
 
+  // Outlet filter
   const { get: getOutlet, getResult } = useOutlet();
+  const [outlet, setOutlet] = useState<any | null>(null);
 
   useEffect(() => {
     getOutlet({ page: 1, limit: 20, status: "active" });
   }, []);
 
-  const [outlet, setOutlet] = useState<any | null>(null);
-
   useEffect(() => {
     if (current.outlet_id && getResult?.data?.data) {
       const outlets = getResult.data.data as any[];
-      const found = outlets.find((c) => c.id === current.outlet_id);
+      const found = outlets.find((c: any) => c.id === current.outlet_id);
       if (found) {
         setOutlet(found);
       }
@@ -43,20 +50,40 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_id, getResult?.data?.data]);
 
+  // Periode type
+  const [periodeType, setPeriodeType] = useState<SelectOptionValue | null>(
+    () => {
+      const value = current.periode_type as string | undefined;
+      return value
+        ? (periodeTypeOptions.find((opt) => opt.value === value) ?? null)
+        : null;
+    },
+  );
+
+  // Periode (month picker via simple month/year string)
+  const [periode, setPeriode] = useState<string>(
+    (current.periode as string) || "",
+  );
+
+  const selectClassName =
+    "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
+
   const applyFilters = (updates: any) => {
     const filters = {
       outlet_id: outlet?.id ?? "",
+      periode_type: periodeType?.value ?? "",
+      periode: periode || "",
       ...updates,
     };
     table.filter(filters);
   };
 
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0">
+    <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
       <div className="w-40 md:w-56">
         <RemoteSelect
           placeholder="Outlet: All"
-          inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
+          inputClassName={selectClassName}
           suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
           value={outlet}
           onChange={(val) => {
@@ -78,6 +105,25 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getLabel={(item: any) => (item ? item.name : "")}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
+        />
+      </div>
+      <div className="w-40 md:w-44">
+        <RemoteSelect<SelectOptionValue>
+          placeholder="Periode: All"
+          inputClassName={selectClassName}
+          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          data={periodeTypeOptions}
+          value={periodeType}
+          onChange={(val) => {
+            setPeriodeType(val);
+            applyFilters({ periode_type: val?.value || "" });
+          }}
+          onClear={() => {
+            setPeriodeType(null);
+            applyFilters({ periode_type: "" });
+          }}
+          getLabel={(item) => (item ? `Periode: ${item.label}` : "")}
+          renderItem={(item) => item?.label}
         />
       </div>
     </div>
