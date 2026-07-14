@@ -53,7 +53,7 @@ export function InventoryItemUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Inventory"
+        category="Inventory & Warehouse"
         title="Ubah Item Inventori"
         subtitle={
           initialData

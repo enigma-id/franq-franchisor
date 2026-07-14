@@ -121,7 +121,7 @@ export function PurchaseOrderDetailPage() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Purchase Order"
+        category="Purchase"
         title={`Order #${data?.code}`}
         backTo={() => navigate("/purchase/order")}
         action={

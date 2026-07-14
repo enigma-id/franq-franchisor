@@ -160,6 +160,22 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
           }),
         );
       }
+      if (
+        initialData.addon_groups &&
+        initialData.addon_groups.length > 0
+      ) {
+        const newAddGroups = initialData.addon_groups.map((group: any) => ({
+          name: group.name ?? "",
+          type: group.type ?? "",
+          items: (group.items || []).map((item: any) => ({
+            addon_menu: item.addon_menu ?? null,
+            addon_menu_id:
+              item.addon_menu?.id ?? item.addon_menu_id ?? "",
+          })),
+        }));
+        setAddGroup(newAddGroups);
+      }
+
       setCategory(initialData?.category ?? null);
     }
   }, [initialData, channelsResult]);

@@ -209,7 +209,7 @@ const createTableConfig = ({
             </Dropdown.Item>
           )}
 
-          {row.document_status === "received" && (
+          {row.document_status === "received" && row.payment_status === "unpaid" && (
             <Dropdown.Item
               onSelect={() => onInvoice?.(row)}
               className="hover:bg-purple-50 hover:text-purple-600"

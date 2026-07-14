@@ -18,22 +18,32 @@ const UserListPage: React.FC = () => {
     [navigate],
   );
 
-  const tableConfig = useMemo(() => createTableConfig({ onView: handleView }), [handleView]);
+  const tableConfig = useMemo(
+    () => createTableConfig({ onView: handleView }),
+    [handleView],
+  );
   const Table = useTable("user-list", tableConfig as TableConfig<unknown>);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Setting"
+        category="Settings"
         title="User"
         subtitle="Kelola pengguna sistem."
-        action={<Button onClick={() => navigate("/user/create")}>+ Tambah User</Button>}
+        action={
+          <Button variant="primary" onClick={() => navigate("/user/create")}>
+            + Tambah User
+          </Button>
+        }
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
         <Table.Tools>
           <TableFilter table={Table} />
         </Table.Tools>
-        <Table.Render emptyTitle="Data Tidak Ditemukan" emptyDescription="Belum ada user." />
+        <Table.Render
+          emptyTitle="Data Tidak Ditemukan"
+          emptyDescription="Belum ada user."
+        />
         <Table.Pagination />
       </Page.Body>
     </Page>

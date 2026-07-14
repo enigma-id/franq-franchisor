@@ -27,6 +27,7 @@ const providerOptions = [
   { label: "QRIS", value: "qris" },
   { label: "Midtrans", value: "midtrans" },
   { label: "Manual", value: "manual" },
+  { label: "Saldo", value: "saldo" },
   { label: "Other", value: "other" },
 ];
 
@@ -86,6 +87,14 @@ const PaymentMethodListPage: React.FC = () => {
         setFormData((prev) => ({
           ...prev,
           name: "Cash",
+          account_name: "",
+          account_number: "",
+        }));
+      } else if (provider?.value === "saldo") {
+        setType(getOptionByValue(typeOptions, "franchise"));
+        setFormData((prev) => ({
+          ...prev,
+          name: "Saldo",
           account_name: "",
           account_number: "",
         }));
@@ -373,7 +382,9 @@ const PaymentMethodListPage: React.FC = () => {
                 getLabel={(item) => item.label ?? ""}
                 renderItem={(item) => item.label ?? ""}
                 disabled={
-                  provider?.value === "cash" || formData.is_member_payment
+                  provider?.value === "cash" ||
+                  provider?.value === "saldo" ||
+                  formData.is_member_payment
                 }
                 error={FormState?.errors?.type as string}
               />

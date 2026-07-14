@@ -65,6 +65,7 @@ import UserListPage from "@/pages/user";
 import UserCreatePage from "@/pages/user/userCreate";
 import UserUpdatePage from "@/pages/user/userUpdate";
 import UserGroupListPage from "@/pages/user/usergroup";
+import UserGroupCreatePage from "@/pages/user/usergroup/create";
 import FranchisorProfilePage from "@/pages/franchisor";
 
 export function AppRoutes() {
@@ -268,6 +269,7 @@ export function AppRoutes() {
         <Route path="/user/create" element={<UserCreatePage />} />
         <Route path="/user/update/:id" element={<UserUpdatePage />} />
         <Route path="/user/group" element={<UserGroupListPage />} />
+        <Route path="/user/group/create" element={<UserGroupCreatePage />} />
 
         {/* Franchisor Profile */}
         <Route path="/franchisor" element={<FranchisorProfilePage />} />

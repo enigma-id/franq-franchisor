@@ -38,7 +38,7 @@ export function B2BOrderUpdate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="B2B"
+        category="Sales"
         title="Edit B2B Order"
         subtitle="Perbarui pesanan B2B."
         backTo={() => navigate(-1)}

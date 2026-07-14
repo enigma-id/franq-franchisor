@@ -16,7 +16,7 @@ const FranchisorProfilePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Setting"
+        category="Settings"
         title="Profil Franchisor"
         subtitle="Informasi perusahaan waralaba."
         backTo={() => navigate(-1)}

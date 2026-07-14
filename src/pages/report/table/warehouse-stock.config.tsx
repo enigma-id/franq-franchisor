@@ -1,5 +1,4 @@
 import config from "@/services/table/const";
-import { currencyFormat } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
@@ -32,22 +31,27 @@ const createTableConfig = ({
         <span className="text-sm">{row?.warehouse?.name ?? "-"}</span>
       ),
     },
-    stock: {
-      title: "Current Stock",
+    quantity_available: {
+      title: "Available",
       align: "right",
       class: "text-right font-semibold",
       component: (row: any) => (
         <span className="text-right block">
-          {currencyFormat(row?.stock)} {row?.item?.default_fraction ?? ""}
+          {row?.quantity_available ?? 0}
         </span>
       ),
     },
-    value: {
-      title: "Estimated Value",
+    quantity_allocated: {
+      title: "Allocated",
       align: "right",
-      class: "text-right font-mono font-medium",
-      component: (row: any) =>
-        currencyFormat((row?.stock ?? 0) * (row?.item?.base_price ?? 0)),
+      class: "text-right",
+      component: (row: any) => row?.quantity_allocated ?? 0,
+    },
+    quantity_defect: {
+      title: "Defect",
+      align: "right",
+      class: "text-right",
+      component: (row: any) => row?.quantity_defect ?? 0,
     },
   },
 });

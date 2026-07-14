@@ -31,7 +31,7 @@ export function B2BOrderCreate() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="B2B"
+        category="Sales"
         title="Tambah B2B Order"
         subtitle="Buat order B2B baru untuk pelanggan."
         backTo={() => navigate(-1)}

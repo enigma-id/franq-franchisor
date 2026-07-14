@@ -233,6 +233,20 @@ function SidebarSection({
   );
 }
 
+// ─── Nav helpers ──────────────────────────────────────────────────────────────
+const siblingExclusions: Record<string, string[]> = {
+  "/user": ["/user/group"],
+};
+
+function isPathActive(currentPath: string, itemPath?: string): boolean {
+  if (!itemPath) return false;
+  if (currentPath === itemPath) return true;
+  // Exclude known sibling routes (e.g. /user should not match /user/group)
+  const exclusions = siblingExclusions[itemPath] ?? [];
+  if (exclusions.some((s) => currentPath === s || currentPath.startsWith(s + "/"))) return false;
+  return currentPath.startsWith(itemPath + "/");
+}
+
 // Active pill — right side indicator
 function ActivePill({ active }: { active: boolean }) {
   if (!active) return null;
@@ -253,9 +267,7 @@ function NavItem({
   onNavigate: () => void;
 }) {
   const location = useLocation();
-  const isActive =
-    location.pathname === item.path ||
-    location.pathname.startsWith(item.path + "/");
+  const isActive = isPathActive(location.pathname, item.path);
 
   return (
     <NavLink
@@ -293,9 +305,7 @@ function ParentItem({
   const [expanded, setExpanded] = useState(false);
   const isChildActive =
     item.children?.some(
-      (c) =>
-        location.pathname === c.path ||
-        location.pathname.startsWith(c.path + "/"),
+      (c) => isPathActive(location.pathname, c.path),
     ) ?? false;
 
   return (
@@ -338,9 +348,7 @@ function ParentItem({
       >
         <div className="ml-9 pl-5 border-l border-base-300 space-y-1 py-1 mr-4">
           {item.children!.map((child) => {
-            const isActive =
-              location.pathname === child.path ||
-              location.pathname.startsWith(child.path + "/");
+            const isActive = isPathActive(location.pathname, child.path);
             return (
               <NavLink
                 key={child.path}

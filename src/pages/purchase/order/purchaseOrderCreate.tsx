@@ -29,7 +29,7 @@ const PurchaseOrderCreatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Purchase Order"
+        category="Purchase"
         title="Buat PO Baru"
         subtitle="Buat pesanan pembelian barang baru."
         backTo={() => navigate(-1)}

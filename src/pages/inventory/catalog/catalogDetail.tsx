@@ -60,7 +60,7 @@ const InventoryCatalogDetailPage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Inventory"
+        category="Inventory & Warehouse"
         title={catalog.name}
         backTo={() => navigate("/inventory/catalog")}
         action={

@@ -36,7 +36,7 @@ const PurchaseOrderUpdatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Purchase Order"
+        category="Purchase"
         title="Update PO"
         subtitle="Perbarui informasi pesanan pembelian"
         backTo={() => navigate(-1)}

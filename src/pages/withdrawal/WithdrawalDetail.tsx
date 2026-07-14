@@ -106,7 +106,7 @@ export function WithdrawalDetail() {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Withdrawal"
+        category="Sales"
         title="Detail Penarikan"
         subtitle={`ID: ${data?.id ?? ""}`}
         backTo={() => navigate(-1)}

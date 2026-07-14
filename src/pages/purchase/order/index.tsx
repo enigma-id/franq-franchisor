@@ -166,7 +166,7 @@ const PurchaseOrderListPage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Purchase Order"
+        category="Purchase"
         title="Purchase Order"
         subtitle="Kelola pesanan pembelian barang ke supplier."
         action={

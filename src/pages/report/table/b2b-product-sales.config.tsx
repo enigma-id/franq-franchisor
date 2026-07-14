@@ -11,23 +11,50 @@ const createTableConfig = ({
   url: "/report/b2b/product-sales",
   filter,
   columns: {
-    name: {
+    date: {
+      title: "Date",
+      sortable: true,
+      component: (row: any) => (
+        <span className="text-sm">{row?.date ? new Date(row.date).toLocaleDateString() : "-"}</span>
+      ),
+    },
+    code: {
+      title: "Order Code",
+      sortable: true,
+      component: (row: any) => (
+        <span className="font-medium text-sm">{row?.code ?? "-"}</span>
+      ),
+    },
+    customer_name: {
+      title: "Customer",
+      sortable: true,
+      component: (row: any) => (
+        <span className="text-sm">{row?.customer_name ?? "-"}</span>
+      ),
+    },
+    menu_name: {
       title: "Product Name",
       sortable: true,
       component: (row: any) => (
         <span className="font-semibold uppercase text-sm">
-          {row?.name ?? "-"}
+          {row?.menu_name ?? "-"}
         </span>
       ),
     },
-    total_qty: {
-      title: "Total Sold",
+    quantity: {
+      title: "Quantity",
       align: "center",
       class: "text-center font-semibold",
-      component: (row: any) => currencyFormat(row?.total_qty),
+      component: (row: any) => row?.quantity ?? "-",
+    },
+    unit_nett: {
+      title: "Unit Price",
+      align: "right",
+      class: "text-right font-mono font-medium",
+      component: (row: any) => currencyFormat(row?.unit_nett),
     },
     total_nett: {
-      title: "Total Revenue",
+      title: "Total",
       align: "right",
       class: "text-right font-mono font-medium",
       component: (row: any) => currencyFormat(row?.total_nett),

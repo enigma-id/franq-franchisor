@@ -1,25 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
-import { Page } from "@/components/app/layout";
-import { InventoryCatalogForm } from "./components/catalogForm";
-import { useInventoryCatalog } from "@/services/inventory/hooks";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Loading, useEnigmaUI } from "@/components";
+import { Page } from "@/components/app/layout";
+import { Button, Loading } from "@/components/ui";
+import { useUserGroup } from "@/services/usergroup/hooks";
 import { Save } from "lucide-react";
+import { useEnigmaUI } from "@/components";
+import { UserGroupForm } from "./components/UserGroupForm";
 
-const InventoryCatalogCreatePage: React.FC = () => {
+const UserGroupCreatePage: React.FC = () => {
   const navigate = useNavigate();
-  const { create, createResult } = useInventoryCatalog();
   const { showToast } = useEnigmaUI();
+  const { create, createResult } = useUserGroup();
   const { isLoading: isCreating, isSuccess } = createResult;
 
   useEffect(() => {
     if (isSuccess) {
       showToast({
-        message: "Katalog berhasil dibuat",
+        message: "User Group berhasil dibuat",
         type: "success",
+        position: "bottom-center",
+        duration: 4000,
       });
-      navigate("/inventory/catalog");
+      navigate("/user/group");
       createResult.reset?.();
     }
   }, [isSuccess, navigate, createResult, showToast]);
@@ -27,14 +30,14 @@ const InventoryCatalogCreatePage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Inventory & Warehouse"
-        title="Tambah Katalog Baru"
-        subtitle="Daftarkan katalog produk baru."
+        category="Settings"
+        title="Tambah User Group"
+        subtitle="Buat grup pengguna baru."
         backTo={() => navigate(-1)}
         action={
           <Button
             type="submit"
-            form="inventory-catalog-form"
+            form="usergroup-form"
             disabled={isCreating}
             variant="success"
           >
@@ -43,22 +46,20 @@ const InventoryCatalogCreatePage: React.FC = () => {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Simpan
+                Simpan Grup
               </>
             )}
           </Button>
         }
       />
-      <Page.Body>
-        <div className="mx-auto py-6">
-          <InventoryCatalogForm
-            id="inventory-catalog-form"
-            onSubmit={(data) => create(data as any)}
-          />
-        </div>
+      <Page.Body className="flex-1 overflow-auto p-4 md:p-6">
+        <UserGroupForm
+          id="usergroup-form"
+          onSubmit={(data) => create(data as any)}
+        />
       </Page.Body>
     </Page>
   );
 };
 
-export default InventoryCatalogCreatePage;
+export default UserGroupCreatePage;
