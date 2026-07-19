@@ -22,7 +22,6 @@ import {
   ArrowDownLeft,
   ShoppingBag,
   Wallet,
-  UserCog,
   UserCircle,
 } from "lucide-react";
 
@@ -181,14 +180,6 @@ const menuSections: MenuSection[] = [
     label: "Settings",
     items: [
       {
-        label: "Pengguna",
-        icon: <UserCog size={18} />,
-        children: [
-          { label: "User", path: "/user" },
-          { label: "User Group", path: "/user/group" },
-        ],
-      },
-      {
         label: "Profil Franchisor",
         path: "/franchisor",
         icon: <UserCircle size={18} />,
@@ -234,16 +225,10 @@ function SidebarSection({
 }
 
 // ─── Nav helpers ──────────────────────────────────────────────────────────────
-const siblingExclusions: Record<string, string[]> = {
-  "/user": ["/user/group"],
-};
 
 function isPathActive(currentPath: string, itemPath?: string): boolean {
   if (!itemPath) return false;
   if (currentPath === itemPath) return true;
-  // Exclude known sibling routes (e.g. /user should not match /user/group)
-  const exclusions = siblingExclusions[itemPath] ?? [];
-  if (exclusions.some((s) => currentPath === s || currentPath.startsWith(s + "/"))) return false;
   return currentPath.startsWith(itemPath + "/");
 }
 

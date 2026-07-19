@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 
 import { RemoteSelect } from "@/components/ui";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import { useInventoryItem } from "@/services/inventory/hooks";
+import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
   table: {
@@ -24,7 +24,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  // Warehouse filter
   const { get: getWarehouse, getResult: getWarehouseResult } = useWarehouse();
   const [warehouse, setWarehouse] = useState<any | null>(null);
 
@@ -42,7 +41,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.warehouse_id, getWarehouseResult?.data?.data]);
 
-  // Item filter
   const { get: getItem, getResult: getItemResult } = useInventoryItem();
   const [item, setItem] = useState<any | null>(null);
 
@@ -60,57 +58,57 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.item_id, getItemResult?.data?.data]);
 
-  const selectClassName =
-    "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
+  const buildFilters = () => ({
+    warehouse_id: warehouse?.id ?? "",
+    item_id: item?.id ?? "",
+  });
 
-  const applyFilters = (updates: any) => {
-    const filters = {
-      warehouse_id: warehouse?.id ?? "",
-      item_id: item?.id ?? "",
-      ...updates,
-    };
-    table.filter(filters);
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (
+      (f.warehouse_id || "") !== (current.warehouse_id || "") ||
+      (f.item_id || "") !== (current.item_id || "")
+    );
+  }, [warehouse, item, current]);
+
+  const anyActive = !!(current.warehouse_id || current.item_id);
+
+  const handleClear = () => {
+    setWarehouse(null);
+    setItem(null);
+    table.filter({ warehouse_id: "", item_id: "" });
   };
 
+  const handleFilter = () => table.filter(buildFilters());
+
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
-      <div className="w-40 md:w-56">
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect
-          placeholder="Warehouse: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Gudang"
+          placeholder="Filter Gudang"
           value={warehouse}
-          onChange={(val) => {
-            setWarehouse(val);
-            applyFilters({ warehouse_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setWarehouse(null);
-            applyFilters({ warehouse_id: "" });
-          }}
+          onChange={(val) => setWarehouse(val)}
+          onClear={() => setWarehouse(null)}
           fetchData={(page, search) =>
             getWarehouse({ page: page || 1, limit: 20, search })
           }
           hook={getWarehouseResult as any}
-          getLabel={(item: any) => (item ? item.name : "")}
+          getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
         />
-      </div>
-      <div className="w-40 md:w-56">
         <RemoteSelect
-          placeholder="Item: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Item"
+          placeholder="Filter Item"
           value={item}
-          onChange={(val) => {
-            setItem(val);
-            applyFilters({ item_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setItem(null);
-            applyFilters({ item_id: "" });
-          }}
+          onChange={(val) => setItem(val)}
+          onClear={() => setItem(null)}
           fetchData={(page, search) =>
             getItem({ page: page || 1, limit: 20, search })
           }
@@ -124,7 +122,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getValue={(item: any) => item.id}
         />
       </div>
-    </div>
+    </TableFilters>
   );
 };
 

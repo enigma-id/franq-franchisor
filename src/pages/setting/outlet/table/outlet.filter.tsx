@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import { useOutletType } from "@/services/outlet/hooks";
+import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
   table: {
@@ -27,7 +27,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  // Outlet type filter
   const { get: getOutletType, getResult: getOutletTypeResult } = useOutletType();
   const [outletType, setOutletType] = useState<any | null>(null);
 
@@ -45,7 +44,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_type_id, getOutletTypeResult?.data?.data]);
 
-  // is_active filter
   const [isActive, setIsActive] = useState<SelectOptionValue | null>(() => {
     const value = current.is_active;
     return value
@@ -53,63 +51,63 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       : null;
   });
 
-  const applyFilters = (updates: any) => {
-    const filters = {
-      outlet_type_id: outletType?.id ?? "",
-      is_active: isActive?.value ?? "",
-      ...updates,
-    };
-    table.filter(filters);
+  const buildFilters = () => ({
+    outlet_type_id: outletType?.id ?? "",
+    is_active: isActive?.value ?? "",
+  });
+
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (
+      (f.outlet_type_id || "") !== (current.outlet_type_id || "") ||
+      (f.is_active || "") !== (current.is_active || "")
+    );
+  }, [outletType, isActive, current]);
+
+  const anyActive = !!(current.outlet_type_id || current.is_active);
+
+  const handleClear = () => {
+    setOutletType(null);
+    setIsActive(null);
+    table.filter({ outlet_type_id: "", is_active: "" });
   };
 
-  const selectClassName =
-    "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
+  const handleFilter = () => table.filter(buildFilters());
 
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
-      <div className="w-40 md:w-56">
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect
-          placeholder="Type: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Tipe Outlet"
+          placeholder="Filter Tipe"
           value={outletType}
-          onChange={(val) => {
-            setOutletType(val);
-            applyFilters({ outlet_type_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setOutletType(null);
-            applyFilters({ outlet_type_id: "" });
-          }}
+          onChange={(val) => setOutletType(val)}
+          onClear={() => setOutletType(null)}
           fetchData={(page, search) =>
             getOutletType({ page: page || 1, limit: 20, search })
           }
           hook={getOutletTypeResult as any}
-          getLabel={(item: any) => (item ? item.name : "")}
+          getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
         />
-      </div>
-      <div className="w-40 md:w-44">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Status: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Status"
+          placeholder="Filter Status"
           data={isActiveOptions}
           value={isActive}
-          onChange={(val) => {
-            setIsActive(val);
-            applyFilters({ is_active: val?.value || "" });
-          }}
-          onClear={() => {
-            setIsActive(null);
-            applyFilters({ is_active: "" });
-          }}
-          getLabel={(item) => (item ? `Status: ${item.label}` : "")}
+          onChange={(opt) => setIsActive(opt)}
+          onClear={() => setIsActive(null)}
+          getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
       </div>
-    </div>
+    </TableFilters>
   );
 };
 

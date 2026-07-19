@@ -30,8 +30,8 @@ const TableFilter: React.FC<TableFilterProps> = ({
           styleType='outline'
           className={
             isActive
-              ? "border-primary text-primary bg-primary/10 shadow-sm font-medium h-9 px-3 gap-2 w-[200px]"
-              : "border-base-300 text-base-content hover:bg-base-200 bg-base-100 shadow-sm font-normal h-9 px-3 gap-2 w-[180px]"
+              ? "border-primary text-primary bg-primary/10 shadow-sm font-medium h-9 px-3 gap-2"
+              : "border-base-300 text-base-content hover:bg-base-200 bg-base-100 shadow-sm font-normal h-9 px-3 gap-2"
           }
         >
           <SlidersHorizontal className={isActive ? "text-primary w-4 h-4" : "text-base-content/50 w-4 h-4"} />

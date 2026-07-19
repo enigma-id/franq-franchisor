@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import { useOutlet } from "@/services/outlet/hooks";
+import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
   table: {
@@ -28,7 +28,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  // Document status filter
   const [documentStatus, setDocumentStatus] =
     useState<SelectOptionValue | null>(() => {
       const value = current.document_status;
@@ -37,7 +36,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
         : null;
     });
 
-  // Outlet filter
   const { get: getOutlet, getResult: getOutletResult } = useOutlet();
   const [outlet, setOutlet] = useState<any | null>(null);
 
@@ -55,63 +53,63 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_id, getOutletResult?.data?.data]);
 
-  const applyFilters = (updates: any) => {
-    const filters = {
-      document_status: documentStatus?.value ?? "",
-      outlet_id: outlet?.id ?? "",
-      ...updates,
-    };
-    table.filter(filters);
+  const buildFilters = () => ({
+    document_status: documentStatus?.value ?? "",
+    outlet_id: outlet?.id ?? "",
+  });
+
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (
+      (f.document_status || "") !== (current.document_status || "") ||
+      (f.outlet_id || "") !== (current.outlet_id || "")
+    );
+  }, [documentStatus, outlet, current]);
+
+  const anyActive = !!(current.document_status || current.outlet_id);
+
+  const handleClear = () => {
+    setDocumentStatus(null);
+    setOutlet(null);
+    table.filter({ document_status: "", outlet_id: "" });
   };
 
-  const selectClassName =
-    "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
+  const handleFilter = () => table.filter(buildFilters());
 
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
-      <div className="w-40 md:w-44">
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Status: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Status"
+          placeholder="Filter Status"
           data={documentStatusOptions}
           value={documentStatus}
-          onChange={(val) => {
-            setDocumentStatus(val);
-            applyFilters({ document_status: val?.value || "" });
-          }}
-          onClear={() => {
-            setDocumentStatus(null);
-            applyFilters({ document_status: "" });
-          }}
-          getLabel={(item) => (item ? `Status: ${item.label}` : "")}
+          onChange={(opt) => setDocumentStatus(opt)}
+          onClear={() => setDocumentStatus(null)}
+          getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
-      </div>
-      <div className="w-40 md:w-56">
         <RemoteSelect
-          placeholder="Outlet: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Outlet"
+          placeholder="Filter Outlet"
           value={outlet}
-          onChange={(val) => {
-            setOutlet(val);
-            applyFilters({ outlet_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setOutlet(null);
-            applyFilters({ outlet_id: "" });
-          }}
+          onChange={(val) => setOutlet(val)}
+          onClear={() => setOutlet(null)}
           fetchData={(page, search) =>
             getOutlet({ page: page || 1, limit: 20, search })
           }
           hook={getOutletResult as any}
-          getLabel={(item: any) => (item ? item.name : "")}
+          getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
         />
       </div>
-    </div>
+    </TableFilters>
   );
 };
 

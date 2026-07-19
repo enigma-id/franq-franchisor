@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
-import { usePOSCategory } from "@/services/pos/hooks";
+import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
   table: {
@@ -28,25 +26,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  // Category filter
-  const { get: getCategory, getResult: getCategoryResult } = usePOSCategory();
-  const [category, setCategory] = useState<any | null>(null);
-
-  useEffect(() => {
-    getCategory({ page: 1, limit: 20 });
-  }, []);
-
-  useEffect(() => {
-    if (current.category_id && getCategoryResult?.data?.data) {
-      const items = getCategoryResult.data.data as any[];
-      const found = items.find((c: any) => c.id === current.category_id);
-      if (found) setCategory(found);
-    } else if (!current.category_id) {
-      setCategory(null);
-    }
-  }, [current.category_id, getCategoryResult?.data?.data]);
-
-  // is_active filter
   const [isActive, setIsActive] = useState<SelectOptionValue | null>(() => {
     const value = current.is_active;
     return value
@@ -54,60 +33,44 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       : null;
   });
 
-  const applyFilters = (updates: any) => {
-    const filters = {
-      category_id: category?.id ?? "",
-      is_active: isActive?.value ?? "",
-      ...updates,
-    };
-    table.filter(filters);
+  const buildFilters = () => ({
+    is_active: isActive?.value ?? "",
+  });
+
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (f.is_active || "") !== (current.is_active || "");
+  }, [isActive, current]);
+
+  const anyActive = !!current.is_active;
+
+  const handleClear = () => {
+    setIsActive(null);
+    table.filter({ is_active: "" });
   };
 
+  const handleFilter = () => table.filter(buildFilters());
+
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="w-40 md:w-48">
-        <RemoteSelect
-          placeholder="Category: All"
-          inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-          value={category}
-          onChange={(val) => {
-            setCategory(val);
-            applyFilters({ category_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setCategory(null);
-            applyFilters({ category_id: "" });
-          }}
-          fetchData={(page, search) =>
-            getCategory({ page: page || 1, limit: 20, search })
-          }
-          hook={getCategoryResult as any}
-          getLabel={(item: any) => (item ? item.name : "")}
-          renderItem={(item: any) => item?.name}
-          getValue={(item: any) => item.id}
-        />
-      </div>
-      <div className="w-40 md:w-44">
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Status: All"
-          inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Status"
+          placeholder="Filter Status"
           data={isActiveOptions}
           value={isActive}
-          onChange={(val) => {
-            setIsActive(val);
-            applyFilters({ is_active: val?.value || "" });
-          }}
-          onClear={() => {
-            setIsActive(null);
-            applyFilters({ is_active: "" });
-          }}
-          getLabel={(item) => (item ? `Status: ${item.label}` : "")}
+          onChange={(opt) => setIsActive(opt)}
+          onClear={() => setIsActive(null)}
+          getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
       </div>
-    </div>
+    </TableFilters>
   );
 };
 

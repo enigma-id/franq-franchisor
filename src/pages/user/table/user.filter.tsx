@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import { useUserGroup } from "@/services/usergroup/hooks";
+import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
   table: {
@@ -27,7 +27,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  // Usergroup filter
   const { get: getUsergroup, getResult: getUsergroupResult } = useUserGroup();
   const [usergroup, setUsergroup] = useState<any | null>(null);
 
@@ -45,7 +44,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.usergroup_id, getUsergroupResult?.data?.data]);
 
-  // is_active filter
   const [isActive, setIsActive] = useState<SelectOptionValue | null>(() => {
     const value = current.is_active;
     return value
@@ -53,63 +51,63 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       : null;
   });
 
-  const applyFilters = (updates: any) => {
-    const filters = {
-      usergroup_id: usergroup?.id ?? "",
-      is_active: isActive?.value ?? "",
-      ...updates,
-    };
-    table.filter(filters);
+  const buildFilters = () => ({
+    usergroup_id: usergroup?.id ?? "",
+    is_active: isActive?.value ?? "",
+  });
+
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (
+      (f.usergroup_id || "") !== (current.usergroup_id || "") ||
+      (f.is_active || "") !== (current.is_active || "")
+    );
+  }, [usergroup, isActive, current]);
+
+  const anyActive = !!(current.usergroup_id || current.is_active);
+
+  const handleClear = () => {
+    setUsergroup(null);
+    setIsActive(null);
+    table.filter({ usergroup_id: "", is_active: "" });
   };
 
-  const selectClassName =
-    "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
+  const handleFilter = () => table.filter(buildFilters());
 
   return (
-    <div className="flex flex-row items-center gap-3 w-full shrink-0 flex-wrap">
-      <div className="w-40 md:w-56">
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect
-          placeholder="User Group: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="User Group"
+          placeholder="Filter Group"
           value={usergroup}
-          onChange={(val) => {
-            setUsergroup(val);
-            applyFilters({ usergroup_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setUsergroup(null);
-            applyFilters({ usergroup_id: "" });
-          }}
+          onChange={(val) => setUsergroup(val)}
+          onClear={() => setUsergroup(null)}
           fetchData={(page, search) =>
             getUsergroup({ page: page || 1, limit: 20, search })
           }
           hook={getUsergroupResult as any}
-          getLabel={(item: any) => (item ? item.name : "")}
+          getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
         />
-      </div>
-      <div className="w-40 md:w-44">
         <RemoteSelect<SelectOptionValue>
-          placeholder="Status: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Status"
+          placeholder="Filter Status"
           data={isActiveOptions}
           value={isActive}
-          onChange={(val) => {
-            setIsActive(val);
-            applyFilters({ is_active: val?.value || "" });
-          }}
-          onClear={() => {
-            setIsActive(null);
-            applyFilters({ is_active: "" });
-          }}
-          getLabel={(item) => (item ? `Status: ${item.label}` : "")}
+          onChange={(opt) => setIsActive(opt)}
+          onClear={() => setIsActive(null)}
+          getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
       </div>
-    </div>
+    </TableFilters>
   );
 };
 

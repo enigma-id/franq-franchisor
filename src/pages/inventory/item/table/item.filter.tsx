@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { RemoteSelect } from "@/components";
 import type { SelectOptionValue } from "@/services/types/table";
-import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
+import TableFilters from "@/components/ui/table/filter";
 
 interface Props {
   table: any;
@@ -31,11 +31,10 @@ export default function TableFilter({ table }: Props) {
     [table.State?.filter],
   );
 
-  const currentStatus = current.is_active ?? "";
-
   const [status, setStatus] = useState<SelectOptionValue | null>(() => {
-    return currentStatus
-      ? (statusOptions.find((opt) => opt.value === currentStatus) ?? null)
+    const value = current.is_active;
+    return value
+      ? (statusOptions.find((opt) => opt.value === value) ?? null)
       : null;
   });
 
@@ -53,69 +52,71 @@ export default function TableFilter({ table }: Props) {
       : null;
   });
 
-  const applyFilters = (updates: any) => {
-    const filters = {
-      is_active: status?.value ?? "",
-      type: typeFilter?.value ?? "",
-      category: categoryFilter?.value ?? "",
-      ...updates,
-    };
-    table.filter(filters);
+  const buildFilters = () => ({
+    is_active: status?.value ?? "",
+    type: typeFilter?.value ?? "",
+    category: categoryFilter?.value ?? "",
+  });
+
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (
+      (f.is_active || "") !== (current.is_active || "") ||
+      (f.type || "") !== (current.type || "") ||
+      (f.category || "") !== (current.category || "")
+    );
+  }, [status, typeFilter, categoryFilter, current]);
+
+  const anyActive = !!(current.is_active || current.type || current.category);
+
+  const handleClear = () => {
+    setStatus(null);
+    setTypeFilter(null);
+    setCategoryFilter(null);
+    table.filter({ is_active: "", type: "", category: "" });
   };
 
+  const handleFilter = () => table.filter(buildFilters());
+
   return (
-    <div className="flex items-center gap-2">
-      <RemoteSelect<SelectOptionValue>
-        placeholder="Status: All"
-        inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
-        suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-        data={statusOptions}
-        value={status}
-        onChange={(val) => {
-          setStatus(val);
-          applyFilters({ is_active: val?.value || "" });
-        }}
-        onClear={() => {
-          setStatus(null);
-          applyFilters({ is_active: "" });
-        }}
-        getLabel={(item) => (item ? `Status: ${item.label}` : "")}
-        renderItem={(item) => item?.label}
-      />
-      <RemoteSelect<SelectOptionValue>
-        placeholder="Type: All"
-        inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
-        suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-        data={typeOptions}
-        value={typeFilter}
-        onChange={(val) => {
-          setTypeFilter(val);
-          applyFilters({ type: val?.value || "" });
-        }}
-        onClear={() => {
-          setTypeFilter(null);
-          applyFilters({ type: "" });
-        }}
-        getLabel={(item) => (item ? `Type: ${item.label}` : "")}
-        renderItem={(item) => item?.label}
-      />
-      <RemoteSelect<SelectOptionValue>
-        placeholder="Category: All"
-        inputClassName="!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium"
-        suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
-        data={categoryOptions}
-        value={categoryFilter}
-        onChange={(val) => {
-          setCategoryFilter(val);
-          applyFilters({ category: val?.value || "" });
-        }}
-        onClear={() => {
-          setCategoryFilter(null);
-          applyFilters({ category: "" });
-        }}
-        getLabel={(item) => (item ? `Category: ${item.label}` : "")}
-        renderItem={(item) => item?.label}
-      />
-    </div>
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <RemoteSelect<SelectOptionValue>
+          label="Status"
+          placeholder="Filter Status"
+          data={statusOptions}
+          value={status}
+          onChange={(opt) => setStatus(opt)}
+          onClear={() => setStatus(null)}
+          getLabel={(item) => item?.label ?? ""}
+          renderItem={(item) => item?.label}
+        />
+        <RemoteSelect<SelectOptionValue>
+          label="Tipe"
+          placeholder="Filter Tipe"
+          data={typeOptions}
+          value={typeFilter}
+          onChange={(opt) => setTypeFilter(opt)}
+          onClear={() => setTypeFilter(null)}
+          getLabel={(item) => item?.label ?? ""}
+          renderItem={(item) => item?.label}
+        />
+        <RemoteSelect<SelectOptionValue>
+          label="Kategori"
+          placeholder="Filter Kategori"
+          data={categoryOptions}
+          value={categoryFilter}
+          onChange={(opt) => setCategoryFilter(opt)}
+          onClear={() => setCategoryFilter(null)}
+          getLabel={(item) => item?.label ?? ""}
+          renderItem={(item) => item?.label}
+        />
+      </div>
+    </TableFilters>
   );
 }

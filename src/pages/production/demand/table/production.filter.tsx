@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DatePicker, RemoteSelect } from "@/components/ui";
 import dayjs, { Dayjs } from "dayjs";
-import { ChevronDown } from "lucide-react";
 import { useOutlet } from "@/services/outlet/hooks";
+import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
   table: {
@@ -18,9 +18,8 @@ interface TableFilterProps {
 }
 
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
-  const current = table.State?.filter ?? {};
+  const current = useMemo(() => table.State?.filter ?? {}, [table.State?.filter]);
 
-  // Outlet filter
   const { get: getOutlet, getResult: getOutletResult } = useOutlet();
   const [outlet, setOutlet] = useState<any | null>(null);
 
@@ -38,73 +37,73 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_id, getOutletResult?.data?.data]);
 
-  const currentDate = current.production_date ?? "";
-  const [date, setDate] = useState<Dayjs | null>(dayjs(currentDate));
-
-  const applyFilters = (updates: any) => {
-    const filters = {
-      production_date: date ? date.format("YYYY-MM-DD") : "",
-      outlet_id: outlet?.id ?? "",
-      ...updates,
-    };
-    table.filter(filters);
-  };
+  const [date, setDate] = useState<Dayjs | null>(
+    current.production_date ? dayjs(current.production_date) : dayjs(),
+  );
 
   useEffect(() => {
-    if (currentDate === "") {
+    if (!current.production_date) {
       setDate(dayjs());
-      applyFilters({ production_date: dayjs().format("YYYY-MM-DD") });
     }
   }, [table]);
 
-  const selectClassName =
-    "!bg-white !border-gray-200 !h-9 !min-h-0 !py-0 !shadow-sm hover:!bg-gray-50 !text-gray-700 cursor-pointer !rounded-lg text-sm font-medium";
+  const buildFilters = () => ({
+    production_date: date ? date.format("YYYY-MM-DD") : "",
+    outlet_id: outlet?.id ?? "",
+  });
+
+  const isDirty = useMemo(() => {
+    const f = buildFilters();
+    return (
+      (f.production_date || "") !== (current.production_date || "") ||
+      (f.outlet_id || "") !== (current.outlet_id || "")
+    );
+  }, [date, outlet, current]);
+
+  const anyActive = !!(current.production_date || current.outlet_id);
+
+  const handleClear = () => {
+    setOutlet(null);
+    setDate(dayjs());
+    table.filter({ production_date: dayjs().format("YYYY-MM-DD"), outlet_id: "" });
+  };
+
+  const handleFilter = () => table.filter(buildFilters());
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="w-40 md:w-56">
+    <TableFilters
+      isActive={anyActive}
+      isDirty={isDirty}
+      handleClear={handleClear}
+      handleFilter={handleFilter}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect
-          placeholder="Outlet: All"
-          inputClassName={selectClassName}
-          suffix={<ChevronDown className="text-gray-400 w-4 h-4" />}
+          label="Outlet"
+          placeholder="Filter Outlet"
           value={outlet}
-          onChange={(val) => {
-            setOutlet(val);
-            applyFilters({ outlet_id: val?.id || "" });
-          }}
-          onClear={() => {
-            setOutlet(null);
-            applyFilters({ outlet_id: "" });
-          }}
+          onChange={(val) => setOutlet(val)}
+          onClear={() => setOutlet(null)}
           fetchData={(page, search) =>
             getOutlet({ page: page || 1, limit: 20, search })
           }
           hook={getOutletResult as any}
-          getLabel={(item: any) => (item ? item.name : "")}
+          getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
         />
-      </div>
-      <div className="w-48">
         <DatePicker
-          placeholder="Date: All Time"
+          label="Tanggal Produksi"
           mode="single"
-          value={date || undefined}
-          onChange={(date: unknown) => {
-            const next = date as Dayjs;
+          value={date ?? undefined}
+          onChange={(d) => {
+            const next = d as Dayjs;
             setDate(next);
-
-            if (next) {
-              applyFilters({ production_date: next.format("YYYY-MM-DD") });
-            } else {
-              applyFilters({ production_date: "" });
-            }
           }}
-          inputClassName={selectClassName}
-          dropdownAlign="right"
+          placeholder="Filter Tanggal"
         />
       </div>
-    </div>
+    </TableFilters>
   );
 };
 
