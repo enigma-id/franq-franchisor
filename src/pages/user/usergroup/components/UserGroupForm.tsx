@@ -86,7 +86,7 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
             {permissionsError && (
               <p className="text-xs text-red-500 mt-1">{permissionsError}</p>
             )}
-            {FormState?.errors?.permissions && (
+            {(FormState?.errors?.permissions as string) && (
               <p className="text-xs text-red-500 mt-1">
                 {FormState.errors.permissions as string}
               </p>
