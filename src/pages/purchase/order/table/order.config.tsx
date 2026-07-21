@@ -50,6 +50,14 @@ const createTableConfig = ({
         </span>
       ),
     },
+    warehouse_name: {
+      title: "Warehouse",
+      component: (row: PurchaseOrderDetail) => (
+        <span className="text-slate-600 font-medium">
+          {row.warehouse_name || "-"}
+        </span>
+      ),
+    },
     total_charges: {
       title: "Total",
       sortable: true,
@@ -183,7 +191,7 @@ const createTableConfig = ({
             </>
           )}
 
-          {row?.payment_status === "unpaid" && (
+          {row?.payment_status === "unpaid" && row?.document_status !== "pending" && (
             <Dropdown.Item
               onSelect={() => onPaid?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"

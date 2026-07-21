@@ -17,11 +17,11 @@ export const canEditSo = (so: SalesOrderDetail): boolean => {
 };
 
 /**
- * Validates if a Sales Order can be updated/edited.
+ * Validates if a Sales Order can be cancelled.
  * API fields: document_status (not order_status), order_type (not type)
  */
 export const canCancelSo = (so: SalesOrderDetail): boolean => {
-  return so.document_status === "published" && so.payment_status === "unpaid";
+  return so.document_status === "pending";
 };
 
 /**

@@ -4,8 +4,8 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { DatePicker, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
-import { useOutlet } from "@/services/outlet/hooks";
 import { useSupplier } from "@/services/supplier/hooks";
+import { useWarehouse } from "@/services/warehouse/hooks";
 import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
@@ -21,6 +21,18 @@ interface TableFilterProps {
 const documentStatusOptions: SelectOptionValue[] = [
   { label: "Pending", value: "pending" },
   { label: "Published", value: "published" },
+  { label: "Completed", value: "completed" },
+];
+
+const paymentStatusOptions: SelectOptionValue[] = [
+  { label: "Unpaid", value: "unpaid" },
+  { label: "Paid", value: "paid" },
+];
+
+const receivingStatusOptions: SelectOptionValue[] = [
+  { label: "New", value: "new" },
+  { label: "Disputed", value: "disputed" },
+  { label: "Completed", value: "completed" },
 ];
 
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
@@ -37,22 +49,21 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
         : null;
     });
 
-  const { get: getOutlet, getResult: getOutletResult } = useOutlet();
-  const [outlet, setOutlet] = useState<any | null>(null);
+  const [paymentStatus, setPaymentStatus] =
+    useState<SelectOptionValue | null>(() => {
+      const value = current.payment_status;
+      return value
+        ? (paymentStatusOptions.find((opt) => opt.value === value) ?? null)
+        : null;
+    });
 
-  useEffect(() => {
-    getOutlet({ page: 1, limit: 20, status: "active" });
-  }, []);
-
-  useEffect(() => {
-    if (current.outlet_id && getOutletResult?.data?.data) {
-      const outlets = getOutletResult.data.data as any[];
-      const found = outlets.find((c: any) => c.id === current.outlet_id);
-      if (found) setOutlet(found);
-    } else if (!current.outlet_id) {
-      setOutlet(null);
-    }
-  }, [current.outlet_id, getOutletResult?.data?.data]);
+  const [receivingStatus, setReceivingStatus] =
+    useState<SelectOptionValue | null>(() => {
+      const value = current.receiving_status;
+      return value
+        ? (receivingStatusOptions.find((opt) => opt.value === value) ?? null)
+        : null;
+    });
 
   const { get: getSupplier, getResult: getSupplierResult } = useSupplier();
   const [supplier, setSupplier] = useState<any | null>(null);
@@ -71,6 +82,23 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.supplier_id, getSupplierResult?.data?.data]);
 
+  const { get: getWarehouse, getResult: getWarehouseResult } = useWarehouse();
+  const [warehouse, setWarehouse] = useState<any | null>(null);
+
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20, status: "active" });
+  }, []);
+
+  useEffect(() => {
+    if (current.warehouse_id && getWarehouseResult?.data?.data) {
+      const warehouses = getWarehouseResult.data.data as any[];
+      const found = warehouses.find((c: any) => c.id === current.warehouse_id);
+      if (found) setWarehouse(found);
+    } else if (!current.warehouse_id) {
+      setWarehouse(null);
+    }
+  }, [current.warehouse_id, getWarehouseResult?.data?.data]);
+
   const [dateRange, setDateRange] = useState<
     [Dayjs | null, Dayjs | null] | undefined
   >(() => {
@@ -84,8 +112,10 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
   const buildFilters = () => ({
     document_status: documentStatus?.value ?? "",
-    outlet_id: outlet?.id ?? "",
+    payment_status: paymentStatus?.value ?? "",
+    receiving_status: receivingStatus?.value ?? "",
     supplier_id: supplier?.id ?? "",
+    warehouse_id: warehouse?.id ?? "",
     start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
     end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
   });
@@ -94,21 +124,41 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     const f = buildFilters();
     return (
       (f.document_status || "") !== (current.document_status || "") ||
-      (f.outlet_id || "") !== (current.outlet_id || "") ||
+      (f.payment_status || "") !== (current.payment_status || "") ||
+      (f.receiving_status || "") !== (current.receiving_status || "") ||
       (f.supplier_id || "") !== (current.supplier_id || "") ||
+      (f.warehouse_id || "") !== (current.warehouse_id || "") ||
       (f.start_date || "") !== (current.start_date || "") ||
       (f.end_date || "") !== (current.end_date || "")
     );
-  }, [documentStatus, outlet, supplier, dateRange, current]);
+  }, [documentStatus, paymentStatus, receivingStatus, supplier, warehouse, dateRange, current]);
 
-  const anyActive = !!(current.document_status || current.outlet_id || current.supplier_id || current.start_date || current.end_date);
+  const anyActive = !!(
+    current.document_status ||
+    current.payment_status ||
+    current.receiving_status ||
+    current.supplier_id ||
+    current.warehouse_id ||
+    current.start_date ||
+    current.end_date
+  );
 
   const handleClear = () => {
     setDocumentStatus(null);
-    setOutlet(null);
+    setPaymentStatus(null);
+    setReceivingStatus(null);
     setSupplier(null);
+    setWarehouse(null);
     setDateRange(undefined);
-    table.filter({ document_status: "", outlet_id: "", supplier_id: "", start_date: "", end_date: "" });
+    table.filter({
+      document_status: "",
+      payment_status: "",
+      receiving_status: "",
+      supplier_id: "",
+      warehouse_id: "",
+      start_date: "",
+      end_date: "",
+    });
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -131,19 +181,25 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
-        <RemoteSelect
-          label="Outlet"
-          placeholder="Filter Outlet"
-          value={outlet}
-          onChange={(val) => setOutlet(val)}
-          onClear={() => setOutlet(null)}
-          fetchData={(page, search) =>
-            getOutlet({ page: page || 1, limit: 20, search })
-          }
-          hook={getOutletResult as any}
-          getLabel={(item: any) => item?.name ?? ""}
-          renderItem={(item: any) => item?.name}
-          getValue={(item: any) => item.id}
+        <RemoteSelect<SelectOptionValue>
+          label="Status Pembayaran"
+          placeholder="Filter Payment"
+          data={paymentStatusOptions}
+          value={paymentStatus}
+          onChange={(opt) => setPaymentStatus(opt)}
+          onClear={() => setPaymentStatus(null)}
+          getLabel={(item) => item?.label ?? ""}
+          renderItem={(item) => item?.label}
+        />
+        <RemoteSelect<SelectOptionValue>
+          label="Status Penerimaan"
+          placeholder="Filter Receiving"
+          data={receivingStatusOptions}
+          value={receivingStatus}
+          onChange={(opt) => setReceivingStatus(opt)}
+          onClear={() => setReceivingStatus(null)}
+          getLabel={(item) => item?.label ?? ""}
+          renderItem={(item) => item?.label}
         />
         <RemoteSelect
           label="Supplier"
@@ -155,6 +211,20 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
             getSupplier({ page: page || 1, limit: 20, search })
           }
           hook={getSupplierResult as any}
+          getLabel={(item: any) => item?.name ?? ""}
+          renderItem={(item: any) => item?.name}
+          getValue={(item: any) => item.id}
+        />
+        <RemoteSelect
+          label="Warehouse"
+          placeholder="Filter Warehouse"
+          value={warehouse}
+          onChange={(val) => setWarehouse(val)}
+          onClear={() => setWarehouse(null)}
+          fetchData={(page, search) =>
+            getWarehouse({ page: page || 1, limit: 20, search })
+          }
+          hook={getWarehouseResult as any}
           getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}

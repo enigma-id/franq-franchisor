@@ -262,16 +262,16 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             getLabel={(item: any) => item?.name}
             value={outlet}
             onChange={(item: OutletDetail) => {
-              const selectedOutlet = item;
+              setOutlet(item);
               setFormData({
                 ...formData,
                 outlet_id: item.id,
-                recipient_name: selectedOutlet?.recipient_name,
-                recipient_region_id: selectedOutlet?.region_id,
-                recipient_phone: selectedOutlet?.phone,
-                recipient_address: selectedOutlet?.address,
+                recipient_name: item?.recipient_name,
+                recipient_region_id: item?.region_id,
+                recipient_phone: item?.phone,
+                recipient_address: item?.address,
               });
-              setRegion(selectedOutlet?.region ?? null);
+              setRegion(item?.region ?? null);
             }}
             placeholder="Pilih outlet"
             error={FormState?.errors?.outlet_id as string}

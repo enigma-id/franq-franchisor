@@ -53,6 +53,14 @@ const createTableConfig = ({
         </div>
       ),
     },
+    warehouse_name: {
+      title: "Warehouse",
+      component: (row: SalesOrderDetail) => (
+        <span className="text-slate-600 font-medium">
+          {row.warehouse_name || "-"}
+        </span>
+      ),
+    },
     total_charges: {
       title: "Total (Rp)",
       headerClass: "text-end!",
@@ -196,7 +204,7 @@ const createTableConfig = ({
             </>
           )}
 
-          {row?.document_status !== "cancelled" && row?.document_status !== "completed" && (
+          {row?.document_status === "pending" && (
             <Dropdown.Item
               onSelect={() => onCancel?.(row)}
               className="hover:bg-orange-50 hover:text-orange-600"
@@ -213,7 +221,7 @@ const createTableConfig = ({
             </Dropdown.Item>
           )}
 
-          {row?.payment_status === "unpaid" && (
+          {row?.payment_status === "unpaid" && row?.document_status === "published" && (
             <Dropdown.Item
               onSelect={() => onPaid?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"
