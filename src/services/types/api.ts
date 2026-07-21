@@ -64,14 +64,14 @@ export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
 
 // ── Shared Status Union Types ──
 
-export type PaymentStatus = "unpaid" | "paid";
+export type PaymentStatus = "unpaid" | "invoiced" | "paid";
 export type DocumentStatusSalesOrder =
   | "pending"
   | "published"
   | "cancelled"
   | "completed";
 export type DocumentStatusPurchaseOrder = "pending" | "published";
-export type DocumentStatusB2B = "pending" | "shipped" | "received" | "invoiced";
+export type DocumentStatusB2B = "pending" | "shipped" | "received";
 export type DocumentStatusProductionPlan =
   | "pending"
   | "published"

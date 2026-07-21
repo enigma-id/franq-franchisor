@@ -73,7 +73,8 @@ export function getStatusVariant(
     confirmed: "info",
     processing: "secondary",
     shipped: "accent",
-    received: "success",
+    received: "primary",
+    invoiced: "success",
     delivered: "success",
     void: "error",
     cancelled: "error",
@@ -83,6 +84,7 @@ export function getStatusVariant(
     // Payment statuses
     unpaid: "error",
     partial: "warning",
+    invoiced: "primary",
     paid: "success",
     refunded: "accent",
 

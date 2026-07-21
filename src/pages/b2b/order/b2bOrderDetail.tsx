@@ -183,6 +183,7 @@ const B2BOrderDetailPage: React.FC = () => {
   const isShipped = order.document_status === "shipped";
   const isReceived = order.document_status === "received";
   const isUnpaid = order.payment_status === "unpaid";
+  const isPaymentInvoiced = order.payment_status === "invoiced";
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -254,7 +255,7 @@ const B2BOrderDetailPage: React.FC = () => {
                 <FileText className="w-4 h-4" />
               </Button>
             )}
-            {isUnpaid && (
+            {isPaymentInvoiced && (
               <Button
                 variant="success"
                 onClick={() => openConfirm("pay")}

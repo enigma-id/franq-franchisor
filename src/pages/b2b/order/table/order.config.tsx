@@ -62,7 +62,6 @@ const createTableConfig = ({
         if (row.document_status === "pending") variant = "warning";
         if (row.document_status === "shipped") variant = "info";
         if (row.document_status === "received") variant = "primary";
-        if (row.document_status === "invoiced") variant = "success";
         return (
           <Badge
             variant={variant}
@@ -80,7 +79,13 @@ const createTableConfig = ({
       headerClass: "text-center",
       component: (row: B2BOrderDetail) => (
         <Badge
-          variant={row.payment_status === "paid" ? "success" : "warning"}
+          variant={
+            row.payment_status === "paid"
+              ? "success"
+              : row.payment_status === "invoiced"
+                ? "primary"
+                : "warning"
+          }
           size="xs"
           className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
         >
@@ -228,7 +233,7 @@ const createTableConfig = ({
             </Dropdown.Item>
           )}
 
-          {row.payment_status === "unpaid" && (
+          {row.payment_status === "invoiced" && (
             <Dropdown.Item
               onSelect={() => onPay?.(row)}
               className="hover:bg-emerald-50 hover:text-emerald-600"
