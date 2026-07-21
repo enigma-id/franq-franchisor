@@ -157,7 +157,7 @@ const OutletTypePage: React.FC = () => {
     };
 
     if (editingItem) {
-      update({ id: editingItem.id, ...payload });
+      update({ id: editingItem.id, payload });
     } else {
       create(payload);
     }

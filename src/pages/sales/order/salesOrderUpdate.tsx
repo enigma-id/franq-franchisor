@@ -72,7 +72,7 @@ export function SalesOrderUpdate() {
           <SalesOrderForm
             id="sales-order-form"
             initialData={initialData?.data as any}
-            onSubmit={(data) => update({ id: id as string, ...data } as any)}
+            onSubmit={(data) => update({ id: id as string, payload: data } as any)}
           />
         )}
       </Page.Body>

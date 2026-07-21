@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { OutletDetail } from "@/services/types/outlet";
 import { Dropdown, Toggle } from "@/components/ui";
-import { Edit, MoreVertical, Power, Store, Trash } from "lucide-react";
+import { Edit, MoreVertical, Store, Trash } from "lucide-react";
 import config from "@/services/table/const";
 import { formatDate } from "@/utils";
 
@@ -172,30 +172,6 @@ const createTableConfig = ({
                 <span className="font-bold text-[13px]">Delete</span>
                 <span className="text-[11px] text-slate-400">
                   Remove outlet
-                </span>
-              </div>
-            </button>
-          </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => onToggleActive?.(row)}
-            className={
-              row?.is_active
-                ? "hover:bg-amber-50 hover:text-amber-600"
-                : "hover:bg-emerald-50 hover:text-emerald-600"
-            }
-          >
-            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
-              <div
-                className={`w-8 h-8 rounded-lg ${row?.is_active ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"} flex items-center justify-center`}
-              >
-                <Power className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">
-                  {row?.is_active ? "Deactivate" : "Activate"}
-                </span>
-                <span className="text-[11px] text-slate-400">
-                  {row?.is_active ? "Deactivate catalog" : "Activate catalog"}
                 </span>
               </div>
             </button>
