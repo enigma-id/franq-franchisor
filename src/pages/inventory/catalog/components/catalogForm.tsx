@@ -99,8 +99,6 @@ export function InventoryCatalogForm({
       const isBundle = initialData.is_bundle;
       setType(isBundle ? "bundle" : "singular");
 
-      console.log(initialData);
-
       setFormData({
         name: initialData.name ?? "",
         is_bundle: initialData.is_bundle,

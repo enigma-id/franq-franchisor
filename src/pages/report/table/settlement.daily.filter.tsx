@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import { RemoteSelect } from "@/components/ui";
-import type { SelectOptionValue } from "@/services/types/table";
 import { useOutlet } from "@/services/outlet/hooks";
 import TableFilters from "@/components/ui/table/filter";
 
@@ -16,9 +15,10 @@ interface TableFilterProps {
         }
       | undefined;
   };
+  periode: string;
 }
 
-const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
+const TableFilter: React.FC<TableFilterProps> = ({ table, periode }) => {
   const current = useMemo(
     () => table.State?.filter ?? {},
     [table.State?.filter],
@@ -41,41 +41,21 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_id, getResult?.data?.data]);
 
-  const [periode, setPeriode] = useState<SelectOptionValue | null>(() => {
-    const cur = current.periode as number | undefined;
-    const y = cur ?? new Date().getFullYear();
-    return { label: String(y), value: y };
-  });
-
-  const yearOptions = Array.from(
-    { length: 5 },
-    (_, i) => new Date().getFullYear() - i,
-  ).map((y) => ({
-    label: String(y),
-    value: y,
-  }));
-
   const buildFilters = () => ({
     outlet_id: outlet?.id ?? "",
-    periode: periode?.value ?? "",
+    periode,
   });
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
-    return (
-      (f.outlet_id || "") !== (current.outlet_id || "") ||
-      String(f.periode || "") !== String(current.periode || "")
-    );
-  }, [outlet, periode, current]);
+    return (f.outlet_id || "") !== (current.outlet_id || "");
+  }, [outlet, current]);
 
   const anyActive = !!(current.outlet_id || current.periode);
 
-  const currYear = new Date().getFullYear();
-
   const handleClear = () => {
     setOutlet(null);
-    setPeriode({ label: String(currYear), value: currYear });
-    table.filter({ outlet_id: "", periode: currYear });
+    table.filter({ outlet_id: "", periode });
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -101,16 +81,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
-        />
-        <RemoteSelect<SelectOptionValue>
-          label="Periode"
-          placeholder="Filter Periode"
-          data={yearOptions}
-          value={periode}
-          onChange={(opt) => setPeriode(opt)}
-          onClear={() => setPeriode({ label: String(currYear), value: currYear })}
-          getLabel={(item) => item?.label ?? ""}
-          renderItem={(item) => item?.label}
         />
       </div>
     </TableFilters>

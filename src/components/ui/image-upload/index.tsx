@@ -24,11 +24,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       const presignedUrl = getPresignedURLResult.data?.data?.upload_url;
 
-      console.log("=== PRESIGNED URL RESULT ===");
-      console.log("Result:", getPresignedURLResult);
-      console.log("Result data:", getPresignedURLResult.data);
-      console.log("Extracted presignedUrl:", presignedUrl);
-
       if (!presignedUrl) {
         return;
       }

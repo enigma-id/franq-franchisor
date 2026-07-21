@@ -291,7 +291,10 @@ const useTable = <T = unknown,>(
     dispatch(resetFilter({ name }));
     const newState = {
       ...TableState,
-      filter: { ...(TableState?.lockedFilter || {}) }, // Preserve locked filters
+      filter: {
+        ...(TableState?.lockedFilter || {}),
+        ...(TableState?.filter?.periode ? { periode: TableState.filter.periode } : {}),
+      },
       textSearch: "",
       page: 1,
     } as TableState<T>;

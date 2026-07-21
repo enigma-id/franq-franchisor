@@ -45,7 +45,9 @@ import ProductionPlanUpdatePage from "@/pages/production/plan/productionPlanUpda
 import DemandProductionPage from "@/pages/production/demand/demandProduction";
 import DemandItemPage from "@/pages/production/demand/demandItem";
 import POSSettlementPage from "@/pages/report/posSettlement";
+import POSSettlementDailyPage from "@/pages/report/posSettlementDaily";
 import B2BSettlementPage from "@/pages/report/b2bSettlement";
+import B2BSettlementDailyPage from "@/pages/report/b2bSettlementDaily";
 import B2BProductSalesPage from "@/pages/report/b2bProductSales";
 import RawMaterialSalesPage from "@/pages/report/rawMaterialSales";
 import ProductSalesPage from "@/pages/report/productSales";
@@ -233,7 +235,9 @@ export function AppRoutes() {
           element={<PosOutstandingPage />}
         />
         <Route path="/report/pos/settlement" element={<POSSettlementPage />} />
+        <Route path="/report/pos/settlement/daily" element={<POSSettlementDailyPage />} />
         <Route path="/report/b2b/settlement" element={<B2BSettlementPage />} />
+        <Route path="/report/b2b/settlement/daily" element={<B2BSettlementDailyPage />} />
         <Route
           path="/report/inventory/product-sales"
           element={<ProductSalesPage />}

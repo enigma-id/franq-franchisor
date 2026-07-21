@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { Page } from "@/components/app/layout";
 import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
@@ -12,7 +12,10 @@ const UserGroupListPage: React.FC = () => {
   const navigate = useNavigate();
 
   const tableConfig = useMemo(() => createTableConfig(), []);
-  const Table = useTable("user-group-list", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "user-group-list",
+    tableConfig as TableConfig<unknown>,
+  );
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -21,14 +24,20 @@ const UserGroupListPage: React.FC = () => {
         title="User Group"
         subtitle="Kelola grup pengguna."
         action={
-          <Button variant="primary" onClick={() => navigate("/user/group/create")}>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/user/group/create")}
+          >
             + Tambah Grup
           </Button>
         }
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
         <Table.Tools />
-        <Table.Render emptyTitle="Data Tidak Ditemukan" emptyDescription="Belum ada grup user." />
+        <Table.Render
+          emptyTitle="Data Tidak Ditemukan"
+          emptyDescription="Belum ada grup user."
+        />
         <Table.Pagination />
       </Page.Body>
     </Page>

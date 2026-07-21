@@ -4,29 +4,39 @@ import { useMemo, useEffect } from "react";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import createTableConfig from "./table/settlement.config";
-import TableFilter from "./table/settlement.filter";
+import createTableConfig from "./table/settlement.daily.config";
+import TableFilter from "./table/settlement.daily.filter";
 import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-export default function SettlementMonthlyPage() {
+export default function SettlementDailyPage() {
+  const [params] = useSearchParams();
   const navigate = useNavigate();
+  const periode = params.get("periode");
+
+  useEffect(() => {
+    if (!periode) navigate("/report/pos/settlement", { replace: true });
+  }, [periode, navigate]);
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      onRowClick: (row: any) =>
-        navigate(`/report/pos/settlement/daily?periode=${row.date}`),
+      lockedFilter: { params_type: "monthly" },
+      filter: { periode: periode ?? "" },
     });
-  }, [navigate]);
+  }, [periode]);
 
-  const Table = useTable("pos_settlement", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "pos_settlement_daily",
+    tableConfig as TableConfig<unknown>,
+  );
 
   const currentFilter = useMemo(() => {
     return {
+      ...(Table.State?.lockedFilter || {}),
       ...(Table.State?.filter || {}),
     };
-  }, [Table.State?.filter]);
+  }, [Table.State?.lockedFilter, Table.State?.filter]);
 
   const currentFilterString = JSON.stringify(currentFilter);
   const [triggerSummary, { data: summaryResponse }] =
@@ -77,14 +87,15 @@ export default function SettlementMonthlyPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Settlement"
+        title={`Settlement Daily — ${periode}`}
         subtitle="Laporan penyelesaian pembayaran."
+        backTo={() => navigate(-1)}
       />
       <Page.Body className="flex-1 flex flex-col min-h-0 ">
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable>
-          <TableFilter table={Table} />
+          <TableFilter table={Table} periode={periode ?? ""} />
         </Table.Tools>
 
         <Table.Render

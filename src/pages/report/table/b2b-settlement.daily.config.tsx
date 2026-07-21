@@ -6,18 +6,17 @@ import { ChevronRight } from "lucide-react";
 
 const createTableConfig = ({
   filter,
+  lockedFilter,
   onRowClick,
 }: {
+  lockedFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onRowClick?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
-  url: "/report/pos-settlement",
-  dataKey: "datas",
+  url: "/report/b2b/settlement",
+  lockedFilter,
   filter,
-  lockedFilter: {
-    params_type: "yearly",
-  },
   onRowClick,
   dynamicColumns: (rows: any[]) => {
     if (!rows?.length) return {};
