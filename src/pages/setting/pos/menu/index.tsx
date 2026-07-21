@@ -102,7 +102,7 @@ const POSMenuListPage: React.FC = () => {
 
   const openOutletType = (row: POSMenuDetail) => {
     openModal({
-      id: "assign-outlet-catalog",
+      id: "assign-outlet-menu",
       content: (
         <AssignOutletTypeModal
           catalog={row}

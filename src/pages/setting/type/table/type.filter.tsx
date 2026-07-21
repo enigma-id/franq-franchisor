@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
-import { usePOSCategory } from "@/services/pos/hooks";
 import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
@@ -27,23 +26,6 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  const { get: getCategory, getResult: getCategoryResult } = usePOSCategory();
-  const [category, setCategory] = useState<any | null>(null);
-
-  useEffect(() => {
-    getCategory({ page: 1, limit: 20 });
-  }, []);
-
-  useEffect(() => {
-    if (current.category_id && getCategoryResult?.data?.data) {
-      const items = getCategoryResult.data.data as any[];
-      const found = items.find((c: any) => c.id === current.category_id);
-      if (found) setCategory(found);
-    } else if (!current.category_id) {
-      setCategory(null);
-    }
-  }, [current.category_id, getCategoryResult?.data?.data]);
-
   const [isActive, setIsActive] = useState<SelectOptionValue | null>(() => {
     const value = current.is_active;
     return value
@@ -52,24 +34,19 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   });
 
   const buildFilters = () => ({
-    category_id: category?.id ?? "",
     is_active: isActive?.value ?? "",
   });
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
-    return (
-      (f.category_id || "") !== (current.category_id || "") ||
-      (f.is_active || "") !== (current.is_active || "")
-    );
-  }, [category, isActive, current]);
+    return (f.is_active || "") !== (current.is_active || "");
+  }, [isActive, current]);
 
-  const anyActive = !!(current.category_id || current.is_active);
+  const anyActive = !!current.is_active;
 
   const handleClear = () => {
-    setCategory(null);
     setIsActive(null);
-    table.filter({ category_id: "", is_active: "" });
+    table.filter({ is_active: "" });
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -81,21 +58,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       handleClear={handleClear}
       handleFilter={handleFilter}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <RemoteSelect
-          label="Kategori"
-          placeholder="Filter Kategori"
-          value={category}
-          onChange={(val) => setCategory(val)}
-          onClear={() => setCategory(null)}
-          fetchData={(page, search) =>
-            getCategory({ page: page || 1, limit: 20, search })
-          }
-          hook={getCategoryResult as any}
-          getLabel={(item: any) => item?.name ?? ""}
-          renderItem={(item: any) => item?.name}
-          getValue={(item: any) => item.id}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-3">
         <RemoteSelect<SelectOptionValue>
           label="Status"
           placeholder="Filter Status"

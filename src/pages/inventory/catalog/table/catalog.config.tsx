@@ -129,6 +129,11 @@ const createTableConfig = ({
         sortable: true,
         format_number: true,
       },
+      unit_price: {
+        title: "Unit Price",
+        sortable: true,
+        format_number: true,
+      },
       outlet_type_count: {
         title: "Outlet Type",
         sortable: false,

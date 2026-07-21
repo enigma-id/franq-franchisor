@@ -89,13 +89,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const [channel, setChannel] = useState<POSFormChannelPrice[]>([]);
   const [category, setCategory] = useState<POSCategoryDetail | null>(null);
 
-  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([
-    {
-      catalog: null,
-      catalog_id: "",
-      porsi: 0,
-    },
-  ]);
+  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([]);
 
   const [addGroup, setAddGroup] = useState<POSAddonGroupForm[]>([
     { name: "", type: "", items: [{ addon_menu: null, addon_menu_id: "" }] },
@@ -111,7 +105,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
       if (Array.isArray(list)) {
         const mapped = list.map((chan: any) => ({
           channel: chan,
-          is_active: true,
+          is_active: false,
           price: 0,
         }));
 
@@ -184,10 +178,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
     e.preventDefault();
     const payload = {
       ...formData,
-      channel_prices: channel.map((c) => ({
-        pos_channel_id: c.channel?.id ?? "",
-        price: c.price,
-      })),
+      channel_prices: channel
+        .filter((c) => c.is_active)
+        .map((c) => ({
+          pos_channel_id: c.channel?.id ?? "",
+          price: c.price,
+        })),
       ingredients: ingredient.map((c) => ({
         catalog_id: c.catalog?.id ?? "",
         porsi: c.porsi,
@@ -376,7 +372,6 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   };
 
   const removeIngredient = (index: number) => {
-    if (index === 0) return;
     setIngredient((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -752,113 +747,114 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
           <div /> /* Empty div to maintain grid layout when addons are hidden */
         )}
       </div>
-      <div>
-        <div
-          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-          style={{ overflow: "visible", zIndex: 10 }}
-        >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                Bahan Baku
-              </h2>
-              <Button
-                variant="success"
-                styleType="soft"
-                size="sm"
-                onClick={addIngredient}
-                type="button"
-              >
-                <Plus className="w-4 h-4" />
-                Tambah
-              </Button>
-            </div>
+      {formData.is_additional === false ? (
+        <div>
+          <div
+            className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+            style={{ overflow: "visible", zIndex: 10 }}
+          >
+            <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                  Bahan Baku
+                </h2>
+                <Button
+                  variant="success"
+                  styleType="soft"
+                  size="sm"
+                  onClick={addIngredient}
+                  type="button"
+                >
+                  <Plus className="w-4 h-4" />
+                  Tambah
+                </Button>
+              </div>
 
-            <div className="p-4">
-              <div className="space-y-3">
-                {ingredient.map((ig, index) => (
-                  <div
-                    key={index}
-                    className={clsx(
-                      "flex items-center gap-3 p-4 rounded-xl border transition-all bg-white  hover:border-violet-300",
-                      FormState.errors?.ingredients
-                        ? "border-red-600"
-                        : "border-slate-200",
-                    )}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <RemoteSelect<InventoryItemDetail>
-                          label="Item"
-                          placeholder="Pilih item..."
-                          required
-                          hook={catalogResult as any}
-                          fetchData={(page, search) =>
-                            getCatalog({ page, search })
+              <div className="p-4">
+                <div className="space-y-3">
+                  {ingredient.map((ig, index) => (
+                    <div
+                      key={index}
+                      className={clsx(
+                        "flex items-center gap-3 p-4 rounded-xl border transition-all bg-white  hover:border-violet-300",
+                        FormState.errors?.ingredients
+                          ? "border-red-600"
+                          : "border-slate-200",
+                      )}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <RemoteSelect<InventoryItemDetail>
+                            label="Item"
+                            placeholder="Pilih item..."
+                            required
+                            hook={catalogResult as any}
+                            fetchData={(page, search) =>
+                              getCatalog({ page, search })
+                            }
+                            getLabel={(it: any) => it?.name}
+                            getValue={(cat: any) => cat?.id}
+                            value={ig.catalog} // Simplification for now
+                            onChange={(it: any) => {
+                              updateIngredient(index, "catalog", it);
+                            }}
+                            error={
+                              (typeof FormState?.errors?.[
+                                `ingredients.${index}.catalog_id`
+                              ] === "string"
+                                ? FormState.errors?.[
+                                    `ingredients.${index}.catalog_id`
+                                  ]
+                                : undefined) as any
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="w-28">
+                        <Input
+                          label="Porsi"
+                          type="number"
+                          value={ig.porsi}
+                          onChange={(e) =>
+                            updateIngredient(
+                              index,
+                              "porsi",
+                              Number(e.target.value),
+                            )
                           }
-                          getLabel={(it: any) => it?.name}
-                          getValue={(cat: any) => cat?.id}
-                          value={ig.catalog} // Simplification for now
-                          onChange={(it: any) => {
-                            updateIngredient(index, "catalog", it);
-                          }}
+                          variant="primary"
                           error={
                             (typeof FormState?.errors?.[
-                              `ingredients.${index}.catalog_id`
+                              `ingredients.${index}.porsi`
                             ] === "string"
-                              ? FormState.errors?.[
-                                  `ingredients.${index}.catalog_id`
-                                ]
+                              ? FormState.errors?.[`ingredients.${index}.porsi`]
                               : undefined) as any
                           }
                         />
                       </div>
+                      <Button
+                        variant="error"
+                        styleType="ghost"
+                        onClick={() => removeIngredient(index)}
+                        className="mt-7"
+                        type="button"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <div className="w-28">
-                      <Input
-                        label="Porsi"
-                        type="number"
-                        value={ig.porsi}
-                        onChange={(e) =>
-                          updateIngredient(
-                            index,
-                            "porsi",
-                            Number(e.target.value),
-                          )
-                        }
-                        variant="primary"
-                        error={
-                          (typeof FormState?.errors?.[
-                            `ingredients.${index}.porsi`
-                          ] === "string"
-                            ? FormState.errors?.[`ingredients.${index}.porsi`]
-                            : undefined) as any
-                        }
-                      />
-                    </div>
-                    <Button
-                      variant="error"
-                      styleType="ghost"
-                      onClick={() => removeIngredient(index)}
-                      disabled={index === 0}
-                      className="mt-7"
-                      type="button"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                  ))}
 
-                {FormState.errors?.boms ? (
-                  <div className="text-error text-xs font-medium leading-[1.66] pt-1">
-                    {FormState.errors?.boms as string}
-                  </div>
-                ) : null}
+                  {FormState.errors?.boms ? (
+                    <div className="text-error text-xs font-medium leading-[1.66] pt-1">
+                      {FormState.errors?.boms as string}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </form>
   );
 };

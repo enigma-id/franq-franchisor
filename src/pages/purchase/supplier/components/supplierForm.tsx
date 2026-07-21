@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Input, RemoteSelect } from "@/components/ui";
+import type { SelectOptionValue } from "@/services/types/table";
 import { Building, MapPin, Landmark } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 
@@ -9,6 +10,13 @@ const SUPPLIER_TYPES = [
   { value: "distributor", label: "Distributor" },
   { value: "factory", label: "Factory" },
   { value: "store", label: "Store" },
+];
+
+const TOP_OPTIONS: SelectOptionValue[] = [
+  { value: 7, label: "7 Hari" },
+  { value: 14, label: "14 Hari" },
+  { value: 30, label: "30 Hari" },
+  { value: 90, label: "90 Hari" },
 ];
 
 export interface SupplierFormData extends Record<string, unknown> {
@@ -44,6 +52,8 @@ export function SupplierForm({
     label: "Distributor",
   });
 
+  const [topSelected, setTopSelected] = useState<SelectOptionValue | null>(null);
+
   const [formData, setFormData] = useState<SupplierFormData>({
     type: "",
     name: "",
@@ -77,6 +87,11 @@ export function SupplierForm({
         label: "Distributor",
       };
       setTypeSelected(typeOpt);
+
+      const topOpt = TOP_OPTIONS.find(
+        (opt) => opt.value === (initialData.top ?? 0),
+      ) ?? null;
+      setTopSelected(topOpt);
     }
   }, [initialData]);
 
@@ -164,19 +179,22 @@ export function SupplierForm({
             error={FormState?.errors?.phone as string}
           />
 
-          <Input
+          <RemoteSelect<SelectOptionValue>
             label="Term of Payment (Hari)"
-            type="number"
-            value={formData.top}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                top: Number(e.target.value),
-              }))
-            }
-            placeholder="Contoh: 30"
-            variant="primary"
-            min={0}
+            placeholder="Pilih Term..."
+            required
+            data={TOP_OPTIONS}
+            value={topSelected}
+            getLabel={(item: any) => item?.label || ""}
+            getValue={(item: any) => item?.value}
+            onChange={(val) => {
+              setTopSelected(val);
+              setFormData((prev) => ({ ...prev, top: val?.value ?? 0 }));
+            }}
+            onClear={() => {
+              setTopSelected(null);
+              setFormData((prev) => ({ ...prev, top: 0 }));
+            }}
             error={FormState?.errors?.top as string}
           />
         </div>

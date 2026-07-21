@@ -18,13 +18,6 @@ const typeOptions: SelectOptionValue[] = [
   { label: "Finished Goods", value: "finished_goods" },
 ];
 
-const categoryOptions: SelectOptionValue[] = [
-  { label: "Package", value: "package" },
-  { label: "Pcs", value: "pcs" },
-  { label: "Liquid", value: "liquid" },
-  { label: "Powder", value: "powder" },
-];
-
 export default function TableFilter({ table }: Props) {
   const current = useMemo(
     () => table.State?.filter ?? {},
@@ -45,35 +38,25 @@ export default function TableFilter({ table }: Props) {
       : null;
   });
 
-  const [categoryFilter, setCategoryFilter] = useState<SelectOptionValue | null>(() => {
-    const value = current.category;
-    return value
-      ? (categoryOptions.find((opt) => opt.value === value) ?? null)
-      : null;
-  });
-
   const buildFilters = () => ({
     is_active: status?.value ?? "",
     type: typeFilter?.value ?? "",
-    category: categoryFilter?.value ?? "",
   });
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
     return (
       (f.is_active || "") !== (current.is_active || "") ||
-      (f.type || "") !== (current.type || "") ||
-      (f.category || "") !== (current.category || "")
+      (f.type || "") !== (current.type || "")
     );
-  }, [status, typeFilter, categoryFilter, current]);
+  }, [status, typeFilter, current]);
 
-  const anyActive = !!(current.is_active || current.type || current.category);
+  const anyActive = !!(current.is_active || current.type);
 
   const handleClear = () => {
     setStatus(null);
     setTypeFilter(null);
-    setCategoryFilter(null);
-    table.filter({ is_active: "", type: "", category: "" });
+    table.filter({ is_active: "", type: "" });
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -103,16 +86,6 @@ export default function TableFilter({ table }: Props) {
           value={typeFilter}
           onChange={(opt) => setTypeFilter(opt)}
           onClear={() => setTypeFilter(null)}
-          getLabel={(item) => item?.label ?? ""}
-          renderItem={(item) => item?.label}
-        />
-        <RemoteSelect<SelectOptionValue>
-          label="Kategori"
-          placeholder="Filter Kategori"
-          data={categoryOptions}
-          value={categoryFilter}
-          onChange={(opt) => setCategoryFilter(opt)}
-          onClear={() => setCategoryFilter(null)}
           getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />

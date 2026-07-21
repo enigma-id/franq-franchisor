@@ -321,6 +321,9 @@ export function PurchaseOrderDetailPage() {
                     Qty
                   </th>
                   <th className="px-4 py-4 text-right uppercase text-[#8B95A5] text-[11px] font-bold">
+                    Qty Received
+                  </th>
+                  <th className="px-4 py-4 text-right uppercase text-[#8B95A5] text-[11px] font-bold">
                     Harga
                   </th>
                   <th className="px-4 py-4 text-right uppercase text-[#8B95A5] text-[11px] font-bold">
@@ -335,6 +338,9 @@ export function PurchaseOrderDetailPage() {
                     <td className="px-4 py-3">{item.item.name}</td>
                     <td className="px-4 py-3 text-right">
                       {item.quantity_ordered} {item.fraction.name}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {item.quantity_received ?? 0} {item.fraction.name}
                     </td>
                     <td className="px-4 py-3 text-right">
                       {formatCurrency(item.unit_nett)}

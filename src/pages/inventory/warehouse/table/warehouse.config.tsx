@@ -1,6 +1,22 @@
 import config from "@/services/table/const";
 import type { WarehouseDetail } from "@/services/types";
-import { Building } from "lucide-react";
+import { Building, Warehouse } from "lucide-react";
+
+const typeBadge = (type: string) => {
+  const styles: Record<string, string> = {
+    default: "bg-purple-50 text-purple-700",
+    production: "bg-amber-50 text-amber-700",
+  };
+  const labels: Record<string, string> = {
+    default: "Default",
+    production: "Production",
+  };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${styles[type] || "bg-slate-100 text-slate-500"}`}>
+      {labels[type] || type || "-"}
+    </span>
+  );
+};
 
 const createTableConfig = () => ({
   ...config,
@@ -17,6 +33,12 @@ const createTableConfig = () => ({
           <span className="font-bold text-slate-700">{row.name}</span>
         </div>
       ),
+    },
+    type: {
+      title: "Tipe",
+      sortable: true,
+      align: "center",
+      component: (row: WarehouseDetail) => typeBadge(row.type),
     },
     address: {
       title: "Alamat",

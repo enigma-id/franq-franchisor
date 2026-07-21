@@ -1,9 +1,15 @@
 import type { DemandItemData } from "@/services/types/production";
 import config from "@/services/table/const";
+import dayjs from "dayjs";
 
-const createTableConfig = () => ({
+const createTableConfig = ({
+  filter,
+}: {
+  filter?: Record<string, unknown>;
+} = {}) => ({
   ...config,
-  url: "/demand/item",
+  url: "/demand/iteem",
+  filter,
   columns: {
     code: {
       title: "Code",

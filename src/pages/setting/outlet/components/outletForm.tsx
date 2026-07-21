@@ -41,11 +41,17 @@ export const OutletForm: React.FC<OutletFormProps> = ({
   });
 
   const [reg, setReg] = useState();
+  const [outletTypeValue, setOutletTypeValue] = useState<any>(null);
 
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
       setReg(initialData?.region);
+      setOutletTypeValue(
+        initialData?.outlet_type?.id
+          ? initialData.outlet_type
+          : null,
+      );
     }
   }, [initialData]);
 
@@ -86,17 +92,15 @@ export const OutletForm: React.FC<OutletFormProps> = ({
             fetchData={(page, search) => getTypes({ page, search })}
             getLabel={(item: any) => item?.name}
             renderItem={(item: any) => item?.name}
-            value={
-              formData.outlet_type_id
-                ? (typesResult.data as any)?.data?.find(
-                    (t: any) => t.id === formData.outlet_type_id,
-                  )
-                : null
-            }
-            onChange={(item: any) =>
-              setFormData({ ...formData, outlet_type_id: item?.id })
-            }
-            onClear={() => setFormData({ ...formData, outlet_type_id: "" })}
+            value={outletTypeValue}
+            onChange={(item: any) => {
+              setOutletTypeValue(item);
+              setFormData({ ...formData, outlet_type_id: item?.id });
+            }}
+            onClear={() => {
+              setOutletTypeValue(null);
+              setFormData({ ...formData, outlet_type_id: "" });
+            }}
             placeholder="Pilih tipe outlet"
             error={FormState?.errors?.outlet_type_id as string}
           />

@@ -75,6 +75,20 @@ const createTableConfig = ({
         </span>
       ),
     },
+    is_additional: {
+      title: "Add-on",
+      sortable: true,
+      align: "center",
+      component: (row: POSMenuDetail) => (
+        row.is_additional ? (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">
+            Ya
+          </span>
+        ) : (
+          <span className="text-slate-300">-</span>
+        )
+      ),
+    },
     is_active: {
       title: "Status",
       class: "text-center",

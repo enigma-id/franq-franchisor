@@ -545,6 +545,7 @@ export function PurchaseOrderForm({
                   </td>
                   <td className="px-4 py-4">
                     <RemoteSelect
+                      key={`item-${supplierSelected?.id || "no-supplier"}-${idx}`}
                       placeholder="Pilih item..."
                       value={item.itemSelected}
                       hook={itemsResult as any}
@@ -554,6 +555,7 @@ export function PurchaseOrderForm({
                           search,
                           status: "active",
                           type: "raw_material",
+                          supplier_id: supplierSelected?.id || undefined,
                         }) as any
                       }
                       getLabel={(it: any) =>
