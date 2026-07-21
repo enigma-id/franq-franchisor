@@ -50,6 +50,7 @@ const ProductionPlanDetailPage: React.FC = () => {
 
   const { data, isLoading } = showResult;
   const plan = data?.data as ProductionPlanDetail;
+  const hasWarehouse = plan?.warehouse_id && plan?.warehouse_id !== "00000000-0000-0000-0000-000000000000";
   const guards = useProductionPlanGuards(plan);
 
   const [confirmModal, setConfirmModal] = useState<{
@@ -371,7 +372,7 @@ const ProductionPlanDetailPage: React.FC = () => {
         <Modal.Header>{confirmModal?.title}</Modal.Header>
         <Modal.Body>
           {confirmModal?.message}
-          {confirmModal?.type === "publish" && (
+          {confirmModal?.type === "publish" && !hasWarehouse && (
             <div className="mt-4">
               <RemoteSelect<WarehouseDetail>
                 label="Warehouse"

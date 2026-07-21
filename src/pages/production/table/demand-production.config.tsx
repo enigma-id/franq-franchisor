@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Badge } from "@/components/ui";
 import config from "@/services/table/const";
-import { dateFormat } from "@/utils";
+import { getStatusVariant } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
@@ -12,31 +13,63 @@ const createTableConfig = ({
   url: "/demand/production",
   filter,
   columns: {
-    production_date: {
-      title: "Tanggal Produksi",
-      sortable: true,
-      component: (row: any) => dateFormat(row?.production_date, "DD/MM/YYYY"),
-    },
-    raw_material_code: {
+    item_code: {
       title: "Kode Material",
       sortable: true,
       component: (row: any) => (
-        <span className="font-medium text-sm">{row?.raw_material_code ?? "-"}</span>
+        <span className="font-bold text-sm text-slate-700">
+          {row?.item?.code ?? "-"}
+        </span>
       ),
     },
-    raw_material_name: {
+    item_name: {
       title: "Nama Material",
       sortable: true,
+      component: (row: any) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-slate-700">
+            {row?.item?.name ?? "-"}
+          </span>
+          {row?.item?.variant && (
+            <span className="text-[11px] text-slate-400">{row.item.variant}</span>
+          )}
+        </div>
+      ),
     },
-    quantity: {
-      title: "Qty",
+    quantity_planned: {
+      title: "Qty Rencana",
       align: "right",
       class: "text-right font-medium",
       format_number: true,
+      component: (row: any) => (
+        <span className="font-medium">
+          {row?.quantity_planned ?? 0} {row?.item?.default_fraction ?? ""}
+        </span>
+      ),
     },
-    unit: {
-      title: "Unit",
-      sortable: true,
+    quantity_produced: {
+      title: "Qty Produksi",
+      align: "right",
+      class: "text-right font-medium",
+      component: (row: any) => (
+        <span className="font-medium text-emerald-600">
+          {row?.quantity_produced ?? 0} {row?.item?.default_fraction ?? ""}
+        </span>
+      ),
+    },
+    document_status: {
+      title: "Status",
+      class: "text-center",
+      align: "center",
+      component: (row: any) => (
+        <Badge
+          variant={getStatusVariant(row?.document_status)}
+          size="xs"
+          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+        >
+          {row?.document_status?.toLowerCase()}
+        </Badge>
+      ),
     },
   },
 });

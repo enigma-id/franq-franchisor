@@ -2,21 +2,27 @@ import React, { useMemo, useEffect, useRef, useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button, Modal } from "@/components/ui";
+import { Button, Modal, RemoteSelect } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import useTable from "@/services/table/hooks";
 import { useProductionPlan } from "@/services/production/hooks";
+import { useWarehouse } from "@/services/warehouse/hooks";
 import createTableConfig from "./table/plan.config";
 import TableFilter from "./table/plan.filter";
 import type { ProductionPlanDetail } from "@/services/types/production";
+import type { WarehouseDetail } from "@/services/types/warehouse";
 import type { TableConfig } from "@/services/table/const";
+import { useAppSelector } from "@/hooks";
 
 const ProductionPlanListPage: React.FC = () => {
   const navigate = useNavigate();
+  const FormState = useAppSelector((s) => s.form);
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const { remove: removePlan, removeResult, publish: publishItem, publishResult, complete: completeItem, completeResult } = useProductionPlan();
+  const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
   const [selectedRow, setSelectedRow] = useState<ProductionPlanDetail | null>(null);
   const [actionType, setActionType] = useState<"publish" | "complete" | null>(null);
+  const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(
@@ -41,21 +47,23 @@ const ProductionPlanListPage: React.FC = () => {
   const openConfirmModal = useCallback((row: ProductionPlanDetail, type: "publish" | "complete") => {
     setSelectedRow(row);
     setActionType(type);
+    setWarehouse(null);
   }, []);
 
   const closeConfirmModal = useCallback(() => {
     setSelectedRow(null);
     setActionType(null);
+    setWarehouse(null);
   }, []);
 
   const handleConfirmAction = useCallback(async () => {
     if (!selectedRow) return;
     const id = selectedRow.id;
     switch (actionType) {
-      case "publish": await publishItem({ id }); break;
+      case "publish": await publishItem({ id, ...(warehouse ? { payload: { warehouse_id: warehouse.id } } : {}) }); break;
       case "complete": await completeItem({ id }); break;
     }
-  }, [selectedRow, actionType, publishItem, completeItem]);
+  }, [selectedRow, actionType, publishItem, completeItem, warehouse]);
 
   const activeResult = useMemo(() => {
     switch (actionType) {
@@ -185,6 +193,21 @@ const ProductionPlanListPage: React.FC = () => {
             Apakah Anda yakin ingin {actionType === "publish" ? "menerbitkan" : "menyelesaikan"}{" "}
             rencana produksi <strong>{selectedRow?.code}</strong>?
           </p>
+          {actionType === "publish" && selectedRow && (!selectedRow.warehouse_id || selectedRow.warehouse_id === "00000000-0000-0000-0000-000000000000") && (
+            <div className="mt-4">
+              <RemoteSelect
+                label="Warehouse"
+                required
+                hook={warehouseResult as any}
+                fetchData={(page: number, search?: string) => getWarehouse({ page, search })}
+                getLabel={(item: any) => item?.name}
+                value={warehouse}
+                onChange={(item: WarehouseDetail | null) => setWarehouse(item)}
+                placeholder="Pilih warehouse"
+                error={FormState?.errors?.warehouse_id as string}
+              />
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button
