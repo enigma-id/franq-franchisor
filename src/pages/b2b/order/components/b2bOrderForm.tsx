@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Trash2, Plus, ShoppingBag } from "lucide-react";
-import { Input, RemoteSelect, DatePicker, Button } from "@/components/ui";
+import { Trash2, Plus, ShoppingBag, Percent } from "lucide-react";
+import { Input, RemoteSelect, DatePicker, Button, Checkbox } from "@/components/ui";
 import { usePOSMenu } from "@/services/pos/hooks";
 import { useAppSelector } from "@/hooks";
 import dayjs, { Dayjs } from "dayjs";
@@ -14,18 +14,19 @@ type B2BOrderItemForm = {
   menu_id: string;
   menu_name: string;
   quantity: number;
+  unit_price: number;
 };
 
 type B2BOrderFormData = {
   customer_name: string;
   customer_phone: string;
   customer_address: string;
-  note: string;
-  discount: number;
-  is_discount_percentage: boolean;
-  discount_value: number;
-  service_charge: number;
+  payment_ref: string;
   shipping_date: string;
+  discount_value: number;
+  discount_percentage: number;
+  is_discount_percentage: boolean;
+  service_charge: number;
   items: B2BOrderItemForm[];
 };
 
@@ -53,18 +54,19 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
     customer_name: "",
     customer_phone: "",
     customer_address: "",
-    note: "",
-    discount: 0,
-    is_discount_percentage: false,
-    discount_value: 0,
-    service_charge: 0,
+    payment_ref: "",
     shipping_date: dayjs().format("YYYY-MM-DD"),
+    discount_value: 0,
+    discount_percentage: 0,
+    is_discount_percentage: false,
+    service_charge: 0,
     items: [
       {
         menuSelected: null,
         menu_id: "",
         menu_name: "",
         quantity: 1,
+        unit_price: 0,
       },
     ],
   });
@@ -83,22 +85,23 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         menu_id: item?.menu_id || "",
         menu_name: item?.menu_name || "",
         quantity: item?.quantity || 1,
+        unit_price: item?.unit_price ?? item?.unit_base ?? 0,
       }));
 
       setFormData({
         customer_name: initialData?.customer_name || "",
         customer_phone: initialData?.customer_phone || "",
         customer_address: initialData?.customer_address || "",
-        note: initialData?.note || "",
-        discount: initialData?.discount ?? 0,
-        is_discount_percentage: initialData?.is_discount_percentage ?? false,
-        discount_value: initialData?.discount_value ?? 0,
-        service_charge: initialData?.service_charge ?? 0,
+        payment_ref: initialData?.payment_ref ?? "",
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
+        discount_value: initialData?.discount_value ?? 0,
+        discount_percentage: initialData?.discount_percentage ?? 0,
+        is_discount_percentage: initialData?.is_discount_percentage ?? false,
+        service_charge: initialData?.service_charge_percentage ?? initialData?.service_charge ?? 0,
         items:
           newItems.length > 0
             ? newItems
-            : [{ menuSelected: null, menu_id: "", menu_name: "", quantity: 1 }],
+            : [{ menuSelected: null, menu_id: "", menu_name: "", quantity: 1, unit_price: 0 }],
       });
       setShippingDate(dayjs(initialData?.shipping_date));
     }
@@ -114,6 +117,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
           menu_id: "",
           menu_name: "",
           quantity: 1,
+          unit_price: 0,
         },
       ],
     }));
@@ -140,6 +144,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               : "",
         menu_name: typeof menu?.name === "string" ? menu.name : "",
         quantity: updated[index].quantity || 1,
+        unit_price: menu?.base_price ?? updated[index].unit_price ?? 0,
       };
       return { ...prev, items: updated };
     });
@@ -153,6 +158,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         menu_id: "",
         menu_name: "",
         quantity: 0,
+        unit_price: 0,
       };
       return { ...prev, items: updated };
     });
@@ -170,33 +176,59 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
     });
   };
 
+  const handlePriceChange = (index: number, val: number) => {
+    const price = val < 0 ? 0 : val;
+    setFormData((prev) => {
+      const updated = [...prev.items];
+      updated[index] = {
+        ...updated[index],
+        unit_price: price,
+      };
+      return { ...prev, items: updated };
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload = {
+    const items = formData.items.filter((item) => item.menu_id).map((item) => ({
+      menu_id: item.menu_id,
+      menu_name: item.menu_name,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+    }));
+
+    const subTotal = items.reduce((sum, i) => sum + i.unit_price * i.quantity, 0);
+
+    let payload: Record<string, any> = {
       ...formData,
-      discount: formData.discount ?? 0,
-      is_discount_percentage: formData.is_discount_percentage,
-      discount_value: formData.discount_value ?? 0,
-      service_charge: formData.service_charge ?? 0,
-      items: formData.items
-        .filter((item) => item.menu_id)
-        .map((item) => ({
-          menu_id: item.menu_id,
-          menu_name: item.menu_name,
-          quantity: item.quantity,
-        })),
+      items,
     };
+
+    if (formData.is_discount_percentage) {
+      payload = {
+        ...payload,
+        discount_value: 0,
+        discount_percentage: formData.discount_percentage,
+      };
+    } else {
+      payload = {
+        ...payload,
+        discount_percentage: 0,
+        discount_value: formData.discount_value,
+      };
+    }
+
     onSubmit(payload as any);
   };
 
   return (
     <form id={id} onSubmit={handleSubmit} className="space-y-6">
-      {/* Customer Info */}
+      {/* Section 1: Detail Order */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
           <ShoppingBag size={16} className="text-primary" />
-          Informasi Pelanggan
+          Detail Order
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Input
@@ -231,16 +263,6 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               error={FormState?.errors?.customer_address as string}
             />
           </div>
-        </div>
-      </div>
-
-      {/* Order Info */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
-          <ShoppingBag size={16} className="text-primary" />
-          Detail Order
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <DatePicker
             label="Tanggal Pengiriman"
             required
@@ -256,55 +278,13 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
             }}
           />
           <Input
-            label="Diskon"
-            type="number"
-            placeholder="0"
-            value={formData.discount}
+            label="Payment Ref"
+            placeholder="Contoh: INV/12345"
+            value={formData.payment_ref}
             onChange={(e) =>
-              setFormData({
-                ...formData,
-                discount: Number(e.target.value),
-              })
+              setFormData({ ...formData, payment_ref: e.target.value })
             }
-            min={0}
           />
-          <Input
-            label="Diskon Value (Rp)"
-            type="number"
-            placeholder="0"
-            value={formData.discount_value}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                discount_value: Number(e.target.value),
-              })
-            }
-            min={0}
-          />
-          <Input
-            label="Service Charge (Rp)"
-            type="number"
-            placeholder="0"
-            value={formData.service_charge}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                service_charge: Number(e.target.value),
-              })
-            }
-            min={0}
-          />
-          <div className="md:col-span-2">
-            <Input
-              type="textarea"
-              label="Catatan"
-              placeholder="Tambahkan catatan order..."
-              value={formData.note}
-              onChange={(e) =>
-                setFormData({ ...formData, note: e.target.value })
-              }
-            />
-          </div>
         </div>
       </div>
 
@@ -332,8 +312,10 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
                   <th className="px-4 py-3 w-12 text-center">#</th>
-                  <th className="px-4 py-3 min-w-[320px]">Menu</th>
-                  <th className="px-4 py-3 w-28 text-center">Qty</th>
+                  <th className="px-4 py-3 w-66">Menu</th>
+                  <th className="px-4 py-3 w-32 text-right">Harga</th>
+                  <th className="px-4 py-3 w-20 text-center">Qty</th>
+                  <th className="px-4 py-3 w-32 text-right">Subtotal</th>
                   <th className="px-4 py-3 w-12 text-center"></th>
                 </tr>
               </thead>
@@ -351,7 +333,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                         placeholder="Pilih Menu"
                         value={item.menuSelected}
                         hook={menusResult as any}
-                        fetchData={(page, search) => getMenus({ page, search })}
+                        fetchData={(page, search) => getMenus({ page, search, addons: "no" })}
                         getLabel={(item: any) =>
                           item
                             ? `${item.name} [${currencyFormat(item.base_price)}]`
@@ -365,6 +347,18 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                     </td>
                     <td className="px-4 py-3 align-top">
                       <Input
+                        type="currency"
+                        variant="primary"
+                        className="text-right font-medium"
+                        value={item.unit_price}
+                        onChange={(e) =>
+                          handlePriceChange(idx, Number(e.target.value))
+                        }
+                        min={0}
+                      />
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <Input
                         type="number"
                         variant="primary"
                         className="text-center"
@@ -374,6 +368,9 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                         }
                         min={1}
                       />
+                    </td>
+                    <td className="px-4 py-3 align-top text-right text-sm font-bold text-slate-800 pt-5 mono">
+                      {currencyFormat(item.unit_price * item.quantity)}
                     </td>
                     <td className="px-4 py-3 align-top text-center pt-4">
                       <Button
@@ -389,6 +386,76 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Billing Summary */}
+          <div className="bg-slate-50 border-t border-slate-200 p-5 rounded-b-xl">
+            <div className="ml-auto md:w-80 space-y-3">
+              {(() => {
+                const subTotal = formData.items.reduce(
+                  (sum, i) => sum + (i.unit_price || 0) * (i.quantity || 0), 0,
+                );
+                const discAmount = formData.is_discount_percentage
+                  ? subTotal * (formData.discount_percentage || 0) / 100
+                  : formData.discount_value || 0;
+                const afterDiscount = subTotal - discAmount;
+                const scAmount = afterDiscount * (formData.service_charge || 0) / 100;
+                const total = afterDiscount + scAmount;
+                return (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Subtotal</span>
+                      <span className="font-semibold text-slate-800 mono">{currencyFormat(subTotal)}</span>
+                    </div>
+                    <div className="flex justify-between items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-slate-600">Discount</span>
+                        <Checkbox
+                          checked={formData.is_discount_percentage}
+                          onChange={(e) => setFormData({ ...formData, is_discount_percentage: e.target.checked })}
+                          variant="primary"
+                        />
+                        <Percent className="w-3.5 h-3.5 text-slate-400" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          className="!w-24 text-right"
+                          value={formData.is_discount_percentage ? formData.discount_percentage : formData.discount_value}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            if (formData.is_discount_percentage) {
+                              setFormData({ ...formData, discount_percentage: val });
+                            } else {
+                              setFormData({ ...formData, discount_value: val });
+                            }
+                          }}
+                          min={0}
+                        />
+                        <span className="text-xs text-slate-500 w-4">{formData.is_discount_percentage ? '%' : 'Rp'}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center gap-2">
+                      <span className="text-sm text-slate-600">Service Charge</span>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          className="!w-24 text-right"
+                          value={formData.service_charge}
+                          onChange={(e) => setFormData({ ...formData, service_charge: Number(e.target.value) })}
+                          min={0}
+                        />
+                        <span className="text-xs text-slate-500 w-4">%</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-200">
+                      <span className="text-base font-bold text-slate-800">Total Charges</span>
+                      <span className="text-xl font-bold text-emerald-600 mono">{currencyFormat(total)}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
       </div>

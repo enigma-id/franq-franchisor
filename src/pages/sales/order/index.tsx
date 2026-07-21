@@ -14,11 +14,10 @@ import { useSalesOrder } from "@/services/sales/hooks";
 export default function SalesOrder() {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
-  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, cancel: cancelItem, cancelResult, paid: paidItem, paidResult } =
+  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, paid: paidItem, paidResult } =
     useSalesOrder();
   const [selectedRow, setSelectedRow] = useState<SalesOrderDetail | null>(null);
-  const [actionType, setActionType] = useState<"publish" | "cancel" | "paid" | null>(null);
-  const [cancelNote, setCancelNote] = useState("");
+  const [actionType, setActionType] = useState<"publish" | "paid" | null>(null);
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(() => {
@@ -27,7 +26,6 @@ export default function SalesOrder() {
       onRemove: (v) => openDelete(v),
       onEdit: (row) => navigate(`/sales/order/update/${row.id}`),
       onPublish: (row) => openConfirmModal(row, "publish"),
-      onCancel: (row) => openConfirmModal(row, "cancel"),
       onPaid: (row) => openConfirmModal(row, "paid"),
     });
   }, [navigate]);
@@ -36,16 +34,14 @@ export default function SalesOrder() {
 
   useEffect(() => { tableRef.current = Table; }, [Table]);
 
-  const openConfirmModal = useCallback((row: SalesOrderDetail, type: "publish" | "cancel" | "paid") => {
+  const openConfirmModal = useCallback((row: SalesOrderDetail, type: "publish" | "paid") => {
     setSelectedRow(row);
     setActionType(type);
-    setCancelNote("");
   }, []);
 
   const closeConfirmModal = useCallback(() => {
     setSelectedRow(null);
     setActionType(null);
-    setCancelNote("");
   }, []);
 
   const handleConfirmAction = useCallback(async () => {
@@ -53,19 +49,17 @@ export default function SalesOrder() {
     const id = selectedRow.id;
     switch (actionType) {
       case "publish": await publishItem({ id }); break;
-      case "cancel": await cancelItem({ id, payload: { note: cancelNote } }); break;
       case "paid": await paidItem({ id }); break;
     }
-  }, [selectedRow, actionType, cancelNote, publishItem, cancelItem, paidItem]);
+  }, [selectedRow, actionType, publishItem, paidItem]);
 
   const activeResult = useMemo(() => {
     switch (actionType) {
       case "publish": return publishResult;
-      case "cancel": return cancelResult;
       case "paid": return paidResult;
       default: return null;
     }
-  }, [actionType, publishResult, cancelResult, paidResult]);
+  }, [actionType, publishResult, paidResult]);
 
   const openDelete = (v: SalesOrderDetail) => {
     openModal({
@@ -166,31 +160,21 @@ export default function SalesOrder() {
       >
         <Modal.Header>
           <div className="font-bold leading-7">
-            Konfirmasi {actionType === "publish" ? "Publish" : actionType === "cancel" ? "Pembatalan" : "Pembayaran"}
+            Konfirmasi {actionType === "publish" ? "Publish" : "Pembayaran"}
           </div>
         </Modal.Header>
         <Modal.Body className="text-sm font-normal leading-5 space-y-4">
           <p>
-            Apakah Anda yakin ingin {actionType === "publish" ? "menerbitkan" : actionType === "cancel" ? "membatalkan" : "membayar"}{" "}
+            Apakah Anda yakin ingin {actionType === "publish" ? "menerbitkan" : "membayar"}{" "}
             sales order <strong>{selectedRow?.code}</strong>?
           </p>
-          {actionType === "cancel" && (
-            <Input
-              type="textarea"
-              label="Alasan Pembatalan"
-              placeholder="Masukkan alasan pembatalan..."
-              value={cancelNote}
-              onChange={(e) => setCancelNote(e.target.value)}
-            />
-          )}
         </Modal.Body>
         <Modal.Footer>
           <Button
             className="flex-1 rounded-xl"
-            variant={actionType === "cancel" ? "error" : "primary"}
+            variant="primary"
             onClick={handleConfirmAction}
             isLoading={activeResult?.isLoading}
-            disabled={actionType === "cancel" && !cancelNote.trim()}
           >
             Konfirmasi
           </Button>

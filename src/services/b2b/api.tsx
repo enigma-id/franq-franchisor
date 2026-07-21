@@ -39,9 +39,10 @@ export const b2bApi = createApi({
     }),
 
     deleteB2BOrder: builder.mutation({
-      query: (id) => ({
+      query: ({ id, payload = {} }) => ({
         url: `/b2b/order/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 

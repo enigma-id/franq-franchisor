@@ -406,8 +406,24 @@ export function PurchaseOrderForm({
             }
             getLabel={(item: any) => item?.name || ""}
             getValue={(item: any) => item?.id}
-            onChange={(v) => setWarehouseSelected(v)}
-            onClear={() => setWarehouseSelected(null)}
+            onChange={(v) => {
+              setWarehouseSelected(v);
+              setFormData((prev) => ({
+                ...prev,
+                warehouse_id: v?.id ?? "",
+                recipient_name: v?.name ?? prev.recipient_name,
+                address: v?.address ?? prev.address,
+              }));
+            }}
+            onClear={() => {
+              setWarehouseSelected(null);
+              setFormData((prev) => ({
+                ...prev,
+                warehouse_id: "",
+                recipient_name: "",
+                address: "",
+              }));
+            }}
             required
             error={
               typeof FormState?.errors?.warehouse_id === "string"

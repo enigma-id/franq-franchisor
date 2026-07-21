@@ -405,7 +405,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                         value={item.catalogSelected}
                         hook={catalogsResult as any}
                         fetchData={(page, search) =>
-                          getCatalogs({ page, search, type: "finished_goods" })
+                          getCatalogs({ page, search, is_active: "true" })
                         }
                         getLabel={(item: any) =>
                           item

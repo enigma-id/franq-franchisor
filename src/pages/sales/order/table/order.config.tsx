@@ -2,14 +2,13 @@ import config from "@/services/table/const";
 import { dateFormat, getStatusVariant, formatDateTime } from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
-import { Edit, Eye, MoreVertical, Trash, Check, X, CreditCard } from "lucide-react";
+import { Edit, Eye, MoreVertical, Trash, Check, CreditCard } from "lucide-react";
 
 const createTableConfig = ({
   onClick,
   onRemove,
   onEdit,
   onPublish,
-  onCancel,
   onPaid,
   filter,
 }: {
@@ -17,7 +16,6 @@ const createTableConfig = ({
   onRemove?: (row: SalesOrderDetail) => void;
   onEdit?: (row: SalesOrderDetail) => void;
   onPublish?: (row: SalesOrderDetail) => void;
-  onCancel?: (row: SalesOrderDetail) => void;
   onPaid?: (row: SalesOrderDetail) => void;
   filter?: Record<string, unknown>;
 }) => ({
@@ -204,22 +202,6 @@ const createTableConfig = ({
             </>
           )}
 
-          {row?.document_status === "pending" && (
-            <Dropdown.Item
-              onSelect={() => onCancel?.(row)}
-              className="hover:bg-orange-50 hover:text-orange-600"
-            >
-              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
-                  <X className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Cancel</span>
-                  <span className="text-[11px] text-slate-400">Cancel sales order</span>
-                </div>
-              </button>
-            </Dropdown.Item>
-          )}
 
           {row?.payment_status === "unpaid" && row?.document_status === "published" && (
             <Dropdown.Item

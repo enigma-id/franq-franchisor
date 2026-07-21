@@ -6,6 +6,9 @@ import { Loading, Button, Badge, Modal } from "@/components/ui";
 import { useB2BOrder } from "@/services/b2b/hooks";
 import { useEnigmaUI } from "@/components";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
+import { usePrintWindow } from "@/utils/usePrintWindow";
+import { B2BInvoicePrint } from "./components/B2BInvoicePrint";
+import { B2BDOPrint } from "./components/B2BDOPrint";
 import {
   AlertCircle,
   Store,
@@ -18,6 +21,7 @@ import {
   CreditCard,
   Trash2,
   Edit,
+  Printer,
 } from "lucide-react";
 import type { B2BOrderDetail } from "@/services/types";
 
@@ -43,6 +47,8 @@ const B2BOrderDetailPage: React.FC = () => {
   const order = showResult?.data?.data as B2BOrderDetail | undefined;
   const orderItems = order?.items ?? [];
   const isLoading = showResult?.isLoading || showResult?.isFetching;
+  const printInvoice = usePrintWindow({ width: 400, height: 600, title: "B2B Invoice" });
+  const printDO = usePrintWindow({ width: 400, height: 600, title: "Delivery Order" });
 
   const [confirmModal, setConfirmModal] = useState<{
     type: "ship" | "receive" | "invoice" | "pay" | "delete";
@@ -173,10 +179,6 @@ const B2BOrderDetailPage: React.FC = () => {
     );
   }
 
-  const totalQty = orderItems.reduce(
-    (sum, item) => sum + (item.quantity || 0),
-    0,
-  );
   const isPending = order.document_status === "pending";
   const isShipped = order.document_status === "shipped";
   const isReceived = order.document_status === "received";
@@ -191,6 +193,20 @@ const B2BOrderDetailPage: React.FC = () => {
         backTo={() => navigate(-1)}
         action={
           <div className="flex gap-2">
+            <Button
+              variant="info"
+              onClick={() => printInvoice.open(<B2BInvoicePrint order={order} />)}
+              title="Print Invoice"
+            >
+              <FileText className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="info"
+              onClick={() => printDO.open(<B2BDOPrint order={order} />)}
+              title="Print DO"
+            >
+              <Printer className="w-4 h-4" />
+            </Button>
             {isPending && (
               <>
                 <Button
@@ -359,9 +375,7 @@ const B2BOrderDetailPage: React.FC = () => {
               <div className="info-row">
                 <dt className="info-label">Diskon</dt>
                 <dd className="info-value">
-                  {order.is_discount_percentage
-                    ? `${order.discount}%`
-                    : formatCurrency(order.discount_value || 0)}
+                  {formatCurrency(order.discount_value || 0)}
                 </dd>
               </div>
               <div className="info-row">
@@ -473,9 +487,7 @@ const B2BOrderDetailPage: React.FC = () => {
                   <td className="px-4 py-3 text-slate-600" colSpan={3}>
                     Subtotal
                   </td>
-                  <td className="px-4 py-3 text-right text-slate-700">
-                    {totalQty} item(s)
-                  </td>
+                  <td className="px-4 py-3 text-right text-slate-700"></td>
                   <td className="px-4 py-3 text-right text-slate-800 mono">
                     {formatCurrency(order.subtotal_nett || 0)}
                   </td>
@@ -488,9 +500,7 @@ const B2BOrderDetailPage: React.FC = () => {
                     Discount
                   </td>
                   <td className="px-4 py-3 text-right text-slate-800 mono">
-                    {order.is_discount_percentage
-                      ? `-${order.discount}%`
-                      : `-${formatCurrency(order.discount_value || 0)}`}
+                    -{formatCurrency(order.discount_value || 0)}
                   </td>
                 </tr>
                 <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">

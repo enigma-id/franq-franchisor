@@ -21,7 +21,7 @@ import {
   CreditCard,
   Trash2,
   CornerDownRight,
-  X,
+  Pen,
 } from "lucide-react";
 
 export default function SalesOrderDetailPage() {
@@ -39,17 +39,14 @@ export default function SalesOrderDetailPage() {
     paidResult,
     remove,
     removeResult,
-    cancel,
-    cancelResult,
   } = useSalesOrder();
   const order = showResult?.data?.data as SalesOrderDetail | undefined;
   // API returns items as "items", not "sales_order_items"
   const orderItems = (order as any)?.items ?? order?.items ?? [];
   const isLoading = showResult?.isLoading || showResult?.isFetching;
 
-  const [note, setNote] = useState("");
   const [confirmModal, setConfirmModal] = useState<{
-    type: "publish" | "cancel" | "paid" | "delete";
+    type: "publish" | "paid" | "delete";
     title: string;
     message: string;
     onConfirm: (v?: any) => void;
@@ -81,15 +78,6 @@ export default function SalesOrderDetailPage() {
   }, [removeResult.isSuccess, navigate, removeResult, showToast]);
 
   useEffect(() => {
-    if (cancelResult.isSuccess) {
-      showToast({ message: "Pembatalan berhasil", type: "success", position: "bottom-center" });
-      setConfirmModal(null);
-      if (id) show({ id });
-      cancelResult.reset?.();
-    }
-  }, [cancelResult.isSuccess, id, show, cancelResult, showToast]);
-
-  useEffect(() => {
     if (publishResult.isSuccess) {
       showToast({ message: "Sales order berhasil diterbitkan", type: "success", position: "bottom-center" });
       setConfirmModal(null);
@@ -103,23 +91,6 @@ export default function SalesOrderDetailPage() {
       await publish({ id });
       show({ id });
     }
-  };
-
-  const handleCancel = () => {
-    setConfirmModal({
-      type: "cancel",
-      title: "Konfirmasi Pembatalan",
-      message:
-        "Apakah Anda yakin ingin memproses pembatalan untuk Sales Order ini?",
-      variant: "primary",
-      onConfirm: (v) => {
-        const payload = { note: v };
-
-        if (id) {
-          cancel({ id, payload });
-        }
-      },
-    });
   };
 
   const handlePaid = () => {
@@ -199,6 +170,15 @@ export default function SalesOrderDetailPage() {
         action={
           <div className="flex gap-2">
             <GuardedButton
+              allowed={guards.canEdit}
+              reason="Hanya order tipe default dengan status pending yang dapat diperbaharui (Edit)."
+              variant="info"
+              onClick={() => navigate(`/sales/order/update/${order?.id}`)}
+              title="Perbaharui (Edit)"
+            >
+              <Pen className="w-4 h-4" />
+            </GuardedButton>
+            <GuardedButton
               allowed={guards.canPublish}
               reason="Hanya order tipe default dengan status pending yang dapat disetujui (publish)."
               variant="success"
@@ -207,16 +187,6 @@ export default function SalesOrderDetailPage() {
               title="Setujui (Approve)"
             >
               <Check className="w-4 h-4" />
-            </GuardedButton>
-            <GuardedButton
-              allowed={guards.canCancel}
-              reason="Hanya order dengan status pembayaran unpaid yang dapat dibatalkan."
-              variant="error"
-              onClick={handleCancel}
-              isLoading={cancelResult.isLoading}
-              title="Batalkan"
-            >
-              <X className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canPay}
@@ -573,26 +543,11 @@ export default function SalesOrderDetailPage() {
 
       <Modal.Wrapper
         open={!!confirmModal}
-        onClose={() => {
-          setConfirmModal(null);
-          setNote("");
-        }}
+        onClose={() => setConfirmModal(null)}
       >
         <Modal.Header>{confirmModal?.title}</Modal.Header>
         <Modal.Body>
           {confirmModal?.message}
-          {confirmModal?.type === "cancel" && (
-            <div className="mt-4">
-              <Input
-                type="textarea"
-                label="Alasan"
-                placeholder="Contoh: Batalkan"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                error={FormState?.errors?.note as string}
-              />
-            </div>
-          )}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setConfirmModal(null)} variant="default">
@@ -601,7 +556,7 @@ export default function SalesOrderDetailPage() {
           <Button
             onClick={() => {
               if (confirmModal) {
-                confirmModal.onConfirm(note);
+                confirmModal.onConfirm();
               }
             }}
             variant={confirmModal?.variant === "error" ? "error" : "primary"}
