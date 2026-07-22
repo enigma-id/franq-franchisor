@@ -12,6 +12,7 @@
 This document catalogs every list endpoint's accepted query parameters from the API contract, cross-referenced against the current frontend filter implementation. Each of the 30 table modules is analyzed with its contract params, actual filter component behavior, and any gaps.
 
 **Key findings:**
+
 - 3 param name mismatches fixed in prior session (`start_at`→`start_date`, `end_at`→`end_date`, `status`→`document_status`)
 - 2 extra params sent that backend ignores (`fulfillment_status`, `date`)
 - 9 modules have zero filter components
@@ -24,17 +25,18 @@ This document catalogs every list endpoint's accepted query parameters from the 
 
 ### Legend
 
-| Status | Meaning |
-|--------|---------|
-| ✅ MATCH | Param correctly named and sent |
-| ❌ MISMATCH | Param name wrong |
-| ⚠️ MISSING | Contract param not sent |
-| 🟡 EXTRA | Param sent but not in contract |
-| 🔴 NO FILTER | No filter component exists |
+| Status       | Meaning                        |
+| ------------ | ------------------------------ |
+| ✅ MATCH     | Param correctly named and sent |
+| ❌ MISMATCH  | Param name wrong               |
+| ⚠️ MISSING   | Contract param not sent        |
+| 🟡 EXTRA     | Param sent but not in contract |
+| 🔴 NO FILTER | No filter component exists     |
 
 ---
 
 ### 1. `GET /inventory/item`
+
 **File:** `src/pages/inventory/item/table/item.filter.tsx`
 **Contract:**
 | Param | Type | Description |
@@ -52,6 +54,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 2. `GET /inventory/catalog`
+
 **File:** `src/pages/inventory/catalog/table/catalog.filter.tsx`
 **Contract:**
 | Param | Type | Description |
@@ -68,6 +71,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 3. `GET /outlet`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -82,12 +86,14 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 4. `GET /outlet/type`
+
 **Contract:** `page`, `limit`, `search`, `is_active`
 **Status:** 🔴 NO FILTER
 
 ---
 
 ### 5. `GET /pos/menu`
+
 **File:** `src/pages/setting/pos/menu/table/menu.filter.tsx`
 **Contract:**
 | Param | Type | Description |
@@ -104,6 +110,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 6. `GET /pos/category`
+
 **File:** `src/pages/setting/pos/category/table/category.filter.tsx`
 **Contract:** `page`, `limit`, `search`, `is_active`
 **Status:** 🔴 Empty placeholder — no actual filter logic
@@ -111,12 +118,14 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 7. `GET /pos/channel`
+
 **Contract:** `page`, `limit`, `search`, `is_active`
 **Status:** 🔴 NO FILTER
 
 ---
 
 ### 8. `GET /payment/method`
+
 **File:** `src/pages/setting/pos/payment/table/payment.filter.tsx`
 **Contract:** `page`, `limit`, `search`, `is_active`
 **Sends:** Only `search` via `handleSearch`
@@ -125,6 +134,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 9. `GET /supplier`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -139,6 +149,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 10. `GET /user`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -153,18 +164,21 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 11. `GET /user/usergroup`
+
 **Contract:** `page`, `limit`, `search`
 **Status:** 🔴 NO FILTER (no params beyond standard, so acceptable)
 
 ---
 
 ### 12. `GET /member/topup-bonus`
+
 **Contract:** `page`, `limit`, `search`, `is_active`
 **Status:** 🔴 NO FILTER
 
 ---
 
 ### 13. `GET /sales/order`
+
 **File:** `src/pages/sales/order/table/order.filter.tsx`
 **Contract:**
 | Param | Type | Description |
@@ -186,6 +200,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 14. `GET /sales/return`
+
 **File:** `src/pages/sales/return/table/return.filter.tsx`
 **Contract:** `page`, `limit`, `search`
 **Sends:** `date` 🟡 (extra — not in contract)
@@ -193,6 +208,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 15. `GET /purchase/order`
+
 **File:** `src/pages/purchase/order/table/order.filter.tsx`
 **Contract:**
 | Param | Type | Description |
@@ -211,6 +227,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 16. `GET /b2b/order`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -226,6 +243,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 17. `GET /production/plan`
+
 **File:** `src/pages/production/plan/table/plan.filter.tsx`
 **Contract:**
 | Param | Type | Description |
@@ -244,12 +262,14 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 18. `GET /warehouse`
+
 **Contract:** No query params listed
 **Status:** ✅ No filter needed
 
 ---
 
 ### 19. `GET /withdrawal-request`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -264,6 +284,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 20. `GET /outlet-topup-request`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -278,6 +299,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 21. `GET /report/outstanding`
+
 **Contract:**
 | Param | Type |
 |-------|------|
@@ -295,6 +317,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 22. `GET /report/pos-settlement`
+
 **Contract:**
 | Param | Type |
 |-------|------|
@@ -309,6 +332,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 23. `GET /report/product-sales`
+
 **Contract:** `outlet_id`, `start_date`, `end_date`, `page`, `limit`, `order_by`
 **File:** `src/pages/report/table/product-sales.filter.tsx`
 **Sends:** `start_date` ✅, `end_date` ✅
@@ -317,12 +341,14 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 24. `GET /report/raw-material-sales`
+
 **Contract:** "Various query options" (unspecified)
 **Status:** 🔴 No specific params documented
 
 ---
 
 ### 25. `GET /report/warehouse-stock`
+
 **Contract:**
 | Param | Type |
 |-------|------|
@@ -337,19 +363,22 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 26. `GET /report/b2b/settlement`
+
 **Contract:** Not specified
-**Config:** `lockedFilter: {params_type: "yearly"}`
+**Config:** `lockedFilter: {periode_type: "yearly"}`
 **Status:** ✅ Static filter only
 
 ---
 
 ### 27. `GET /report/b2b/product-sales`
+
 **Contract:** Not specified
 **Status:** 🔴 No filter
 
 ---
 
 ### 28. `GET /demand/production`
+
 **Contract:**
 | Param | Type | Description |
 |-------|------|-------------|
@@ -363,6 +392,7 @@ This document catalogs every list endpoint's accepted query parameters from the 
 ---
 
 ### 29. `GET /demand/item`
+
 **Contract:** `production_date`, `outlet_id`
 **Status:** No standalone filter (child of demand production page)
 
@@ -384,38 +414,38 @@ pie title Filter Implementation Status
 
 ### Modules Missing Filter Components Entirely
 
-| Endpoint | Available Params |
-|----------|-----------------|
-| `GET /outlet` | `outlet_type_id`, `is_active` |
-| `GET /outlet/type` | `is_active` |
-| `GET /pos/channel` | `is_active` |
-| `GET /supplier` | `is_active`, `type` |
-| `GET /user` | `usergroup_id`, `is_active` |
-| `GET /withdrawal-request` | `document_status`, `outlet_id` |
-| `GET /outlet-topup-request` | `document_status`, `outlet_id` |
-| `GET /b2b/order` | `document_status`, `start_date`, `end_date` |
-| `GET /report/warehouse-stock` | `warehouse_id`, `item_id` |
+| Endpoint                      | Available Params                            |
+| ----------------------------- | ------------------------------------------- |
+| `GET /outlet`                 | `outlet_type_id`, `is_active`               |
+| `GET /outlet/type`            | `is_active`                                 |
+| `GET /pos/channel`            | `is_active`                                 |
+| `GET /supplier`               | `is_active`, `type`                         |
+| `GET /user`                   | `usergroup_id`, `is_active`                 |
+| `GET /withdrawal-request`     | `document_status`, `outlet_id`              |
+| `GET /outlet-topup-request`   | `document_status`, `outlet_id`              |
+| `GET /b2b/order`              | `document_status`, `start_date`, `end_date` |
+| `GET /report/warehouse-stock` | `warehouse_id`, `item_id`                   |
 
 ### Modules Missing Contract Params in Existing Filters
 
-| Endpoint | Missing Params |
-|----------|---------------|
-| `GET /sales/order` | `outlet_id`, `warehouse_id` |
-| `GET /production/plan` | `outlet_id` |
-| `GET /purchase/order` | All (empty placeholder) |
-| `GET /report/outstanding` | `outlet_id` |
-| `GET /report/product-sales` | `outlet_id` |
-| `GET /report/pos-settlement` | `periode`, `periode_type` |
-| `GET /inventory/item` | `type`, `category` |
-| `GET /inventory/catalog` | `item_type` |
-| `GET /demand/production` | `outlet_id` |
+| Endpoint                     | Missing Params              |
+| ---------------------------- | --------------------------- |
+| `GET /sales/order`           | `outlet_id`, `warehouse_id` |
+| `GET /production/plan`       | `outlet_id`                 |
+| `GET /purchase/order`        | All (empty placeholder)     |
+| `GET /report/outstanding`    | `outlet_id`                 |
+| `GET /report/product-sales`  | `outlet_id`                 |
+| `GET /report/pos-settlement` | `periode`, `periode_type`   |
+| `GET /inventory/item`        | `type`, `category`          |
+| `GET /inventory/catalog`     | `item_type`                 |
+| `GET /demand/production`     | `outlet_id`                 |
 
 ### Extra Params (Not in Contract)
 
-| Endpoint | Extra Param | Risk |
-|----------|------------|------|
-| `GET /sales/order` | `fulfillment_status` | Ignored by backend |
-| `GET /sales/return` | `date` | Ignored by backend |
+| Endpoint            | Extra Param          | Risk               |
+| ------------------- | -------------------- | ------------------ |
+| `GET /sales/order`  | `fulfillment_status` | Ignored by backend |
+| `GET /sales/return` | `date`               | Ignored by backend |
 
 ---
 
@@ -431,6 +461,7 @@ Filter Component
 ```
 
 **Key files:**
+
 - **API layer:** `src/services/table/api.tsx` — `buildParams()` constructs `{page, limit, search, order_by, ...lockedFilter, ...filter}`
 - **Filter mechanism:** `src/services/table/hooks.tsx` — `onFilter()` merges lockedFilter + existing filter + new field
 - **Config pattern:** `src/pages/*/table/*.config.tsx` — returns `{ url, columns, filter?, lockedFilter? }`
@@ -454,4 +485,4 @@ Filter Component
 
 ---
 
-*Research completed with SDD 2.0*
+_Research completed with SDD 2.0_
