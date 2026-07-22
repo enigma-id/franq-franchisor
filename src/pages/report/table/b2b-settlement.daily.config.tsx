@@ -2,22 +2,18 @@
 import config from "@/services/table/const";
 import { currencyFormat } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
-import { ChevronRight } from "lucide-react";
 
 const createTableConfig = ({
   filter,
   lockedFilter,
-  onRowClick,
 }: {
   lockedFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
-  onRowClick?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
   url: "/report/b2b/settlement",
   lockedFilter,
   filter,
-  onRowClick,
   dynamicColumns: (rows: any[]) => {
     if (!rows?.length) return {};
 
@@ -46,13 +42,6 @@ const createTableConfig = ({
         component: (row: any) => row.periode,
       },
       ...dynamic,
-      action: {
-        title: "",
-        width: 40,
-        component: () => (
-          <ChevronRight size={16} className="text-base-content/30" />
-        ),
-      },
     };
   },
 });
