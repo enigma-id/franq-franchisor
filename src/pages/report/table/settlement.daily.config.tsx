@@ -42,9 +42,9 @@ const createTableConfig = ({
     });
 
     return {
-      date: {
+      periode: {
         title: "Date",
-        component: (row: any) => row.date,
+        component: (row: any) => row.periode,
       },
       ...dynamic,
       action: {

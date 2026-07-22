@@ -7,9 +7,19 @@ import createTableConfig from "./table/b2b-settlement.config";
 import TableFilter from "./table/settlement.filter"; // Reuse monthly filter pattern
 import { SettlementSummaryCards } from "@/components/app";
 import { useB2BReport } from "@/services/report/hooks";
+import { useNavigate } from "react-router-dom";
 
 export default function B2BSettlementPage() {
-  const tableConfig = useMemo(() => createTableConfig({}), []);
+  const navigate = useNavigate();
+  const tableConfig = useMemo(
+    () =>
+      createTableConfig({
+        filter: { periode: new Date().getFullYear() },
+        onRowClick: (row: any) =>
+          navigate(`/report/b2b/settlement/daily?periode=${row.periode}`),
+      }),
+    [navigate],
+  );
 
   const Table = useTable("b2b_settlement", tableConfig as TableConfig<unknown>);
 
@@ -35,18 +45,31 @@ export default function B2BSettlementPage() {
     const d = summaryResult?.data;
 
     if (Array.isArray(d)) {
-      if (d.length > 0 && d[0].payment_methods && d[0].nominals) {
-        return d[0].payment_methods.map((m: string, i: number) => ({
-          method: m,
-          total: d[0].nominals[i] || 0,
-        }));
+      if (d.length === 0) return [];
+
+      // Determine the key set from first row that has data
+      let keys: string[] = [];
+      const firstRow = d.find((r: any) => r.payment_statuses?.length > 0);
+      if (firstRow?.payment_statuses) {
+        keys = firstRow.payment_statuses;
+      } else if (d[0].payment_statuses) {
+        keys = d[0].payment_statuses;
+      } else if (d[0].payment_methods) {
+        keys = d[0].payment_methods;
       }
-      if (d.length > 0 && d[0].payment_statuses && d[0].nominals) {
-        return d[0].payment_statuses.map((m: string, i: number) => ({
-          method: m,
-          total: d[0].nominals[i] || 0,
-        }));
+
+      if (keys.length > 0) {
+        // Aggregate nominals across all rows
+        return keys.map((key: string, i: number) => {
+          const total = d.reduce(
+            (sum: number, row: any) =>
+              sum + (row.nominals?.[i] ?? 0),
+            0,
+          );
+          return { method: key, total };
+        });
       }
+
       return d.map((item: any) => ({
         method: item.payment_method || item.method || item.name || "Unknown",
         total: item.nominal || item.total || item.amount || 0,
@@ -54,14 +77,14 @@ export default function B2BSettlementPage() {
     }
 
     if (typeof d === "object" && d !== null) {
-      if (d.payment_methods && d.nominals) {
-        return d.payment_methods.map((m: string, i: number) => ({
+      if (d.payment_statuses && d.nominals) {
+        return d.payment_statuses.map((m: string, i: number) => ({
           method: m,
           total: d.nominals[i] || 0,
         }));
       }
-      if (d.payment_statuses && d.nominals) {
-        return d.payment_statuses.map((m: string, i: number) => ({
+      if (d.payment_methods && d.nominals) {
+        return d.payment_methods.map((m: string, i: number) => ({
           method: m,
           total: d.nominals[i] || 0,
         }));

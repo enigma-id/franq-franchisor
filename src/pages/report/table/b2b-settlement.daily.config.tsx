@@ -22,7 +22,7 @@ const createTableConfig = ({
     if (!rows?.length) return {};
 
     const firstRow = rows[0];
-    const methods = firstRow.payment_methods ?? [];
+    const methods = firstRow.payment_statuses ?? firstRow.payment_methods ?? [];
 
     const dynamic: Record<string, any> = {};
 
@@ -41,9 +41,9 @@ const createTableConfig = ({
     });
 
     return {
-      date: {
+      periode: {
         title: "Date",
-        component: (row: any) => row.date,
+        component: (row: any) => row.periode,
       },
       ...dynamic,
       action: {

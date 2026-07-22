@@ -1,29 +1,34 @@
 import config from "@/services/table/const";
 import { currencyFormat } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
+import { ChevronRight } from "lucide-react";
 
 const createTableConfig = ({
   filter,
+  onRowClick,
 }: {
   filter?: Record<string, unknown>;
+  onRowClick?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
   url: "/report/b2b/settlement",
   lockedFilter: {
-    params_type: "yearly",
+    periode_type: "yearly",
   },
   filter,
+  onRowClick,
   dynamicColumns: (rows: any[]) => {
     if (!rows?.length) return {};
 
     const firstRow = rows[0];
-    const methods = firstRow.payment_methods ?? [];
+    const statuses =
+      firstRow.payment_statuses ?? firstRow.payment_methods ?? [];
 
     const dynamic: Record<string, any> = {};
 
-    methods.forEach((method: string, index: number) => {
-      dynamic[method] = {
-        title: method,
+    statuses.forEach((status: string, index: number) => {
+      dynamic[status] = {
+        title: status,
         align: "right",
         headerClass: "text-right",
         class: "text-right",
@@ -36,10 +41,17 @@ const createTableConfig = ({
 
     return {
       periode: {
-        title: "Date",
+        title: "Periode",
         component: (row: any) => row.periode,
       },
       ...dynamic,
+      action: {
+        title: "",
+        width: 40,
+        component: () => (
+          <ChevronRight size={16} className="text-base-content/30" />
+        ),
+      },
     };
   },
 });

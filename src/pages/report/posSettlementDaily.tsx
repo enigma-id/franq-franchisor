@@ -21,7 +21,7 @@ export default function SettlementDailyPage() {
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      lockedFilter: { params_type: "monthly" },
+      lockedFilter: { periode_type: "monthly" },
       filter: { periode: periode ?? "" },
     });
   }, [periode]);
@@ -84,14 +84,14 @@ export default function SettlementDailyPage() {
   }, [summaryResponse]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
+        category='Report'
         title={`Settlement Daily — ${periode}`}
-        subtitle="Laporan penyelesaian pembayaran."
+        subtitle='Laporan penyelesaian pembayaran.'
         backTo={() => navigate(-1)}
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0 ">
+      <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable>
@@ -99,8 +99,8 @@ export default function SettlementDailyPage() {
         </Table.Tools>
 
         <Table.Render
-          emptyTitle="No Settlement Data"
-          emptyDescription="Settlement data will appear here once available."
+          emptyTitle='No Settlement Data'
+          emptyDescription='Settlement data will appear here once available.'
         />
         <Table.Pagination />
       </Page.Body>

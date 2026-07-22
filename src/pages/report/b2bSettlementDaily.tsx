@@ -21,7 +21,7 @@ export default function B2BSettlementDailyPage() {
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      lockedFilter: { params_type: "monthly" },
+      lockedFilter: { periode_type: "monthly" },
       filter: { periode: periode ?? "" },
     });
   }, [periode]);
@@ -52,22 +52,43 @@ export default function B2BSettlementDailyPage() {
     if (!summaryResponse?.data) return [];
     const d = summaryResponse.data;
 
-    // Handle array response [{ payment_methods: [], nominals: [] }]
     if (Array.isArray(d)) {
-      if (d.length > 0 && d[0].payment_methods && d[0].nominals) {
-        return d[0].payment_methods.map((m: string, i: number) => ({
-          method: m,
-          total: d[0].nominals[i] || 0,
-        }));
+      if (d.length === 0) return [];
+
+      let keys: string[] = [];
+      const firstRow = d.find((r: any) => r.payment_statuses?.length > 0);
+      if (firstRow?.payment_statuses) {
+        keys = firstRow.payment_statuses;
+      } else if (d[0].payment_statuses) {
+        keys = d[0].payment_statuses;
+      } else if (d[0].payment_methods) {
+        keys = d[0].payment_methods;
       }
+
+      if (keys.length > 0) {
+        return keys.map((key: string, i: number) => {
+          const total = d.reduce(
+            (sum: number, row: any) =>
+              sum + (row.nominals?.[i] ?? 0),
+            0,
+          );
+          return { method: key, total };
+        });
+      }
+
       return d.map((item: any) => ({
         method: item.payment_method || item.method || item.name || "Unknown",
         total: item.nominal || item.total || item.amount || 0,
       }));
     }
 
-    // Handle object response { payment_methods: [], nominals: [] }
     if (typeof d === "object" && d !== null) {
+      if (d.payment_statuses && d.nominals) {
+        return d.payment_statuses.map((m: string, i: number) => ({
+          method: m,
+          total: d.nominals[i] || 0,
+        }));
+      }
       if (d.payment_methods && d.nominals) {
         return d.payment_methods.map((m: string, i: number) => ({
           method: m,
@@ -84,14 +105,14 @@ export default function B2BSettlementDailyPage() {
   }, [summaryResponse]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
+        category='Report'
         title={`B2B Settlement Daily — ${periode}`}
-        subtitle="Laporan penyelesaian pembayaran B2B."
+        subtitle='Laporan penyelesaian pembayaran B2B.'
         backTo={() => navigate(-1)}
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0 ">
+      <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable>
@@ -99,8 +120,8 @@ export default function B2BSettlementDailyPage() {
         </Table.Tools>
 
         <Table.Render
-          emptyTitle="No B2B Settlement Data"
-          emptyDescription="B2B Settlement data will appear here once available."
+          emptyTitle='No B2B Settlement Data'
+          emptyDescription='B2B Settlement data will appear here once available.'
         />
         <Table.Pagination />
       </Page.Body>

@@ -16,7 +16,7 @@ const createTableConfig = ({
   dataKey: "datas",
   filter,
   lockedFilter: {
-    params_type: "yearly",
+    periode_type: "yearly",
   },
   onRowClick,
   dynamicColumns: (rows: any[]) => {
@@ -51,7 +51,7 @@ const createTableConfig = ({
         title: "",
         width: 40,
         component: () => (
-          <ChevronRight size={16} className="text-base-content/30" />
+          <ChevronRight size={16} className='text-base-content/30' />
         ),
       },
     };

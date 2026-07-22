@@ -15,6 +15,7 @@ export default function SettlementMonthlyPage() {
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
+      filter: { periode: new Date().getFullYear() },
       onRowClick: (row: any) =>
         navigate(`/report/pos/settlement/daily?periode=${row.date}`),
     });
