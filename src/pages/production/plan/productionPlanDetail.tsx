@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge, Button, Modal, RemoteSelect } from "@/components/ui";
@@ -438,16 +439,17 @@ const ProductionPlanDetailPage: React.FC = () => {
                           <span className="text-[15px] font-bold text-primary">
                             {item.quantity_planned}
                           </span>
-                          {isProcess && item.document_status !== "completed" && (
-                            <Button
-                              styleType="ghost"
-                              size="sm"
-                              onClick={() => handleOpenEditPlanned(item)}
-                              title="Ubah Qty Planned"
-                            >
-                              <Pencil size={12} />
-                            </Button>
-                          )}
+                          {isProcess &&
+                            item.document_status !== "completed" && (
+                              <Button
+                                styleType="ghost"
+                                size="sm"
+                                onClick={() => handleOpenEditPlanned(item)}
+                                title="Ubah Qty Planned"
+                              >
+                                <Pencil size={12} />
+                              </Button>
+                            )}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-[15px] font-bold text-slate-600 text-right align-text-top!">

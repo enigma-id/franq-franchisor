@@ -22,12 +22,14 @@ export function usePrintWindow({
   const rootRef = useRef<Root | null>(null);
   const [ready, setReady] = useState(false);
 
-  const open = (children: ReactNode) => {
+  const open = (children: ReactNode, size?: { width?: number; height?: number }) => {
     if (!printWindow.current || printWindow.current.closed) {
+      const w = size?.width ?? width;
+      const h = size?.height ?? height;
       printWindow.current = window.open(
         "",
         title,
-        `width=${width},height=${height},left=200,top=200`,
+        `width=${w},height=${h},left=200,top=200`,
       );
 
       if (!printWindow.current) {
@@ -131,6 +133,17 @@ export function usePrintWindow({
         rootRef.current = createRoot(container.current);
       }
       rootRef.current.render(content);
+
+      // Auto print after render
+      setTimeout(() => {
+        printWindow.current?.focus();
+        printWindow.current?.print();
+        if (autoClose) {
+          setTimeout(() => {
+            printWindow.current?.close();
+          }, 300);
+        }
+      }, 500);
     }
   }, [content, autoClose]);
 

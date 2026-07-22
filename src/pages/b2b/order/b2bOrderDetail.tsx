@@ -47,8 +47,8 @@ const B2BOrderDetailPage: React.FC = () => {
   const order = showResult?.data?.data as B2BOrderDetail | undefined;
   const orderItems = order?.items ?? [];
   const isLoading = showResult?.isLoading || showResult?.isFetching;
-  const printInvoice = usePrintWindow({ width: 400, height: 600, title: "B2B Invoice" });
-  const printDO = usePrintWindow({ width: 400, height: 600, title: "Delivery Order" });
+  const printInvoice = usePrintWindow({ width: 800, height: 900, title: "B2B Invoice" });
+  const printDO = usePrintWindow({ width: 800, height: 900, title: "Delivery Order" });
 
   const [confirmModal, setConfirmModal] = useState<{
     type: "ship" | "receive" | "invoice" | "pay" | "delete";
