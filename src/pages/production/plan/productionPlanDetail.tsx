@@ -214,10 +214,18 @@ const ProductionPlanDetailPage: React.FC = () => {
 
   const handleConfirmCompleteItem = () => {
     if (!completeItemModal || !id) return;
+    if (!completeItemModal.warehouse?.id) {
+      showToast({
+        message: "Warehouse tujuan harus dipilih",
+        type: "error",
+        position: "bottom-center",
+      });
+      return;
+    }
     completeItem({
       id: completeItemModal.item.id,
       payload: {
-        warehouse_id: completeItemModal.warehouse?.id,
+        warehouse_id: completeItemModal.warehouse.id,
         quantity_produced: completeItemModal.quantityProduced,
       },
     });
@@ -580,6 +588,7 @@ const ProductionPlanDetailPage: React.FC = () => {
                 )
               }
               placeholder="Pilih warehouse"
+              error={FormState?.errors?.warehouse_id as string}
             />
           </div>
         </Modal.Body>
