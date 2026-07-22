@@ -6,7 +6,7 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 } = {}) => ({
   ...config,
-  url: "/demand/iteem",
+  url: "/demand/item",
   filter,
   columns: {
     code: {
@@ -64,4 +64,3 @@ const createTableConfig = ({
 });
 
 export default createTableConfig;
-
