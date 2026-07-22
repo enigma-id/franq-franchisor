@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge, Button, Modal, RemoteSelect } from "@/components/ui";
-import { useEnigmaUI } from "@/components";
+import { Input, useEnigmaUI } from "@/components";
 import { useProductionPlan } from "@/services/production/hooks";
 import {
   Loader2,
@@ -11,9 +11,15 @@ import {
   Check,
   Trash2,
   Printer,
+  CheckCircle,
+  Pencil,
 } from "lucide-react";
 import dayjs from "dayjs";
-import type { ProductionPlanDetail, WarehouseDetail } from "@/services/types";
+import type {
+  ProductionPlanDetail,
+  ProductionPlanItem,
+  WarehouseDetail,
+} from "@/services/types";
 import { useProductionPlanGuards } from "@/hooks/useProductionPlanGuards";
 import { GuardedButton } from "@/components/app";
 import React, { useEffect, useState } from "react";
@@ -43,14 +49,24 @@ const ProductionPlanDetailPage: React.FC = () => {
     completeResult,
     remove,
     removeResult,
+    updateItem,
+    updateItemResult,
+    completeItem,
+    completeItemResult,
   } = useProductionPlan();
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
 
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+  const [editingPlanned, setEditingPlanned] = useState<{
+    item: ProductionPlanItem;
+    quantity: number;
+  } | null>(null);
 
   const { data, isLoading } = showResult;
   const plan = data?.data as ProductionPlanDetail;
-  const hasWarehouse = plan?.warehouse_id && plan?.warehouse_id !== "00000000-0000-0000-0000-000000000000";
+  const hasWarehouse =
+    plan?.warehouse_id &&
+    plan?.warehouse_id !== "00000000-0000-0000-0000-000000000000";
   const guards = useProductionPlanGuards(plan);
 
   const [confirmModal, setConfirmModal] = useState<{
@@ -59,6 +75,12 @@ const ProductionPlanDetailPage: React.FC = () => {
     message: string;
     onConfirm: (v?: any) => void;
     variant: "primary" | "error" | "success";
+  } | null>(null);
+
+  const [completeItemModal, setCompleteItemModal] = useState<{
+    item: ProductionPlanItem;
+    warehouse: WarehouseDetail | null;
+    quantityProduced: number;
   } | null>(null);
 
   useEffect(() => {
@@ -71,29 +93,57 @@ const ProductionPlanDetailPage: React.FC = () => {
     if (
       publishResult.isSuccess ||
       completeResult.isSuccess ||
-      removeResult.isSuccess
+      removeResult.isSuccess ||
+      updateItemResult.isSuccess ||
+      completeItemResult.isSuccess
     ) {
       setConfirmModal(null);
+      setCompleteItemModal(null);
       if (publishResult.isSuccess) {
-        showToast({ message: "Rencana produksi berhasil diterbitkan", type: "success", position: "bottom-center" });
+        showToast({
+          message: "Rencana produksi berhasil diterbitkan",
+          type: "success",
+          position: "bottom-center",
+        });
         publishResult.reset?.();
       }
       if (completeResult.isSuccess) {
-        showToast({ message: "Rencana produksi berhasil diselesaikan", type: "success", position: "bottom-center" });
+        showToast({
+          message: "Rencana produksi berhasil diselesaikan",
+          type: "success",
+          position: "bottom-center",
+        });
         completeResult.reset?.();
       }
       if (removeResult.isSuccess) {
-        showToast({ message: "Rencana produksi berhasil dihapus", type: "success", position: "bottom-center" });
+        showToast({
+          message: "Rencana produksi berhasil dihapus",
+          type: "success",
+          position: "bottom-center",
+        });
         removeResult.reset?.();
         navigate("/production/plan");
-      } else if (id) {
-        show({ id });
       }
+      if (updateItemResult.isSuccess) {
+        updateItemResult.reset?.();
+        setEditingPlanned(null);
+      }
+      if (completeItemResult.isSuccess) {
+        showToast({
+          message: "Item berhasil diselesaikan",
+          type: "success",
+          position: "bottom-center",
+        });
+        completeItemResult.reset?.();
+      }
+      if (id) show({ id });
     }
   }, [
     publishResult.isSuccess,
     completeResult.isSuccess,
     removeResult.isSuccess,
+    updateItemResult.isSuccess,
+    completeItemResult.isSuccess,
     id,
     show,
     navigate,
@@ -143,6 +193,36 @@ const ProductionPlanDetailPage: React.FC = () => {
     openPrint(<Plan data={item} plan={plan} />);
   };
 
+  const handleOpenEditPlanned = (item: ProductionPlanItem) => {
+    setEditingPlanned({ item, quantity: item.quantity_planned });
+  };
+
+  const handleSavePlanned = () => {
+    if (!editingPlanned || !id) return;
+    const qty = editingPlanned.quantity;
+    if (qty < 0) return;
+    updateItem({ id: editingPlanned.item.id, payload: { quantity: qty } });
+  };
+
+  const handleOpenCompleteItem = (item: ProductionPlanItem) => {
+    setCompleteItemModal({
+      item,
+      warehouse: null,
+      quantityProduced: item.quantity_produced,
+    });
+  };
+
+  const handleConfirmCompleteItem = () => {
+    if (!completeItemModal || !id) return;
+    completeItem({
+      id: completeItemModal.item.id,
+      payload: {
+        warehouse_id: completeItemModal.warehouse?.id,
+        quantity_produced: completeItemModal.quantityProduced,
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <Page className="h-full flex items-center justify-center">
@@ -159,9 +239,12 @@ const ProductionPlanDetailPage: React.FC = () => {
     );
   }
 
+  const isProcess = plan.document_status === "process";
+
   const statusMap = {
     pending: "default",
     published: "info",
+    process: "warning",
     completed: "success",
     cancelled: "error",
   } as const;
@@ -291,14 +374,16 @@ const ProductionPlanDetailPage: React.FC = () => {
                   <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
                     Qty Produced
                   </th>
-                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none"></th>
+                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                    {isProcess ? "Action" : ""}
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {plan.items?.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={5}
                       className="px-4 py-12 text-center text-base-content/50"
                     >
                       Tidak ada item
@@ -340,19 +425,44 @@ const ProductionPlanDetailPage: React.FC = () => {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-[15px] font-bold text-primary text-right align-text-top!">
-                        {item.quantity_planned}
+                      <td className="px-4 py-3 text-right align-text-top!">
+                        <div className="inline-flex items-center justify-end gap-1">
+                          <span className="text-[15px] font-bold text-primary">
+                            {item.quantity_planned}
+                          </span>
+                          {isProcess && item.document_status !== "completed" && (
+                            <Button
+                              styleType="ghost"
+                              size="sm"
+                              onClick={() => handleOpenEditPlanned(item)}
+                              title="Ubah Qty Planned"
+                            >
+                              <Pencil size={12} />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-[15px] font-bold text-slate-600 text-right align-text-top!">
                         {item.quantity_produced}
                       </td>
-                      <td className="px-4 py-3 text-[15px] font-bold text-slate-600 text-right align-text-top!">
-                        <Button
-                          styleType="ghost"
-                          onClick={() => handleOpenPrint(item)}
-                        >
-                          <Printer size={16} />
-                        </Button>
+                      <td className="px-4 py-3 text-right align-text-top!">
+                        <div className="flex items-center justify-end gap-1">
+                          {isProcess && item.document_status === "new" && (
+                            <Button
+                              styleType="ghost"
+                              onClick={() => handleOpenCompleteItem(item)}
+                              title="Selesaikan Item"
+                            >
+                              <CheckCircle size={15} />
+                            </Button>
+                          )}
+                          <Button
+                            styleType="ghost"
+                            onClick={() => handleOpenPrint(item)}
+                          >
+                            <Printer size={16} />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -363,11 +473,10 @@ const ProductionPlanDetailPage: React.FC = () => {
         </div>
       </Page.Body>
 
+      {/* Confirm Modal (publish / complete plan / delete) */}
       <Modal.Wrapper
         open={!!confirmModal}
-        onClose={() => {
-          setConfirmModal(null);
-        }}
+        onClose={() => setConfirmModal(null)}
       >
         <Modal.Header>{confirmModal?.title}</Modal.Header>
         <Modal.Body>
@@ -393,17 +502,95 @@ const ProductionPlanDetailPage: React.FC = () => {
             Batal
           </Button>
           <Button
-            onClick={() => {
-              if (confirmModal) {
-                confirmModal.onConfirm(warehouse);
-              }
-            }}
+            onClick={() => confirmModal?.onConfirm(warehouse)}
             variant={confirmModal?.variant === "error" ? "error" : "primary"}
             isLoading={
               publishResult.isLoading ||
               completeResult.isLoading ||
               removeResult.isLoading
             }
+          >
+            Konfirmasi
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
+
+      {/* Edit Qty Planned Modal */}
+      <Modal.Wrapper
+        open={!!editingPlanned}
+        onClose={() => setEditingPlanned(null)}
+      >
+        <Modal.Header>Update Quantity Planned</Modal.Header>
+        <Modal.Body>
+          <Input
+            label="Quantity Planned"
+            type="number"
+            value={editingPlanned?.quantity ?? 0}
+            onChange={(e) =>
+              setEditingPlanned((prev) =>
+                prev ? { ...prev, quantity: Number(e.target.value) } : null,
+              )
+            }
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setEditingPlanned(null)} variant="default">
+            Batal
+          </Button>
+          <Button
+            onClick={handleSavePlanned}
+            variant="primary"
+            isLoading={updateItemResult.isLoading}
+          >
+            Simpan
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
+
+      {/* Complete Item Modal */}
+      <Modal.Wrapper
+        open={!!completeItemModal}
+        onClose={() => setCompleteItemModal(null)}
+      >
+        <Modal.Header>Complete Item Production</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-4">
+            <Input
+              label="Quantity Produced"
+              type="number"
+              value={completeItemModal?.quantityProduced ?? 0}
+              onChange={(e) =>
+                setCompleteItemModal((prev) =>
+                  prev
+                    ? { ...prev, quantityProduced: Number(e.target.value) }
+                    : null,
+                )
+              }
+            />
+            <RemoteSelect<WarehouseDetail>
+              label="Warehouse Tujuan"
+              required
+              hook={warehouseResult as any}
+              fetchData={(page, search) => getWarehouse({ page, search })}
+              getLabel={(item: any) => item?.name}
+              value={completeItemModal?.warehouse ?? null}
+              onChange={(item: WarehouseDetail) =>
+                setCompleteItemModal((prev) =>
+                  prev ? { ...prev, warehouse: item } : null,
+                )
+              }
+              placeholder="Pilih warehouse"
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setCompleteItemModal(null)} variant="default">
+            Batal
+          </Button>
+          <Button
+            onClick={handleConfirmCompleteItem}
+            variant="primary"
+            isLoading={completeItemResult.isLoading}
           >
             Konfirmasi
           </Button>

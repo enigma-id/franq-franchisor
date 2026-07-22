@@ -23,7 +23,6 @@ export function usePrintWindow({
   const [ready, setReady] = useState(false);
 
   const open = (children: ReactNode) => {
-    // Jika belum dibuka atau sudah ditutup, buka jendela baru
     if (!printWindow.current || printWindow.current.closed) {
       printWindow.current = window.open(
         "",
@@ -36,25 +35,29 @@ export function usePrintWindow({
         return;
       }
 
-      // Buat kontainer baru
+      const base = printWindow.current.document.createElement("base");
+      base.href = window.location.origin;
+      printWindow.current.document.head.appendChild(base);
+
       container.current = printWindow.current.document.createElement("div");
       printWindow.current.document.body.appendChild(container.current);
 
-      // Tambahkan style
       const style = printWindow.current.document.createElement("style");
       style.innerHTML = `
         html {
           line-height: 1;
           -ms-text-size-adjust: 100%;
-          -webkit-text-size-adjust: 100%
+          -webkit-text-size-adjust: 100%;
         }
         body {
           font-family: monospace;
           background: #e0e0e0;
           margin: 0;
+          padding: 0;
         }
         @page {
-          margin: 0
+          margin: 0;
+          size: auto;
         }
         .sheet {
           margin: 0 auto;
@@ -63,23 +66,44 @@ export function usePrintWindow({
           box-sizing: border-box;
           page-break-after: always;
           background: #fff;
-          box-shadow: 0 .5mm 2mm rgba(0, 0, 0, .3);
+          box-shadow: 0 0.5mm 2mm rgba(0, 0, 0, 0.3);
           margin: 5mm auto;
-        }
-        body .sheet {
-          width: 80mm;
-          height: fit-content;
           padding: 0;
+          width: 80mm;
+          min-height: fit-content;
+        }
+        .sheet.A4 {
+          width: 210mm;
+          height: 297mm;
+          padding: 10mm 15mm;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
         @media print {
+          body {
+            background: #fff;
+          }
+          .sheet {
+            box-shadow: none;
+            margin: 0 auto;
+            page-break-after: always;
+          }
+          .sheet.A4 {
+            width: 210mm;
+            height: 297mm;
+            padding: 10mm 15mm;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
           .page-break {
-            page-break-after: always
+            page-break-after: always;
           }
         }
       `;
       printWindow.current.document.head.appendChild(style);
 
-      // Pantau jendela tertutup
       const interval = setInterval(() => {
         if (printWindow.current?.closed) {
           clearInterval(interval);
@@ -107,19 +131,6 @@ export function usePrintWindow({
         rootRef.current = createRoot(container.current);
       }
       rootRef.current.render(content);
-
-      // Auto print setelah render + delay kecil agar DOM siap
-      // setTimeout(() => {
-      //   printWindow.current?.focus();
-      //   printWindow.current?.print();
-
-      //   // Optional: auto-close setelah print
-      //   if (autoClose) {
-      //     setTimeout(() => {
-      //       printWindow.current?.close();
-      //     }, 300);
-      //   }
-      // }, 500);
     }
   }, [content, autoClose]);
 
