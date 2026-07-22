@@ -1,21 +1,144 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from "react";
 import { formatDate } from "@/utils";
 import type { B2BOrderDetail } from "@/services/types";
+import logoImg from "../../../../../public/logo.png";
 
 interface Props {
   order: B2BOrderDetail;
 }
 
+const styles = {
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  } as const,
+  logoArea: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+  } as const,
+  logoImg: {
+    height: 48,
+    width: "auto",
+  } as const,
+  invoiceTitle: {
+    textAlign: "right" as const,
+  },
+  invoiceH1: {
+    margin: 0,
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#303030",
+  } as const,
+  info: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: 28,
+  } as const,
+  infoBlock: {
+    fontSize: 12,
+  } as const,
+  infoLabel: {
+    fontWeight: "bold",
+    fontSize: 12,
+    marginBottom: 4,
+    color: "#303030",
+  } as const,
+  infoText: {
+    margin: 0,
+    lineHeight: 1.6,
+    fontSize: 12,
+    color: "#555",
+  } as const,
+  dates: {
+    display: "grid",
+    gridTemplateColumns: "auto auto",
+    gap: "6px 24px",
+    fontSize: 12,
+    textAlign: "right" as const,
+    alignContent: "start",
+  } as const,
+  table: {
+    width: "100%",
+    borderCollapse: "separate" as const,
+    borderSpacing: 0,
+    marginTop: 28,
+    border: "1px solid #eee",
+    borderRadius: 10,
+    overflow: "hidden",
+    fontSize: 12,
+  } as const,
+  th: {
+    fontSize: 11,
+    color: "#888",
+    fontWeight: 600,
+    textAlign: "left" as const,
+    padding: "10px 12px",
+    background: "#fafafa",
+  } as const,
+  td: {
+    padding: "10px 12px",
+    fontSize: 12,
+    borderTop: "1px solid #eee",
+  } as const,
+  tableWrap: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+  } as const,
+  footer: {
+    marginTop: 20,
+  } as const,
+  note: {
+    fontSize: 11,
+    color: "#666",
+  } as const,
+  signature: {
+    width: "100%",
+    borderCollapse: "collapse",
+    fontSize: 11,
+  } as const,
+  signCol: {
+    textAlign: "center" as const,
+    width: "33%",
+  } as const,
+  signLabel: {
+    fontWeight: "bold",
+    color: "#555",
+    marginBottom: 4,
+  } as const,
+  signLine: {
+    borderTop: "1px solid #222",
+    paddingTop: 4,
+    margin: "0 20px",
+  } as const,
+  signSub: {
+    fontSize: 8,
+    color: "#999",
+    marginTop: 4,
+  } as const,
+  pageNum: {
+    textAlign: "center",
+    fontSize: 9,
+    color: "#bbb",
+    marginTop: 12,
+    paddingTop: 6,
+    borderTop: "1px solid #eee",
+  } as const,
+} as const;
+
 export function B2BDOPrint({ order }: Props) {
   const items = order.items ?? [];
-  const limit = 30;
-  const firstPage = items.length >= 21 && items.length <= 25 ? items.length - 1 : 25;
+  const limit = 28;
+  const firstPage = 22;
 
   const pages = useMemo(() => {
     if (items.length <= firstPage) return [items];
     const first = items.slice(0, firstPage);
     const rest = items.slice(firstPage);
-    const chunks: typeof items[] = [first];
+    const chunks: (typeof items)[] = [first];
     for (let i = 0; i < rest.length; i += limit) {
       chunks.push(rest.slice(i, i + limit));
     }
@@ -27,144 +150,113 @@ export function B2BDOPrint({ order }: Props) {
     return firstPage + (pageIdx - 1) * limit + itemIdx + 1;
   };
 
+  const numberCol = { textAlign: "center" as const, width: 36 };
+  const qtyCol = { textAlign: "center" as const, width: 48 };
+
   return (
     <>
       {pages.map((page, pageIdx) => (
-        <section key={pageIdx} className="sheet A4" style={{ padding: "40px 60px" }}>
-          {/* Header - only on first page */}
-          {pageIdx === 0 && (
-            <>
-              <table className="header" cellSpacing="0" cellPadding="2">
-                <tbody>
-                  <tr>
-                    <td style={{ width: "50%", verticalAlign: "middle" }} />
-                    <td style={{ verticalAlign: "bottom", textAlign: "center" }}>
-                      <pre style={{ fontSize: 18, fontWeight: "bold", letterSpacing: 2, margin: 0, fontFamily: "inherit" }}>
-                        DELIVERY ORDER
-                      </pre>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        <section key={pageIdx} className="sheet A4">
+          {/* Header */}
+          <div style={styles.header}>
+            <div style={styles.logoArea}>
+              <img src={logoImg} alt="logo" style={styles.logoImg} />
+            </div>
+            <div style={styles.invoiceTitle}>
+              <div style={styles.invoiceH1}>DELIVERY ORDER</div>
+            </div>
+          </div>
 
-              <table cellSpacing="0" cellPadding="3">
-                <tbody>
-                  <tr>
-                    <td style={{ width: "50%", verticalAlign: "top" }}>
-                      <table className="body" cellSpacing="0" cellPadding="3">
-                        <thead className="bg-section">
-                          <tr>
-                            <th className="center border-top border-left border-right" colSpan={2} style={{ width: "50%" }}>#SO CODE</th>
-                          </tr>
-                          <tr>
-                            <td className="center border-bottom border-left border-right" colSpan={2}>{order.code}</td>
-                          </tr>
-                          <tr>
-                            <th className="center border-left border-right" style={{ width: "50%" }}>CUSTOMER</th>
-                            <th className="center border-right" style={{ width: "50%" }}>REFF</th>
-                          </tr>
-                          <tr>
-                            <td className="border-bottom border-right border-left">{order.customer_name}</td>
-                            <td className="border-bottom border-right">-</td>
-                          </tr>
-                        </thead>
-                      </table>
-                    </td>
-                    <td style={{ width: "50%", verticalAlign: "top" }}>
-                      <table className="body" cellSpacing="0" cellPadding="3">
-                        <thead className="bg-section">
-                          <tr>
-                            <th className="center border-top border-left border-right" style={{ width: "50%" }}>ORDER DATE</th>
-                            <th className="center border-top border-right" style={{ width: "50%" }}>ETD</th>
-                          </tr>
-                          <tr>
-                            <td className="border-bottom border-right border-left">
-                              {formatDate(order.created_at, "DD/MM/YYYY")}
-                            </td>
-                            <td className="border-bottom border-right">
-                              {formatDate(order.shipping_date, "DD/MM/YYYY")}
-                            </td>
-                          </tr>
-                        </thead>
-                      </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </>
-          )}
+          {/* Code row */}
+          <div
+            style={{
+              textAlign: "right",
+              fontSize: 13,
+              color: "#444",
+              marginTop: 2,
+            }}
+          >
+            #{order.code}
+          </div>
 
-          {/* Items table */}
-          <table className="body" cellSpacing="0" cellPadding="5" style={{ marginTop: 10 }}>
-            <thead className="bg-section">
-              <tr>
-                <th style={{ width: "5%", fontSize: 10 }} className="center border-top border-left">NO</th>
-                <th style={{ width: "35%", fontSize: 10 }} className="border-top border-left">ITEM</th>
-                <th className="center border-top border-left border-right" style={{ fontSize: 10 }}>QTY</th>
-              </tr>
-            </thead>
-            <tbody>
-              {page.map((row: any, i: number) => (
-                <tr key={i}>
-                  <td className="center border-bottom border-left" style={{ fontSize: 9 }}>
-                    {pageNumber(pageIdx, i)}
-                  </td>
-                  <td className="border-bottom border-left" style={{ fontSize: 9 }}>{row.menu_name}</td>
-                  <td className="border-bottom border-left border-right right" style={{ fontSize: 9 }}>{row.quantity}</td>
+          {/* Customer + Dates */}
+          <div style={styles.info}>
+            <div style={styles.infoBlock}>
+              <div style={styles.infoLabel}>Kepada Yth:</div>
+              <p style={styles.infoText}>
+                <b>{order.customer_name}</b>
+                <br />
+                {order.customer_address || "-"}
+              </p>
+            </div>
+            <div style={styles.dates}>
+              <strong>Tgl Order:</strong>
+              <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
+              <strong>Tgl Kirim:</strong>
+              <span>{formatDate(order.shipping_date, "DD/MM/YYYY")}</span>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <div style={styles.tableWrap}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={{ ...styles.th, ...numberCol }}>NO</th>
+                  <th style={styles.th}>ITEM</th>
+                  <th style={{ ...styles.th, ...qtyCol }}>QTY</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Footer - only on last page */}
-          {pageIdx === pages.length - 1 && (
-            <table className="body" cellSpacing="0" cellPadding="0">
+              </thead>
               <tbody>
-                <tr>
-                  <td>
-                    <table className="body" cellSpacing="0" cellPadding="5" style={{ marginTop: 10 }}>
-                      <thead className="bg-section">
-                        <tr>
-                          <th className="left border-left border-right border-top" style={{ paddingLeft: 10 }}>Remarks</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="border-left border-right" style={{ height: 20 }}>{order.note || ""}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <table className="body" cellSpacing="0" cellPadding="5">
-                      <thead className="bg-section">
-                        <tr>
-                          <th style={{ width: "50%" }} className="center border-left border-right border-top">PENGIRIM</th>
-                          <th style={{ width: "50%" }} className="center border-right border-top">PENERIMA</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="center border-left border-right" style={{ height: 50 }}>&nbsp;</td>
-                          <td className="center border-right" style={{ height: 50 }}>&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <td className="center border-bottom border-left border-right">&nbsp;</td>
-                          <td className="center border-bottom border-right" style={{ fontStyle: "italic", fontSize: 10 }}>
-                            Diterima dalam kondisi yang baik
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
+                {page.map((row: any, i: number) => (
+                  <tr key={i}>
+                    <td style={{ ...styles.td, ...numberCol, color: "#999" }}>
+                      {pageNumber(pageIdx, i)}
+                    </td>
+                    <td style={{ ...styles.td, fontWeight: 600 }}>
+                      {row.menu_name}
+                    </td>
+                    <td style={{ ...styles.td, ...qtyCol }}>{row.quantity}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          )}
 
-          <div className="footer">Page {pageIdx + 1} of {pages.length}</div>
+            {/* Footer — last page only */}
+            {pageIdx === pages.length - 1 && (
+              <div style={styles.footer}>
+                <div style={styles.note}>
+                  {order.note && (
+                    <div style={{ marginBottom: 6 }}>Catatan: {order.note}</div>
+                  )}
+                </div>
+                <table style={styles.signature}>
+                  <tbody>
+                    <tr>
+                      <td style={styles.signCol}>
+                        <div style={styles.signLabel}>PENGIRIM</div>
+                        <div style={{ height: 50 }}>&nbsp;</div>
+                        <div style={styles.signLine}>&nbsp;</div>
+                      </td>
+                      <td style={styles.signCol}>
+                        <div style={styles.signLabel}>MENGETAHUI</div>
+                        <div style={{ height: 50 }}>&nbsp;</div>
+                        <div style={styles.signLine}>&nbsp;</div>
+                      </td>
+                      <td style={styles.signCol}>
+                        <div style={styles.signLabel}>PENERIMA</div>
+                        <div style={{ height: 50 }}>&nbsp;</div>
+                        <div style={styles.signLine}>&nbsp;</div>
+                        <div style={styles.signSub}>
+                          Diterima dalam kondisi baik
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </section>
       ))}
     </>
