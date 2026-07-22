@@ -1,6 +1,6 @@
 import config from "@/services/table/const";
 import type { WarehouseDetail } from "@/services/types";
-import { Building, Warehouse } from "lucide-react";
+import { Building } from "lucide-react";
 
 const typeBadge = (type: string) => {
   const styles: Record<string, string> = {

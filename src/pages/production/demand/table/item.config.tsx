@@ -1,7 +1,5 @@
 import type { DemandItemData } from "@/services/types/production";
 import config from "@/services/table/const";
-import dayjs from "dayjs";
-
 const createTableConfig = ({
   filter,
 }: {

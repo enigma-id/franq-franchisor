@@ -92,12 +92,12 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         customer_name: initialData?.customer_name || "",
         customer_phone: initialData?.customer_phone || "",
         customer_address: initialData?.customer_address || "",
-        payment_ref: initialData?.payment_ref ?? "",
+        payment_ref: (initialData as any)?.payment_ref ?? "",
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
         discount_value: initialData?.discount_value ?? 0,
-        discount_percentage: initialData?.discount_percentage ?? 0,
+        discount_percentage: (initialData as any)?.discount_percentage ?? 0,
         is_discount_percentage: initialData?.is_discount_percentage ?? false,
-        service_charge: initialData?.service_charge_percentage ?? initialData?.service_charge ?? 0,
+        service_charge: (initialData as any)?.service_charge_percentage ?? initialData?.service_charge ?? 0,
         items:
           newItems.length > 0
             ? newItems
@@ -144,7 +144,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               : "",
         menu_name: typeof menu?.name === "string" ? menu.name : "",
         quantity: updated[index].quantity || 1,
-        unit_price: menu?.base_price ?? updated[index].unit_price ?? 0,
+        unit_price: Number(menu?.base_price ?? updated[index].unit_price ?? 0),
       };
       return { ...prev, items: updated };
     });
@@ -197,8 +197,6 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
       quantity: item.quantity,
       unit_price: item.unit_price,
     }));
-
-    const subTotal = items.reduce((sum, i) => sum + i.unit_price * i.quantity, 0);
 
     let payload: Record<string, any> = {
       ...formData,

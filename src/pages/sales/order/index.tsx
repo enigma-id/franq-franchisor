@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import { Button, Modal, Input } from "@/components/ui";
+import { Button, Modal } from "@/components/ui";
 import { Plus } from "lucide-react";
 import createTableConfig from "./table/order.config";
 import TableFilter from "./table/order.filter";

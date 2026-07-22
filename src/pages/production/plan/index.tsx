@@ -199,7 +199,7 @@ const ProductionPlanListPage: React.FC = () => {
                 label="Warehouse"
                 required
                 hook={warehouseResult as any}
-                fetchData={(page: number, search?: string) => getWarehouse({ page, search })}
+                fetchData={(page?: number, search?: string) => getWarehouse({ page: page ?? 1, search })}
                 getLabel={(item: any) => item?.name}
                 value={warehouse}
                 onChange={(item: WarehouseDetail | null) => setWarehouse(item)}

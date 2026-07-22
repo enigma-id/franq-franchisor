@@ -84,7 +84,6 @@ export function getStatusVariant(
     // Payment statuses
     unpaid: "error",
     partial: "warning",
-    invoiced: "primary",
     paid: "success",
     refunded: "accent",
 

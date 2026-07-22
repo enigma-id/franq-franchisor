@@ -3,12 +3,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
-import { Loading, Button, Badge, Modal, Input } from "@/components/ui";
+import { Loading, Button, Badge, Modal } from "@/components/ui";
 import { useSalesOrder } from "@/services/sales/hooks";
 import { useEnigmaUI } from "@/components";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import type { SalesOrderDetail } from "@/services/types/sales";
-import { useAppSelector, useSalesOrderGuards } from "@/hooks";
+import { useSalesOrderGuards } from "@/hooks";
 import { GuardedButton } from "@/components/app";
 import {
   ArrowLeft,
@@ -27,7 +27,6 @@ import {
 export default function SalesOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const FormState = useAppSelector((s) => s.form);
   const { showToast } = useEnigmaUI();
 
   const {

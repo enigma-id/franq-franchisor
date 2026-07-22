@@ -189,7 +189,7 @@ export function SupplierForm({
             getValue={(item: any) => item?.value}
             onChange={(val) => {
               setTopSelected(val);
-              setFormData((prev) => ({ ...prev, top: val?.value ?? 0 }));
+              setFormData((prev) => ({ ...prev, top: Number(val?.value ?? 0) }));
             }}
             onClear={() => {
               setTopSelected(null);
