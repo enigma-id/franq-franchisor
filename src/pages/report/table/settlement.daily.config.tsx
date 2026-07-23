@@ -17,12 +17,9 @@ const createTableConfig = ({
   filter,
   dynamicColumns: (rows: any[]) => {
     if (!rows?.length) return {};
-
     const firstRow = rows[0];
     const methods = firstRow.payment_methods ?? [];
-
     const dynamic: Record<string, any> = {};
-
     methods.forEach((method: string, index: number) => {
       dynamic[method] = {
         title: method,
@@ -36,11 +33,10 @@ const createTableConfig = ({
         },
       };
     });
-
     return {
       periode: {
         title: "Date",
-        component: (row: any) => row.periode,
+        component: (row: any) => row.date,
       },
       ...dynamic,
     };
