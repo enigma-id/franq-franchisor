@@ -56,6 +56,7 @@ export interface B2BOrderDetail {
   service_charge_value: number;
   total_charges: number;
   shipping_date: string;
+  payment_ref: string;
   paid_at: string;
   received_at: string;
   is_deleted: boolean;
