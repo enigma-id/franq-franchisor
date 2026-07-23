@@ -235,7 +235,7 @@ export function B2BInvoicePrint({ order }: Props) {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "flex-end",
+                  alignItems: "flex-start",
                   marginTop: 20,
                 }}
               >
