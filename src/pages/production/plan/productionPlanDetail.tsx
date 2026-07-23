@@ -191,7 +191,11 @@ const ProductionPlanDetailPage: React.FC = () => {
   };
 
   const handleOpenPrint = (item: any) => {
-    openPrint(<Plan data={item} plan={plan} />);
+    const repeatCount =
+      item.quantity_produced > 0
+        ? item.quantity_produced
+        : item.quantity_planned;
+    openPrint(<Plan data={item} plan={plan} repeatCount={repeatCount} />);
   };
 
   const handleOpenEditPlanned = (item: ProductionPlanItem) => {
