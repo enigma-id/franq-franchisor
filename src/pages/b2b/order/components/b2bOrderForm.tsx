@@ -21,6 +21,7 @@ type B2BOrderFormData = {
   customer_name: string;
   customer_phone: string;
   customer_address: string;
+  note: string;
   payment_ref: string;
   shipping_date: string;
   discount_value: number;
@@ -54,6 +55,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
     customer_name: "",
     customer_phone: "",
     customer_address: "",
+    note: "",
     payment_ref: "",
     shipping_date: dayjs().format("YYYY-MM-DD"),
     discount_value: 0,
@@ -92,6 +94,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         customer_name: initialData?.customer_name || "",
         customer_phone: initialData?.customer_phone || "",
         customer_address: initialData?.customer_address || "",
+        note: initialData?.note || "",
         payment_ref: (initialData as any)?.payment_ref ?? "",
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
         discount_value: initialData?.discount_value ?? 0,
@@ -386,73 +389,88 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
             </table>
           </div>
 
-          {/* Billing Summary */}
+          {/* Billing Summary + Notes */}
           <div className="bg-slate-50 border-t border-slate-200 p-5 rounded-b-xl">
-            <div className="ml-auto md:w-80 space-y-3">
-              {(() => {
-                const subTotal = formData.items.reduce(
-                  (sum, i) => sum + (i.unit_price || 0) * (i.quantity || 0), 0,
-                );
-                const discAmount = formData.is_discount_percentage
-                  ? subTotal * (formData.discount_percentage || 0) / 100
-                  : formData.discount_value || 0;
-                const afterDiscount = subTotal - discAmount;
-                const scAmount = afterDiscount * (formData.service_charge || 0) / 100;
-                const total = afterDiscount + scAmount;
-                return (
-                  <>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Subtotal</span>
-                      <span className="font-semibold text-slate-800 mono">{currencyFormat(subTotal)}</span>
-                    </div>
-                    <div className="flex justify-between items-center gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-600">Discount</span>
-                        <Checkbox
-                          checked={formData.is_discount_percentage}
-                          onChange={(e) => setFormData({ ...formData, is_discount_percentage: e.target.checked })}
-                          variant="primary"
-                        />
-                        <Percent className="w-3.5 h-3.5 text-slate-400" />
+            <div className="grid grid-cols-2 gap-6">
+              {/* Notes - left side */}
+              <div>
+                <Input
+                  type="textarea"
+                  label="Catatan"
+                  placeholder="Catatan untuk order ini..."
+                  value={formData.note}
+                  onChange={(e) =>
+                    setFormData({ ...formData, note: e.target.value })
+                  }
+                />
+              </div>
+              {/* Billing - right side */}
+              <div className="space-y-2">
+                {(() => {
+                  const subTotal = formData.items.reduce(
+                    (sum, i) => sum + (i.unit_price || 0) * (i.quantity || 0), 0,
+                  );
+                  const discAmount = formData.is_discount_percentage
+                    ? subTotal * (formData.discount_percentage || 0) / 100
+                    : formData.discount_value || 0;
+                  const afterDiscount = subTotal - discAmount;
+                  const scAmount = afterDiscount * (formData.service_charge || 0) / 100;
+                  const total = afterDiscount + scAmount;
+                  return (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-600">Subtotal</span>
+                        <span className="font-semibold text-slate-800 mono">{currencyFormat(subTotal)}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          className="!w-24 text-right"
-                          value={formData.is_discount_percentage ? formData.discount_percentage : formData.discount_value}
-                          onChange={(e) => {
-                            const val = Number(e.target.value);
-                            if (formData.is_discount_percentage) {
-                              setFormData({ ...formData, discount_percentage: val });
-                            } else {
-                              setFormData({ ...formData, discount_value: val });
-                            }
-                          }}
-                          min={0}
-                        />
-                        <span className="text-xs text-slate-500 w-4">{formData.is_discount_percentage ? '%' : 'Rp'}</span>
+                      <div className="flex justify-between items-center gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-slate-600">Discount</span>
+                          <Checkbox
+                            checked={formData.is_discount_percentage}
+                            onChange={(e) => setFormData({ ...formData, is_discount_percentage: e.target.checked })}
+                            variant="primary"
+                          />
+                          <Percent className="w-3.5 h-3.5 text-slate-400" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            className="!w-24 text-right"
+                            value={formData.is_discount_percentage ? formData.discount_percentage : formData.discount_value}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              if (formData.is_discount_percentage) {
+                                setFormData({ ...formData, discount_percentage: val });
+                              } else {
+                                setFormData({ ...formData, discount_value: val });
+                              }
+                            }}
+                            min={0}
+                          />
+                          <span className="text-xs text-slate-500 w-4">{formData.is_discount_percentage ? '%' : 'Rp'}</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center gap-2">
-                      <span className="text-sm text-slate-600">Service Charge</span>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          className="!w-24 text-right"
-                          value={formData.service_charge}
-                          onChange={(e) => setFormData({ ...formData, service_charge: Number(e.target.value) })}
-                          min={0}
-                        />
-                        <span className="text-xs text-slate-500 w-4">%</span>
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-sm text-slate-600">Service Charge</span>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            className="!w-24 text-right"
+                            value={formData.service_charge}
+                            onChange={(e) => setFormData({ ...formData, service_charge: Number(e.target.value) })}
+                            min={0}
+                          />
+                          <span className="text-xs text-slate-500 w-4">%</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-200">
-                      <span className="text-base font-bold text-slate-800">Total Charges</span>
-                      <span className="text-xl font-bold text-emerald-600 mono">{currencyFormat(total)}</span>
-                    </div>
-                  </>
-                );
-              })()}
+                      <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-200">
+                        <span className="text-base font-bold text-slate-800">Total Charges</span>
+                        <span className="text-xl font-bold text-emerald-600 mono">{currencyFormat(total)}</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
           </div>
         </div>

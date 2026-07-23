@@ -44,7 +44,6 @@ const createTableConfig = ({
         </div>
       ),
     },
-    customer_name: { title: "Pelanggan" },
     document_status: {
       title: "Status",
       class: "text-center",
