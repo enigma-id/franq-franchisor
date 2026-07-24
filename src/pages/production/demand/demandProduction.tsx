@@ -4,9 +4,13 @@ import createTableConfig from "../table/demand-production.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import TableFilter from "./table/production.filter";
+import dayjs from "dayjs";
 
 export default function DemandProductionPage() {
-  const tableConfig = useMemo(() => createTableConfig({}), []);
+  const tableConfig = useMemo(
+    () => createTableConfig({ filter: { production_date: dayjs().format("YYYY-MM-DD") } }),
+    [],
+  );
   const Table = useTable(
     "demand_production",
     tableConfig as TableConfig<unknown>,

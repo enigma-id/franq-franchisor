@@ -36,6 +36,16 @@ const createTableConfig = ({
         </div>
       ),
     },
+    stock: {
+      title: "Stock",
+      align: "right",
+      class: "text-right font-medium",
+      component: (row: any) => (
+        <span className="font-medium text-amber-600">
+          {row?.item?.stock_available ?? 0} {row?.item?.default_fraction ?? ""}
+        </span>
+      ),
+    },
     quantity_planned: {
       title: "Qty Rencana",
       align: "right",

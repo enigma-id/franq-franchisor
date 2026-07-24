@@ -191,6 +191,12 @@ export function B2BInvoicePrint({ order }: Props) {
               <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
               <strong>Jatuh Tempo:</strong>
               <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
+              {order.payment_ref && (
+                <>
+                  <strong>Payment Ref:</strong>
+                  <span>{order.payment_ref}</span>
+                </>
+              )}
             </div>
           </div>
 
@@ -235,7 +241,7 @@ export function B2BInvoicePrint({ order }: Props) {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "flex-end",
+                  alignItems: "flex-start",
                   marginTop: 20,
                 }}
               >

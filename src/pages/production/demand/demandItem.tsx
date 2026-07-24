@@ -7,14 +7,13 @@ import TableFilter from "./table/production.filter";
 import dayjs from "dayjs";
 
 export default function DemandItemPage() {
-  const lockFilter = {
-    production_date: dayjs("2026-07-26").format("YYYY-MM-DD"),
-  };
+  const lockFilter = { production_date: dayjs().format("YYYY-MM-DD") };
   const tableConfig = useMemo(
     () => createTableConfig({ filter: lockFilter }),
     [],
   );
   const Table = useTable("demand_item", tableConfig as TableConfig<unknown>);
+  console.log("[DemandItem] initial filter:", Table.State?.filter);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
