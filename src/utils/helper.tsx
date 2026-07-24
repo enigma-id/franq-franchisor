@@ -73,7 +73,7 @@ export function statusBadge(status: string): ReactNode {
     <Badge
       variant={variant}
       size="md"
-      className="capitalize! rounded-full!"
+      className="capitalize!"
       appearance="outline"
     >
       {label}

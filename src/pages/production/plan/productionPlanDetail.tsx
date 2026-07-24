@@ -9,7 +9,7 @@ import {
   Store,
   ListOrdered,
   FileText,
-  Check,
+  Send,
   Trash2,
   Printer,
   CheckCircle,
@@ -28,6 +28,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import { useAppSelector } from "@/hooks";
+import { getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import Plan from "@/components/app/print/plan";
 
@@ -250,16 +251,7 @@ const ProductionPlanDetailPage: React.FC = () => {
 
   const isProcess = plan.document_status === "process";
 
-  const statusMap = {
-    pending: "default",
-    published: "info",
-    process: "warning",
-    completed: "success",
-    cancelled: "error",
-  } as const;
-
-  const statusVariant =
-    statusMap[plan.document_status as keyof typeof statusMap] || "neutral";
+  const statusVariant = getStatusVariant(plan.document_status);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -272,22 +264,22 @@ const ProductionPlanDetailPage: React.FC = () => {
             <GuardedButton
               allowed={guards.canPublish}
               reason="Hanya rencana dengan status pending yang dapat disetujui."
-              variant="success"
+              variant="primary"
               onClick={handlePublish}
               isLoading={publishResult.isLoading}
               title="Publish"
             >
-              <Check className="w-4 h-4" />
+              <Send className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canComplete}
               reason="Hanya rencana dengan status published yang dapat diselesaikan."
-              variant="primary"
+              variant="success"
               onClick={handleComplete}
               isLoading={completeResult.isLoading}
               title="Complete"
             >
-              <Check className="w-4 h-4" />
+              <CheckCircle className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canDelete}
@@ -333,7 +325,7 @@ const ProductionPlanDetailPage: React.FC = () => {
                 <dd className="info-value">
                   <Badge
                     variant={statusVariant}
-                    className="capitalize rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+                    className="capitalize px-2.5 font-semibold text-[10px] tracking-wider"
                   >
                     {plan.document_status}
                   </Badge>

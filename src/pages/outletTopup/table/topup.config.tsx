@@ -2,7 +2,7 @@ import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
 import { Eye, MoreVertical, CheckCircle2, XCircle } from "lucide-react";
 import type { OutletTopupDetail } from "@/services/types";
-import { currencyFormat } from "@/utils";
+import { currencyFormat, getStatusVariant } from "@/utils";
 
 const createTableConfig = ({
   onView,
@@ -38,13 +38,9 @@ const createTableConfig = ({
       title: "Status",
       class: "text-center",
       headerClass: "text-center",
-      component: (row: OutletTopupDetail) => {
-        let variant: "default" | "success" | "error" | "warning" = "default";
-        if (row.document_status === "approved") variant = "success";
-        if (row.document_status === "rejected") variant = "error";
-        if (row.document_status === "pending") variant = "warning";
-        return <Badge variant={variant}>{row.document_status}</Badge>;
-      },
+      component: (row: OutletTopupDetail) => (
+        <Badge variant={getStatusVariant(row.document_status)}>{row.document_status}</Badge>
+      ),
     },
     created_at: {
       title: "Tanggal",

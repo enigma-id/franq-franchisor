@@ -75,7 +75,7 @@ const createTableConfig = ({
         <Badge
           variant={getStatusVariant(row.document_status)}
           size="xs"
-          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+          className="px-2.5 font-semibold text-[10px] tracking-wider"
         >
           {row.document_status?.toLowerCase() || "-"}
         </Badge>
@@ -89,7 +89,7 @@ const createTableConfig = ({
         <Badge
           variant={getStatusVariant(row.receiving_status)}
           size="xs"
-          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+          className="px-2.5 font-semibold text-[10px] tracking-wider"
         >
           {row.receiving_status?.toLowerCase() || "-"}
         </Badge>
@@ -103,7 +103,7 @@ const createTableConfig = ({
         <Badge
           variant={getStatusVariant(row.payment_status)}
           size="xs"
-          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+          className="px-2.5 font-semibold text-[10px] tracking-wider"
         >
           {row.payment_status?.toLowerCase() || "-"}
         </Badge>

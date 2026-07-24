@@ -111,7 +111,7 @@ export function SupplierForm({
       className="max-w-5xl mx-auto space-y-6"
     >
       {/* Section 1: Informasi Utama Supplier */}
-      <div className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm">
+      <div className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm !overflow-visible z-10">
         <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
           <div className="flex items-center gap-2">
             <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg">

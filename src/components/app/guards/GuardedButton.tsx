@@ -5,7 +5,6 @@ import type {
   ButtonStyle,
   ButtonVariant,
 } from "@/components/ui/button/types";
-import { Tooltip } from "@/components/ui";
 
 interface GuardedButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -37,14 +36,11 @@ export const GuardedButton: React.FC<GuardedButtonProps> = ({
   ...props
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!allowed || isLoading) {
-      e.preventDefault();
-      return;
-    }
+    if (!allowed || isLoading) return;
     onClick(e);
   };
 
-  const buttonElement = (
+  return (
     <Button
       {...props}
       variant={variant}
@@ -53,28 +49,11 @@ export const GuardedButton: React.FC<GuardedButtonProps> = ({
       disabled={disabled || !allowed || isLoading}
       onClick={handleClick}
       isLoading={isLoading}
-      className={`
-        ${!allowed ? "opacity-50 cursor-not-allowed pointer-events-auto" : ""}
-        ${className}
-      `}
+      className={className}
+      title={title}
     >
       {children}
     </Button>
-  );
-
-  const tooltipLabel = allowed ? title : `${title}\n\n⚠️ ${reason}`;
-
-  const tooltipVariant = allowed ? "neutral" : "error";
-
-  return (
-    <Tooltip
-      label={tooltipLabel}
-      position="bottom"
-      variant={tooltipVariant}
-      size="sm"
-    >
-      {buttonElement}
-    </Tooltip>
   );
 };
 

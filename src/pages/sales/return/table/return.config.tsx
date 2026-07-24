@@ -3,18 +3,7 @@ import type { SalesReturnDetail } from "@/services/types/sales";
 import { Badge, Dropdown } from "@/components/ui";
 import { CheckCircle2, Eye, MoreVertical, RefreshCcw } from "lucide-react";
 import dayjs from "dayjs";
-
-const statusVariant = (status: string) => {
-  if (status === "approved" || status === "active") return "success";
-  if (status === "rejected") return "error";
-  return "warning";
-};
-
-const statusLabel = (status: string) => {
-  if (status === "approved" || status === "active") return "Approved";
-  if (status === "rejected") return "Rejected";
-  return "Pending";
-};
+import { getStatusVariant } from "@/utils";
 
 const createTableConfig = ({
   onView,
@@ -57,10 +46,10 @@ const createTableConfig = ({
       title: "Status",
       component: (row: SalesReturnDetail) => (
         <Badge
-          variant={statusVariant(row.status)}
-          className="px-3 py-1 rounded-full text-xs"
+          variant={getStatusVariant(row.status)}
+          className="px-3 py-1 text-xs"
         >
-          {statusLabel(row.status)}
+          {row.status}
         </Badge>
       ),
     },

@@ -1,6 +1,7 @@
 import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
 import type { B2BOrderDetail } from "@/services/types";
+import { getStatusVariant } from "@/utils";
 import {
   Eye,
   MoreVertical,
@@ -49,29 +50,15 @@ const createTableConfig = ({
       title: "Status",
       class: "text-center",
       headerClass: "text-center",
-      component: (row: B2BOrderDetail) => {
-        let variant:
-          | "default"
-          | "primary"
-          | "secondary"
-          | "accent"
-          | "info"
-          | "success"
-          | "warning"
-          | "error" = "default";
-        if (row.document_status === "pending") variant = "warning";
-        if (row.document_status === "shipped") variant = "info";
-        if (row.document_status === "received") variant = "primary";
-        return (
-          <Badge
-            variant={variant}
-            size="xs"
-            className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
-          >
-            {row.document_status?.toLowerCase()}
-          </Badge>
-        );
-      },
+      component: (row: B2BOrderDetail) => (
+        <Badge
+          variant={getStatusVariant(row.document_status)}
+          size="xs"
+          className="px-2.5 font-semibold text-[10px] tracking-wider"
+        >
+          {row.document_status?.toLowerCase()}
+        </Badge>
+      ),
     },
     payment_status: {
       title: "Pembayaran",
@@ -79,15 +66,9 @@ const createTableConfig = ({
       headerClass: "text-center",
       component: (row: B2BOrderDetail) => (
         <Badge
-          variant={
-            row.payment_status === "paid"
-              ? "success"
-              : row.payment_status === "invoiced"
-                ? "primary"
-                : "warning"
-          }
+          variant={getStatusVariant(row.payment_status)}
           size="xs"
-          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+          className="px-2.5 font-semibold text-[10px] tracking-wider"
         >
           {row.payment_status?.toLowerCase()}
         </Badge>

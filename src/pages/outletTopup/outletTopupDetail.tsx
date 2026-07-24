@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Badge, Button, Modal, Input, Loading } from "@/components/ui";
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Send, XCircle, AlertCircle } from "lucide-react";
 import { useOutletTopup } from "@/services/outletTopup/hooks";
 import { useEnigmaUI } from "@/components";
 import dayjs from "dayjs";
-import { currencyFormat } from "@/utils";
+import { currencyFormat, getStatusVariant } from "@/utils";
 
 const OutletTopupDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -117,7 +117,7 @@ const OutletTopupDetailPage: React.FC = () => {
                 onClick={() => setConfirmModal({ type: "approve" })}
                 disabled={approveResult.isLoading}
               >
-                <CheckCircle2 size={18} /> Approve
+                <Send size={18} /> Approve
               </Button>
               <Button
                 variant="error"
@@ -144,15 +144,7 @@ const OutletTopupDetailPage: React.FC = () => {
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">Status</span>
-            <Badge
-              variant={
-                data?.document_status === "approved"
-                  ? "success"
-                  : data?.document_status === "rejected"
-                    ? "error"
-                    : "warning"
-              }
-            >
+            <Badge variant={getStatusVariant(data?.document_status)}>
               {data?.document_status}
             </Badge>
           </div>

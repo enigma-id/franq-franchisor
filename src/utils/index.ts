@@ -67,19 +67,25 @@ export function getStatusVariant(
     | "error"
   > = {
     // General / Purchase / Sales order statuses
+    approved: "success",
     draft: "default",
     pending: "warning",
-    submitted: "warning",
-    confirmed: "info",
+    submitted: "info",
+    confirmed: "primary",
+    published: "primary",
+    process: "warning",
     processing: "secondary",
+    completed: "success",
     shipped: "accent",
-    received: "primary",
-    invoiced: "success",
+    received: "success",
+    invoiced: "info",
     delivered: "success",
     void: "error",
     cancelled: "error",
+    rejected: "error",
     active: "primary",
-    finished: "success",
+    finished: "default",
+    awaiting_approval: "warning",
 
     // Payment statuses
     unpaid: "error",

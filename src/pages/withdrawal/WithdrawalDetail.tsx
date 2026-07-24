@@ -3,9 +3,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { useEffect, useState } from "react";
-import { currencyFormat } from "@/utils";
+import { currencyFormat, getStatusVariant } from "@/utils";
 import { Badge, Button, Modal, Input, Loading } from "@/components/ui";
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Send, XCircle, AlertCircle } from "lucide-react";
 import { useWithdrawal } from "@/services/withdrawal/hooks";
 import { useEnigmaUI } from "@/components";
 
@@ -118,7 +118,7 @@ export function WithdrawalDetail() {
                 onClick={() => setConfirmModal({ type: "approve" })}
                 disabled={approveResult.isLoading}
               >
-                <CheckCircle2 size={18} /> Approve
+                <Send size={18} /> Approve
               </Button>
               <Button
                 variant="error"
@@ -169,15 +169,7 @@ export function WithdrawalDetail() {
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">Status</span>
-            <Badge
-              variant={
-                data?.document_status === "approved"
-                  ? "success"
-                  : data?.document_status === "rejected"
-                    ? "error"
-                    : "warning"
-              }
-            >
+            <Badge variant={getStatusVariant(data?.document_status)}>
               {data?.document_status}
             </Badge>
           </div>

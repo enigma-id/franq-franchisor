@@ -5,6 +5,8 @@ import { Page } from "@/components/app/layout";
 import { Loading, Button, Badge, Modal } from "@/components/ui";
 import { useB2BOrder } from "@/services/b2b/hooks";
 import { useEnigmaUI } from "@/components";
+import { useB2BOrderGuards } from "@/hooks";
+import { GuardedButton } from "@/components/app";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { B2BInvoicePrint } from "./components/B2BInvoicePrint";
@@ -15,13 +17,14 @@ import {
   Hash,
   Wallet,
   ListOrdered,
-  Truck,
   PackageCheck,
   FileText,
   CreditCard,
   Trash2,
   Edit,
   Printer,
+  Send,
+  Receipt,
 } from "lucide-react";
 import type { B2BOrderDetail } from "@/services/types";
 
@@ -49,6 +52,7 @@ const B2BOrderDetailPage: React.FC = () => {
   const isLoading = showResult?.isLoading || showResult?.isFetching;
   const printInvoice = usePrintWindow({ width: 800, height: 900, title: "B2B Invoice" });
   const printDO = usePrintWindow({ width: 800, height: 900, title: "Delivery Order" });
+  const guards = useB2BOrderGuards(order);
 
   const [confirmModal, setConfirmModal] = useState<{
     type: "ship" | "receive" | "invoice" | "pay" | "delete";
@@ -112,6 +116,7 @@ const B2BOrderDetailPage: React.FC = () => {
   const openConfirm = (
     type: "ship" | "receive" | "invoice" | "pay" | "delete",
   ) => {
+    if (!canTransition[type]) return;
     const labels: Record<
       string,
       { title: string; message: string; variant: "primary" | "error" }
@@ -185,6 +190,15 @@ const B2BOrderDetailPage: React.FC = () => {
   const isUnpaid = order.payment_status === "unpaid";
   const isPaymentInvoiced = order.payment_status === "invoiced";
 
+  // State transition guards: prevents API calls if state has already changed
+  const canTransition: Record<string, boolean> = {
+    ship: isPending,
+    receive: isShipped,
+    invoice: isReceived && isUnpaid,
+    pay: isPaymentInvoiced,
+    delete: isPending,
+  };
+
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
@@ -194,20 +208,24 @@ const B2BOrderDetailPage: React.FC = () => {
         backTo={() => navigate(-1)}
         action={
           <div className="flex gap-2">
-            <Button
-              variant="info"
-              onClick={() => printInvoice.open(<B2BInvoicePrint order={order} />)}
-              title="Print Invoice"
-            >
-              <FileText className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="info"
-              onClick={() => printDO.open(<B2BDOPrint order={order} />)}
-              title="Print DO"
-            >
-              <Printer className="w-4 h-4" />
-            </Button>
+            {order.payment_status !== "unpaid" && (
+              <Button
+                variant="info"
+                onClick={() => printInvoice.open(<B2BInvoicePrint order={order} />)}
+                title="Print Invoice"
+              >
+                <Printer className="w-4 h-4" />
+              </Button>
+            )}
+            {!isPending && (
+              <Button
+                variant="info"
+                onClick={() => printDO.open(<B2BDOPrint order={order} />)}
+                title="Print DO"
+              >
+                <FileText className="w-4 h-4" />
+              </Button>
+            )}
             {isPending && (
               <>
                 <Button
@@ -221,14 +239,16 @@ const B2BOrderDetailPage: React.FC = () => {
                   variant="primary"
                   onClick={() => openConfirm("ship")}
                   isLoading={shipResult.isLoading}
+                  disabled={!canTransition.ship}
                   title="Ship"
                 >
-                  <Truck className="w-4 h-4" />
+                  <Send className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="error"
                   onClick={() => openConfirm("delete")}
                   isLoading={removeResult.isLoading}
+                  disabled={!canTransition.delete}
                   title="Hapus"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -240,6 +260,7 @@ const B2BOrderDetailPage: React.FC = () => {
                 variant="info"
                 onClick={() => openConfirm("receive")}
                 isLoading={receiveResult.isLoading}
+                disabled={!canTransition.receive}
                 title="Receive"
               >
                 <PackageCheck className="w-4 h-4" />
@@ -250,9 +271,10 @@ const B2BOrderDetailPage: React.FC = () => {
                 variant="primary"
                 onClick={() => openConfirm("invoice")}
                 isLoading={invoiceResult.isLoading}
+                disabled={!canTransition.invoice}
                 title="Invoice"
               >
-                <FileText className="w-4 h-4" />
+                <Receipt className="w-4 h-4" />
               </Button>
             )}
             {isPaymentInvoiced && (
@@ -260,6 +282,7 @@ const B2BOrderDetailPage: React.FC = () => {
                 variant="success"
                 onClick={() => openConfirm("pay")}
                 isLoading={payResult.isLoading}
+                disabled={!canTransition.pay}
                 title="Pay"
               >
                 <CreditCard className="w-4 h-4" />
@@ -329,7 +352,7 @@ const B2BOrderDetailPage: React.FC = () => {
                   <Badge
                     variant={getStatusVariant(order.document_status)}
                     size="xs"
-                    className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+                    className="px-2.5 font-semibold text-[10px] tracking-wider"
                   >
                     {order.document_status?.toLowerCase()}
                   </Badge>
@@ -341,7 +364,7 @@ const B2BOrderDetailPage: React.FC = () => {
                   <Badge
                     variant={getStatusVariant(order.payment_status)}
                     size="xs"
-                    className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+                    className="px-2.5 font-semibold text-[10px] tracking-wider"
                   >
                     {order.payment_status?.toLowerCase()}
                   </Badge>

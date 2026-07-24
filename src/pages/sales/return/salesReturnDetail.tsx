@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Badge, Button, Modal } from "@/components/ui";
-import { RefreshCcw, ShoppingBag, Calendar, Hash, CheckCircle2 } from "lucide-react";
+import { RefreshCcw, ShoppingBag, Calendar, Hash, Send } from "lucide-react";
 import { useEnigmaUI } from "@/components";
+import { getStatusVariant } from "@/utils";
 import { useSalesReturn } from "@/services/sales/hooks";
 import dayjs from "dayjs";
 import type { SalesReturnDetail } from "@/services/types";
@@ -42,21 +43,9 @@ const SalesReturnDetailPage: React.FC = () => {
 
   const statusBadge = () => {
     if (!data) return null;
-    if (isApproved)
-      return (
-        <Badge variant="success" className="px-4 py-1.5 rounded-full text-xs">
-          Approved
-        </Badge>
-      );
-    if (data.status === "rejected")
-      return (
-        <Badge variant="error" className="px-4 py-1.5 rounded-full text-xs">
-          Rejected
-        </Badge>
-      );
     return (
-      <Badge variant="warning" className="px-4 py-1.5 rounded-full text-xs">
-        Pending
+      <Badge variant={getStatusVariant(data.status)} className="px-4 py-1.5 text-xs">
+        {data.status}
       </Badge>
     );
   };
@@ -78,7 +67,7 @@ const SalesReturnDetailPage: React.FC = () => {
                     onClick={() => setShowApproveModal(true)}
                     disabled={approveResult.isLoading}
                   >
-                    <CheckCircle2 size={18} />
+                    <Send size={18} />
                     Approve
                   </Button>
                 </>

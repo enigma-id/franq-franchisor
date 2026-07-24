@@ -154,17 +154,13 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
           }),
         );
       }
-      if (
-        initialData.addon_groups &&
-        initialData.addon_groups.length > 0
-      ) {
+      if (initialData.addon_groups && initialData.addon_groups.length > 0) {
         const newAddGroups = initialData.addon_groups.map((group: any) => ({
           name: group.name ?? "",
           type: group.type ?? "",
           items: (group.items || []).map((item: any) => ({
             addon_menu: item.addon_menu ?? null,
-            addon_menu_id:
-              item.addon_menu?.id ?? item.addon_menu_id ?? "",
+            addon_menu_id: item.addon_menu?.id ?? item.addon_menu_id ?? "",
           })),
         }));
         setAddGroup(newAddGroups);
@@ -404,7 +400,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
     <form id={id} onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! relative z-20">
             <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
               <Layers size={16} className="text-slate-400" />
               <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
@@ -507,10 +503,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
 
       <div className="grid grid-cols-2 gap-5">
         {/* Section 2: Channel Pricing Matrix */}
-        <div
-          className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-          style={{ overflow: "visible", zIndex: 10 }}
-        >
+        <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! z-10">
           <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
             <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
               Matriks Harga Penjualan POS Channel
@@ -520,7 +513,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               berbeda dari harga dasar.
             </p>
           </div>
-          <div className="p-4" style={{ overflow: "visible" }}>
+          <div className="p-4 overflow-visible!">
             {channel.length === 0 ? (
               <p className="py-6 text-center text-sm text-slate-400 italic">
                 Memuat data channel penjualan...
@@ -576,8 +569,8 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
         {/* Section 3: Add-on Groups (Jika bukan menu tambahan itu sendiri) */}
         {formData.is_additional === false ? (
           <div
-            className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-            style={{ overflow: "visible", zIndex: 15 }}
+            className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible!"
+            style={{ zIndex: 15 }}
           >
             <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
               <div>
@@ -749,10 +742,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
       </div>
       {formData.is_additional === false ? (
         <div>
-          <div
-            className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
-            style={{ overflow: "visible", zIndex: 10 }}
-          >
+          <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! z-10">
             <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">

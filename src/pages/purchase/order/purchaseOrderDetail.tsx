@@ -12,10 +12,10 @@ import {
   Hash,
   Wallet,
   ListOrdered,
-  Check,
   CreditCard,
   Trash2,
-  Pen,
+  Edit,
+  Send,
 } from "lucide-react";
 import { usePurchaseOrderGuards } from "@/hooks";
 import { GuardedButton } from "@/components/app";
@@ -131,31 +131,30 @@ export function PurchaseOrderDetailPage() {
               reason="Hanya order tipe default dengan status pending yang dapat diperbaharui (Edit)."
               variant="info"
               onClick={() => navigate(`/purchase/order/update/${data?.id}`)}
-              isLoading={publishResult.isLoading}
-              title="Perbaharui (Edit)"
+              title="Edit"
             >
-              <Pen className="w-4 h-4" />
+              <Edit className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canPublish}
               reason="Hanya order tipe default dengan status pending yang dapat disetujui (publish)."
-              variant="success"
+              variant="primary"
               onClick={handlePublish}
               isLoading={publishResult.isLoading}
-              title="Setujui (Approve)"
+              title="Publish"
             >
-              <Check className="w-4 h-4" />
+              <Send className="w-4 h-4" />
             </GuardedButton>
-            <GuardedButton
-              allowed={guards.canPaid}
-              reason="Hanya order dengan status pembayaran void yang dapat dibayar (lunas)."
-              variant="primary"
-              onClick={handlePaid}
-              isLoading={paidResult.isLoading}
-              title="Bayar (Pay)"
-            >
-              <CreditCard className="w-4 h-4" />
-            </GuardedButton>
+            {guards.canPaid && (
+              <Button
+                variant="success"
+                onClick={handlePaid}
+                isLoading={paidResult.isLoading}
+                title="Pay"
+              >
+                <CreditCard className="w-4 h-4" />
+              </Button>
+            )}
             <GuardedButton
               allowed={guards.canDelete}
               reason="Hanya order tipe default dengan status pending yang dapat dihapus."

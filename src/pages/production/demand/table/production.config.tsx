@@ -54,7 +54,7 @@ const createTableConfig = ({
         <Badge
           variant={getStatusVariant(row.status)}
           size="xs"
-          className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+          className="px-2.5 font-semibold text-[10px] tracking-wider"
         >
           {row.status?.toLowerCase()}
         </Badge>

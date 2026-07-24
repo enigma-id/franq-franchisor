@@ -17,11 +17,12 @@ import {
   AlertCircle,
   Wallet,
   ListOrdered,
-  Check,
   CreditCard,
   Trash2,
   CornerDownRight,
-  Pen,
+  Edit,
+  Send,
+  Receipt,
 } from "lucide-react";
 
 export default function SalesOrderDetailPage() {
@@ -173,30 +174,30 @@ export default function SalesOrderDetailPage() {
               reason="Hanya order tipe default dengan status pending yang dapat diperbaharui (Edit)."
               variant="info"
               onClick={() => navigate(`/sales/order/update/${order?.id}`)}
-              title="Perbaharui (Edit)"
+              title="Edit"
             >
-              <Pen className="w-4 h-4" />
+              <Edit className="w-4 h-4" />
             </GuardedButton>
             <GuardedButton
               allowed={guards.canPublish}
               reason="Hanya order tipe default dengan status pending yang dapat disetujui (publish)."
-              variant="success"
+              variant="primary"
               onClick={handlePublish}
               isLoading={publishResult.isLoading}
-              title="Setujui (Approve)"
+              title="Publish"
             >
-              <Check className="w-4 h-4" />
+              <Send className="w-4 h-4" />
             </GuardedButton>
-            <GuardedButton
-              allowed={guards.canPay}
-              reason="Hanya order dengan status pembayaran void yang dapat dibayar (lunas)."
-              variant="primary"
-              onClick={handlePaid}
-              isLoading={paidResult.isLoading}
-              title="Bayar (Pay)"
-            >
-              <CreditCard className="w-4 h-4" />
-            </GuardedButton>
+            {guards.canPay && (
+              <Button
+                variant="success"
+                onClick={handlePaid}
+                isLoading={paidResult.isLoading}
+                title="Pay"
+              >
+                <CreditCard className="w-4 h-4" />
+              </Button>
+            )}
             <GuardedButton
               allowed={guards.canDelete}
               reason="Hanya order tipe default dengan status pending yang dapat dihapus."
@@ -288,7 +289,7 @@ export default function SalesOrderDetailPage() {
                   <Badge
                     variant={getStatusVariant(order.document_status)}
                     size="xs"
-                    className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+                    className="px-2.5 font-semibold text-[10px] tracking-wider"
                   >
                     {order.document_status?.toLowerCase()}
                   </Badge>
@@ -300,7 +301,7 @@ export default function SalesOrderDetailPage() {
                   <Badge
                     variant={getStatusVariant(order.payment_status)}
                     size="xs"
-                    className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+                    className="px-2.5 font-semibold text-[10px] tracking-wider"
                   >
                     {order.payment_status?.toLowerCase()}
                   </Badge>
@@ -312,7 +313,7 @@ export default function SalesOrderDetailPage() {
                   <Badge
                     variant={getStatusVariant(order.fulfillment_status)}
                     size="xs"
-                    className="rounded-full px-2.5 font-semibold text-[10px] tracking-wider"
+                    className="px-2.5 font-semibold text-[10px] tracking-wider"
                   >
                     {order.fulfillment_status?.toLowerCase()}
                   </Badge>
@@ -417,7 +418,7 @@ export default function SalesOrderDetailPage() {
                             <Badge
                               variant="info"
                               size="xs"
-                              className="rounded-full px-2 font-semibold text-[10px]"
+                              className="px-2 font-semibold text-[10px]"
                             >
                               Bundle
                             </Badge>
