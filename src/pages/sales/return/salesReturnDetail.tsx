@@ -25,9 +25,7 @@ const SalesReturnDetailPage: React.FC = () => {
   const data = showResult.data?.data as SalesReturnDetail;
   const isPending =
     data?.status === "pending" || data?.status === "awaiting_approval";
-  const isApproved = data?.status === "approved" || data?.status === "active";
-
-  const handleApprove = async () => {
+const handleApprove = async () => {
     if (!id) return;
     await approve({ id });
     setShowApproveModal(false);

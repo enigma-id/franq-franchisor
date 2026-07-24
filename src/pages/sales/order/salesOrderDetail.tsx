@@ -22,7 +22,6 @@ import {
   CornerDownRight,
   Edit,
   Send,
-  Receipt,
 } from "lucide-react";
 
 export default function SalesOrderDetailPage() {

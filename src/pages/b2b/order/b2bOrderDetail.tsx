@@ -5,8 +5,6 @@ import { Page } from "@/components/app/layout";
 import { Loading, Button, Badge, Modal } from "@/components/ui";
 import { useB2BOrder } from "@/services/b2b/hooks";
 import { useEnigmaUI } from "@/components";
-import { useB2BOrderGuards } from "@/hooks";
-import { GuardedButton } from "@/components/app";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { B2BInvoicePrint } from "./components/B2BInvoicePrint";
@@ -52,7 +50,6 @@ const B2BOrderDetailPage: React.FC = () => {
   const isLoading = showResult?.isLoading || showResult?.isFetching;
   const printInvoice = usePrintWindow({ width: 800, height: 900, title: "B2B Invoice" });
   const printDO = usePrintWindow({ width: 800, height: 900, title: "Delivery Order" });
-  const guards = useB2BOrderGuards(order);
 
   const [confirmModal, setConfirmModal] = useState<{
     type: "ship" | "receive" | "invoice" | "pay" | "delete";
