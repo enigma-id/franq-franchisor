@@ -14,6 +14,12 @@ import {
   useLazyGetRawMaterialSalesQuery,
   useLazyGetRawMaterialSalesSummaryQuery,
   useLazyGetWarehouseStockQuery,
+  useLazyGetCancelledProductSalesQuery,
+  useLazyGetCancelledProductSalesSummaryQuery,
+  useLazyGetProductItemQuery,
+  useLazyGetProductItemSummaryQuery,
+  useLazyGetB2BProductItemQuery,
+  useLazyGetB2BProductItemSummaryQuery,
 } from "./api";
 
 export const useReport = createCrudHook<any>({
@@ -34,6 +40,10 @@ export const usePOSReport = createCrudHook<any>({
     outstandingSummary: useLazyGetOutstandingSummaryQuery,
     settlement: useLazyGetPOSSettlementQuery,
     settlementSummary: useLazyGetPOSSettlementSummaryQuery,
+    cancelledProductSales: useLazyGetCancelledProductSalesQuery,
+    cancelledProductSalesSummary: useLazyGetCancelledProductSalesSummaryQuery,
+    productItem: useLazyGetProductItemQuery,
+    productItemSummary: useLazyGetProductItemSummaryQuery,
   },
 });
 
@@ -44,5 +54,7 @@ export const useB2BReport = createCrudHook<any>({
     settlementSummary: useLazyGetB2BSettlementSummaryQuery,
     productSales: useLazyGetB2BProductSalesQuery,
     productSalesSummary: useLazyGetB2BProductSalesSummaryQuery,
+    productItem: useLazyGetB2BProductItemQuery,
+    productItemSummary: useLazyGetB2BProductItemSummaryQuery,
   },
 });

@@ -95,6 +95,51 @@ export const reportApi = createApi({
       }),
     }),
 
+    getCancelledProductSales: builder.query({
+      query: (params) => ({
+        url: `/report/cancelled-product-sales`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getCancelledProductSalesSummary: builder.query({
+      query: (params) => ({
+        url: `/report/cancelled-product-sales/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getProductItem: builder.query({
+      query: (params) => ({
+        url: `/report/product-item`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getProductItemSummary: builder.query({
+      query: (params) => ({
+        url: `/report/product-item/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getB2BProductItem: builder.query({
+      query: (params) => ({
+        url: `/report/b2b/product-item`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getB2BProductItemSummary: builder.query({
+      query: (params) => ({
+        url: `/report/b2b/product-item/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
     getWarehouseStock: builder.query({
       query: (params) => ({
         url: `/report/warehouse-stock`,
@@ -120,4 +165,10 @@ export const {
   useLazyGetRawMaterialSalesQuery,
   useLazyGetRawMaterialSalesSummaryQuery,
   useLazyGetWarehouseStockQuery,
+  useLazyGetCancelledProductSalesQuery,
+  useLazyGetCancelledProductSalesSummaryQuery,
+  useLazyGetProductItemQuery,
+  useLazyGetProductItemSummaryQuery,
+  useLazyGetB2BProductItemQuery,
+  useLazyGetB2BProductItemSummaryQuery,
 } = reportApi;

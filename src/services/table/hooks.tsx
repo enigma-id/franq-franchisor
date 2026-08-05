@@ -338,15 +338,18 @@ const useTable = <T = unknown,>(
   const Tools = ({
     children,
     downloadable,
+    hideSearch,
   }: {
     children?: React.ReactNode;
     downloadable?: boolean;
+    hideSearch?: boolean;
   }) => (
     <TableTool
       name={name}
       onSearch={onSearched}
       downloadable={downloadable}
       onDownload={onDownload}
+      hideSearch={hideSearch}
     >
       {children}
     </TableTool>

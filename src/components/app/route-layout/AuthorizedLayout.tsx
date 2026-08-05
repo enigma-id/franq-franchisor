@@ -23,6 +23,7 @@ import {
   ShoppingBag,
   Wallet,
   UserCircle,
+  Gift,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -149,6 +150,11 @@ const menuSections: MenuSection[] = [
         children: [
           { label: "Outstanding", path: "/report/pos/outstanding" },
           { label: "Settlement", path: "/report/pos/settlement" },
+          { label: "Menu", path: "/report/pos/product-item" },
+          {
+            label: "Transaction Cancel",
+            path: "/report/pos/cancelled-product-sales",
+          },
         ],
       },
       {
@@ -157,6 +163,7 @@ const menuSections: MenuSection[] = [
         children: [
           { label: "Settlement B2B", path: "/report/b2b/settlement" },
           { label: "Product Sales B2B", path: "/report/b2b/product-sales" },
+          { label: "Menu B2B", path: "/report/b2b/product-item" },
         ],
       },
       {
@@ -183,6 +190,11 @@ const menuSections: MenuSection[] = [
         label: "Profil Franchisor",
         path: "/franchisor",
         icon: <UserCircle size={18} />,
+      },
+      {
+        label: "Schema Bonus Topup",
+        path: "/setting/member/topup-bonus",
+        icon: <Gift size={18} />,
       },
       {
         label: "Outlet",

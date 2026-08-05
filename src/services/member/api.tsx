@@ -15,9 +15,10 @@ export const memberTopupBonusApi = createApi({
     }),
 
     getTopupBonus: builder.query({
-      query: (id) => ({
+      query: ({ id, ...params }) => ({
         url: `/member/topup-bonus/${id}`,
         method: "GET",
+        params,
       }),
     }),
 
@@ -38,9 +39,10 @@ export const memberTopupBonusApi = createApi({
     }),
 
     deleteTopupBonus: builder.mutation({
-      query: (id) => ({
+      query: ({ id, ...payload }) => ({
         url: `/member/topup-bonus/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 

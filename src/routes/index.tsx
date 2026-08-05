@@ -53,6 +53,9 @@ import RawMaterialSalesPage from "@/pages/report/rawMaterialSales";
 import ProductSalesPage from "@/pages/report/productSales";
 import WarehouseStockPage from "@/pages/report/warehouseStock";
 import PosOutstandingPage from "@/pages/report/outstanding";
+import CancelledProductSalesPage from "@/pages/report/cancelledProductSales";
+import ProductItemPage from "@/pages/report/productItem";
+import B2BProductItemPage from "@/pages/report/b2bProductItem";
 import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
 import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
 import { WithdrawalDetail } from "@/pages/withdrawal/WithdrawalDetail";
@@ -69,6 +72,7 @@ import UserUpdatePage from "@/pages/user/userUpdate";
 import UserGroupListPage from "@/pages/user/usergroup";
 import UserGroupCreatePage from "@/pages/user/usergroup/create";
 import FranchisorProfilePage from "@/pages/franchisor";
+import TopupBonusPage from "@/pages/setting/member/topupBonus";
 
 export function AppRoutes() {
   useAppMetadata();
@@ -236,6 +240,15 @@ export function AppRoutes() {
         />
         <Route path="/report/pos/settlement" element={<POSSettlementPage />} />
         <Route path="/report/pos/settlement/daily" element={<POSSettlementDailyPage />} />
+        <Route
+          path="/report/pos/cancelled-product-sales"
+          element={<CancelledProductSalesPage />}
+        />
+        <Route path="/report/pos/product-item" element={<ProductItemPage />} />
+        <Route
+          path="/report/b2b/product-item"
+          element={<B2BProductItemPage />}
+        />
         <Route path="/report/b2b/settlement" element={<B2BSettlementPage />} />
         <Route path="/report/b2b/settlement/daily" element={<B2BSettlementDailyPage />} />
         <Route
@@ -277,6 +290,9 @@ export function AppRoutes() {
 
         {/* Franchisor Profile */}
         <Route path="/franchisor" element={<FranchisorProfilePage />} />
+
+        {/* Member - Topup Bonus */}
+        <Route path="/setting/member/topup-bonus" element={<TopupBonusPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
