@@ -22,14 +22,22 @@ import { usePaymentMethod } from "@/services/payment-method/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
 import { getOptionByValue } from "@/utils/helper";
 
-const providerOptions = [
-  { label: "Cash", value: "cash" },
-  { label: "QRIS", value: "qris" },
-  { label: "Midtrans", value: "midtrans" },
-  { label: "Manual", value: "manual" },
-  { label: "Saldo", value: "saldo" },
-  { label: "Other", value: "other" },
-];
+const providerOptions = {
+  franchise: [
+    { label: "QRIS", value: "qris" },
+    { label: "Midtrans", value: "midtrans" },
+    { label: "Manual", value: "manual" },
+    { label: "Saldo", value: "saldo" },
+    { label: "Other", value: "other" },
+  ],
+  pos: [
+    { label: "Cash", value: "cash" },
+    { label: "QRIS", value: "qris" },
+    { label: "Midtrans", value: "midtrans" },
+    { label: "Other", value: "other" },
+    { label: "Manual", value: "manual" },
+  ],
+};
 
 const bankOptions = [
   { label: "BCA", value: "BCA" },
@@ -80,8 +88,8 @@ const PaymentMethodListPage: React.FC = () => {
   const [type, setType] = useState<SelectOptionValue | null>(null);
 
   useEffect(() => {
-    if (!editingItem) {
-      setFormData((prev) => ({ ...prev, is_member_payment: false }));
+    // Jalankan jika mode create ATAU jika provider diubah secara manual saat mode edit
+    if (provider?.value) {
       if (provider?.value === "cash") {
         setType(getOptionByValue(typeOptions, "pos"));
         setFormData((prev) => ({
@@ -107,17 +115,16 @@ const PaymentMethodListPage: React.FC = () => {
         }));
       } else if (
         provider?.value === "manual" ||
-        provider?.value === "midtrans"
+        provider?.value === "midtrans" ||
+        provider?.value === "other"
       ) {
-        setFormData((prev) => ({ ...prev, name: "" }));
-      } else if (provider?.value === "other") {
-        setFormData((prev) => ({
-          ...prev,
-          name: "",
-          account_name: "",
-          account_number: "",
-        }));
+        // Jangan reset name jika sedang mode edit dan provider-nya belum diubah user
+        // (opsional: bisa dikondisikan lagi jika ingin mempertahankan nilai lama)
       }
+    }
+
+    if (!editingItem) {
+      setFormData((prev) => ({ ...prev, is_member_payment: false }));
     }
   }, [provider?.value, editingItem]);
 
@@ -140,7 +147,12 @@ const PaymentMethodListPage: React.FC = () => {
             account_number: row?.account_number ?? "",
             is_member_payment: row?.is_member_payment ?? false,
           });
-          setProvider(getOptionByValue(providerOptions, row?.provider));
+
+          // Ambil provider berdasarkan type dari row
+          const selectedType = row?.type as keyof typeof providerOptions;
+          const availableProviders = providerOptions[selectedType] || [];
+          setProvider(getOptionByValue(availableProviders, row?.provider));
+
           setType(getOptionByValue(typeOptions, row?.type));
           setModalOpen(true);
         },
@@ -303,10 +315,22 @@ const PaymentMethodListPage: React.FC = () => {
     }
   };
 
+  const onChangeType = (t: any) => {
+    setType(t);
+
+    setFormData({
+      name: "",
+      account_name: "",
+      account_number: "",
+      is_member_payment: false,
+    });
+    setProvider(null);
+  };
+
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Settings"
+        category='Settings'
         title='Metode Pembayaran'
         subtitle='Kelola metode pembayaran yang tersedia di POS.'
         action={
@@ -352,82 +376,92 @@ const PaymentMethodListPage: React.FC = () => {
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <RemoteSelect<SelectOptionValue>
                 required
-                label='Provider'
-                suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
-                data={providerOptions}
-                value={provider}
-                onChange={(val) => {
-                  setProvider(val);
-                }}
-                onClear={() => {
-                  setProvider(null);
-                  setFormData((prev) => ({ ...prev, name: "" }));
-                }}
-                getLabel={(item) => item.label ?? ""}
-                renderItem={(item) => item.label ?? ""}
-                error={FormState?.errors?.provider as string}
-              />
-              <RemoteSelect<SelectOptionValue>
-                required
                 label='Type'
                 suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
                 data={typeOptions}
                 value={type}
                 onChange={(val) => {
-                  setType(val);
+                  onChangeType(val);
                 }}
                 onClear={() => {
                   setType(null);
                 }}
                 getLabel={(item) => item.label ?? ""}
                 renderItem={(item) => item.label ?? ""}
-                disabled={
-                  provider?.value === "cash" ||
-                  provider?.value === "saldo" ||
-                  formData.is_member_payment
-                }
                 error={FormState?.errors?.type as string}
               />
-              {provider?.value === "manual" ||
-              provider?.value === "midtrans" ? (
-                <RemoteSelect<SelectOptionValue>
-                  required
-                  label='Nama Metode'
-                  suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
-                  data={bankOptions}
-                  value={getOptionByValue(bankOptions, formData.name)}
-                  onChange={(val) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      name: (val?.value as string) ?? "",
-                    }));
-                  }}
-                  onClear={() => {
-                    setFormData((prev) => ({ ...prev, name: "" }));
-                  }}
-                  getLabel={(item) => item.label ?? ""}
-                  renderItem={(item) => item.label ?? ""}
-                  error={FormState?.errors?.name as string}
-                />
-              ) : (
-                <Input
-                  label='Nama Metode'
-                  required
-                  value={formData.name}
-                  disabled={
-                    provider?.value === "cash" || provider?.value === "qris"
-                  }
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  placeholder={
-                    provider?.value === "other"
-                      ? "Masukkan nama metode"
-                      : "Auto-filled"
-                  }
-                  variant='primary'
-                  error={FormState?.errors?.name as string}
-                />
+
+              {type && (
+                <>
+                  <RemoteSelect<SelectOptionValue>
+                    required
+                    label='Provider'
+                    suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
+                    data={
+                      type?.value
+                        ? providerOptions[
+                            type.value as keyof typeof providerOptions
+                          ]
+                        : []
+                    }
+                    value={provider}
+                    onChange={(val) => {
+                      setProvider(val);
+                    }}
+                    onClear={() => {
+                      setProvider(null);
+                      setFormData((prev) => ({ ...prev, name: "" }));
+                    }}
+                    getLabel={(item) => item.label ?? ""}
+                    renderItem={(item) => item.label ?? ""}
+                    error={FormState?.errors?.provider as string}
+                  />
+
+                  {provider?.value === "manual" ||
+                  provider?.value === "midtrans" ? (
+                    <RemoteSelect<SelectOptionValue>
+                      required
+                      label='Nama Metode'
+                      suffix={<ChevronDown className='text-gray-400 w-4 h-4' />}
+                      data={bankOptions}
+                      value={getOptionByValue(bankOptions, formData.name)}
+                      onChange={(val) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: (val?.value as string) ?? "",
+                        }));
+                      }}
+                      onClear={() => {
+                        setFormData((prev) => ({ ...prev, name: "" }));
+                      }}
+                      getLabel={(item) => item.label ?? ""}
+                      renderItem={(item) => item.label ?? ""}
+                      error={FormState?.errors?.name as string}
+                    />
+                  ) : (
+                    <Input
+                      label='Nama Metode'
+                      required
+                      value={formData.name}
+                      disabled={
+                        provider?.value === "cash" || provider?.value === "qris"
+                      }
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      placeholder={
+                        provider?.value === "other"
+                          ? "Masukkan nama metode"
+                          : "Auto-filled"
+                      }
+                      variant='primary'
+                      error={FormState?.errors?.name as string}
+                    />
+                  )}
+                </>
               )}
             </div>
 

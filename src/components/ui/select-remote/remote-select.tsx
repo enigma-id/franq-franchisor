@@ -59,6 +59,9 @@ export const RemoteSelect = <T,>({
       // Jika user mengetik sesuatu yang berbeda dari label value, clear value
       if (val !== currentLabel) {
         onClear?.();
+        // onClear bisa men-set search (parent state) yang harus menang di sini
+        setSearch("");
+        inputValueRef.current = "";
       }
     }
 
@@ -109,7 +112,14 @@ export const RemoteSelect = <T,>({
   const resolveLabel = (item: any) => {
     if (!item) return "";
     if (item.is_create) return item.label;
-    return getLabel?.(item) ?? String(item);
+    const label = getLabel?.(item) ?? String(item);
+    // Prevent `[object Object]` from leaking into the search input / internal
+    // ref when `value` is a complex object (e.g. `{ label, value }`) but no
+    // `getLabel` is provided. Fall back to the value field instead.
+    if (label === "[object Object]" && item.value !== undefined) {
+      return String(item.value);
+    }
+    return label;
   };
 
   /* =========================
