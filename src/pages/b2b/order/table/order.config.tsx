@@ -7,7 +7,6 @@ import {
   MoreVertical,
   Trash,
   Truck,
-  PackageCheck,
   FileText,
   Wallet,
   Edit,
