@@ -184,7 +184,7 @@ const createTableConfig = ({
                 <div className='flex flex-col items-start leading-tight'>
                   <span className='font-bold text-[13px]'>Invoice</span>
                   <span className='text-[11px] text-slate-400'>
-                    Generate invoice
+                    Send invoice
                   </span>
                 </div>
               </button>
