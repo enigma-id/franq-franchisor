@@ -13,7 +13,7 @@ import TableFilter from "./table/order.filter";
 import { useEnigmaUI } from "@/components";
 import { Plus } from "lucide-react";
 
-type ActionType = "ship" | "receive" | "invoice" | "pay" | "delete";
+type ActionType = "ship" | "invoice" | "pay" | "delete";
 
 const B2BOrderListPage: React.FC = () => {
   useDocumentMeta("B2B Order | Sukabread Franchisee", "");
@@ -24,8 +24,6 @@ const B2BOrderListPage: React.FC = () => {
     removeResult,
     ship,
     shipResult,
-    receive,
-    receiveResult,
     invoice,
     invoiceResult,
     pay,
@@ -63,9 +61,6 @@ const B2BOrderListPage: React.FC = () => {
       case "ship":
         await ship({ id });
         break;
-      case "receive":
-        await receive({ id });
-        break;
       case "invoice":
         await invoice({ id });
         break;
@@ -76,14 +71,12 @@ const B2BOrderListPage: React.FC = () => {
         await remove({ id });
         break;
     }
-  }, [selectedRow, actionType, ship, receive, invoice, pay, remove]);
+  }, [selectedRow, actionType, ship, invoice, pay, remove]);
 
   const activeResult = useMemo(() => {
     switch (actionType) {
       case "ship":
         return shipResult;
-      case "receive":
-        return receiveResult;
       case "invoice":
         return invoiceResult;
       case "pay":
@@ -93,14 +86,7 @@ const B2BOrderListPage: React.FC = () => {
       default:
         return null;
     }
-  }, [
-    actionType,
-    shipResult,
-    receiveResult,
-    invoiceResult,
-    payResult,
-    removeResult,
-  ]);
+  }, [actionType, shipResult, invoiceResult, payResult, removeResult]);
 
   const tableConfig = useMemo(
     () =>
@@ -109,7 +95,6 @@ const B2BOrderListPage: React.FC = () => {
         onEdit: handleEdit,
         onRemove: (row) => openConfirm(row, "delete"),
         onShip: (row) => openConfirm(row, "ship"),
-        onReceive: (row) => openConfirm(row, "receive"),
         onInvoice: (row) => openConfirm(row, "invoice"),
         onPay: (row) => openConfirm(row, "pay"),
       }),
@@ -139,7 +124,6 @@ const B2BOrderListPage: React.FC = () => {
   const actionLabel = actionType
     ? {
         ship: "Ship",
-        receive: "Receive",
         invoice: "Invoice",
         pay: "Pay",
         delete: "Delete",
@@ -147,28 +131,28 @@ const B2BOrderListPage: React.FC = () => {
     : "";
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Sales"
-        title="B2B Order"
-        subtitle="Kelola pesanan B2B."
+        category='Sales'
+        title='B2B Order'
+        subtitle='Kelola pesanan B2B.'
         action={
           <Button
-            variant="primary"
+            variant='primary'
             onClick={() => navigate("/b2b/order/create")}
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className='w-4 h-4 mr-2' />
             Buat Pesanan
           </Button>
         }
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Data Tidak Ditemukan"
-          emptyDescription="Belum ada pesanan B2B."
+          emptyTitle='Data Tidak Ditemukan'
+          emptyDescription='Belum ada pesanan B2B.'
         />
         <Table.Pagination />
       </Page.Body>
@@ -179,9 +163,9 @@ const B2BOrderListPage: React.FC = () => {
         closeOnOutsideClick={false}
       >
         <Modal.Header>
-          <div className="font-bold leading-7">Konfirmasi {actionLabel}</div>
+          <div className='font-bold leading-7'>Konfirmasi {actionLabel}</div>
         </Modal.Header>
-        <Modal.Body className="text-sm font-normal leading-5">
+        <Modal.Body className='text-sm font-normal leading-5'>
           <p>
             Apakah Anda yakin ingin{" "}
             {actionLabel === "Delete"
@@ -192,21 +176,21 @@ const B2BOrderListPage: React.FC = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            className="flex-1 rounded-xl"
+            className='flex-1 rounded-xl'
             variant={actionType === "delete" ? "error" : "primary"}
             onClick={handleConfirm}
             isLoading={activeResult?.isLoading}
           >
             {activeResult?.isLoading ? (
-              <Loading size="sm" variant="spinner" />
+              <Loading size='sm' variant='spinner' />
             ) : (
               "Konfirmasi"
             )}
           </Button>
           <Button
-            className="flex-1 rounded-xl"
-            styleType="outline"
-            variant="secondary"
+            className='flex-1 rounded-xl'
+            styleType='outline'
+            variant='secondary'
             onClick={closeConfirm}
             disabled={activeResult?.isLoading}
           >
