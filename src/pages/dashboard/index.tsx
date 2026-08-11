@@ -275,7 +275,7 @@ const DashboardPage: React.FC = () => {
                 theme={THEMES.orange}
               />
               <SummaryCard
-                label="Total Outstanding"
+                label="Outstanding (POS)"
                 value={formatCurrency(data?.outstanding_total || 0)}
                 icon={Receipt}
                 theme={THEMES.rose}
@@ -285,6 +285,18 @@ const DashboardPage: React.FC = () => {
                 value={formatCurrency(data?.total_saldo_membership || 0)}
                 icon={Users}
                 theme={THEMES.purple}
+              />
+              <SummaryCard
+                label="Outstanding B2B"
+                value={formatCurrency(data?.b2b_summary?.total_outstanding || 0)}
+                icon={Receipt}
+                theme={THEMES.rose}
+              />
+              <SummaryCard
+                label="Rencana Produksi"
+                value={`${data?.production_plan_summary?.completed || 0} / ${data?.production_plan_summary?.plan || 0}`}
+                icon={Package}
+                theme={THEMES.indigo}
               />
             </div>
 
@@ -351,57 +363,6 @@ const DashboardPage: React.FC = () => {
               <CompositionCard data={data?.revenue_composition} />
             </div>
 
-            {/* Bottom Row Summaries */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100">
-                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
-                  Outstanding B2B
-                </h4>
-                <p className="text-xl font-extrabold text-slate-800">
-                  {formatCurrency(data?.b2b_summary?.total_outstanding || 0)}
-                </p>
-                <p className="text-xs font-medium text-slate-400 mt-1">
-                  {data?.b2b_summary?.unpaid_count || 0} Tagihan belum dibayar
-                </p>
-              </div>
-              <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100">
-                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
-                  Rencana Produksi
-                </h4>
-                <div className="flex items-end justify-between">
-                  <div>
-                    <p className="text-xl font-extrabold text-slate-800">
-                      {data?.production_plan_summary?.completed || 0} /{" "}
-                      {data?.production_plan_summary?.plan || 0}
-                    </p>
-                    <p className="text-xs font-medium text-slate-400 mt-1">
-                      Target produksi bulan ini
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-base font-bold text-indigo-600">
-                      {Math.round(
-                        ((data?.production_plan_summary?.completed || 0) /
-                          (data?.production_plan_summary?.plan || 1)) *
-                          100,
-                      )}
-                      %
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100">
-                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
-                  Saldo Membership
-                </h4>
-                <p className="text-xl font-extrabold text-slate-800">
-                  {formatCurrency(data?.total_saldo_membership || 0)}
-                </p>
-                <p className="text-xs font-medium text-slate-400 mt-1">
-                  Total saldo mengendap
-                </p>
-              </div>
-            </div>
           </>
         )}
       </Page.Body>
