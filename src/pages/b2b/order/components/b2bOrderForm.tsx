@@ -86,7 +86,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
 
   useEffect(() => {
     if (channelsResult?.isSuccess) {
-      const list = (channelsResult?.data?.data ?? []) as RemoteOption[];
+      const list = (channelsResult?.data?.data ?? []) as unknown as RemoteOption[];
       if (Array.isArray(list) && list.length > 0) {
         setChannel(list[0]);
       }

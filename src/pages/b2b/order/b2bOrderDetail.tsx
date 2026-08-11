@@ -13,7 +13,6 @@ import {
   AlertCircle,
   Store,
   ListOrdered,
-  PackageCheck,
   FileText,
   CreditCard,
   Trash2,
@@ -186,7 +185,7 @@ const B2BOrderDetailPage: React.FC = () => {
   }
 
   const isPending = order.document_status === "pending";
-  const isUnpaid = order.payment_status === "pending";
+  const isUnpaid = order.payment_status === "unpaid";
   const isInvoiced = order.payment_status === "invoiced";
 
   // State transition guards: prevents API calls if state has already changed

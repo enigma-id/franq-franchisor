@@ -79,7 +79,6 @@ export const {
   useUpdateB2BOrderMutation,
   useDeleteB2BOrderMutation,
   useShipB2BOrderMutation,
-  useReceiveB2BOrderMutation,
   useInvoiceB2BOrderMutation,
   usePayB2BOrderMutation,
 } = b2bApi;
