@@ -252,7 +252,7 @@ const B2BOrderDetailPage: React.FC = () => {
             )}
             {isUnpaid && (
               <Button
-                variant='primary'
+                variant='success'
                 onClick={() => openConfirm("invoice")}
                 isLoading={invoiceResult.isLoading}
                 disabled={!canTransition.invoice}
