@@ -34,8 +34,6 @@ const B2BOrderDetailPage: React.FC = () => {
     showResult,
     ship,
     shipResult,
-    receive,
-    receiveResult,
     invoice,
     invoiceResult,
     pay,
@@ -46,11 +44,19 @@ const B2BOrderDetailPage: React.FC = () => {
   const order = showResult?.data?.data as B2BOrderDetail | undefined;
   const orderItems = order?.items ?? [];
   const isLoading = showResult?.isLoading || showResult?.isFetching;
-  const printInvoice = usePrintWindow({ width: 800, height: 900, title: "B2B Invoice" });
-  const printDO = usePrintWindow({ width: 800, height: 900, title: "Delivery Order" });
+  const printInvoice = usePrintWindow({
+    width: 800,
+    height: 900,
+    title: "B2B Invoice",
+  });
+  const printDO = usePrintWindow({
+    width: 800,
+    height: 900,
+    title: "Delivery Order",
+  });
 
   const [confirmModal, setConfirmModal] = useState<{
-    type: "ship" | "receive" | "invoice" | "pay" | "delete";
+    type: "ship" | "invoice" | "pay" | "delete";
     title: string;
     message: string;
     variant: "primary" | "error";
@@ -64,15 +70,13 @@ const B2BOrderDetailPage: React.FC = () => {
   const activeResult =
     confirmModal?.type === "ship"
       ? shipResult
-      : confirmModal?.type === "receive"
-        ? receiveResult
-        : confirmModal?.type === "invoice"
-          ? invoiceResult
-          : confirmModal?.type === "pay"
-            ? payResult
-            : confirmModal?.type === "delete"
-              ? removeResult
-              : null;
+      : confirmModal?.type === "invoice"
+        ? invoiceResult
+        : confirmModal?.type === "pay"
+          ? payResult
+          : confirmModal?.type === "delete"
+            ? removeResult
+            : null;
 
   useEffect(() => {
     if (activeResult?.isSuccess) {
@@ -89,16 +93,20 @@ const B2BOrderDetailPage: React.FC = () => {
         show({ id });
       }
     }
-  }, [activeResult?.isSuccess, confirmModal?.type, id, navigate, show, showToast]);
+  }, [
+    activeResult?.isSuccess,
+    confirmModal?.type,
+    id,
+    navigate,
+    show,
+    showToast,
+  ]);
 
   const handleAction = async () => {
     if (!id || !confirmModal) return;
     switch (confirmModal.type) {
       case "ship":
         await ship({ id });
-        break;
-      case "receive":
-        await receive({ id });
         break;
       case "invoice":
         await invoice({ id });
@@ -153,10 +161,10 @@ const B2BOrderDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
         <Page.Body>
-          <div className="flex-1 flex items-center justify-center min-h-64">
-            <Loading size="lg" variant="spinner" />
+          <div className='flex-1 flex items-center justify-center min-h-64'>
+            <Loading size='lg' variant='spinner' />
           </div>
         </Page.Body>
       </Page>
@@ -165,15 +173,15 @@ const B2BOrderDetailPage: React.FC = () => {
 
   if (!order) {
     return (
-      <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
         <Page.Body>
-          <div className="flex-1 flex items-center justify-center min-h-64">
-            <div className="text-center">
-              <AlertCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-lg font-medium text-slate-600 mb-2">
+          <div className='flex-1 flex items-center justify-center min-h-64'>
+            <div className='text-center'>
+              <AlertCircle className='w-16 h-16 text-slate-300 mx-auto mb-4' />
+              <p className='text-lg font-medium text-slate-600 mb-2'>
                 Order tidak ditemukan
               </p>
-              <Button variant="primary" onClick={() => navigate(-1)}>
+              <Button variant='primary' onClick={() => navigate(-1)}>
                 Kembali
               </Button>
             </div>
@@ -185,173 +193,163 @@ const B2BOrderDetailPage: React.FC = () => {
 
   const isPending = order.document_status === "pending";
   const isShipped = order.document_status === "shipped";
-  const isReceived = order.document_status === "received";
-  const isUnpaid = order.payment_status === "unpaid";
-  const isPaymentInvoiced = order.payment_status === "invoiced";
+  const isUnpaid = order.payment_status === "pending";
+  const isInvoiced = order.payment_status === "invoiced";
 
   // State transition guards: prevents API calls if state has already changed
   const canTransition: Record<string, boolean> = {
     ship: isPending,
     receive: isShipped,
-    invoice: isReceived && isUnpaid,
-    pay: isPaymentInvoiced,
+    invoice: isUnpaid,
+    pay: isInvoiced,
     delete: isPending,
   };
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Sales"
-        title="B2B Order Detail"
+        category='Sales'
+        title='B2B Order Detail'
         subtitle={order.code}
         backTo={() => navigate(-1)}
         action={
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             <Button
-              variant="info"
-              onClick={() => printInvoice.open(<B2BInvoicePrint order={order} />)}
-              title="Print Invoice"
+              variant='info'
+              onClick={() =>
+                printInvoice.open(<B2BInvoicePrint order={order} />)
+              }
+              title='Print Invoice'
             >
-              <Printer className="w-4 h-4" />
+              <Printer className='w-4 h-4' />
             </Button>
             <Button
-              variant="info"
+              variant='info'
               onClick={() => printDO.open(<B2BDOPrint order={order} />)}
-              title="Print DO"
+              title='Print DO'
             >
-              <FileText className="w-4 h-4" />
+              <FileText className='w-4 h-4' />
             </Button>
             {isPending && (
               <>
                 <Button
-                  variant="primary"
+                  variant='primary'
                   onClick={() => navigate(`/b2b/order/update/${order.id}`)}
-                  title="Edit"
+                  title='Edit'
                 >
-                  <Edit className="w-4 h-4" />
+                  <Edit className='w-4 h-4' />
                 </Button>
                 <Button
-                  variant="primary"
+                  variant='primary'
                   onClick={() => openConfirm("ship")}
                   isLoading={shipResult.isLoading}
                   disabled={!canTransition.ship}
-                  title="Ship"
+                  title='Ship'
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className='w-4 h-4' />
                 </Button>
                 <Button
-                  variant="error"
+                  variant='error'
                   onClick={() => openConfirm("delete")}
                   isLoading={removeResult.isLoading}
                   disabled={!canTransition.delete}
-                  title="Hapus"
+                  title='Hapus'
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className='w-4 h-4' />
                 </Button>
               </>
             )}
-            {isShipped && (
+            {isUnpaid && (
               <Button
-                variant="info"
-                onClick={() => openConfirm("receive")}
-                isLoading={receiveResult.isLoading}
-                disabled={!canTransition.receive}
-                title="Receive"
-              >
-                <PackageCheck className="w-4 h-4" />
-              </Button>
-            )}
-            {isReceived && isUnpaid && (
-              <Button
-                variant="primary"
+                variant='primary'
                 onClick={() => openConfirm("invoice")}
                 isLoading={invoiceResult.isLoading}
                 disabled={!canTransition.invoice}
-                title="Invoice"
+                title='Invoice'
               >
-                <Receipt className="w-4 h-4" />
+                <Receipt className='w-4 h-4' />
               </Button>
             )}
-            {isPaymentInvoiced && (
+            {isInvoiced && (
               <Button
-                variant="success"
+                variant='success'
                 onClick={() => openConfirm("pay")}
                 isLoading={payResult.isLoading}
                 disabled={!canTransition.pay}
-                title="Pay"
+                title='Pay'
               >
-                <CreditCard className="w-4 h-4" />
+                <CreditCard className='w-4 h-4' />
               </Button>
             )}
           </div>
         }
       />
       <Page.Body>
-        <div className="grid grid-cols-1 gap-6">
+        <div className='grid grid-cols-1 gap-6'>
           {/* Customer & Order Info */}
-          <div className="card-info card-animate p-6">
-            <div className="card-section-header">
-              <div className="card-section-icon">
+          <div className='card-info card-animate p-6'>
+            <div className='card-section-header'>
+              <div className='card-section-icon'>
                 <Store size={18} />
               </div>
-              <h2 className="card-section-title">Informasi Pesanan</h2>
+              <h2 className='card-section-title'>Informasi Pesanan</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               {/* Left: Customer Info */}
-              <dl className="space-y-1">
-                <div className="info-row">
-                  <dt className="info-label">Nama</dt>
-                  <dd className="info-value">{order.customer_name}</dd>
+              <dl className='space-y-1'>
+                <div className='info-row'>
+                  <dt className='info-label'>Nama</dt>
+                  <dd className='info-value'>{order.customer_name}</dd>
                 </div>
-                <div className="info-row">
-                  <dt className="info-label">Telepon</dt>
-                  <dd className="info-value">{order.customer_phone || "-"}</dd>
+                <div className='info-row'>
+                  <dt className='info-label'>Telepon</dt>
+                  <dd className='info-value'>{order.customer_phone || "-"}</dd>
                 </div>
-                <div className="info-row flex-col items-start gap-1">
-                  <dt className="info-label">Alamat</dt>
-                  <dd className="info-value text-left w-full wrap-break-words mt-0.5">
+                <div className='info-row flex-col items-start gap-1'>
+                  <dt className='info-label'>Alamat</dt>
+                  <dd className='info-value text-left w-full wrap-break-words mt-0.5'>
                     {order.customer_address || "-"}
                   </dd>
                 </div>
               </dl>
 
               {/* Right: Order Info */}
-              <dl className="space-y-1">
-                <div className="info-row">
-                  <dt className="info-label">Kode</dt>
-                  <dd className="info-value">{order.code}</dd>
+              <dl className='space-y-1'>
+                <div className='info-row'>
+                  <dt className='info-label'>Kode</dt>
+                  <dd className='info-value'>{order.code}</dd>
                 </div>
-                <div className="info-row">
-                  <dt className="info-label">Tanggal Order</dt>
-                  <dd className="info-value">
+                <div className='info-row'>
+                  <dt className='info-label'>Tanggal Order</dt>
+                  <dd className='info-value'>
                     {formatDate(order.created_at, "DD MMM YYYY, HH:mm")}
                   </dd>
                 </div>
-                <div className="info-row">
-                  <dt className="info-label">Tanggal Kirim</dt>
-                  <dd className="info-value">
+                <div className='info-row'>
+                  <dt className='info-label'>Tanggal Kirim</dt>
+                  <dd className='info-value'>
                     {formatDate(order.shipping_date, "DD MMM YYYY")}
                   </dd>
                 </div>
-                <div className="info-row">
-                  <dt className="info-label">Document Status</dt>
-                  <dd className="info-value">
+                <div className='info-row'>
+                  <dt className='info-label'>Document Status</dt>
+                  <dd className='info-value'>
                     <Badge
                       variant={getStatusVariant(order.document_status)}
-                      size="xs"
-                      className="px-2.5 font-semibold text-[10px] tracking-wider"
+                      size='xs'
+                      className='px-2.5 font-semibold text-[10px] tracking-wider'
                     >
                       {order.document_status?.toLowerCase()}
                     </Badge>
                   </dd>
                 </div>
-                <div className="info-row">
-                  <dt className="info-label">Payment Status</dt>
-                  <dd className="info-value">
+                <div className='info-row'>
+                  <dt className='info-label'>Payment Status</dt>
+                  <dd className='info-value'>
                     <Badge
                       variant={getStatusVariant(order.payment_status)}
-                      size="xs"
-                      className="px-2.5 font-semibold text-[10px] tracking-wider"
+                      size='xs'
+                      className='px-2.5 font-semibold text-[10px] tracking-wider'
                     >
                       {order.payment_status?.toLowerCase()}
                     </Badge>
@@ -360,39 +358,38 @@ const B2BOrderDetailPage: React.FC = () => {
               </dl>
             </div>
           </div>
-
         </div>
 
         {/* Items Table */}
-        <div className="card-table card-animate mt-6">
-          <div className="table-header p-6!">
-            <div className="table-header-icon">
+        <div className='card-table card-animate mt-6'>
+          <div className='table-header p-6!'>
+            <div className='table-header-icon'>
               <ListOrdered size={16} />
             </div>
-            <h2 className="table-header-title">
+            <h2 className='table-header-title'>
               Order Items ({orderItems.length})
             </h2>
           </div>
-          <div className="flex-1 overflow-auto">
+          <div className='flex-1 overflow-auto'>
             <table
-              className="table-hover table-vcenter datatable table"
-              width="100%"
+              className='table-hover table-vcenter datatable table'
+              width='100%'
             >
               <thead>
                 <tr>
-                  <th className="px-4 py-4 text-left text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                  <th className='px-4 py-4 text-left text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     #
                   </th>
-                  <th className="px-4 py-4 text-left text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                  <th className='px-4 py-4 text-left text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     Menu
                   </th>
-                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     Qty
                   </th>
-                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     Harga
                   </th>
-                  <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
+                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     Total
                   </th>
                 </tr>
@@ -402,7 +399,7 @@ const B2BOrderDetailPage: React.FC = () => {
                   <tr>
                     <td
                       colSpan={5}
-                      className="px-4 py-12 text-center text-base-content/50"
+                      className='px-4 py-12 text-center text-base-content/50'
                     >
                       Tidak ada data
                     </td>
@@ -411,21 +408,21 @@ const B2BOrderDetailPage: React.FC = () => {
                   orderItems.map((item, idx) => (
                     <tr
                       key={item.id || idx}
-                      className="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors"
+                      className='hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors'
                     >
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
+                      <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700'>
                         {idx + 1}
                       </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
+                      <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700'>
                         {item.menu_name}
                       </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                      <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
                         {item.quantity}
                       </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                      <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
                         {formatCurrency(item.unit_nett || 0)}
                       </td>
-                      <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
+                      <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
                         {formatCurrency(
                           (item.unit_nett || 0) * (item.quantity || 0),
                         )}
@@ -437,39 +434,39 @@ const B2BOrderDetailPage: React.FC = () => {
             </table>
           </div>
           {/* Note (left) + Nominal Summary (right) */}
-          <div className="flex flex-col md:flex-row gap-6 p-5 border-t border-slate-100">
-            <div className="flex-1">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <div className='flex flex-col md:flex-row gap-6 p-5 border-t border-slate-100'>
+            <div className='flex-1'>
+              <span className='text-xs font-bold text-slate-500 uppercase tracking-wider'>
                 Catatan
               </span>
-              <p className="mt-1 text-sm text-slate-700 whitespace-pre-wrap">
+              <p className='mt-1 text-sm text-slate-700 whitespace-pre-wrap'>
                 {order.note || "-"}
               </p>
             </div>
-            <div className="md:w-80 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Subtotal</span>
-                <span className="font-semibold text-slate-800 mono">
+            <div className='md:w-80 space-y-2'>
+              <div className='flex justify-between text-sm'>
+                <span className='text-slate-600'>Subtotal</span>
+                <span className='font-semibold text-slate-800 mono'>
                   {formatCurrency(order.subtotal_nett || 0)}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Discount</span>
-                <span className="font-semibold text-slate-800 mono">
+              <div className='flex justify-between text-sm'>
+                <span className='text-slate-600'>Discount</span>
+                <span className='font-semibold text-slate-800 mono'>
                   -{formatCurrency(order.discount_value || 0)}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Service Charge</span>
-                <span className="font-semibold text-slate-800 mono">
+              <div className='flex justify-between text-sm'>
+                <span className='text-slate-600'>Service Charge</span>
+                <span className='font-semibold text-slate-800 mono'>
                   {formatCurrency(order.service_charge_value || 0)}
                 </span>
               </div>
-              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
-                <span className="text-base font-bold text-slate-800">
+              <div className='flex justify-between text-sm pt-2 border-t border-slate-200'>
+                <span className='text-base font-bold text-slate-800'>
                   Total Bill
                 </span>
-                <span className="text-base font-bold text-slate-900 mono">
+                <span className='text-base font-bold text-slate-900 mono'>
                   {formatCurrency(order.total_charges || 0)}
                 </span>
               </div>
@@ -485,7 +482,7 @@ const B2BOrderDetailPage: React.FC = () => {
         <Modal.Header>{confirmModal?.title}</Modal.Header>
         <Modal.Body>{confirmModal?.message}</Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setConfirmModal(null)} variant="default">
+          <Button onClick={() => setConfirmModal(null)} variant='default'>
             Batal
           </Button>
           <Button
