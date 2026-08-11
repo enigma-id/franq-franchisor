@@ -54,14 +54,6 @@ export const b2bApi = createApi({
       }),
     }),
 
-    receiveB2BOrder: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/b2b/order/${id}/receive`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
     invoiceB2BOrder: builder.mutation({
       query: ({ id, ...payload }) => ({
         url: `/b2b/order/${id}/invoice`,

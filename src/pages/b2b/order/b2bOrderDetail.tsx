@@ -120,9 +120,7 @@ const B2BOrderDetailPage: React.FC = () => {
     }
   };
 
-  const openConfirm = (
-    type: "ship" | "receive" | "invoice" | "pay" | "delete",
-  ) => {
+  const openConfirm = (type: "ship" | "invoice" | "pay" | "delete") => {
     if (!canTransition[type]) return;
     const labels: Record<
       string,
@@ -133,11 +131,7 @@ const B2BOrderDetailPage: React.FC = () => {
         message: "Apakah Anda yakin ingin memproses ship untuk order ini?",
         variant: "primary",
       },
-      receive: {
-        title: "Konfirmasi Receive",
-        message: "Apakah Anda yakin ingin memproses receive untuk order ini?",
-        variant: "primary",
-      },
+
       invoice: {
         title: "Konfirmasi Invoice",
         message: "Apakah Anda yakin ingin memproses invoice untuk order ini?",
@@ -192,14 +186,12 @@ const B2BOrderDetailPage: React.FC = () => {
   }
 
   const isPending = order.document_status === "pending";
-  const isShipped = order.document_status === "shipped";
   const isUnpaid = order.payment_status === "pending";
   const isInvoiced = order.payment_status === "invoiced";
 
   // State transition guards: prevents API calls if state has already changed
   const canTransition: Record<string, boolean> = {
     ship: isPending,
-    receive: isShipped,
     invoice: isUnpaid,
     pay: isInvoiced,
     delete: isPending,

@@ -6,7 +6,6 @@ import {
   useUpdateB2BOrderMutation,
   useDeleteB2BOrderMutation,
   useShipB2BOrderMutation,
-  useReceiveB2BOrderMutation,
   useInvoiceB2BOrderMutation,
   usePayB2BOrderMutation,
 } from "./api";
@@ -21,7 +20,6 @@ export const useB2BOrder = createCrudHook<B2BOrderDetail>({
   useRemoveMutation: useDeleteB2BOrderMutation,
   customOperations: {
     ship: { hook: useShipB2BOrderMutation },
-    receive: { hook: useReceiveB2BOrderMutation },
     invoice: { hook: useInvoiceB2BOrderMutation },
     pay: { hook: usePayB2BOrderMutation },
   },
