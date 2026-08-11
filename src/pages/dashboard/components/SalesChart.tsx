@@ -12,8 +12,7 @@ import {
   Legend,
 } from "recharts";
 import { formatCurrency } from "@/utils";
-import { TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
-import clsx from "clsx";
+import { TrendingUp, BarChart2 } from "lucide-react";
 import type { SalesGraph } from "@/services/types";
 
 interface SalesChartProps {
@@ -84,44 +83,6 @@ const CustomTooltip = ({
   return null;
 };
 
-const MiniStatCard = ({
-  label,
-  value,
-  trend,
-  trendValue,
-}: {
-  label: string;
-  value: string;
-  trend: "up" | "down" | "neutral";
-  trendValue: string;
-}) => (
-  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-    <div>
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-        {label}
-      </p>
-      <p className="text-sm font-bold text-slate-800 mt-0.5">{value}</p>
-    </div>
-    <div
-      className={clsx(
-        "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold",
-        trend === "up"
-          ? "bg-green-100 text-green-600"
-          : trend === "down"
-            ? "bg-red-100 text-red-600"
-            : "bg-slate-100 text-slate-500",
-      )}
-    >
-      {trend === "up" ? (
-        <TrendingUp className="w-3 h-3" />
-      ) : trend === "down" ? (
-        <TrendingDown className="w-3 h-3" />
-      ) : null}
-      {trendValue}
-    </div>
-  </div>
-);
-
 export const SalesChart: React.FC<SalesChartProps> = ({
   data,
   isLoading,
@@ -139,20 +100,6 @@ export const SalesChart: React.FC<SalesChartProps> = ({
       });
 
       return point;
-    });
-  }, [data]);
-
-  const stats = useMemo(() => {
-    if (!data?.series || data.series.length === 0) return null;
-    return data.series.map((s) => {
-      const latest = s.data[s.data.length - 1] || 0;
-      const previous = s.data[s.data.length - 2] || 0;
-      const change = previous > 0 ? ((latest - previous) / previous) * 100 : 0;
-      return {
-        name: s.name,
-        value: latest,
-        change,
-      };
     });
   }, [data]);
 
@@ -175,7 +122,7 @@ export const SalesChart: React.FC<SalesChartProps> = ({
     return (
       <div className="w-full rounded-3xl bg-white border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-100">
-          <h3 className="text-lg font-bold text-slate-800">{title}</h3>
+          <h3 className="text-base font-bold text-slate-800">{title}</h3>
         </div>
         <div className="p-6">
           <div className="h-72 bg-slate-50/50 rounded-2xl flex items-center justify-center border-2 border-dashed border-slate-200">
@@ -194,33 +141,19 @@ export const SalesChart: React.FC<SalesChartProps> = ({
   }
 
   return (
-    <div className="w-full rounded-3xl bg-white border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden min-h-3/4">
+    <div className="w-full rounded-3xl bg-white border border-slate-200/60 shadow-xl shadow-slate-200/20 overflow-hidden min-h-fit">
       <div className="px-6 py-5 border-b border-slate-100 bg-linear-to-r from-white to-slate-50/50">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-800">{title}</h3>
+            <h3 className="text-base font-bold text-slate-800">{title}</h3>
           </div>
         </div>
       </div>
 
       <div className="p-6 pt-4">
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-            {stats.map((s, i) => (
-              <MiniStatCard
-                key={i}
-                label={s.name}
-                value={formatCurrency(s.value)}
-                trend={s.change >= 0 ? "up" : "down"}
-                trendValue={`${s.change >= 0 ? "+" : ""}${s.change.toFixed(1)}%`}
-              />
-            ))}
-          </div>
-        )}
-
         <div className="h-72 w-full outline-none focus:outline-none">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart

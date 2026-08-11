@@ -25,8 +25,8 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   if (variant === "primary") {
     return (
       <div
-        className="bg-white rounded-2xl shadow-md overflow-hidden relative flex items-center p-6 w-full"
-        style={{ height: 110 }}
+        className="bg-white rounded-2xl shadow-md overflow-hidden relative flex items-center p-4 w-full"
+        style={{ height: 84 }}
       >
         {/* Background gradient overlay */}
         <div
@@ -49,25 +49,25 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
           />
         </div>
 
-        <div className="flex items-center gap-5 relative z-10 w-full">
+        <div className="flex items-center gap-3 relative z-10 w-full">
           {/* Icon with light circle */}
           <div
             className="flex items-center justify-center rounded-full shrink-0 border-[2px] border-white shadow-sm"
             style={{
-              width: 64,
-              height: 64,
+              width: 48,
+              height: 48,
               backgroundColor: theme.iconBg,
             }}
           >
-            <Icon className={`w-8 h-8 ${theme.text}`} strokeWidth={2} />
+            <Icon className={`w-6 h-6 ${theme.text}`} strokeWidth={2} />
           </div>
 
           {/* Text content */}
           <div className="flex flex-col justify-center min-w-0 pr-2">
-            <span className="text-[13px] font-bold text-slate-500 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
               {label}
             </span>
-            <span className="text-3xl sm:text-4xl font-extrabold text-slate-800 leading-tight mt-1 truncate">
+            <span className="text-lg sm:text-xl font-extrabold text-slate-800 leading-tight mt-0.5 truncate">
               {value}
             </span>
           </div>
@@ -77,7 +77,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
         <svg
           viewBox="0 0 1440 390"
           xmlns="http://www.w3.org/2000/svg"
-          className="absolute bottom-0 left-0 w-full h-[90px] pointer-events-none"
+          className="absolute bottom-0 left-0 w-full h-[60px] pointer-events-none"
           style={{ opacity: 0.15, transform: "scaleX(-1)" }}
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -94,14 +94,14 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <div
       className="relative overflow-hidden bg-white rounded-2xl shadow-md flex items-center justify-between"
-      style={{ height: 90, padding: "0 20px" }}
+      style={{ height: 76, padding: "0 16px" }}
     >
       {/* Text content */}
       <div className="flex flex-col justify-center z-10 min-w-0 pr-2">
-        <span className="text-[10px] font-semibold tracking-widest text-gray-500 uppercase truncate">
+        <span className="text-[9px] font-semibold tracking-widest text-gray-500 uppercase truncate">
           {label}
         </span>
-        <span className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mt-0.5 truncate">
+        <span className="text-base sm:text-lg font-bold text-gray-900 leading-tight mt-0.5 truncate">
           {value}
         </span>
       </div>
@@ -110,19 +110,19 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
       <div
         className="z-10 flex items-center justify-center rounded-full shrink-0 border-[2px] border-white shadow-sm"
         style={{
-          width: 52,
-          height: 52,
+          width: 44,
+          height: 44,
           backgroundColor: theme.iconBg,
         }}
       >
-        <Icon className={`w-6 h-6 ${theme.text}`} strokeWidth={1.8} />
+        <Icon className={`w-5 h-5 ${theme.text}`} strokeWidth={1.8} />
       </div>
 
       {/* Wave decoration - bottom */}
       <svg
         viewBox="0 0 1440 390"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute bottom-0 left-0 w-full h-[80px] pointer-events-none"
+        className="absolute bottom-0 left-0 w-full h-[56px] pointer-events-none"
         style={{ opacity: 0.15, transform: "scaleX(-1)" }}
         preserveAspectRatio="none"
         aria-hidden="true"

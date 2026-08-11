@@ -34,11 +34,32 @@ export interface OutletBalanceTotal {
   total_withdrawn: number;
 }
 
+export interface TopMenuItem {
+  menu_name: string;
+  total_qty: number;
+  total_revenue: number;
+}
+
+export interface TopMemberItem {
+  member_name: string;
+  saldo: number;
+}
+
+export interface TopOutletItem {
+  outlet_name: string;
+  total_qty: number;
+  total_revenue: number;
+}
+
+export interface TopOutstandingOutlet {
+  outlet_name: string;
+  total_outstanding: number;
+  order_count: number;
+}
+
 export interface DashboardData {
   total_revenue: number;
-  po_pending: number;
   withdrawal_pending: number;
-  withdrawal_pending_amount: number;
   stock_kritis: number;
   sales_graph: SalesGraph;
   omset_retail: number;
@@ -49,10 +70,7 @@ export interface DashboardData {
   total_outlet: number;
   outlet_aktif: number;
   total_saldo_membership: number;
-  total_service_charge: number;
-  total_discount: number;
   outstanding_total: number;
-  outstanding_count: number;
   total_withdrawal_bulan_ini: number;
   so_pipeline: PipelineSummary;
   po_pipeline: PipelineSummary;
@@ -60,4 +78,8 @@ export interface DashboardData {
   b2b_summary: B2BSummary;
   production_plan_summary: ProductionPlanSummary;
   outlet_balance_total: OutletBalanceTotal;
+  top_menu: TopMenuItem[];
+  top_member: TopMemberItem[];
+  top_outlet: TopOutletItem[];
+  top_outstanding_outlets?: TopOutstandingOutlet[];
 }

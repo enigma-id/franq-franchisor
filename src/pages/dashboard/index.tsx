@@ -13,6 +13,11 @@ import {
   CheckCircle2,
   FileText,
   PieChart,
+  ConciergeBell,
+  Receipt,
+  Users,
+  Medal,
+  TriangleAlert,
 } from "lucide-react";
 import { Page } from "@/components/app/layout";
 import { formatCurrency } from "@/utils";
@@ -42,41 +47,41 @@ const PipelineCard = ({
   icon: any;
   theme: any;
 }) => (
-  <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
-    <div className="flex items-center gap-3 mb-6">
+  <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
+    <div className="flex items-center gap-3 mb-3">
       <div
-        className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg"
+        className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
         style={{ backgroundColor: theme.iconBg }}
       >
         <Icon className={`w-5 h-5 ${theme.text}`} />
       </div>
-      <h3 className="text-lg font-bold text-slate-800">{title}</h3>
+      <h3 className="text-sm font-bold text-slate-800">{title}</h3>
     </div>
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-amber-500" />
-          <span className="text-sm font-medium text-slate-500">Pending</span>
+          <span className="text-xs font-medium text-slate-500">Pending</span>
         </div>
-        <span className="text-base font-bold text-slate-800">
+        <span className="text-xs font-bold text-slate-800">
           {data?.pending || 0}
         </span>
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium text-slate-500">Published</span>
+          <span className="text-xs font-medium text-slate-500">Published</span>
         </div>
-        <span className="text-base font-bold text-slate-800">
+        <span className="text-xs font-bold text-slate-800">
           {data?.published || 0}
         </span>
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          <span className="text-sm font-bold text-slate-700">Completed</span>
+          <span className="text-xs font-bold text-slate-700">Completed</span>
         </div>
-        <span className="text-base font-bold text-emerald-600">
+        <span className="text-xs font-bold text-emerald-600">
           {data?.completed || 0}
         </span>
       </div>
@@ -87,16 +92,16 @@ const PipelineCard = ({
 const CompositionCard = ({ data }: { data: any }) => {
   const total = data?.data?.reduce((a: number, b: number) => a + b, 0) || 0;
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-lg shadow-indigo-100">
+    <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-lg shadow-indigo-100">
           <PieChart className="w-5 h-5 text-indigo-500" />
         </div>
-        <h3 className="text-lg font-bold text-slate-800">
+        <h3 className="text-sm font-bold text-slate-800">
           Komposisi Pendapatan
         </h3>
       </div>
-      <div className="space-y-5">
+      <div className="space-y-3">
         {!data?.labels || data.labels.length === 0 ? (
           <div className="h-40 flex items-center justify-center text-slate-400 text-sm italic">
             Data tidak tersedia
@@ -125,6 +130,60 @@ const CompositionCard = ({ data }: { data: any }) => {
     </div>
   );
 };
+
+const TopListCard = ({
+  title,
+  items,
+  icon: Icon,
+  theme,
+  valueLabel,
+}: {
+  title: string;
+  items?: { name: string; qty?: number; revenue: number }[];
+  icon: any;
+  theme: any;
+  valueLabel?: string;
+}) => (
+  <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
+    <div className="flex items-center gap-3 mb-3">
+      <div
+        className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
+        style={{ backgroundColor: theme.iconBg }}
+      >
+        <Icon className={`w-5 h-5 ${theme.text}`} />
+      </div>
+      <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+    </div>
+    <div className="space-y-3">
+      {!items || items.length === 0 ? (
+        <div className="h-24 flex items-center justify-center text-slate-400 text-sm italic">
+          Data tidak tersedia
+        </div>
+      ) : (
+        items.map((item, i) => (
+          <div className="flex items-center justify-between" key={i}>
+            <div className="flex items-center gap-2 min-w-0">
+              <Icon className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="text-xs font-medium text-slate-500 truncate">
+                {item.name}
+              </span>
+            </div>
+            <div className="flex flex-col items-end leading-tight shrink-0 ml-2">
+              {item.qty != null && (
+                <span className="text-[10px] text-slate-500">
+                  {item.qty} {valueLabel}
+                </span>
+              )}
+              <span className="text-xs font-bold text-slate-800">
+                {formatCurrency(item.revenue)}
+              </span>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+);
 
 const DashboardPage: React.FC = () => {
   const [periode, setPeriode] = React.useState(dayjs().format("YYYY-MM"));
@@ -174,14 +233,14 @@ const DashboardPage: React.FC = () => {
                 theme={THEMES.indigo}
               />
               <SummaryCard
-                label="Stock Kritis"
+                label="Stok Menipis"
                 value={data?.stock_kritis || 0}
                 icon={Package}
                 theme={THEMES.rose}
               />
               <SummaryCard
                 label="Withdrawal Pending"
-                value={formatCurrency(data?.withdrawal_pending_amount || 0)}
+                value={formatCurrency(data?.withdrawal_pending || 0)}
                 icon={Wallet}
                 theme={THEMES.amber}
               />
@@ -215,10 +274,68 @@ const DashboardPage: React.FC = () => {
                 icon={Package}
                 theme={THEMES.orange}
               />
+              <SummaryCard
+                label="Total Outstanding"
+                value={formatCurrency(data?.outstanding_total || 0)}
+                icon={Receipt}
+                theme={THEMES.rose}
+              />
+              <SummaryCard
+                label="Total Saldo Membership"
+                value={formatCurrency(data?.total_saldo_membership || 0)}
+                icon={Users}
+                theme={THEMES.purple}
+              />
+            </div>
+
+            {/* Top Menu / Top Member / Top Outlet / Top Outstanding */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <TopListCard
+                title="Top Menu"
+                items={data?.top_menu?.map((m: any) => ({
+                  name: m.menu_name,
+                  qty: m.total_qty,
+                  revenue: m.total_revenue,
+                }))}
+                icon={ConciergeBell}
+                theme={THEMES.orange}
+                valueLabel="ORDER"
+              />
+              <TopListCard
+                title="Top Member"
+                items={data?.top_member?.map((mb: any) => ({
+                  name: mb.member_name,
+                  revenue: mb.saldo,
+                }))}
+                icon={Medal}
+                theme={THEMES.green}
+              />
+              <TopListCard
+                title="Top Outlet"
+                items={data?.top_outlet?.map((o: any) => ({
+                  name: o.outlet_name,
+                  qty: o.total_qty,
+                  revenue: o.total_revenue,
+                }))}
+                icon={Store}
+                theme={THEMES.teal}
+                valueLabel="ORDER"
+              />
+              <TopListCard
+                title="Top Outstanding Bills"
+                items={data?.top_outstanding_outlets?.map((o: any) => ({
+                  name: o.outlet_name,
+                  qty: o.order_count,
+                  revenue: o.total_outstanding,
+                }))}
+                icon={TriangleAlert}
+                theme={THEMES.rose}
+                valueLabel="ORDER"
+              />
             </div>
 
             {/* Pipeline & Composition */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <PipelineCard
                 title="Pipeline Sales Order"
                 data={data?.so_pipeline}
@@ -235,25 +352,25 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Bottom Row Summaries */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/20 border border-slate-100">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100">
                 <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
                   Outstanding B2B
                 </h4>
-                <p className="text-2xl font-extrabold text-slate-800">
+                <p className="text-xl font-extrabold text-slate-800">
                   {formatCurrency(data?.b2b_summary?.total_outstanding || 0)}
                 </p>
                 <p className="text-xs font-medium text-slate-400 mt-1">
                   {data?.b2b_summary?.unpaid_count || 0} Tagihan belum dibayar
                 </p>
               </div>
-              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/20 border border-slate-100">
+              <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100">
                 <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
                   Rencana Produksi
                 </h4>
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-2xl font-extrabold text-slate-800">
+                    <p className="text-xl font-extrabold text-slate-800">
                       {data?.production_plan_summary?.completed || 0} /{" "}
                       {data?.production_plan_summary?.plan || 0}
                     </p>
@@ -262,7 +379,7 @@ const DashboardPage: React.FC = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-indigo-600">
+                    <span className="text-base font-bold text-indigo-600">
                       {Math.round(
                         ((data?.production_plan_summary?.completed || 0) /
                           (data?.production_plan_summary?.plan || 1)) *
@@ -273,11 +390,11 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/20 border border-slate-100">
+              <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100">
                 <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
                   Saldo Membership
                 </h4>
-                <p className="text-2xl font-extrabold text-slate-800">
+                <p className="text-xl font-extrabold text-slate-800">
                   {formatCurrency(data?.total_saldo_membership || 0)}
                 </p>
                 <p className="text-xs font-medium text-slate-400 mt-1">
