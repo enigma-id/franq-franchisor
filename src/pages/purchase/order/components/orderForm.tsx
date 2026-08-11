@@ -524,18 +524,10 @@ export function PurchaseOrderForm({
         className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
         style={{ overflow: "visible", zIndex: 10 }}
       >
-        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
           <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
             Daftar Bahan Baku (Purchase Items)
           </h2>
-          <button
-            type="button"
-            onClick={addItemRow}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            Tambah Baris
-          </button>
         </div>
         <div className="">
           <table className="w-full text-left border-collapse min-w-250">
@@ -646,6 +638,18 @@ export function PurchaseOrderForm({
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Table Footer: Add Row */}
+        <div className="px-5 py-4 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={addItemRow}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Tambah Baris
+          </button>
         </div>
 
         {/* Table Footer: Billing Summary */}

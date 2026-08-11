@@ -3,7 +3,6 @@
  * Sales Types
  */
 
-import type { RegionDetail } from "./region";
 import type { OutletDetail } from "./outlet";
 import type { DocumentStatusSalesOrder, FulfillmentStatus, PaymentStatus, SalesReturnStatus } from "./api";
 
@@ -19,7 +18,6 @@ export interface SalesOrderBase {
   recipient_name: string;
   recipient_phone: string;
   recipient_address: string;
-  recipient_region_id: string;
   shipping_date: string;
   self_pickup: boolean;
   note: string;
@@ -33,7 +31,6 @@ export interface SalesOrderRequest {
   recipient_name: string;
   recipient_phone: string;
   recipient_address: string;
-  recipient_region_id: string;
   shipping_date: string;
   self_pickup: boolean;
   note: string;
@@ -89,7 +86,6 @@ export interface SalesOrderDetail extends SalesOrderBase {
   created_at: string;
   updated_at: string;
   outlet: OutletDetail;
-  region: RegionDetail;
   /** API returns this field as "items" */
   items: SalesOrderItemDetail[];
 }

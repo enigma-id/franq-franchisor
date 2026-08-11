@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Plus, ShoppingBag, Percent } from "lucide-react";
 import { Input, RemoteSelect, DatePicker, Button, Checkbox } from "@/components/ui";
-import { usePOSMenu } from "@/services/pos/hooks";
+import { usePOSMenu, usePOSChannel } from "@/services/pos/hooks";
 import { useAppSelector } from "@/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { currencyFormat } from "@/utils";
@@ -49,7 +49,8 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
-  const { get: getMenus, getResult: menusResult } = usePOSMenu();
+  const { get: getMenus, getResult: menusResult, getPrices, getPricesResult } = usePOSMenu();
+  const { get: getChannels, getResult: channelsResult } = usePOSChannel();
 
   const [formData, setFormData] = useState<B2BOrderFormData>({
     customer_name: "",
@@ -75,6 +76,23 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
 
   const [shippingDate, setShippingDate] = useState<Dayjs | null>(dayjs());
 
+  const [channel, setChannel] = useState<RemoteOption | null>(null);
+  const [pendingPriceRow, setPendingPriceRow] = useState<number | null>(null);
+
+  // Fetch B2B channel on mount (search=B2B)
+  useEffect(() => {
+    getChannels({ search: "B2B" });
+  }, [getChannels]);
+
+  useEffect(() => {
+    if (channelsResult?.isSuccess) {
+      const list = (channelsResult?.data?.data ?? []) as RemoteOption[];
+      if (Array.isArray(list) && list.length > 0) {
+        setChannel(list[0]);
+      }
+    }
+  }, [channelsResult]);
+
   useEffect(() => {
     if (initialData) {
       const newItems = (initialData.items || []).map((item: any) => ({
@@ -87,7 +105,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         menu_id: item?.menu_id || "",
         menu_name: item?.menu_name || "",
         quantity: item?.quantity || 1,
-        unit_price: item?.unit_price ?? item?.unit_base ?? 0,
+        unit_price: item?.unit_nett ?? item?.unit_base ?? 0,
       }));
 
       setFormData({
@@ -98,7 +116,10 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         payment_ref: (initialData as any)?.payment_ref ?? "",
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
         discount_value: initialData?.discount_value ?? 0,
-        discount_percentage: (initialData as any)?.discount_percentage ?? 0,
+        discount_percentage:
+          (initialData as any)?.discount_percentage ??
+          (initialData as any)?.discount ??
+          0,
         is_discount_percentage: initialData?.is_discount_percentage ?? false,
         service_charge: (initialData as any)?.service_charge_percentage ?? initialData?.service_charge ?? 0,
         items:
@@ -109,6 +130,36 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
       setShippingDate(dayjs(initialData?.shipping_date));
     }
   }, [initialData]);
+
+  // Apply fetched channel price to the pending row
+  useEffect(() => {
+    if (getPricesResult?.isSuccess && pendingPriceRow != null) {
+      const priceData = (getPricesResult as any)?.data?.data;
+      const price =
+        typeof priceData?.channel_price === "number"
+          ? priceData.channel_price
+          : typeof priceData?.price === "number"
+            ? priceData.price
+            : typeof priceData?.unit_price === "number"
+              ? priceData.unit_price
+              : 0;
+
+      if (price > 0) {
+        setFormData((prev) => {
+          const updated = [...prev.items];
+          if (updated[pendingPriceRow]) {
+            updated[pendingPriceRow] = {
+              ...updated[pendingPriceRow],
+              unit_price: price,
+            };
+            return { ...prev, items: updated };
+          }
+          return prev;
+        });
+      }
+      setPendingPriceRow(null);
+    }
+  }, [getPricesResult, pendingPriceRow]);
 
   const addItemRow = () => {
     setFormData((prev) => ({
@@ -134,6 +185,14 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
   };
 
   const handleItemChange = (index: number, menu: RemoteOption | null) => {
+    // Fetch menu pricing for the selected menu + channel (skip custom menus)
+    if (menu && channel?.id && menu.is_custom !== true) {
+      setPendingPriceRow(index);
+      getPrices({ menu_id: String(menu.id), channel_id: String(channel.id) });
+    } else {
+      setPendingPriceRow(null);
+    }
+
     setFormData((prev) => {
       const updated = [...prev.items];
       updated[index] = {
@@ -145,7 +204,12 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
             : typeof menu?.id === "number"
               ? String(menu.id)
               : "",
-        menu_name: typeof menu?.name === "string" ? menu.name : "",
+        menu_name:
+          typeof menu?.name === "string" && menu.name
+            ? menu.name
+            : typeof menu?.custom_name === "string"
+              ? menu.custom_name
+              : "",
         quantity: updated[index].quantity || 1,
         unit_price: Number(menu?.base_price ?? updated[index].unit_price ?? 0),
       };
@@ -163,6 +227,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         quantity: 0,
         unit_price: 0,
       };
+      if (index === pendingPriceRow) setPendingPriceRow(null);
       return { ...prev, items: updated };
     });
   };
@@ -232,27 +297,28 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
           Detail Order
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            label="Nama Pelanggan"
-            required
-            placeholder="Contoh: Budi Santoso"
-            value={formData.customer_name}
-            onChange={(e) =>
-              setFormData({ ...formData, customer_name: e.target.value })
-            }
-            error={FormState?.errors?.customer_name as string}
-          />
-          <Input
-            label="No. Telepon"
-            required
-            placeholder="Contoh: 081234567890"
-            value={formData.customer_phone}
-            onChange={(e) =>
-              setFormData({ ...formData, customer_phone: e.target.value })
-            }
-            error={FormState?.errors?.customer_phone as string}
-          />
-          <div className="md:col-span-2">
+          {/* Left: Customer info */}
+          <div className="space-y-4">
+            <Input
+              label="Nama Pelanggan"
+              required
+              placeholder="Contoh: Budi Santoso"
+              value={formData.customer_name}
+              onChange={(e) =>
+                setFormData({ ...formData, customer_name: e.target.value })
+              }
+              error={FormState?.errors?.customer_name as string}
+            />
+            <Input
+              label="No. Telepon"
+              required
+              placeholder="Contoh: 081234567890"
+              value={formData.customer_phone}
+              onChange={(e) =>
+                setFormData({ ...formData, customer_phone: e.target.value })
+              }
+              error={FormState?.errors?.customer_phone as string}
+            />
             <Input
               type="textarea"
               label="Alamat Lengkap"
@@ -264,28 +330,31 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               error={FormState?.errors?.customer_address as string}
             />
           </div>
-          <DatePicker
-            label="Tanggal Pengiriman"
-            required
-            disablePast
-            value={shippingDate || undefined}
-            onChange={(date: unknown) => {
-              const next = date as Dayjs;
-              setShippingDate(next);
-              setFormData({
-                ...formData,
-                shipping_date: date ? (next as Dayjs).format("YYYY-MM-DD") : "",
-              });
-            }}
-          />
-          <Input
-            label="Payment Ref"
-            placeholder="Contoh: INV/12345"
-            value={formData.payment_ref}
-            onChange={(e) =>
-              setFormData({ ...formData, payment_ref: e.target.value })
-            }
-          />
+          {/* Right: Shipping & payment */}
+          <div className="space-y-4">
+            <DatePicker
+              label="Tanggal Pengiriman"
+              required
+              disablePast
+              value={shippingDate || undefined}
+              onChange={(date: unknown) => {
+                const next = date as Dayjs;
+                setShippingDate(next);
+                setFormData({
+                  ...formData,
+                  shipping_date: date ? (next as Dayjs).format("YYYY-MM-DD") : "",
+                });
+              }}
+            />
+            <Input
+              label="Payment Ref"
+              placeholder="Contoh: INV/12345"
+              value={formData.payment_ref}
+              onChange={(e) =>
+                setFormData({ ...formData, payment_ref: e.target.value })
+              }
+            />
+          </div>
         </div>
       </div>
 
@@ -295,18 +364,10 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
           className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
           style={{ overflow: "visible", zIndex: 10 }}
         >
-          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
             <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
               Daftar Menu
             </h2>
-            <button
-              type="button"
-              onClick={addItemRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              Tambah Baris
-            </button>
           </div>
           <div style={{ overflow: "visible" }}>
             <table className="w-full text-left border-collapse">
@@ -334,17 +395,34 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                         placeholder="Pilih Menu"
                         value={item.menuSelected}
                         hook={menusResult as any}
-                        fetchData={(page, search) => getMenus({ page, search, addons: "no" })}
+                        fetchData={(page, search) => getMenus({ page, search, addons: "no", is_already_order: "true", is_active: "true" })}
                         getLabel={(item: any) =>
-                          item
-                            ? `${item.name} [${currencyFormat(item.base_price)}]`
-                            : ""
+                          item?.is_custom ? "{custom name}" : item?.name ?? ""
                         }
                         getValue={(item: any) => item?.id}
                         onChange={(item: any) => handleItemChange(idx, item)}
                         onClear={() => handleItemClear(idx)}
                         required
                       />
+                      {(item as any).menuSelected?.is_custom === true && (
+                        <div className="mt-2">
+                          <Input
+                            placeholder="Masukkan nama menu custom..."
+                            value={item.menu_name}
+                            onChange={(e) => {
+                              const newItems = [...formData.items];
+                              newItems[idx] = {
+                                ...newItems[idx],
+                                menu_name: e.target.value,
+                              };
+                              setFormData((prev) => ({
+                                ...prev,
+                                items: newItems,
+                              }));
+                            }}
+                          />
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-3 align-top">
                       <Input
@@ -387,6 +465,18 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Add Row */}
+          <div className="px-5 py-4 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={addItemRow}
+              className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Tambah Baris
+            </button>
           </div>
 
           {/* Billing Summary + Notes */}

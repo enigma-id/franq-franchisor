@@ -94,7 +94,6 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
         type: "",
         name: initialData?.warehouse_name,
         address: "",
-        region_id: "",
         is_default: false,
         is_active: false,
         has_area: false,
@@ -187,19 +186,8 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-visible relative">
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
           <h3 className="font-bold text-slate-700">Daftar Item Produksi</h3>
-          <div className="flex gap-2">
-            <Button
-              variant="success"
-              onClick={addItem}
-              size="sm"
-              styleType="soft"
-            >
-              <Plus size={14} />
-              Tambah Baris
-            </Button>
-          </div>
         </div>
         <table className="w-full text-left border-collapse min-w-150">
           <thead>
@@ -282,6 +270,17 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             ))}
           </tbody>
         </table>
+        <div className="px-6 py-4 border-t border-slate-100">
+          <Button
+            variant="success"
+            onClick={addItem}
+            size="sm"
+            styleType="soft"
+          >
+            <Plus size={14} />
+            Tambah Baris
+          </Button>
+        </div>
       </div>
     </form>
   );

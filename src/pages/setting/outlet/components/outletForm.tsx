@@ -7,9 +7,7 @@ import type {
   OutletTypeDetail,
 } from "@/services/types/outlet";
 import { Input, RemoteSelect } from "@/components";
-import { useRegion } from "@/services/region/hooks";
 import { useAppSelector } from "@/hooks";
-import { formatRegion } from "@/utils/common";
 
 interface OutletFormProps {
   id?: string;
@@ -24,7 +22,6 @@ export const OutletForm: React.FC<OutletFormProps> = ({
 }) => {
   const FormState = useAppSelector((s) => s.form);
   const { get: getTypes, getResult: typesResult } = useOutletType();
-  const { get: getRegion, getResult: regionResult } = useRegion();
 
   const [formData, setFormData] = useState<OutletCreateRequest>({
     outlet_type_id: "",
@@ -32,7 +29,6 @@ export const OutletForm: React.FC<OutletFormProps> = ({
     recipient_name: "",
     phone: "",
     address: "",
-    region_id: "",
     service_charges: 0,
     owner_name: "",
     owner_username: "",
@@ -40,13 +36,11 @@ export const OutletForm: React.FC<OutletFormProps> = ({
     channels: [],
   });
 
-  const [reg, setReg] = useState();
   const [outletTypeValue, setOutletTypeValue] = useState<any>(null);
 
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
-      setReg(initialData?.region);
       setOutletTypeValue(
         initialData?.outlet_type?.id
           ? initialData.outlet_type
@@ -57,11 +51,7 @@ export const OutletForm: React.FC<OutletFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {
-      ...formData,
-      region_id: "d0acf30b-e55f-4ee8-a47b-434e438b8d74",
-    };
-    onSubmit(payload);
+    onSubmit(formData);
   };
 
   return (
@@ -225,22 +215,6 @@ export const OutletForm: React.FC<OutletFormProps> = ({
           </h2>
         </div>
         <div className="p-5 space-y-4">
-          <RemoteSelect
-            label="Region"
-            required
-            hook={regionResult as any}
-            fetchData={(page, search) => getRegion({ page, q: search })}
-            getLabel={(item) => formatRegion(item)}
-            renderItem={(item) => formatRegion(item)}
-            value={reg}
-            onChange={(item: any) => {
-              setReg(item);
-              setFormData({ ...formData, region_id: item?.id });
-            }}
-            onClear={() => setFormData({ ...formData, region_id: "" })}
-            placeholder="Pilih Provinsi"
-            error={FormState?.errors?.region_id as string}
-          />
           <div className="space-y-1">
             <Input
               type="textarea"

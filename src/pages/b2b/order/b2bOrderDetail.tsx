@@ -12,8 +12,6 @@ import { B2BDOPrint } from "./components/B2BDOPrint";
 import {
   AlertCircle,
   Store,
-  Hash,
-  Wallet,
   ListOrdered,
   PackageCheck,
   FileText,
@@ -84,10 +82,14 @@ const B2BOrderDetailPage: React.FC = () => {
         position: "bottom-center",
       });
       setConfirmModal(null);
-      if (id) show({ id });
       activeResult.reset?.();
+      if (confirmModal?.type === "delete") {
+        navigate("/b2b/order");
+      } else if (id) {
+        show({ id });
+      }
     }
-  }, [activeResult?.isSuccess, id, show, showToast]);
+  }, [activeResult?.isSuccess, confirmModal?.type, id, navigate, show, showToast]);
 
   const handleAction = async () => {
     if (!id || !confirmModal) return;
@@ -205,24 +207,20 @@ const B2BOrderDetailPage: React.FC = () => {
         backTo={() => navigate(-1)}
         action={
           <div className="flex gap-2">
-            {order.payment_status !== "unpaid" && (
-              <Button
-                variant="info"
-                onClick={() => printInvoice.open(<B2BInvoicePrint order={order} />)}
-                title="Print Invoice"
-              >
-                <Printer className="w-4 h-4" />
-              </Button>
-            )}
-            {!isPending && (
-              <Button
-                variant="info"
-                onClick={() => printDO.open(<B2BDOPrint order={order} />)}
-                title="Print DO"
-              >
-                <FileText className="w-4 h-4" />
-              </Button>
-            )}
+            <Button
+              variant="info"
+              onClick={() => printInvoice.open(<B2BInvoicePrint order={order} />)}
+              title="Print Invoice"
+            >
+              <Printer className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="info"
+              onClick={() => printDO.open(<B2BDOPrint order={order} />)}
+              title="Print DO"
+            >
+              <FileText className="w-4 h-4" />
+            </Button>
             {isPending && (
               <>
                 <Button
@@ -289,16 +287,17 @@ const B2BOrderDetailPage: React.FC = () => {
         }
       />
       <Page.Body>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Customer Info */}
-          <div className="card-info card-animate p-6 flex flex-col justify-between">
-            <div>
-              <div className="card-section-header">
-                <div className="card-section-icon">
-                  <Store size={18} />
-                </div>
-                <h2 className="card-section-title">Informasi Pelanggan</h2>
+        <div className="grid grid-cols-1 gap-6">
+          {/* Customer & Order Info */}
+          <div className="card-info card-animate p-6">
+            <div className="card-section-header">
+              <div className="card-section-icon">
+                <Store size={18} />
               </div>
+              <h2 className="card-section-title">Informasi Pesanan</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left: Customer Info */}
               <dl className="space-y-1">
                 <div className="info-row">
                   <dt className="info-label">Nama</dt>
@@ -315,121 +314,53 @@ const B2BOrderDetailPage: React.FC = () => {
                   </dd>
                 </div>
               </dl>
-            </div>
-          </div>
 
-          {/* Order Info */}
-          <div className="card-info card-animate p-6">
-            <div className="card-section-header">
-              <div className="card-section-icon">
-                <Hash size={18} />
-              </div>
-              <h2 className="card-section-title">Informasi Pesanan</h2>
-            </div>
-            <dl className="space-y-1">
-              <div className="info-row">
-                <dt className="info-label">Kode</dt>
-                <dd className="info-value">{order.code}</dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Tanggal Order</dt>
-                <dd className="info-value">
-                  {formatDate(order.created_at, "DD MMM YYYY, HH:mm")}
-                </dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Tanggal Kirim</dt>
-                <dd className="info-value">
-                  {formatDate(order.shipping_date, "DD MMM YYYY")}
-                </dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Document Status</dt>
-                <dd className="info-value">
-                  <Badge
-                    variant={getStatusVariant(order.document_status)}
-                    size="xs"
-                    className="px-2.5 font-semibold text-[10px] tracking-wider"
-                  >
-                    {order.document_status?.toLowerCase()}
-                  </Badge>
-                </dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Payment Status</dt>
-                <dd className="info-value">
-                  <Badge
-                    variant={getStatusVariant(order.payment_status)}
-                    size="xs"
-                    className="px-2.5 font-semibold text-[10px] tracking-wider"
-                  >
-                    {order.payment_status?.toLowerCase()}
-                  </Badge>
-                </dd>
-              </div>
-              {order.note && (
-                <div className="info-row flex-col items-start gap-1">
-                  <dt className="info-label">Catatan</dt>
-                  <dd className="info-value text-left w-full mt-0.5">
-                    {order.note}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
-
-          {/* Payment Info */}
-          <div className="card-info card-animate p-6">
-            <div className="card-section-header">
-              <div className="card-section-icon">
-                <Wallet size={18} />
-              </div>
-              <h2 className="card-section-title">Pembayaran</h2>
-            </div>
-            <dl className="space-y-1">
-              <div className="info-row">
-                <dt className="info-label">Subtotal</dt>
-                <dd className="info-value">
-                  {formatCurrency(order.subtotal_nett || 0)}
-                </dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Diskon</dt>
-                <dd className="info-value">
-                  {formatCurrency(order.discount_value || 0)}
-                </dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Service Charge</dt>
-                <dd className="info-value">
-                  {formatCurrency(order.service_charge_value || 0)}
-                </dd>
-              </div>
-              <div className="info-row">
-                <dt className="info-label">Total</dt>
-                <dd className="info-value font-bold">
-                  {formatCurrency(order.total_charges || 0)}
-                </dd>
-              </div>
-              {order.paid_at && order.paid_at !== "0001-01-01T00:00:00Z" && (
+              {/* Right: Order Info */}
+              <dl className="space-y-1">
                 <div className="info-row">
-                  <dt className="info-label">Dibayar</dt>
+                  <dt className="info-label">Kode</dt>
+                  <dd className="info-value">{order.code}</dd>
+                </div>
+                <div className="info-row">
+                  <dt className="info-label">Tanggal Order</dt>
                   <dd className="info-value">
-                    {formatDate(order.paid_at, "DD MMM YYYY, HH:mm")}
+                    {formatDate(order.created_at, "DD MMM YYYY, HH:mm")}
                   </dd>
                 </div>
-              )}
-              {order.received_at &&
-                order.received_at !== "0001-01-01T00:00:00Z" && (
-                  <div className="info-row">
-                    <dt className="info-label">Diterima</dt>
-                    <dd className="info-value">
-                      {formatDate(order.received_at, "DD MMM YYYY, HH:mm")}
-                    </dd>
-                  </div>
-                )}
-            </dl>
+                <div className="info-row">
+                  <dt className="info-label">Tanggal Kirim</dt>
+                  <dd className="info-value">
+                    {formatDate(order.shipping_date, "DD MMM YYYY")}
+                  </dd>
+                </div>
+                <div className="info-row">
+                  <dt className="info-label">Document Status</dt>
+                  <dd className="info-value">
+                    <Badge
+                      variant={getStatusVariant(order.document_status)}
+                      size="xs"
+                      className="px-2.5 font-semibold text-[10px] tracking-wider"
+                    >
+                      {order.document_status?.toLowerCase()}
+                    </Badge>
+                  </dd>
+                </div>
+                <div className="info-row">
+                  <dt className="info-label">Payment Status</dt>
+                  <dd className="info-value">
+                    <Badge
+                      variant={getStatusVariant(order.payment_status)}
+                      size="xs"
+                      className="px-2.5 font-semibold text-[10px] tracking-wider"
+                    >
+                      {order.payment_status?.toLowerCase()}
+                    </Badge>
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </div>
+
         </div>
 
         {/* Items Table */}
@@ -503,51 +434,46 @@ const B2BOrderDetailPage: React.FC = () => {
                   ))
                 )}
               </tbody>
-              <tfoot className="border-t border-slate-200">
-                <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td className="px-4 py-3 text-slate-600" colSpan={3}>
-                    Subtotal
-                  </td>
-                  <td className="px-4 py-3 text-right text-slate-700"></td>
-                  <td className="px-4 py-3 text-right text-slate-800 mono">
-                    {formatCurrency(order.subtotal_nett || 0)}
-                  </td>
-                </tr>
-                <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td
-                    className="px-4 py-3 text-slate-600 text-right"
-                    colSpan={4}
-                  >
-                    Discount
-                  </td>
-                  <td className="px-4 py-3 text-right text-slate-800 mono">
-                    -{formatCurrency(order.discount_value || 0)}
-                  </td>
-                </tr>
-                <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td
-                    className="px-4 py-3 text-slate-600 text-right"
-                    colSpan={4}
-                  >
-                    Service Charge
-                  </td>
-                  <td className="px-4 py-3 text-right text-slate-800 mono">
-                    {formatCurrency(order.service_charge_value || 0)}
-                  </td>
-                </tr>
-                <tr className="bg-slate-100 font-bold border-t border-slate-200">
-                  <td
-                    className="px-4 py-3.5 text-slate-800 text-right text-[14px]"
-                    colSpan={4}
-                  >
-                    Total Bill
-                  </td>
-                  <td className="px-4 py-3.5 text-right text-slate-900 text-[14px] mono">
-                    {formatCurrency(order.total_charges || 0)}
-                  </td>
-                </tr>
-              </tfoot>
             </table>
+          </div>
+          {/* Note (left) + Nominal Summary (right) */}
+          <div className="flex flex-col md:flex-row gap-6 p-5 border-t border-slate-100">
+            <div className="flex-1">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Catatan
+              </span>
+              <p className="mt-1 text-sm text-slate-700 whitespace-pre-wrap">
+                {order.note || "-"}
+              </p>
+            </div>
+            <div className="md:w-80 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">Subtotal</span>
+                <span className="font-semibold text-slate-800 mono">
+                  {formatCurrency(order.subtotal_nett || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">Discount</span>
+                <span className="font-semibold text-slate-800 mono">
+                  -{formatCurrency(order.discount_value || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">Service Charge</span>
+                <span className="font-semibold text-slate-800 mono">
+                  {formatCurrency(order.service_charge_value || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
+                <span className="text-base font-bold text-slate-800">
+                  Total Bill
+                </span>
+                <span className="text-base font-bold text-slate-900 mono">
+                  {formatCurrency(order.total_charges || 0)}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </Page.Body>

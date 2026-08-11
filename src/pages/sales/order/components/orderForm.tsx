@@ -14,15 +14,12 @@ import { useInventoryCatalog } from "@/services/inventory/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import { useAppSelector } from "@/hooks";
-import { useRegion } from "@/services/region/hooks";
 import { currencyFormat } from "@/utils";
 import type {
   OutletDetail,
   SalesOrderDetail,
   WarehouseDetail,
 } from "@/services/types";
-import type { RegionDetail } from "@/services/types/region";
-import { formatRegion } from "@/utils/common";
 
 type SalesOrderItemForm = {
   catalogSelected: unknown;
@@ -36,7 +33,6 @@ type SalesOrderFormData = {
   outlet_id: string;
   recipient_name: string;
   recipient_phone: string;
-  recipient_region_id: string;
   recipient_address: string;
   note: string;
   shipping_date: string;
@@ -67,7 +63,6 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   const { get: getOutlets, getResult: outletsResult } = useOutlet();
   const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
-  const { get: getRegion, getResult: regionResult } = useRegion();
 
   // Keep runtime shape as-is; fix TS to match the existing formData fields
   const [formData, setFormData] = useState<SalesOrderFormData>({
@@ -76,7 +71,6 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
     outlet_id: "",
     recipient_name: "",
     recipient_phone: "",
-    recipient_region_id: "",
     recipient_address: "",
     note: "",
     shipping_date: dayjs().format("YYYY-MM-DD"),
@@ -91,7 +85,6 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   });
 
   const [shipping_date, setShippingDate] = useState<Dayjs | null>(dayjs());
-  const [region, setRegion] = useState<RegionDetail | null>(null);
   const [outlet, setOutlet] = useState<OutletDetail | null>(null);
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
 
@@ -111,7 +104,6 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
         outlet_id: initialData?.outlet_id,
         recipient_name: initialData?.recipient_name,
         recipient_phone: initialData?.recipient_phone,
-        recipient_region_id: initialData?.recipient_region_id,
         recipient_address: initialData?.recipient_address,
         note: initialData?.note,
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
@@ -120,14 +112,12 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
       });
       setShippingDate(dayjs(initialData?.shipping_date));
 
-      setRegion(initialData?.region);
       setWarehouse({
         id: initialData?.warehouse_id,
         brand_id: "",
         type: "",
         name: initialData?.warehouse_name,
         address: "",
-        region_id: "",
         is_default: false,
         is_active: false,
         has_area: false,
@@ -267,11 +257,9 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                 ...formData,
                 outlet_id: item.id,
                 recipient_name: item?.recipient_name,
-                recipient_region_id: item?.region_id,
                 recipient_phone: item?.phone,
                 recipient_address: item?.address,
               });
-              setRegion(item?.region ?? null);
             }}
             placeholder="Pilih outlet"
             error={FormState?.errors?.outlet_id as string}
@@ -310,26 +298,6 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             }
             error={FormState?.errors?.recipient_phone as string}
           />
-          <RemoteSelect<RegionDetail>
-            label="Region"
-            required
-            hook={regionResult as any}
-            fetchData={(page, search) => getRegion({ page, q: search })}
-            getLabel={(item) => formatRegion(item)}
-            renderItem={(item) => formatRegion(item)}
-            value={region}
-            onChange={(item) => {
-              setRegion(item);
-              setFormData({ ...formData, recipient_region_id: item?.id || "" });
-            }}
-            onClear={() => {
-              setRegion(null);
-              setFormData({ ...formData, recipient_region_id: "" });
-            }}
-            placeholder="Pilih Region"
-            error={FormState?.errors?.recipient_region_id as string}
-          />
-
           <Input
             type="textarea"
             label="Alamat Lengkap"
@@ -367,18 +335,10 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
           className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
           style={{ overflow: "visible", zIndex: 10 }}
         >
-          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
             <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
               Daftar Barang (Catalog Items)
             </h2>
-            <button
-              type="button"
-              onClick={addItemRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              Tambah Baris
-            </button>
           </div>
           <div style={{ overflow: "visible" }}>
             <table className="w-full text-left border-collapse">
@@ -446,6 +406,16 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="px-5 py-4 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={addItemRow}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Tambah Baris
+            </button>
           </div>
         </div>
       </div>

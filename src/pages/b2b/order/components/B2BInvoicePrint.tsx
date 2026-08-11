@@ -153,11 +153,11 @@ export function B2BInvoicePrint({ order }: Props) {
   return (
     <>
       {pages.map((page, pageIdx) => (
-        <section key={pageIdx} className="sheet A4">
+        <section key={pageIdx} className='sheet A4'>
           {/* Header */}
           <div style={styles.header}>
             <div style={styles.logoArea}>
-              <img src={logoImg} alt="logo" style={styles.logoImg} />
+              <img src={logoImg} alt='logo' style={styles.logoImg} />
             </div>
             <div style={styles.invoiceTitle}>
               <div style={styles.invoiceH1}>INVOICE</div>
@@ -189,14 +189,8 @@ export function B2BInvoicePrint({ order }: Props) {
             <div style={styles.dates}>
               <strong>Tanggal:</strong>
               <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
-              <strong>Jatuh Tempo:</strong>
-              <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
-              {order.payment_ref && (
-                <>
-                  <strong>Payment Ref:</strong>
-                  <span>{order.payment_ref}</span>
-                </>
-              )}
+              <strong>Payment Ref:</strong>
+              <span>{order.payment_ref || "-"}</span>
             </div>
           </div>
 
@@ -223,11 +217,12 @@ export function B2BInvoicePrint({ order }: Props) {
                     </td>
                     <td style={{ ...styles.td, ...qtyCol }}>{row.quantity}</td>
                     <td style={{ ...styles.td, ...priceCol }}>
-                      {formatCurrency(row.unit_nett || 0)}
+                      {formatCurrency(row.unit_nett || row.unit_base || 0)}
                     </td>
                     <td style={{ ...styles.td, ...priceCol }}>
                       {formatCurrency(
-                        (row.unit_nett || 0) * (row.quantity || 0),
+                        (row.unit_nett || row.unit_base || 0) *
+                          (row.quantity || 0),
                       )}
                     </td>
                   </tr>
@@ -247,7 +242,18 @@ export function B2BInvoicePrint({ order }: Props) {
               >
                 <div style={styles.note}>
                   {order.note && (
-                    <div style={{ marginBottom: 6 }}>Catatan: {order.note}</div>
+                    <div style={{ marginBottom: 10 }}>
+                      Cattan:
+                      <span
+                        style={{
+                          marginTop: 5,
+                          display: "block",
+                          whiteSpace: "pre-wrap",
+                        }}
+                      >
+                        {order.note}
+                      </span>
+                    </div>
                   )}
                 </div>
                 <div style={styles.summary}>

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:sandbox": "tsc -b && vite build --mode sandbox",
     "lint": "eslint .",
     "preview": "vite preview"
   },

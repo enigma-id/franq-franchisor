@@ -156,11 +156,11 @@ export function B2BDOPrint({ order }: Props) {
   return (
     <>
       {pages.map((page, pageIdx) => (
-        <section key={pageIdx} className="sheet A4">
+        <section key={pageIdx} className='sheet A4'>
           {/* Header */}
           <div style={styles.header}>
             <div style={styles.logoArea}>
-              <img src={logoImg} alt="logo" style={styles.logoImg} />
+              <img src={logoImg} alt='logo' style={styles.logoImg} />
             </div>
             <div style={styles.invoiceTitle}>
               <div style={styles.invoiceH1}>DELIVERY ORDER</div>
@@ -227,7 +227,18 @@ export function B2BDOPrint({ order }: Props) {
               <div style={styles.footer}>
                 <div style={styles.note}>
                   {order.note && (
-                    <div style={{ marginBottom: 6 }}>Catatan: {order.note}</div>
+                    <div style={{ marginBottom: 10 }}>
+                      Cattan:
+                      <span
+                        style={{
+                          display: "block",
+                          whiteSpace: "pre-wrap",
+                          lineHeight: "2.5",
+                        }}
+                      >
+                        {order.note}
+                      </span>
+                    </div>
                   )}
                 </div>
                 <table style={styles.signature}>
@@ -235,17 +246,13 @@ export function B2BDOPrint({ order }: Props) {
                     <tr>
                       <td style={styles.signCol}>
                         <div style={styles.signLabel}>PENGIRIM</div>
-                        <div style={{ height: 50 }}>&nbsp;</div>
+                        <div style={{ height: 55 }}>&nbsp;</div>
                         <div style={styles.signLine}>&nbsp;</div>
-                      </td>
-                      <td style={styles.signCol}>
-                        <div style={styles.signLabel}>MENGETAHUI</div>
-                        <div style={{ height: 50 }}>&nbsp;</div>
-                        <div style={styles.signLine}>&nbsp;</div>
+                        <div style={styles.signSub}>&nbsp; </div>
                       </td>
                       <td style={styles.signCol}>
                         <div style={styles.signLabel}>PENERIMA</div>
-                        <div style={{ height: 50 }}>&nbsp;</div>
+                        <div style={{ height: 55 }}>&nbsp;</div>
                         <div style={styles.signLine}>&nbsp;</div>
                         <div style={styles.signSub}>
                           Diterima dalam kondisi baik

@@ -21,7 +21,6 @@ export interface WarehouseBase {
   type: string;
   name: string;
   address: string;
-  region_id: string;
   is_default: boolean;
   is_active: boolean;
   has_area: boolean;

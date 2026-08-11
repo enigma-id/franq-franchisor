@@ -237,9 +237,7 @@ export default function SalesOrderDetailPage() {
                 <div className="info-row flex-col items-start gap-1">
                   <dt className="info-label">Alamat</dt>
                   <dd className="info-value text-left w-full wrap-break-words mt-0.5">
-                    {[order.recipient_address, order.region?.name]
-                      .filter(Boolean)
-                      .join(", ")}
+                    {order.recipient_address || "-"}
                   </dd>
                 </div>
                 <div className="info-row">

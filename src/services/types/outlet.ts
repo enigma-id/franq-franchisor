@@ -3,15 +3,12 @@
  * Synchronized with Postman Collection
  */
 
-import type { RegionDetail } from "./region";
-
 export interface OutletBase {
   outlet_type_id: string;
   name: string;
   recipient_name: string;
   phone: string;
   address: string;
-  region_id: string;
   service_charges: number;
   owner_name: string;
   owner_username: string;
@@ -41,7 +38,6 @@ export interface OutletDetail extends OutletBase {
   created_at: string;
   updated_at: string;
   saldo?: number;
-  region?: RegionDetail;
   outlet_type?: {
     name: string;
   };
