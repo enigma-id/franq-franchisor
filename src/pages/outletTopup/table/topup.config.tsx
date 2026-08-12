@@ -18,6 +18,7 @@ const createTableConfig = ({
   columns: {
     code: {
       title: "Kode",
+      sortable: true,
       class: "font-medium",
       component: (row: OutletTopupDetail) => (
         <span className="text-xs font-mono">{row.code || "-"}</span>
@@ -25,17 +26,21 @@ const createTableConfig = ({
     },
     outlet: {
       title: "Outlet",
+      sortable: true,
+      alias: "outlet_id",
       class: "font-medium",
       component: (row: OutletTopupDetail) => <span>{row.outlet?.name || "-"}</span>,
     },
     amount: {
       title: "Jumlah",
+      sortable: true,
       class: "font-mono text-right",
       headerClass: "text-right",
       component: (row: OutletTopupDetail) => <span className="font-semibold">{currencyFormat(row.amount)}</span>,
     },
     document_status: {
       title: "Status",
+      sortable: true,
       class: "text-center",
       headerClass: "text-center",
       component: (row: OutletTopupDetail) => (
@@ -44,6 +49,7 @@ const createTableConfig = ({
     },
     created_at: {
       title: "Tanggal",
+      sortable: true,
       class: "text-sm",
       component: (row: OutletTopupDetail) => (
         <span>{new Date(row.created_at).toLocaleDateString("id-ID")}</span>

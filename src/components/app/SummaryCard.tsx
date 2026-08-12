@@ -13,6 +13,7 @@ export interface SummaryCardProps {
   icon: LucideIcon | React.ElementType;
   theme: SummaryCardTheme;
   variant?: "default" | "primary";
+  onClick?: () => void;
 }
 
 export const SummaryCard: React.FC<SummaryCardProps> = ({
@@ -21,11 +22,17 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   icon: Icon,
   theme,
   variant = "default",
+  onClick,
 }) => {
+  const clickableCls = onClick
+    ? "cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-150"
+    : "";
+
   if (variant === "primary") {
     return (
       <div
-        className="bg-white rounded-2xl shadow-md overflow-hidden relative flex items-center p-4 w-full"
+        onClick={onClick}
+        className={`bg-white rounded-2xl shadow-md overflow-hidden relative flex items-center p-4 w-full ${clickableCls}`}
         style={{ height: 84 }}
       >
         {/* Background gradient overlay */}
@@ -93,7 +100,8 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
 
   return (
     <div
-      className="relative overflow-hidden bg-white rounded-2xl shadow-md flex items-center justify-between"
+      onClick={onClick}
+      className={`relative overflow-hidden bg-white rounded-2xl shadow-md flex items-center justify-between ${clickableCls}`}
       style={{ height: 76, padding: "0 16px" }}
     >
       {/* Text content */}

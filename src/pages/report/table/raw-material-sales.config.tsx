@@ -8,7 +8,7 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }): TableConfig<any> => ({
   ...config,
-  url: "/report/raw-material-sales",
+  url: "/report/sales-order-item",
   filter,
   columns: {
     date: {

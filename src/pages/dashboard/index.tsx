@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { Loading, MonthPicker } from "@/components/ui";
 import {
@@ -24,6 +25,7 @@ import { formatCurrency } from "@/utils";
 import { SummaryCard } from "@/components/app";
 import { useDashboard } from "@/services/dashboard/hooks";
 import SalesChart from "./components/SalesChart";
+import OutletMap from "./components/OutletMap";
 
 const THEMES = {
   green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
@@ -41,13 +43,22 @@ const PipelineCard = ({
   data,
   icon: Icon,
   theme,
+  onClick,
 }: {
   title: string;
   data: any;
   icon: any;
   theme: any;
+  onClick?: () => void;
 }) => (
-  <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
+  <div
+    onClick={onClick}
+    className={`bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full ${
+      onClick
+        ? "cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-150 group"
+        : ""
+    }`}
+  >
     <div className="flex items-center gap-3 mb-3">
       <div
         className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
@@ -89,10 +100,23 @@ const PipelineCard = ({
   </div>
 );
 
-const CompositionCard = ({ data }: { data: any }) => {
+const CompositionCard = ({
+  data,
+  onClick,
+}: {
+  data: any;
+  onClick?: () => void;
+}) => {
   const total = data?.data?.reduce((a: number, b: number) => a + b, 0) || 0;
   return (
-    <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
+    <div
+      onClick={onClick}
+      className={`bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full ${
+        onClick
+          ? "cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-150 group"
+          : ""
+      }`}
+    >
       <div className="flex items-center gap-3 mb-3">
         <div className="w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-lg shadow-indigo-100">
           <PieChart className="w-5 h-5 text-indigo-500" />
@@ -137,14 +161,23 @@ const TopListCard = ({
   icon: Icon,
   theme,
   valueLabel,
+  onClick,
 }: {
   title: string;
   items?: { name: string; qty?: number; revenue: number }[];
   icon: any;
   theme: any;
   valueLabel?: string;
+  onClick?: () => void;
 }) => (
-  <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full">
+  <div
+    onClick={onClick}
+    className={`bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full ${
+      onClick
+        ? "cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-150 group"
+        : ""
+    }`}
+  >
     <div className="flex items-center gap-3 mb-3">
       <div
         className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
@@ -186,12 +219,15 @@ const TopListCard = ({
 );
 
 const DashboardPage: React.FC = () => {
+  const navigate = useNavigate();
   const [periode, setPeriode] = React.useState(dayjs().format("YYYY-MM"));
   const { get, getResult } = useDashboard();
   const { data: response, isLoading } = getResult;
 
   // The API returns the dashboard data directly at the root
   const data = response?.data as any;
+
+  const go = (path: string) => () => navigate(path);
 
   const fetchData = useCallback(() => {
     get({ periode });
@@ -217,68 +253,94 @@ const DashboardPage: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Sales Chart */}
-            <SalesChart
-              data={data?.sales_graph}
-              isLoading={isLoading}
-              title="Performa Penjualan Multi-Saluran"
-            />
+            {/* Sales Chart + Outlet Map — side by side */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+              <div>
+                <SalesChart
+                  data={data?.sales_graph}
+                  isLoading={isLoading}
+                  title="Performa Penjualan Multi-Saluran"
+                />
+              </div>
+              <div>
+                <OutletMap outlets={data?.outlet_map} isLoading={isLoading} />
+              </div>
+            </div>
 
-            {/* Middle Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Omset */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <SummaryCard
-                label="Total Pendapatan"
-                value={formatCurrency(data?.total_revenue || 0)}
+                label="Omset Total"
+                value={formatCurrency(data?.omset_total || 0)}
                 icon={TrendingUp}
                 theme={THEMES.indigo}
               />
               <SummaryCard
-                label="Stok Menipis"
-                value={data?.stock_kritis || 0}
-                icon={Package}
-                theme={THEMES.rose}
-              />
-              <SummaryCard
-                label="Withdrawal Pending"
-                value={formatCurrency(data?.withdrawal_pending || 0)}
-                icon={Wallet}
-                theme={THEMES.amber}
-              />
-              <SummaryCard
-                label="Outlet Aktif"
-                value={`${data?.outlet_aktif || 0} / ${data?.total_outlet || 0}`}
-                icon={Store}
-                theme={THEMES.teal}
-              />
-              <SummaryCard
-                label="Omset Retail (POS)"
-                value={formatCurrency(data?.omset_retail || 0)}
+                label="Omset POS"
+                value={formatCurrency(data?.pos_summary?.omset || 0)}
                 icon={TrendingUp}
                 theme={THEMES.blue}
-              />
-              <SummaryCard
-                label="Omset B2B"
-                value={formatCurrency(data?.omset_b2b || 0)}
-                icon={TrendingUp}
-                theme={THEMES.indigo}
+                onClick={go(`/report/pos/settlement/daily?periode=${periode}`)}
               />
               <SummaryCard
                 label="Omset Franchise"
                 value={formatCurrency(data?.omset_franchise || 0)}
                 icon={TrendingUp}
                 theme={THEMES.purple}
+                onClick={go("/report/inventory/product-sales")}
+              />
+              <SummaryCard
+                label="Omset B2B"
+                value={formatCurrency(data?.b2b_summary?.omset || 0)}
+                icon={TrendingUp}
+                theme={THEMES.indigo}
+                onClick={go(`/report/b2b/settlement/daily?periode=${periode}`)}
               />
               <SummaryCard
                 label="Omset Bahan Baku"
                 value={formatCurrency(data?.omset_bahan_baku || 0)}
                 icon={Package}
                 theme={THEMES.orange}
+                onClick={go("/report/inventory/material-sales")}
               />
+            </div>
+
+            {/* Middle Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <SummaryCard
-                label="Outstanding (POS)"
-                value={formatCurrency(data?.outstanding_total || 0)}
+                label="Outstanding POS"
+                value={formatCurrency(data?.pos_summary?.outstanding || 0)}
                 icon={Receipt}
                 theme={THEMES.rose}
+                onClick={go("/report/pos/outstanding")}
+              />
+              <SummaryCard
+                label="Outstanding B2B"
+                value={formatCurrency(data?.b2b_summary?.outstanding || 0)}
+                icon={Receipt}
+                theme={THEMES.rose}
+                onClick={go("/b2b/order")}
+              />
+              <SummaryCard
+                label="Stok Menipis"
+                value={data?.stock_kritis || 0}
+                icon={Package}
+                theme={THEMES.rose}
+                onClick={go("/report/inventory/warehouse-stock")}
+              />
+              <SummaryCard
+                label="Withdrawal Pending"
+                value={formatCurrency(data?.withdrawal_pending || 0)}
+                icon={Wallet}
+                theme={THEMES.amber}
+                onClick={go("/withdrawal")}
+              />
+              <SummaryCard
+                label="Outlet Aktif"
+                value={`${data?.outlet_aktif || 0} / ${data?.total_outlet || 0}`}
+                icon={Store}
+                theme={THEMES.teal}
+                onClick={go("/setting/outlet")}
               />
               <SummaryCard
                 label="Total Saldo Membership"
@@ -287,16 +349,11 @@ const DashboardPage: React.FC = () => {
                 theme={THEMES.purple}
               />
               <SummaryCard
-                label="Outstanding B2B"
-                value={formatCurrency(data?.b2b_summary?.total_outstanding || 0)}
-                icon={Receipt}
-                theme={THEMES.rose}
-              />
-              <SummaryCard
                 label="Rencana Produksi"
                 value={`${data?.production_plan_summary?.completed || 0} / ${data?.production_plan_summary?.plan || 0}`}
                 icon={Package}
                 theme={THEMES.indigo}
+                onClick={go("/production/plan")}
               />
             </div>
 
@@ -353,12 +410,14 @@ const DashboardPage: React.FC = () => {
                 data={data?.so_pipeline}
                 icon={TrendingUp}
                 theme={THEMES.indigo}
+                onClick={go("/sales/order")}
               />
               <PipelineCard
                 title="Pipeline Purchase Order"
                 data={data?.po_pipeline}
                 icon={CreditCard}
                 theme={THEMES.rose}
+                onClick={go("/purchase/order")}
               />
               <CompositionCard data={data?.revenue_composition} />
             </div>

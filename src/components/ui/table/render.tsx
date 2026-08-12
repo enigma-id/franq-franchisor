@@ -57,7 +57,7 @@ function TableRender<T>({
   };
 
   const onFieldSorted = (field: string, column: TableColumn<T>) => {
-    if (!column?.sortable) return;
+    if (column?.sortable === false) return;
     const sorting = checkSorted();
 
     let sortby = field;

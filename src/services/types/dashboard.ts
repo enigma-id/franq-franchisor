@@ -19,19 +19,19 @@ export interface RevenueComposition {
   data: number[];
 }
 
+export interface PosSummary {
+  omset: number;
+  outstanding: number;
+}
+
 export interface B2BSummary {
-  total_outstanding: number;
-  unpaid_count: number;
+  omset: number;
+  outstanding: number;
 }
 
 export interface ProductionPlanSummary {
   plan: number;
   completed: number;
-}
-
-export interface OutletBalanceTotal {
-  total_saldo: number;
-  total_withdrawn: number;
 }
 
 export interface TopMenuItem {
@@ -57,29 +57,33 @@ export interface TopOutstandingOutlet {
   order_count: number;
 }
 
+export interface OutletMapItem {
+  outlet_id: string;
+  outlet_name: string;
+  latitude: number;
+  longitude: number;
+  last_seen: string;
+}
+
 export interface DashboardData {
-  total_revenue: number;
   withdrawal_pending: number;
   stock_kritis: number;
   sales_graph: SalesGraph;
-  omset_retail: number;
-  omset_b2b: number;
-  omset_franchise: number;
   omset_total: number;
+  omset_franchise: number;
   omset_bahan_baku: number;
+  pos_summary: PosSummary;
+  b2b_summary: B2BSummary;
   total_outlet: number;
   outlet_aktif: number;
   total_saldo_membership: number;
-  outstanding_total: number;
-  total_withdrawal_bulan_ini: number;
-  so_pipeline: PipelineSummary;
-  po_pipeline: PipelineSummary;
-  revenue_composition: RevenueComposition;
-  b2b_summary: B2BSummary;
-  production_plan_summary: ProductionPlanSummary;
-  outlet_balance_total: OutletBalanceTotal;
   top_menu: TopMenuItem[];
   top_member: TopMemberItem[];
   top_outlet: TopOutletItem[];
+  so_pipeline: PipelineSummary;
+  po_pipeline: PipelineSummary;
+  revenue_composition: RevenueComposition;
   top_outstanding_outlets?: TopOutstandingOutlet[];
+  outlet_map: OutletMapItem[];
+  production_plan_summary: ProductionPlanSummary;
 }

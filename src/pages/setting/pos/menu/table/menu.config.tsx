@@ -60,6 +60,7 @@ const createTableConfig = ({
     category: {
       title: "Kategori",
       sortable: true,
+      alias: "category_id",
       component: (row: POSMenuDetail) => (
         <span className="text-slate-600 font-medium">
           {row.category?.name || "Tanpa Kategori"}

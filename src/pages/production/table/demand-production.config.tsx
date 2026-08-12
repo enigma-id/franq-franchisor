@@ -16,6 +16,7 @@ const createTableConfig = ({
     item_code: {
       title: "Kode Material",
       sortable: true,
+      alias: "item_id",
       component: (row: any) => (
         <span className="font-bold text-sm text-slate-700">
           {row?.item?.code ?? "-"}
@@ -25,6 +26,7 @@ const createTableConfig = ({
     item_name: {
       title: "Nama Material",
       sortable: true,
+      alias: "item_id",
       component: (row: any) => (
         <div className="flex flex-col">
           <span className="font-medium text-slate-700">

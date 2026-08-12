@@ -12,10 +12,11 @@ const createTableConfig = ({
   ...config,
   url: "/user",
   columns: {
-    name: { title: "Nama", class: "font-medium" },
-    username: { title: "Username" },
+    name: { title: "Nama", sortable: true, class: "font-medium" },
+    username: { title: "Username", sortable: true },
     is_active: {
       title: "Aktif",
+      sortable: true,
       class: "text-center",
       headerClass: "text-center",
       component: (row: UserDetail) => (
@@ -26,6 +27,7 @@ const createTableConfig = ({
     },
     last_activity_at: {
       title: "Terakhir Aktif",
+      sortable: true,
       class: "text-sm",
       component: (row: UserDetail) => (
         <span>
@@ -37,6 +39,7 @@ const createTableConfig = ({
     },
     action: {
       title: "",
+      sortable: false,
       width: 100,
       component: (row: UserDetail) => (
         <div className="flex justify-end gap-1">

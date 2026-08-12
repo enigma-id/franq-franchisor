@@ -32,6 +32,7 @@ const createTableConfig = ({
   columns: {
     code: {
       title: "Kode",
+      sortable: true,
       class: "font-medium",
       component: (row: B2BOrderDetail) => (
         <div>
@@ -44,6 +45,7 @@ const createTableConfig = ({
     },
     document_status: {
       title: "Status",
+      sortable: true,
       class: "text-center",
       headerClass: "text-center",
       component: (row: B2BOrderDetail) => (
@@ -58,6 +60,7 @@ const createTableConfig = ({
     },
     payment_status: {
       title: "Pembayaran",
+      sortable: true,
       class: "text-center",
       headerClass: "text-center",
       component: (row: B2BOrderDetail) => (
@@ -72,6 +75,7 @@ const createTableConfig = ({
     },
     total_charges: {
       title: "Total",
+      sortable: true,
       class: "font-mono text-right",
       headerClass: "text-right",
       component: (row: B2BOrderDetail) => (
@@ -82,6 +86,7 @@ const createTableConfig = ({
     },
     shipping_date: {
       title: "Tgl Kirim",
+      sortable: true,
       class: "text-sm",
       component: (row: B2BOrderDetail) => (
         <span>{new Date(row.shipping_date).toLocaleDateString("id-ID")}</span>

@@ -40,6 +40,7 @@ const createTableConfig = ({
     outlet: {
       title: "Outlet",
       sortable: true,
+      alias: "outlet_id",
       component: (row: SalesOrderDetail) => (
         <div>
           <span className="font-medium block">

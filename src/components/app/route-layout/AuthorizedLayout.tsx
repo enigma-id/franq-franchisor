@@ -150,6 +150,7 @@ const menuSections: MenuSection[] = [
         children: [
           { label: "Outstanding", path: "/report/pos/outstanding" },
           { label: "Settlement", path: "/report/pos/settlement" },
+          { label: "Product Sales", path: "/report/inventory/product-sales" },
           { label: "Menu", path: "/report/pos/product-item" },
           {
             label: "Transaction Cancel",
@@ -170,11 +171,7 @@ const menuSections: MenuSection[] = [
         label: "Inventory & Sales",
         icon: <BarChart3 size={18} />,
         children: [
-          { label: "Product Sales", path: "/report/inventory/product-sales" },
-          {
-            label: "Raw Material Sales",
-            path: "/report/inventory/material-sales",
-          },
+          { label: "Product Sales", path: "/report/inventory/material-sales" },
           {
             label: "Warehouse Stock",
             path: "/report/inventory/warehouse-stock",

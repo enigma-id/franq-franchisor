@@ -80,8 +80,8 @@ export default function RawMaterialSalesPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Raw Material Sales"
-        subtitle="Laporan pemakaian bahan baku."
+        title="Product Sales"
+        subtitle="Laporan penjualan produk."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
         <OverviewCards data={summary} />
@@ -91,7 +91,7 @@ export default function RawMaterialSalesPage() {
         </Table.Tools>
         <Table.Render
           emptyTitle="Belum Ada Data"
-          emptyDescription="Data pemakaian bahan baku akan muncul di sini."
+          emptyDescription="Data penjualan produk akan muncul di sini."
         />
         <Table.Pagination />
       </Page.Body>

@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* Subtle attribution for dashboard outlet map */
+.outlet-map .leaflet-control-attribution {
+  font-size: 9px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(4px);
+  padding: 1px 4px;
+  border-radius: 6px;
+}
+.outlet-map .leaflet-control-attribution a {
+  color: #64748b;
+}
+
 @plugin "daisyui/index.js" {
   logs: true;
   exclude: input, modal, drawer, table;

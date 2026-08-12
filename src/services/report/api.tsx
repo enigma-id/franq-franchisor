@@ -82,14 +82,14 @@ export const reportApi = createApi({
 
     getRawMaterialSales: builder.query({
       query: (params) => ({
-        url: `/report/raw-material-sales`,
+        url: `/report/sales-order-item`,
         method: "GET",
         params,
       }),
     }),
     getRawMaterialSalesSummary: builder.query({
       query: (params) => ({
-        url: `/report/raw-material-sales/summary`,
+        url: `/report/sales-order-item/summary`,
         method: "GET",
         params,
       }),
