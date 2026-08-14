@@ -7,22 +7,25 @@ import { useUserGroup } from "@/services/usergroup/hooks";
 import { Save } from "lucide-react";
 import { useEnigmaUI } from "@/components";
 import { UserGroupForm } from "./components/UserGroupForm";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const UserGroupCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
   const { create, createResult } = useUserGroup();
+  const canManage = useCan(ACTION.usergroup);
   const { isLoading: isCreating, isSuccess } = createResult;
 
   useEffect(() => {
     if (isSuccess) {
       showToast({
-        message: "User Group berhasil dibuat",
+        message: "Usergroup berhasil dibuat",
         type: "success",
         position: "bottom-center",
         duration: 4000,
       });
-      navigate("/user/group");
+      navigate("/usergroup");
       createResult.reset?.();
     }
   }, [isSuccess, navigate, createResult, showToast]);
@@ -35,21 +38,23 @@ const UserGroupCreatePage: React.FC = () => {
         subtitle="Buat grup pengguna baru."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="usergroup-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Grup
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="usergroup-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Grup
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 overflow-auto p-4 md:p-6">

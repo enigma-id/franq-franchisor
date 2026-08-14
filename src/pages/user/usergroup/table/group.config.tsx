@@ -4,7 +4,7 @@ import type { UserGroupDetail } from "@/services/types";
 
 const createTableConfig = () => ({
   ...config,
-  url: "/user/usergroup",
+  url: "/usergroup",
   columns: {
     name: { title: "Nama Grup", sortable: true, class: "font-medium" },
     is_active: {

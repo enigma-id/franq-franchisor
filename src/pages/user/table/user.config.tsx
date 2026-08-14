@@ -6,8 +6,10 @@ import type { UserDetail } from "@/services/types";
 
 const createTableConfig = ({
   onView,
+  canManage,
 }: {
   onView?: (row: UserDetail) => void;
+  canManage?: boolean;
 }) => ({
   ...config,
   url: "/user",
@@ -50,13 +52,15 @@ const createTableConfig = ({
           >
             <Eye size={16} />
           </Button>
-          <Button
-            size="sm"
-            className="text-primary hover:bg-primary/10"
-            onClick={() => (window.location.href = `/user/update/${row.id}`)}
-          >
-            <Pencil size={16} />
-          </Button>
+          {canManage && (
+            <Button
+              size="sm"
+              className="text-primary hover:bg-primary/10"
+              onClick={() => (window.location.href = `/user/update/${row.id}`)}
+            >
+              <Pencil size={16} />
+            </Button>
+          )}
         </div>
       ),
     },
