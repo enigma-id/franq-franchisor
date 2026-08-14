@@ -61,7 +61,10 @@ const createTableConfig = ({
                   <Pencil className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Update Usergroup</span>
+                  <span className="font-bold text-[13px]">Edit</span>
+                  <span className="text-[11px] text-slate-400">
+                    Modify usergroup info
+                  </span>
                 </div>
               </button>
             </Dropdown.Item>
@@ -76,6 +79,9 @@ const createTableConfig = ({
                 </div>
                 <div className="flex flex-col items-start leading-tight">
                   <span className="font-bold text-[13px]">Delete</span>
+                  <span className="text-[11px] text-slate-400">
+                    Remove usergroup
+                  </span>
                 </div>
               </button>
             </Dropdown.Item>

@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import { Input, RemoteSelect } from "@/components/ui";
 import { useUserGroup } from "@/services/usergroup/hooks";
 import { useAppSelector } from "@/hooks";
-import { UserIcon, ShieldCheck } from "lucide-react";
 import type { UserDetail } from "@/services/types";
 
 interface UserFormProps {
@@ -52,8 +51,7 @@ export const UserForm: React.FC<UserFormProps> = ({
     if (isEdit) {
       const payload: Record<string, unknown> = {
         name,
-        // usergroup_id optional — user boleh tanpa usergroup (super admin)
-        usergroup_id: usergroup?.id ?? null,
+        usergroup_id: usergroup?.id ?? "",
       };
       if (password) payload.password = password;
       if (confirmPassword) payload.confirm_password = confirmPassword;
@@ -72,88 +70,67 @@ export const UserForm: React.FC<UserFormProps> = ({
 
   return (
     <form id={id} onSubmit={handleSubmit} className="space-y-6">
-      {/* Account Info */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
-          <UserIcon size={16} className="text-primary" />
-          Informasi Akun
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            label="Username"
-            required
-            placeholder="Contoh: budi.santoso"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            error={FormState?.errors?.username as string}
-            disabled={isEdit}
-          />
-          <Input
-            label="Nama Lengkap"
-            required
-            placeholder="Contoh: Budi Santoso"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={FormState?.errors?.name as string}
-          />
-        </div>
+      {/* Informasi Akun */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Input
+          label="Username"
+          required
+          placeholder="Contoh: budi.santoso"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          error={FormState?.errors?.username as string}
+          disabled={isEdit}
+        />
+        <Input
+          label="Nama Lengkap"
+          required
+          placeholder="Contoh: Budi Santoso"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          error={FormState?.errors?.name as string}
+        />
+        <RemoteSelect
+          label="Usergroup"
+          placeholder="Pilih Usergroup"
+          value={usergroup}
+          hook={usergroupsResult as any}
+          fetchData={(page, search) =>
+            getUsergroups({ page: page || 1, limit: 50, search })
+          }
+          getLabel={(item: any) => (item ? item.name : "")}
+          renderItem={(item: any) => item?.name}
+          getValue={(item: any) => item?.id}
+          onChange={(val: any) => setUsergroup(val)}
+          onClear={() => setUsergroup(null)}
+          required
+        />
       </div>
+      {FormState?.errors?.usergroup_id ? (
+        <p className="text-xs text-red-500 -mt-4">
+          {FormState.errors.usergroup_id as string}
+        </p>
+      ) : null}
 
-      {/* Security */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
-          <ShieldCheck size={16} className="text-primary" />
-          Keamanan
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            type="password"
-            label="Password"
-            required={!isEdit}
-            placeholder={isEdit ? "Kosongkan jika tidak diganti" : "Min. 8 karakter"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={FormState?.errors?.password as string}
-          />
-          <Input
-            type="password"
-            label="Konfirmasi Password"
-            required={!isEdit}
-            placeholder={isEdit ? "Kosongkan jika tidak diganti" : "Ulangi password"}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            error={FormState?.errors?.confirm_password as string}
-          />
-        </div>
-      </div>
-
-      {/* Usergroup */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
-          <ShieldCheck size={16} className="text-primary" />
-          Usergroup
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RemoteSelect
-            placeholder={isEdit ? "Kosongkan untuk tanpa usergroup (super admin)" : "Pilih Usergroup"}
-            value={usergroup}
-            hook={usergroupsResult as any}
-            fetchData={(page, search) =>
-              getUsergroups({ page: page || 1, limit: 50, search })
-            }
-            getLabel={(item: any) => (item ? item.name : "")}
-            renderItem={(item: any) => item?.name}
-            getValue={(item: any) => item?.id}
-            onChange={(val: any) => setUsergroup(val)}
-            onClear={() => setUsergroup(null)}
-            required={!isEdit}
-          />
-        </div>
-        {FormState?.errors?.usergroup_id ? (
-          <p className="text-xs text-red-500 mt-2">
-            {FormState.errors.usergroup_id as string}
-          </p>
-        ) : null}
+      {/* Keamanan */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Input
+          type="password"
+          label="Password"
+          required={!isEdit}
+          placeholder={isEdit ? "Kosongkan jika tidak diganti" : "Min. 8 karakter"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={FormState?.errors?.password as string}
+        />
+        <Input
+          type="password"
+          label="Konfirmasi Password"
+          required={!isEdit}
+          placeholder={isEdit ? "Kosongkan jika tidak diganti" : "Ulangi password"}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          error={FormState?.errors?.confirm_password as string}
+        />
       </div>
     </form>
   );

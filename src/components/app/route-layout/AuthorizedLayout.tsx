@@ -43,6 +43,8 @@ interface MenuItem {
   icon: React.ReactNode;
   badge?: string;
   permission?: MenuSlug;
+  /** Hanya tampil utk super admin (user tanpa usergroup). */
+  superAdminOnly?: boolean;
   children?: MenuChild[];
 }
 
@@ -239,6 +241,7 @@ const menuSections: MenuSection[] = [
         label: "Profil Franchisor",
         path: "/franchisor",
         icon: <UserCircle size={18} />,
+        superAdminOnly: true,
       },
       {
         label: "Schema Bonus Topup",
@@ -297,23 +300,23 @@ function SidebarSection({
 // ─── Nav helpers ──────────────────────────────────────────────────────────────
 
 /** Item diizinkan jika tanpa permission (selalu tampil) atau user punya slug. */
-function isItemAllowed(userPermissions: string[] | undefined, slug?: MenuSlug) {
-  return slug === undefined || hasPermission(userPermissions, slug);
-}
-
-function isChildAllowed(
+function isItemAllowed(
   userPermissions: string[] | undefined,
-  child: MenuChild,
+  item: Pick<MenuItem, "permission" | "superAdminOnly">,
+  isSuperAdmin: boolean,
 ) {
-  return isItemAllowed(userPermissions, child.permission);
+  // Item khusus super admin (mis. Profil Franchisor) hanya utk user tanpa usergroup
+  if (item.superAdminOnly) return isSuperAdmin;
+  return item.permission === undefined || hasPermission(userPermissions, item.permission);
 }
 
 /** Parent item tetap tampil jika minimal satu child diizinkan. */
 function isParentAllowed(
   userPermissions: string[] | undefined,
   item: MenuItem,
+  isSuperAdmin: boolean,
 ) {
-  return item.children!.some((c) => isChildAllowed(userPermissions, c));
+  return item.children!.some((c) => isItemAllowed(userPermissions, c, isSuperAdmin));
 }
 
 function isPathActive(currentPath: string, itemPath?: string): boolean {
@@ -462,19 +465,22 @@ export function AuthorizedLayout() {
     navigate("/signin");
   };
 
+  // Super admin = user tanpa usergroup
+  const isSuperAdmin = !user?.user?.usergroup_id;
+
   // Filter menu berdasarkan permission — super admin (tanpa permission) lihat semua.
   const visibleSections = useMemo(() => {
     return menuSections
       .map((section) => {
         const items = section.items.filter((item) =>
           item.children
-            ? isParentAllowed(userPermissions, item)
-            : isItemAllowed(userPermissions, item.permission),
+            ? isParentAllowed(userPermissions, item, isSuperAdmin)
+            : isItemAllowed(userPermissions, item, isSuperAdmin),
         );
         return items.length > 0 ? { ...section, items } : null;
       })
       .filter((s): s is MenuSection => s !== null);
-  }, [userPermissions]);
+  }, [userPermissions, isSuperAdmin]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-base-200">

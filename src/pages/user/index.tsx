@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useMemo, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Page } from "@/components/app/layout";
-import { Button, RemoteSelect, Drawer } from "@/components/ui";
+import { Button, Drawer } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
@@ -9,38 +10,39 @@ import createTableConfig from "./table/user.config";
 import type { UserDetail } from "@/services/types";
 import TableFilter from "./table/user.filter";
 import { useUser } from "@/services/user/hooks";
-import { useUserGroup } from "@/services/usergroup/hooks";
+import { useAppSelector } from "@/hooks";
 import { useEnigmaUI } from "@/components";
 import { UserForm } from "./components/UserForm";
+import { UserPermissionForm } from "./components/UserPermissionForm";
 import { Save, UserPlus, ShieldCheck } from "lucide-react";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
-import type { UserGroupDetail } from "@/services/types";
 
 type DrawerMode = "create" | "edit" | "permission";
 
 const UserListPage: React.FC = () => {
   useDocumentMeta("User | Sukabread Franchisee", "");
   const { showToast } = useEnigmaUI();
-  const { create, createResult, update, updateResult, show } = useUser();
-  const { get: getUsergroups, getResult: usergroupsResult } = useUserGroup();
+  const {
+    create,
+    createResult,
+    update,
+    updateResult,
+    show,
+    activate,
+    activateResult,
+    deactivate,
+    deactivateResult,
+    updatePermissions,
+    updatePermissionsResult,
+  } = useUser();
   const canManage = useCan(ACTION.user);
+  const currentUserId = useAppSelector((s) => s.auth.session?.user?.id);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>("create");
   const [editRow, setEditRow] = useState<UserDetail | null>(null);
   const [editData, setEditData] = useState<any | null>(null);
-  const [permGroup, setPermGroup] = useState<UserGroupDetail | null>(null);
-
-  const handleView = useCallback(
-    (row: UserDetail) => {
-      setDrawerMode("edit");
-      setEditRow(row);
-      setEditData(row);
-      setDrawerOpen(true);
-    },
-    [],
-  );
 
   const openCreate = useCallback(() => {
     setDrawerMode("create");
@@ -51,7 +53,6 @@ const UserListPage: React.FC = () => {
     setDrawerOpen(false);
     setEditRow(null);
     setEditData(null);
-    setPermGroup(null);
     createResult.reset?.();
     updateResult.reset?.();
   }, [createResult, updateResult]);
@@ -72,76 +73,106 @@ const UserListPage: React.FC = () => {
   );
 
   const openPermission = useCallback(
-    (row: UserDetail) => {
+    async (row: UserDetail) => {
       setDrawerMode("permission");
       setEditRow(row);
-      const list = (usergroupsResult?.data as { data?: UserGroupDetail[] })
-        ?.data ?? [];
-      const found = list.find((g) => g.id === row.usergroup_id);
-      setPermGroup(found ?? null);
       setDrawerOpen(true);
+      try {
+        const res = await show({ id: row.id });
+        setEditData((res as any)?.data ?? row);
+      } catch {
+        setEditData(row);
+      }
     },
-    [usergroupsResult?.data],
+    [show],
+  );
+
+  const handleToggleActive = useCallback(
+    (row: UserDetail) => {
+      if (row.is_active) {
+        deactivate({ id: row.id });
+      } else {
+        activate({ id: row.id });
+      }
+    },
+    [activate, deactivate],
   );
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onView: handleView,
         onEdit: openEdit,
         onPermission: openPermission,
+        onToggleActive: handleToggleActive,
         canManage,
+        currentUserId,
       }),
-    [handleView, openEdit, openPermission, canManage],
+    [
+      openEdit,
+      openPermission,
+      handleToggleActive,
+      canManage,
+      currentUserId,
+    ],
   );
   const Table = useTable("user-list", tableConfig as TableConfig<unknown>);
 
   const handleCreate = useCallback(
     async (data: Record<string, unknown>) => {
-      try {
-        await create(data);
-        showToast({
-          message: "User berhasil dibuat",
-          type: "success",
-          position: "bottom-center",
-          duration: 4000,
-        });
-        closeDrawer();
-        Table.boot();
-      } catch {
-        /* error form state handled by createCrudHook */
-      }
+      create(data);
     },
-    [create, showToast, closeDrawer, Table],
+    [create],
   );
 
   const handleUpdate = useCallback(
     async (data: Record<string, unknown>) => {
       if (!editRow) return;
-      try {
-        await update({ id: editRow.id, payload: data as any });
-        showToast({
-          message: "User berhasil diperbarui",
-          type: "success",
-          position: "bottom-center",
-          duration: 4000,
-        });
-        closeDrawer();
-        Table.boot();
-      } catch {
-        /* handled */
-      }
+      update({ id: editRow.id, payload: data as any });
     },
-    [editRow, update, showToast, closeDrawer, Table],
+    [editRow, update],
   );
 
-  const handleSavePermission = useCallback(async () => {
-    if (!editRow) return;
-    try {
-      await update({
-        id: editRow.id,
-        payload: { usergroup_id: permGroup?.id ?? null },
+  const handleSavePermission = useCallback(
+    async (data: Record<string, unknown>) => {
+      if (!editRow) return;
+      updatePermissions({ id: editRow.id, payload: data as any });
+    },
+    [editRow, updatePermissions],
+  );
+
+  // Create success → toast + close + refresh
+  useEffect(() => {
+    if (createResult?.isSuccess) {
+      showToast({
+        message: "User berhasil dibuat",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
       });
+      closeDrawer();
+      Table.boot();
+      createResult.reset?.();
+    }
+  }, [createResult, showToast, closeDrawer, Table]);
+
+  // Update success (edit user) → toast + close + refresh
+  useEffect(() => {
+    if (updateResult?.isSuccess) {
+      showToast({
+        message: "User berhasil diperbarui",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      closeDrawer();
+      Table.boot();
+      updateResult.reset?.();
+    }
+  }, [updateResult, showToast, closeDrawer, Table]);
+
+  // Update permissions success (drawer permission) → toast + close + refresh
+  useEffect(() => {
+    if (updatePermissionsResult?.isSuccess) {
       showToast({
         message: "Permission user berhasil diperbarui",
         type: "success",
@@ -150,10 +181,35 @@ const UserListPage: React.FC = () => {
       });
       closeDrawer();
       Table.boot();
-    } catch {
-      /* handled */
+      updatePermissionsResult.reset?.();
     }
-  }, [editRow, permGroup, update, showToast, closeDrawer, Table]);
+  }, [updatePermissionsResult, showToast, closeDrawer, Table]);
+
+  useEffect(() => {
+    if (activateResult?.isSuccess) {
+      showToast({
+        message: "User berhasil diaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      activateResult.reset?.();
+    }
+  }, [activateResult, showToast, Table]);
+
+  useEffect(() => {
+    if (deactivateResult?.isSuccess) {
+      showToast({
+        message: "User berhasil dinonaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      deactivateResult.reset?.();
+    }
+  }, [deactivateResult, showToast, Table]);
 
   const drawerTitle =
     drawerMode === "create"
@@ -167,7 +223,7 @@ const UserListPage: React.FC = () => {
       ? "Buat pengguna baru untuk sistem."
       : drawerMode === "edit"
         ? "Perbarui data pengguna."
-        : "Pilih usergroup untuk mengatur hak akses. Kosongkan untuk tanpa usergroup (super admin).";
+        : "Pilih Permission untuk mengatur hak akses.";
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -215,18 +271,10 @@ const UserListPage: React.FC = () => {
           </div>
           <div className="flex-1 overflow-y-auto p-5">
             {drawerMode === "permission" ? (
-              <RemoteSelect
-                placeholder="Pilih Usergroup (kosongkan utk super admin)"
-                value={permGroup}
-                hook={usergroupsResult as any}
-                fetchData={(page, search) =>
-                  getUsergroups({ page: page || 1, limit: 50, search })
-                }
-                getLabel={(item: any) => (item ? item.name : "")}
-                renderItem={(item: any) => item?.name}
-                getValue={(item: any) => item?.id}
-                onChange={(val: any) => setPermGroup(val)}
-                onClear={() => setPermGroup(null)}
+              <UserPermissionForm
+                id="user-permission-form"
+                initialData={editData}
+                onSubmit={handleSavePermission}
               />
             ) : (
               <UserForm
@@ -242,9 +290,10 @@ const UserListPage: React.FC = () => {
             </Button>
             {drawerMode === "permission" ? (
               <Button
+                type="submit"
+                form="user-permission-form"
                 variant="primary"
-                onClick={handleSavePermission}
-                isLoading={updateResult?.isLoading}
+                isLoading={updatePermissionsResult?.isLoading}
               >
                 <Save className="w-4 h-4 mr-2" />
                 Simpan Permission

@@ -8,7 +8,7 @@
 
 | Lapisan | Slug namespace | Contoh | Dipakai untuk |
 |---|---|---|---|
-| **Page / sidebar** | `frontend.franchisor.<module>` | `frontend.franchisor.sales-order` | Menu sidebar + akses page (route guard) |
+| **Page / sidebar** | `frontend.franchisor.<group>.<action>` | `frontend.franchisor.sales.sales-order` | Menu sidebar + akses page (route guard) |
 | **Button action** | `svc-franchisor.<module>.manage` | `svc-franchisor.sales-order.manage` | Setiap tombol aksi (create/edit/delete/approve/publish/dll) |
 
 - **Super admin**: user tanpa usergroup / tanpa `permissions` → akses **semua** (full access). Tidak ada slug yang menghalangi.
@@ -40,44 +40,70 @@ export interface User {
 
 ---
 
-## 3. Daftar slug — Page / Sidebar (`frontend.franchisor.*`)
+## 3. Daftar slug — Page / Sidebar (`frontend.franchisor.<group>.<action>`)
 
 > Slugs dari seed `permission` (application `frontend`). → dipakai di **sidebar menu** + **route guard**.
+> Struktur: `module` = group menu (Dashboard/Sales/Purchase/MasterData/Production/Setting/Report), `action` = modul existing (b2b-order, sales-order, inventory-item, dst).
 
+### Dashboard
 | Page / Menu | Slug | Route |
 |---|---|---|
 | Dashboard | `frontend.franchisor.dashboard` | `/dashboard` |
-| B2B Order | `frontend.franchisor.b2b-order` | `/b2b/order` |
-| Sales Order | `frontend.franchisor.sales-order` | `/sales/order` |
-| Sales Return | `frontend.franchisor.sales-return` | `/sales/return` |
-| Withdrawal | `frontend.franchisor.withdrawal` | `/withdrawal` |
-| Outlet Topup | `frontend.franchisor.outlet-topup` | `/outlet-topup` |
-| Warehouse | `frontend.franchisor.warehouse` | `/inventory/warehouse` |
-| Inventory Item | `frontend.franchisor.inventory-item` | `/inventory/item` |
-| Inventory Catalog | `frontend.franchisor.inventory-catalog` | `/inventory/catalog` |
-| Demand | `frontend.franchisor.demand` | `/production/demand/production`, `/production/demand/item` |
-| Production Plan | `frontend.franchisor.production-plan` | `/production/plan` |
-| Supplier | `frontend.franchisor.supplier` | `/purchase/supplier` |
-| Purchase Order | `frontend.franchisor.purchase-order` | `/purchase/order` |
+
+### Sales
+| Page / Menu | Slug | Route |
+|---|---|---|
+| B2B Order | `frontend.franchisor.sales.b2b-order` | `/b2b/order` |
+| Sales Order | `frontend.franchisor.sales.sales-order` | `/sales/order` |
+| Sales Return | `frontend.franchisor.sales.sales-return` | `/sales/return` |
+| Withdrawal | `frontend.franchisor.sales.withdrawal` | `/withdrawal` |
+| Outlet Topup | `frontend.franchisor.sales.outlet-topup` | `/outlet-topup` |
+
+### Purchase
+| Page / Menu | Slug | Route |
+|---|---|---|
+| Supplier | `frontend.franchisor.purchase.supplier` | `/purchase/supplier` |
+| Purchase Order | `frontend.franchisor.purchase.purchase-order` | `/purchase/order` |
+
+### Master Data (Inventory & Warehouse)
+| Page / Menu | Slug | Route |
+|---|---|---|
+| Warehouse | `frontend.franchisor.master-data.warehouse` | `/inventory/warehouse` |
+| Inventory Item | `frontend.franchisor.master-data.item` | `/inventory/item` |
+| Inventory Catalog | `frontend.franchisor.master-data.catalog` | `/inventory/catalog` |
+
+### Production
+| Page / Menu | Slug | Route |
+|---|---|---|
+| Demand | `frontend.franchisor.production.demand` | `/production/demand/production`, `/production/demand/item` |
+| Production Plan | `frontend.franchisor.production.production-plan` | `/production/plan` |
+
+### Report
+| Page / Menu | Slug | Route |
+|---|---|---|
 | Report POS Outstanding | `frontend.franchisor.report.pos-outstanding` | `/report/pos/outstanding` |
 | Report POS Settlement | `frontend.franchisor.report.pos-settlement` | `/report/pos/settlement`, `/report/pos/settlement/daily` |
 | Report Product Sales | `frontend.franchisor.report.product-sales` | `/report/inventory/product-sales` |
 | Report POS Product Item | `frontend.franchisor.report.pos-product-item` | `/report/pos/product-item` |
 | Report Transaction Cancel | `frontend.franchisor.report.cancelled` | `/report/pos/cancelled-product-sales` |
-| Report B2B Settlement | `frontend.franchisor.report.b2b-settlement` | `/report/b2b/settlement`, `/report/b2b/settlement/daily` |
-| Report B2B Product Sales | `frontend.franchisor.report.b2b-product-sales` | `/report/b2b/product-sales` |
-| Report B2B Product Item | `frontend.franchisor.report.b2b-product-item` | `/report/b2b/product-item` |
+| Report Settlement B2B | `frontend.franchisor.report.b2b.settlement` | `/report/b2b/settlement`, `/report/b2b/settlement/daily` |
+| Report Product Sales B2B | `frontend.franchisor.report.b2b.product-sales` | `/report/b2b/product-sales` |
+| Report Menu B2B | `frontend.franchisor.report.b2b.product-item` | `/report/b2b/product-item` |
 | Report Material Sales | `frontend.franchisor.report.inventory-material-sales` | `/report/inventory/material-sales` |
 | Report Warehouse Stock | `frontend.franchisor.report.warehouse-stock` | `/report/inventory/warehouse-stock` |
-| Setting Outlet | `frontend.franchisor.outlet` | `/setting/outlet` |
-| Setting Tipe Outlet | `frontend.franchisor.outlet-type` | `/setting/type/outlet` |
-| Setting POS Channel | `frontend.franchisor.pos-channel` | `/setting/pos/channel` |
-| Setting POS Category | `frontend.franchisor.pos-category` | `/setting/pos/category` |
-| Setting POS Menu | `frontend.franchisor.pos-menu` | `/setting/pos/menu` |
-| Setting POS Payment | `frontend.franchisor.pos-payment` | `/setting/pos/payment` |
-| Schema Bonus Topup | `frontend.franchisor.topup-bonus` | `/setting/member/topup-bonus` |
-| User | `frontend.franchisor.user` | `/user` |
-| Usergroup | `frontend.franchisor.usergroup` | `/user/group` |
+
+### Setting
+| Page / Menu | Slug | Route |
+|---|---|---|
+| Setting Outlet | `frontend.franchisor.setting.outlet` | `/setting/outlet` |
+| Setting Tipe Outlet | `frontend.franchisor.setting.outlet-type` | `/setting/type/outlet` |
+| Setting POS Channel | `frontend.franchisor.setting.pos-channel` | `/setting/pos/channel` |
+| Setting POS Category | `frontend.franchisor.setting.pos-category` | `/setting/pos/category` |
+| Setting POS Menu | `frontend.franchisor.setting.pos-menu` | `/setting/pos/menu` |
+| Setting POS Payment | `frontend.franchisor.setting.pos-payment` | `/setting/pos/payment` |
+| Schema Bonus Topup | `frontend.franchisor.setting.topup-bonus` | `/setting/member/topup-bonus` |
+| User | `frontend.franchisor.setting.user` | `/user` |
+| Usergroup | `frontend.franchisor.setting.usergroup` | `/usergroup` |
 
 > **Note**: `/franchisor` (Profil Franchisor) **tidak punya slug** → selalu tampil di semua user (hanya view).
 
@@ -112,12 +138,12 @@ export interface User {
 > **Tidak punya action slug** (view-only, tanpa tombol gate): Warehouse, semua Report, Dashboard, Profil Franchisor.
 
 **Perhatian — nama module beda antar namespace:**
-- Page `frontend.franchisor.inventory-item` ↔ action `svc-franchisor.inventory.manage`
-- Page `inventory-catalog` ↔ action `catalog`
-- Page `b2b-order` ↔ action `b2b`
-- Page `outlet-topup` ↔ action `outlet-topup-request`
-- Page `withdrawal` ↔ action `withdrawal-request`
-- Page `topup-bonus` ↔ action `member-topup`
+- Page `frontend.franchisor.master-data.item` ↔ action `svc-franchisor.inventory.manage`
+- Page `master-data.catalog` ↔ action `catalog`
+- Page `sales.b2b-order` ↔ action `b2b`
+- Page `sales.outlet-topup` ↔ action `outlet-topup-request`
+- Page `sales.withdrawal` ↔ action `withdrawal-request`
+- Page `setting.topup-bonus` ↔ action `member-topup`
 
 ---
 
@@ -129,7 +155,8 @@ export interface User {
 // Menu/page slugs (frontend namespace)
 export const MENU = {
   dashboard: "frontend.franchisor.dashboard",
-  b2bOrder: "frontend.franchisor.b2b-order",
+  b2bOrder: "frontend.franchisor.sales.b2b-order",
+  salesOrder: "frontend.franchisor.sales.sales-order",
   // ... dst (lihat tabel §3)
 } as const;
 

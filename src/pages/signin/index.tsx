@@ -26,10 +26,16 @@ const SignInPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (loginResult.isSuccess) {
-      loadProfile();
-      navigate("/", { replace: true });
-    }
+    if (!loginResult.isSuccess) return;
+
+    const fetchProfile = async () => {
+      try {
+        await loadProfile();
+      } finally {
+        navigate("/", { replace: true });
+      }
+    };
+    fetchProfile();
   }, [loginResult, navigate, loadProfile]);
 
   return (

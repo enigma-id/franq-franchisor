@@ -2,7 +2,7 @@
  * Permission slug constants — single source of truth.
  *
  * Dua namespace (lihat docs/RBAC.md):
- * - MENU:  `frontend.franchisor.<module>` → sidebar + akses page (route guard)
+ * - MENU:  `frontend.franchisor.<group>.<action>` → sidebar + akses page (route guard)
  * - ACTION: `svc-franchisor.<module>.manage` → tombol aksi per page
  *
  * Slug berasal dari seed tabel `permission` (backend). Jangan invent slug baru.
@@ -11,38 +11,44 @@
 // ─── Menu / page slugs (application 'frontend') ──────────────────────────────
 export const MENU = {
   dashboard: "frontend.franchisor.dashboard",
-  b2bOrder: "frontend.franchisor.b2b-order",
-  salesOrder: "frontend.franchisor.sales-order",
-  salesReturn: "frontend.franchisor.sales-return",
-  withdrawal: "frontend.franchisor.withdrawal",
-  outletTopup: "frontend.franchisor.outlet-topup",
-  warehouse: "frontend.franchisor.warehouse",
-  inventoryItem: "frontend.franchisor.inventory-item",
-  inventoryCatalog: "frontend.franchisor.inventory-catalog",
-  demand: "frontend.franchisor.demand",
-  productionPlan: "frontend.franchisor.production-plan",
-  supplier: "frontend.franchisor.supplier",
-  purchaseOrder: "frontend.franchisor.purchase-order",
+  // Sales
+  b2bOrder: "frontend.franchisor.sales.b2b-order",
+  salesOrder: "frontend.franchisor.sales.sales-order",
+  salesReturn: "frontend.franchisor.sales.sales-return",
+  withdrawal: "frontend.franchisor.sales.withdrawal",
+  outletTopup: "frontend.franchisor.sales.outlet-topup",
+  // Purchase
+  supplier: "frontend.franchisor.purchase.supplier",
+  purchaseOrder: "frontend.franchisor.purchase.purchase-order",
+  // Master Data (Inventory & Warehouse)
+  warehouse: "frontend.franchisor.master-data.warehouse",
+  inventoryItem: "frontend.franchisor.master-data.item",
+  inventoryCatalog: "frontend.franchisor.master-data.catalog",
+  // Production
+  demand: "frontend.franchisor.production.demand",
+  productionPlan: "frontend.franchisor.production.production-plan",
+  // Report
   reportPosOutstanding: "frontend.franchisor.report.pos-outstanding",
   reportPosSettlement: "frontend.franchisor.report.pos-settlement",
   reportProductSales: "frontend.franchisor.report.product-sales",
   reportPosProductItem: "frontend.franchisor.report.pos-product-item",
   reportCancelled: "frontend.franchisor.report.cancelled",
-  reportB2BSettlement: "frontend.franchisor.report.b2b-settlement",
-  reportB2BProductSales: "frontend.franchisor.report.b2b-product-sales",
-  reportB2BProductItem: "frontend.franchisor.report.b2b-product-item",
+  reportB2BSettlement: "frontend.franchisor.report.b2b.settlement",
+  reportB2BProductSales: "frontend.franchisor.report.b2b.product-sales",
+  reportB2BProductItem: "frontend.franchisor.report.b2b.product-item",
   reportInventoryMaterialSales:
     "frontend.franchisor.report.inventory-material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
-  outlet: "frontend.franchisor.outlet",
-  outletType: "frontend.franchisor.outlet-type",
-  posChannel: "frontend.franchisor.pos-channel",
-  posCategory: "frontend.franchisor.pos-category",
-  posMenu: "frontend.franchisor.pos-menu",
-  posPayment: "frontend.franchisor.pos-payment",
-  topupBonus: "frontend.franchisor.topup-bonus",
-  user: "frontend.franchisor.user",
-  usergroup: "frontend.franchisor.usergroup",
+  // Setting
+  outlet: "frontend.franchisor.setting.outlet",
+  outletType: "frontend.franchisor.setting.outlet-type",
+  posChannel: "frontend.franchisor.setting.pos-channel",
+  posCategory: "frontend.franchisor.setting.pos-category",
+  posMenu: "frontend.franchisor.setting.pos-menu",
+  posPayment: "frontend.franchisor.setting.pos-payment",
+  topupBonus: "frontend.franchisor.setting.topup-bonus",
+  user: "frontend.franchisor.setting.user",
+  usergroup: "frontend.franchisor.setting.usergroup",
 } as const;
 
 export type MenuSlug = (typeof MENU)[keyof typeof MENU];

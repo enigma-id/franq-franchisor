@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Page } from "@/components/app/layout";
 import { Button, Drawer } from "@/components/ui";
@@ -97,41 +99,17 @@ const UserGroupListPage: React.FC = () => {
 
   const handleCreate = useCallback(
     async (data: Record<string, unknown>) => {
-      try {
-        await create(data);
-        showToast({
-          message: "Usergroup berhasil dibuat",
-          type: "success",
-          position: "bottom-center",
-          duration: 4000,
-        });
-        closeDrawer();
-        Table.boot();
-      } catch {
-        /* error form state handled by createCrudHook */
-      }
+      create(data);
     },
-    [create, showToast, closeDrawer, Table],
+    [create],
   );
 
   const handleUpdate = useCallback(
     async (data: Record<string, unknown>) => {
       if (!editRow) return;
-      try {
-        await update({ id: editRow.id, payload: data as any });
-        showToast({
-          message: "Usergroup berhasil diperbarui",
-          type: "success",
-          position: "bottom-center",
-          duration: 4000,
-        });
-        closeDrawer();
-        Table.boot();
-      } catch {
-        /* handled */
-      }
+      update({ id: editRow.id, payload: data as any });
     },
-    [editRow, update, showToast, closeDrawer, Table],
+    [editRow, update],
   );
 
   const handleDelete = useCallback(async () => {
@@ -151,6 +129,36 @@ const UserGroupListPage: React.FC = () => {
       /* handled */
     }
   }, [deleteRow, remove, showToast, Table, removeResult]);
+
+  // Create success → toast + close + refresh
+  useEffect(() => {
+    if (createResult?.isSuccess) {
+      showToast({
+        message: "Usergroup berhasil dibuat",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      closeDrawer();
+      Table.boot();
+      createResult.reset?.();
+    }
+  }, [createResult, showToast, closeDrawer, Table]);
+
+  // Update success → toast + close + refresh
+  useEffect(() => {
+    if (updateResult?.isSuccess) {
+      showToast({
+        message: "Usergroup berhasil diperbarui",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      closeDrawer();
+      Table.boot();
+      updateResult.reset?.();
+    }
+  }, [updateResult, showToast, closeDrawer, Table]);
 
   useEffect(() => {
     if (activateResult?.isSuccess) {
@@ -178,7 +186,7 @@ const UserGroupListPage: React.FC = () => {
     }
   }, [deactivateResult, showToast, Table]);
 
-  const drawerTitle = drawerMode === "create" ? "Tambah Usergroup" : "Update Usergroup";
+  const drawerTitle = drawerMode === "create" ? "Tambah Usergroup" : "Edit Usergroup";
   const drawerSubtitle =
     drawerMode === "create"
       ? "Buat usergroup baru."
