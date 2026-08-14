@@ -1,21 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Input, RemoteSelect } from "@/components/ui";
 import { useUserGroup } from "@/services/usergroup/hooks";
 import { useAppSelector } from "@/hooks";
 import { UserIcon, ShieldCheck } from "lucide-react";
+import type { UserDetail } from "@/services/types";
 
 interface UserFormProps {
   id?: string;
+  /** Mode edit — prefill field & password tidak wajib. */
+  initialData?: UserDetail | null;
   onSubmit: (data: Record<string, unknown>) => void;
 }
 
 export const UserForm: React.FC<UserFormProps> = ({
   id = "user-form",
+  initialData,
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
   const { get: getUsergroups, getResult: usergroupsResult } = useUserGroup();
+
+  const isEdit = !!initialData;
 
   const [usergroup, setUsergroup] = useState<any | null>(null);
   const [username, setUsername] = useState("");
@@ -27,18 +35,39 @@ export const UserForm: React.FC<UserFormProps> = ({
     getUsergroups({ page: 1, limit: 50 });
   }, []);
 
+  // Mode edit — prefill dari initialData
+  useEffect(() => {
+    if (!initialData) return;
+    setUsername(initialData.username ?? "");
+    setName(initialData.name ?? "");
+
+    const list = (usergroupsResult?.data as any)?.data ?? [];
+    const found = list.find((g: any) => g.id === initialData.usergroup_id);
+    setUsergroup(found ?? null);
+  }, [initialData, usergroupsResult?.data]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload: Record<string, unknown> = {
+    if (isEdit) {
+      const payload: Record<string, unknown> = {
+        name,
+        // usergroup_id optional — user boleh tanpa usergroup (super admin)
+        usergroup_id: usergroup?.id ?? null,
+      };
+      if (password) payload.password = password;
+      if (confirmPassword) payload.confirm_password = confirmPassword;
+      onSubmit(payload);
+      return;
+    }
+
+    onSubmit({
       usergroup_id: usergroup?.id ?? "",
       username,
       name,
       password,
       confirm_password: confirmPassword,
-    };
-
-    onSubmit(payload);
+    });
   };
 
   return (
@@ -57,6 +86,7 @@ export const UserForm: React.FC<UserFormProps> = ({
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             error={FormState?.errors?.username as string}
+            disabled={isEdit}
           />
           <Input
             label="Nama Lengkap"
@@ -79,8 +109,8 @@ export const UserForm: React.FC<UserFormProps> = ({
           <Input
             type="password"
             label="Password"
-            required
-            placeholder="Min. 8 karakter"
+            required={!isEdit}
+            placeholder={isEdit ? "Kosongkan jika tidak diganti" : "Min. 8 karakter"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={FormState?.errors?.password as string}
@@ -88,8 +118,8 @@ export const UserForm: React.FC<UserFormProps> = ({
           <Input
             type="password"
             label="Konfirmasi Password"
-            required
-            placeholder="Ulangi password"
+            required={!isEdit}
+            placeholder={isEdit ? "Kosongkan jika tidak diganti" : "Ulangi password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             error={FormState?.errors?.confirm_password as string}
@@ -97,15 +127,15 @@ export const UserForm: React.FC<UserFormProps> = ({
         </div>
       </div>
 
-      {/* User Group */}
+      {/* Usergroup */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h3 className="text-sm font-bold text-slate-700 uppercase mb-4 flex items-center gap-2">
           <ShieldCheck size={16} className="text-primary" />
-          Grup Pengguna
+          Usergroup
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <RemoteSelect
-            placeholder="Pilih User Group"
+            placeholder={isEdit ? "Kosongkan untuk tanpa usergroup (super admin)" : "Pilih Usergroup"}
             value={usergroup}
             hook={usergroupsResult as any}
             fetchData={(page, search) =>
@@ -116,7 +146,7 @@ export const UserForm: React.FC<UserFormProps> = ({
             getValue={(item: any) => item?.id}
             onChange={(val: any) => setUsergroup(val)}
             onClear={() => setUsergroup(null)}
-            required
+            required={!isEdit}
           />
         </div>
         {FormState?.errors?.usergroup_id ? (

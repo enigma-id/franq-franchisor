@@ -69,10 +69,7 @@ import B2BOrderUpdatePage from "@/pages/b2b/order/b2bOrderUpdate";
 import OutletTopupListPage from "@/pages/outletTopup";
 import OutletTopupDetailPage from "@/pages/outletTopup/outletTopupDetail";
 import UserListPage from "@/pages/user";
-import UserCreatePage from "@/pages/user/userCreate";
-import UserUpdatePage from "@/pages/user/userUpdate";
-import UserGroupListPage from "@/pages/user/usergroup";
-import UserGroupCreatePage from "@/pages/user/usergroup/create";
+import UserGroupListPage from "@/pages/usergroup";
 import FranchisorProfilePage from "@/pages/franchisor";
 import TopupBonusPage from "@/pages/setting/member/topupBonus";
 
@@ -629,34 +626,10 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/user/create"
-          element={
-            <PermissionGuard permission={MENU.user}>
-              <UserCreatePage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path="/user/update/:id"
-          element={
-            <PermissionGuard permission={MENU.user}>
-              <UserUpdatePage />
-            </PermissionGuard>
-          }
-        />
-        <Route
           path="/usergroup"
           element={
             <PermissionGuard permission={MENU.usergroup}>
               <UserGroupListPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path="/usergroup/create"
-          element={
-            <PermissionGuard permission={MENU.usergroup}>
-              <UserGroupCreatePage />
             </PermissionGuard>
           }
         />
