@@ -19,6 +19,9 @@ export const useAuth = () => {
       const res = await loginMutation(payload).unwrap();
       if (res?.message === "success") {
         dispatch(setCredentials(res.data));
+        // Muat profile (/profile/me) setelah login — pastikan session lengkap
+        // sebelum app pindah ke route protected.
+        await loadProfile();
       }
     } catch (err) {
       failureWithTimeout(err);
