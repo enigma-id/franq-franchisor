@@ -11,10 +11,13 @@ import type { POSMenuDetail } from "@/services/types";
 import { Button, Modal, useEnigmaUI } from "@/components";
 import { Plus } from "lucide-react";
 import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const POSMenuListPage: React.FC = () => {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.posMenu);
   const {
     remove,
     removeResult,
@@ -42,8 +45,9 @@ const POSMenuListPage: React.FC = () => {
           }
         },
         onToggleActive: (row) => handleToggleActive(row),
+        canManage,
       }),
-    [navigate, activate, deactivate],
+    [navigate, activate, deactivate, canManage],
   );
 
   const { get: getOutlets } = useOutlet();
@@ -142,14 +146,16 @@ const POSMenuListPage: React.FC = () => {
             <p>Are you sure?</p>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              className="flex-1 rounded-xl"
-              variant="error"
-              onClick={() => handleDelete(v)}
-              isLoading={removeResult?.isLoading}
-            >
-              Confirm
-            </Button>
+            {canManage && (
+              <Button
+                className="flex-1 rounded-xl"
+                variant="error"
+                onClick={() => handleDelete(v)}
+                isLoading={removeResult?.isLoading}
+              >
+                Confirm
+              </Button>
+            )}
             <Button
               className="flex-1 rounded-xl"
               styleType="outline"
@@ -211,13 +217,15 @@ const POSMenuListPage: React.FC = () => {
         title="POS Menu"
         subtitle="Kelola daftar menu makanan dan minuman untuk POS."
         action={
-          <Button
-            variant="primary"
-            onClick={() => navigate("/setting/pos/menu/create")}
-          >
-            <Plus size={18} />
-            Tambah Menu
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              onClick={() => navigate("/setting/pos/menu/create")}
+            >
+              <Plus size={18} />
+              Tambah Menu
+            </Button>
+          )
         }
       />
 

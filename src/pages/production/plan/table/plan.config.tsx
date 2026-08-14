@@ -9,11 +9,13 @@ const createTableConfig = ({
   onRemove,
   onPublish,
   onComplete,
+  canManage,
 }: {
   onView: (id: string) => void;
   onRemove: (v: ProductionPlanDetail) => void;
   onPublish?: (row: ProductionPlanDetail) => void;
   onComplete?: (row: ProductionPlanDetail) => void;
+  canManage: boolean;
 }) => ({
   ...config,
   url: "/production/plan",
@@ -95,7 +97,7 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
-          {row.document_status === "pending" && (
+          {canManage && row.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onPublish?.(row)}
@@ -133,7 +135,7 @@ const createTableConfig = ({
             </>
           )}
 
-          {row.document_status === "published" && (
+          {canManage && row.document_status === "published" && (
             <Dropdown.Item
               onSelect={() => onComplete?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"

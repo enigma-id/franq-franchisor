@@ -8,9 +8,11 @@ import { getStatusVariant } from "@/utils";
 const createTableConfig = ({
   onView,
   onApprove,
+  canManage,
 }: {
   onView: (id: string) => void;
   onApprove?: (row: SalesReturnDetail) => void;
+  canManage?: boolean;
 }) => ({
   ...config,
   url: "/sales/return",
@@ -92,7 +94,7 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          {row?.status === "pending" && (
+          {canManage && row?.status === "pending" && (
             <Dropdown.Item
               onSelect={() => onApprove?.(row)}
               className="hover:bg-emerald-50 hover:text-emerald-600"

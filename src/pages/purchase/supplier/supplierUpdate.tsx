@@ -7,11 +7,14 @@ import { useSupplier } from "@/services/supplier/hooks";
 import { Loading } from "@/components/ui";
 import { Button, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const SupplierUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.supplier);
   const { show, showResult, update, updateResult } = useSupplier();
   const { isLoading: isUpdating, isSuccess } = updateResult;
 
@@ -40,21 +43,23 @@ const SupplierUpdatePage: React.FC = () => {
         subtitle="Perbarui informasi mitra penyuplai."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="supplier-form"
-            disabled={isUpdating}
-            variant="success"
-          >
-            {isUpdating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Supplier
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="supplier-form"
+              disabled={isUpdating}
+              variant="success"
+            >
+              {isUpdating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Supplier
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

@@ -7,12 +7,15 @@ import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save, RefreshCw } from "lucide-react";
 import type { InventoryCatalogDetail } from "@/services/types";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const InventoryCatalogUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { show, showResult, update, updateResult } = useInventoryCatalog();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.catalog);
   const { isLoading: isUpdating, isSuccess } = updateResult;
 
   useEffect(() => {
@@ -46,21 +49,23 @@ const InventoryCatalogUpdatePage: React.FC = () => {
         }
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="inventory-catalog-form"
-            disabled={isUpdating || showResult.isLoading}
-            variant="success"
-          >
-            {isUpdating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Perubahan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="inventory-catalog-form"
+              disabled={isUpdating || showResult.isLoading}
+              variant="success"
+            >
+              {isUpdating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Perubahan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 overflow-auto p-6">

@@ -8,10 +8,13 @@ import { useOutletTopup } from "@/services/outletTopup/hooks";
 import { useEnigmaUI } from "@/components";
 import dayjs from "dayjs";
 import { currencyFormat, getStatusVariant } from "@/utils";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const OutletTopupDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.outletTopupRequest);
   const { showToast } = useEnigmaUI();
   const { show, showResult, approve, approveResult, reject, rejectResult } =
     useOutletTopup();
@@ -110,7 +113,7 @@ const OutletTopupDetailPage: React.FC = () => {
         title="Detail Topup Outlet"
         backTo={() => navigate(-1)}
         action={
-          data && isPending ? (
+          data && isPending && canManage ? (
             <div className="flex items-center gap-2">
               <Button
                 variant="success"

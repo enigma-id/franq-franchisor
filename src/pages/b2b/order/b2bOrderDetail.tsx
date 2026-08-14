@@ -22,10 +22,13 @@ import {
   Receipt,
 } from "lucide-react";
 import type { B2BOrderDetail } from "@/services/types";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const B2BOrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.b2b);
 
   const { showToast } = useEnigmaUI();
   const {
@@ -221,56 +224,60 @@ const B2BOrderDetailPage: React.FC = () => {
             >
               <FileText className='w-4 h-4' />
             </Button>
-            {isPending && (
+            {canManage && (
               <>
-                <Button
-                  variant='primary'
-                  onClick={() => navigate(`/b2b/order/update/${order.id}`)}
-                  title='Edit'
-                >
-                  <Edit className='w-4 h-4' />
-                </Button>
-                <Button
-                  variant='primary'
-                  onClick={() => openConfirm("ship")}
-                  isLoading={shipResult.isLoading}
-                  disabled={!canTransition.ship}
-                  title='Ship'
-                >
-                  <Send className='w-4 h-4' />
-                </Button>
-                <Button
-                  variant='error'
-                  onClick={() => openConfirm("delete")}
-                  isLoading={removeResult.isLoading}
-                  disabled={!canTransition.delete}
-                  title='Hapus'
-                >
-                  <Trash2 className='w-4 h-4' />
-                </Button>
+                {isPending && (
+                  <>
+                    <Button
+                      variant='primary'
+                      onClick={() => navigate(`/b2b/order/update/${order.id}`)}
+                      title='Edit'
+                    >
+                      <Edit className='w-4 h-4' />
+                    </Button>
+                    <Button
+                      variant='primary'
+                      onClick={() => openConfirm("ship")}
+                      isLoading={shipResult.isLoading}
+                      disabled={!canTransition.ship}
+                      title='Ship'
+                    >
+                      <Send className='w-4 h-4' />
+                    </Button>
+                    <Button
+                      variant='error'
+                      onClick={() => openConfirm("delete")}
+                      isLoading={removeResult.isLoading}
+                      disabled={!canTransition.delete}
+                      title='Hapus'
+                    >
+                      <Trash2 className='w-4 h-4' />
+                    </Button>
+                  </>
+                )}
+                {isUnpaid && (
+                  <Button
+                    variant='success'
+                    onClick={() => openConfirm("invoice")}
+                    isLoading={invoiceResult.isLoading}
+                    disabled={!canTransition.invoice}
+                    title='Invoice'
+                  >
+                    <Receipt className='w-4 h-4' />
+                  </Button>
+                )}
+                {isInvoiced && (
+                  <Button
+                    variant='success'
+                    onClick={() => openConfirm("pay")}
+                    isLoading={payResult.isLoading}
+                    disabled={!canTransition.pay}
+                    title='Pay'
+                  >
+                    <CreditCard className='w-4 h-4' />
+                  </Button>
+                )}
               </>
-            )}
-            {isUnpaid && (
-              <Button
-                variant='success'
-                onClick={() => openConfirm("invoice")}
-                isLoading={invoiceResult.isLoading}
-                disabled={!canTransition.invoice}
-                title='Invoice'
-              >
-                <Receipt className='w-4 h-4' />
-              </Button>
-            )}
-            {isInvoiced && (
-              <Button
-                variant='success'
-                onClick={() => openConfirm("pay")}
-                isLoading={payResult.isLoading}
-                disabled={!canTransition.pay}
-                title='Pay'
-              >
-                <CreditCard className='w-4 h-4' />
-              </Button>
             )}
           </div>
         }

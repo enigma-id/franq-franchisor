@@ -10,12 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { useOutletTopup } from "@/services/outletTopup/hooks";
 import TableFilter from "./table/topup.filter";
 import { useEnigmaUI } from "@/components";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 type ActionType = "approve" | "reject";
 
 const OutletTopupListPage: React.FC = () => {
   useDocumentMeta("Topup Outlet | Sukabread Franchisee", "");
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.outletTopupRequest);
   const { showToast } = useEnigmaUI();
   const { approve, approveResult, reject, rejectResult } = useOutletTopup();
   const [selectedRow, setSelectedRow] = useState<OutletTopupDetail | null>(null);
@@ -65,7 +68,8 @@ const OutletTopupListPage: React.FC = () => {
     onView: handleView,
     onApprove: (row) => openConfirm(row, "approve"),
     onReject: (row) => openConfirm(row, "reject"),
-  }), [handleView, openConfirm]);
+    canManage,
+  }), [handleView, openConfirm, canManage]);
 
   const Table = useTable("outlet-topup-list", tableConfig as TableConfig<unknown>);
 

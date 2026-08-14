@@ -8,11 +8,14 @@ import { getStatusVariant } from "@/utils";
 import { useSalesReturn } from "@/services/sales/hooks";
 import dayjs from "dayjs";
 import type { SalesReturnDetail } from "@/services/types";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const SalesReturnDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.salesReturn);
   const { show, showResult, approve, approveResult } =
     useSalesReturn();
 
@@ -58,7 +61,7 @@ const handleApprove = async () => {
         action={
           data && (
             <div className="flex items-center gap-2">
-              {isPending && (
+              {canManage && isPending && (
                 <>
                   <Button
                     variant="success"

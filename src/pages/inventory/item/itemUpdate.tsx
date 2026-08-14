@@ -10,6 +10,8 @@ import type {
   InventoryItemUpdateRequest,
 } from "@/services/types";
 import { InventoryItemForm } from "./components/itemForm";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 export function InventoryItemUpdate() {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +20,7 @@ export function InventoryItemUpdate() {
   const { isLoading: isLoadingDetail, data: detailData } = showResult;
   const { isLoading: isUpdating, isSuccess } = updateResult;
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.inventory);
 
   useEffect(() => {
     if (id) {
@@ -62,21 +65,23 @@ export function InventoryItemUpdate() {
         }
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="inventory-item-form"
-            disabled={isUpdating || isLoadingDetail}
-            variant="success"
-          >
-            {isUpdating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Perubahan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="inventory-item-form"
+              disabled={isUpdating || isLoadingDetail}
+              variant="success"
+            >
+              {isUpdating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Perubahan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 overflow-auto p-6">

@@ -12,12 +12,15 @@ import { useB2BOrder } from "@/services/b2b/hooks";
 import TableFilter from "./table/order.filter";
 import { useEnigmaUI } from "@/components";
 import { Plus } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 type ActionType = "ship" | "invoice" | "pay" | "delete";
 
 const B2BOrderListPage: React.FC = () => {
   useDocumentMeta("B2B Order | Sukabread Franchisee", "");
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.b2b);
   const { showToast } = useEnigmaUI();
   const {
     remove,
@@ -97,8 +100,9 @@ const B2BOrderListPage: React.FC = () => {
         onShip: (row) => openConfirm(row, "ship"),
         onInvoice: (row) => openConfirm(row, "invoice"),
         onPay: (row) => openConfirm(row, "pay"),
+        canManage,
       }),
-    [handleView, handleEdit, openConfirm],
+    [handleView, handleEdit, openConfirm, canManage],
   );
 
   const Table = useTable("b2b-order-list", tableConfig as TableConfig<unknown>);
@@ -137,13 +141,15 @@ const B2BOrderListPage: React.FC = () => {
         title='B2B Order'
         subtitle='Kelola pesanan B2B.'
         action={
-          <Button
-            variant='primary'
-            onClick={() => navigate("/b2b/order/create")}
-          >
-            <Plus className='w-4 h-4 mr-2' />
-            Buat Pesanan
-          </Button>
+          canManage && (
+            <Button
+              variant='primary'
+              onClick={() => navigate("/b2b/order/create")}
+            >
+              <Plus className='w-4 h-4 mr-2' />
+              Buat Pesanan
+            </Button>
+          )
         }
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>

@@ -30,11 +30,14 @@ import { useWarehouse } from "@/services/warehouse/hooks";
 import { useAppSelector } from "@/hooks";
 import { getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 import Plan from "@/components/app/print/plan";
 
 const ProductionPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.production);
   const FormState = useAppSelector((s) => s.form);
   const { open: openPrint } = usePrintWindow({
     title: "Print Preview",
@@ -264,38 +267,40 @@ const ProductionPlanDetailPage: React.FC = () => {
         title={`Detail Rencana Produksi - ${plan.code}`}
         backTo={() => navigate(-1)}
         action={
-          <div className="flex gap-2">
-            <GuardedButton
-              allowed={guards.canPublish}
-              reason="Hanya rencana dengan status pending yang dapat disetujui."
-              variant="primary"
-              onClick={handlePublish}
-              isLoading={publishResult.isLoading}
-              title="Publish"
-            >
-              <Send className="w-4 h-4" />
-            </GuardedButton>
-            <GuardedButton
-              allowed={guards.canComplete}
-              reason="Hanya rencana dengan status published yang dapat diselesaikan."
-              variant="success"
-              onClick={handleComplete}
-              isLoading={completeResult.isLoading}
-              title="Complete"
-            >
-              <CheckCircle className="w-4 h-4" />
-            </GuardedButton>
-            <GuardedButton
-              allowed={guards.canDelete}
-              reason="Hanya rencana dengan status pending yang dapat dihapus."
-              variant="error"
-              onClick={handleDelete}
-              isLoading={removeResult.isLoading}
-              title="Delete"
-            >
-              <Trash2 className="w-4 h-4" />
-            </GuardedButton>
-          </div>
+          canManage && (
+            <div className="flex gap-2">
+              <GuardedButton
+                allowed={guards.canPublish}
+                reason="Hanya rencana dengan status pending yang dapat disetujui."
+                variant="primary"
+                onClick={handlePublish}
+                isLoading={publishResult.isLoading}
+                title="Publish"
+              >
+                <Send className="w-4 h-4" />
+              </GuardedButton>
+              <GuardedButton
+                allowed={guards.canComplete}
+                reason="Hanya rencana dengan status published yang dapat diselesaikan."
+                variant="success"
+                onClick={handleComplete}
+                isLoading={completeResult.isLoading}
+                title="Complete"
+              >
+                <CheckCircle className="w-4 h-4" />
+              </GuardedButton>
+              <GuardedButton
+                allowed={guards.canDelete}
+                reason="Hanya rencana dengan status pending yang dapat dihapus."
+                variant="error"
+                onClick={handleDelete}
+                isLoading={removeResult.isLoading}
+                title="Delete"
+              >
+                <Trash2 className="w-4 h-4" />
+              </GuardedButton>
+            </div>
+          )
         }
       />
 
@@ -435,7 +440,8 @@ const ProductionPlanDetailPage: React.FC = () => {
                           <span className="text-[15px] font-bold text-primary">
                             {item.quantity_planned}
                           </span>
-                          {isProcess &&
+                          {canManage &&
+                            isProcess &&
                             item.document_status !== "completed" && (
                               <Button
                                 styleType="ghost"
@@ -453,15 +459,17 @@ const ProductionPlanDetailPage: React.FC = () => {
                       </td>
                       <td className="px-4 py-3 text-right align-text-top!">
                         <div className="flex items-center justify-end gap-1">
-                          {isProcess && item.document_status === "new" && (
-                            <Button
-                              styleType="ghost"
-                              onClick={() => handleOpenCompleteItem(item)}
-                              title="Selesaikan Item"
-                            >
-                              <CheckCircle size={15} />
-                            </Button>
-                          )}
+                          {canManage &&
+                            isProcess &&
+                            item.document_status === "new" && (
+                              <Button
+                                styleType="ghost"
+                                onClick={() => handleOpenCompleteItem(item)}
+                                title="Selesaikan Item"
+                              >
+                                <CheckCircle size={15} />
+                              </Button>
+                            )}
                           <Button
                             styleType="ghost"
                             onClick={() => handleOpenPrint(item)}

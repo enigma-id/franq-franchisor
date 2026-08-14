@@ -9,7 +9,7 @@ import { useAuth } from "@/services/auth/hooks";
 const SignInPage: React.FC = () => {
   const navigate = useNavigate();
   const FormState = useAppSelector((s: any) => s.form);
-  const { login, loginResult } = useAuth();
+  const { login, loadProfile, loginResult } = useAuth();
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -27,9 +27,10 @@ const SignInPage: React.FC = () => {
 
   useEffect(() => {
     if (loginResult.isSuccess) {
+      loadProfile();
       navigate("/", { replace: true });
     }
-  }, [loginResult, navigate]);
+  }, [loginResult, navigate, loadProfile]);
 
   return (
     <div className="min-h-screen w-full relative flex items-center bg-white overflow-hidden font-sans">

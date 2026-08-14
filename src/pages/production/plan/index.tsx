@@ -13,9 +13,12 @@ import type { ProductionPlanDetail } from "@/services/types/production";
 import type { WarehouseDetail } from "@/services/types/warehouse";
 import type { TableConfig } from "@/services/table/const";
 import { useAppSelector } from "@/hooks";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const ProductionPlanListPage: React.FC = () => {
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.production);
   const FormState = useAppSelector((s) => s.form);
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const { remove: removePlan, removeResult, publish: publishItem, publishResult, complete: completeItem, completeResult } = useProductionPlan();
@@ -33,8 +36,9 @@ const ProductionPlanListPage: React.FC = () => {
         onRemove: (v) => openDelete(v),
         onPublish: (row) => openConfirmModal(row, "publish"),
         onComplete: (row) => openConfirmModal(row, "complete"),
+        canManage,
       }),
-    [navigate],
+    [navigate, canManage],
   );
 
   const Table = useTable(
@@ -153,15 +157,17 @@ const ProductionPlanListPage: React.FC = () => {
         title="Daftar Rencana Produksi"
         subtitle="Kelola dan pantau rencana produksi harian."
         action={
-          <Button
-            variant="primary"
-            shape="wide"
-            size="md"
-            onClick={() => navigate("/production/plan/create")}
-          >
-            <Plus size={18} className="mr-2" />
-            Buat Rencana
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              shape="wide"
+              size="md"
+              onClick={() => navigate("/production/plan/create")}
+            >
+              <Plus size={18} className="mr-2" />
+              Buat Rencana
+            </Button>
+          )
         }
       />
 

@@ -6,11 +6,14 @@ import { Badge, Button, Loading } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { InventoryItemDetail } from "@/services/types";
 import { Package, Factory } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const InventoryItemDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { show, showResult } = useInventoryItem();
+  const canManage = useCan(ACTION.inventory);
   const { isLoading, data } = showResult;
 
   const item = data?.data as InventoryItemDetail;
@@ -40,12 +43,14 @@ const InventoryItemDetailPage: React.FC = () => {
         title={item.name}
         backTo={() => navigate("/inventory/item")}
         action={
-          <Button
-            variant="primary"
-            onClick={() => navigate(`/inventory/item/update/${id}`)}
-          >
-            Edit Item
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              onClick={() => navigate(`/inventory/item/update/${id}`)}
+            >
+              Edit Item
+            </Button>
+          )
         }
       />
       <Page.Body className="p-6 space-y-6">

@@ -6,12 +6,15 @@ import { usePOSMenu } from "@/services/pos/hooks";
 import { useNavigate } from "react-router-dom";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const POSMenuCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { create, createResult } = usePOSMenu();
   const { isLoading: isCreating, isSuccess } = createResult;
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.posMenu);
 
   useEffect(() => {
     if (isSuccess) {
@@ -32,21 +35,23 @@ const POSMenuCreatePage: React.FC = () => {
         subtitle="Daftarkan menu makanan atau minuman baru."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="pos-catalog-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="pos-catalog-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

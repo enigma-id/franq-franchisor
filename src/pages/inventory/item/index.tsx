@@ -9,6 +9,8 @@ import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import { useInventoryItem } from "@/services/inventory/hooks";
 import type { InventoryItemDetail } from "@/services/types";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 import createTableConfig from "./table/item.config";
 import TableFilter from "./table/item.filter";
@@ -16,6 +18,7 @@ import TableFilter from "./table/item.filter";
 export function InventoryItem() {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.inventory);
   const {
     remove: removeItem,
     removeResult: removeItemResult,
@@ -47,8 +50,9 @@ export function InventoryItem() {
           openDelete(v);
         },
         onToggleActive: (row: InventoryItemDetail) => handleToggleActive(row),
+        canManage,
       }),
-    [navigate, activateItem, deactivateItem],
+    [navigate, activateItem, deactivateItem, canManage],
   );
   const Table = useTable("inventory_item", tableConfig as TableConfig<unknown>);
 
@@ -137,15 +141,17 @@ export function InventoryItem() {
         title="Inventory Item"
         subtitle="Daftar item inventori."
         action={
-          <Button
-            variant="primary"
-            shape="wide"
-            size="md"
-            onClick={() => navigate("/inventory/item/create")}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Tambah Item
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              shape="wide"
+              size="md"
+              onClick={() => navigate("/inventory/item/create")}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Item
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">

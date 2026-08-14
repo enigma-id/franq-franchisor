@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useLoginMutation, useSignupMutation, useUpdateMeMutation } from "./api";
+import { useLoginMutation, useSignupMutation, useUpdateMeMutation, useLazyGetMeQuery } from "./api";
 import { useFormActions } from "../form/hooks";
 import { setCredentials, logout as logoutAction, session } from "./slice";
 import type { AppDispatch } from "../store";
@@ -12,6 +12,7 @@ export const useAuth = () => {
   const [loginMutation, loginResult] = useLoginMutation();
   const [signupMutation, signupResult] = useSignupMutation();
   const [updateMeMutation, updateMeResult] = useUpdateMeMutation();
+  const [getMe] = useLazyGetMeQuery();
 
   const login = async (payload: LoginRequest) => {
     try {
@@ -46,6 +47,29 @@ export const useAuth = () => {
     }
   };
 
+  /**
+   * Muat profil user dari GET /profile/me dan simpan permission slugs
+   * ke session (state.auth.session.user.permissions).
+   * Dipanggil setelah login / saat app boot (user sudah authenticated).
+   */
+  const loadProfile = async () => {
+    try {
+      const res = await getMe().unwrap();
+      if (res?.message === "success" && res.data) {
+        dispatch(
+          session({
+            user: {
+              ...res.data,
+              permissions: res.data.permissions,
+            },
+          }),
+        );
+      }
+    } catch (err) {
+      failureWithTimeout(err);
+    }
+  };
+
   const logout = () => {
     dispatch(logoutAction());
   };
@@ -57,6 +81,7 @@ export const useAuth = () => {
     signupResult,
     updateMe,
     updateMeResult,
+    loadProfile,
     logout,
   };
 };

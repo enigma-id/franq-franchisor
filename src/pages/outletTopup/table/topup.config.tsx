@@ -8,10 +8,12 @@ const createTableConfig = ({
   onView,
   onApprove,
   onReject,
+  canManage,
 }: {
   onView?: (row: OutletTopupDetail) => void;
   onApprove?: (row: OutletTopupDetail) => void;
   onReject?: (row: OutletTopupDetail) => void;
+  canManage: boolean;
 }) => ({
   ...config,
   url: "/outlet-topup-request",
@@ -84,7 +86,7 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
-          {row.document_status === "pending" && (
+          {canManage && row.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onApprove?.(row)}

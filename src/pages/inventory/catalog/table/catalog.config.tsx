@@ -22,6 +22,7 @@ const createTableConfig = ({
   onRemove,
   onOutletType,
   onToggleActive,
+  canManage,
 }: {
   onRowClick?: (row: any) => void;
   lockFilter?: Record<string, unknown>;
@@ -31,6 +32,7 @@ const createTableConfig = ({
   onRemove?: (row: any) => void;
   onOutletType?: (row: any, outletType?: any) => void;
   onToggleActive?: (row: any) => void;
+  canManage?: boolean;
 }) => {
   return {
     ...config,
@@ -180,6 +182,7 @@ const createTableConfig = ({
               onChange={() => onToggleActive?.(row)}
               variant="success"
               size="sm"
+              disabled={!canManage}
             />
           </div>
         ),
@@ -216,57 +219,67 @@ const createTableConfig = ({
               </button>
             </Dropdown.Item>
 
-            <Dropdown.Item
-              onSelect={() => onEdit?.(row)}
-              className="hover:bg-indigo-50 hover:text-indigo-600"
-            >
-              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                  <Edit className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Edit</span>
-                  <span className="text-[11px] text-slate-400">
-                    Modify catalog info
-                  </span>
-                </div>
-              </button>
-            </Dropdown.Item>
+            {canManage && (
+              <Dropdown.Item
+                onSelect={() => onEdit?.(row)}
+                className="hover:bg-indigo-50 hover:text-indigo-600"
+              >
+                <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                    <Edit className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="font-bold text-[13px]">Edit</span>
+                    <span className="text-[11px] text-slate-400">
+                      Modify catalog info
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+            )}
 
-            <div className="my-1 border-t border-slate-50"></div>
-            <Dropdown.Item
-              onSelect={() => onRemove?.(row)}
-              className="hover:bg-red-50 hover:text-red-600"
-            >
-              <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
-                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                  <Trash className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Delete</span>
-                  <span className="text-[11px] text-slate-400">
-                    Remove catalog
-                  </span>
-                </div>
-              </button>
-            </Dropdown.Item>
-            <div className="my-1 border-t border-slate-50"></div>
-            <Dropdown.Item
-              onSelect={() => onOutletType?.(row)}
-              className="hover:bg-blue-50 hover:text-blue-600"
-            >
-              <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                  <Store className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Outlet Type</span>
-                  <span className="text-[11px] text-slate-400">
-                    Manage availability
-                  </span>
-                </div>
-              </button>
-            </Dropdown.Item>
+            {canManage && (
+              <>
+                <div className="my-1 border-t border-slate-50"></div>
+                <Dropdown.Item
+                  onSelect={() => onRemove?.(row)}
+                  className="hover:bg-red-50 hover:text-red-600"
+                >
+                  <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                      <Trash className="w-4 h-4" />
+                    </div>
+                    <div className="flex flex-col items-start leading-tight">
+                      <span className="font-bold text-[13px]">Delete</span>
+                      <span className="text-[11px] text-slate-400">
+                        Remove catalog
+                      </span>
+                    </div>
+                  </button>
+                </Dropdown.Item>
+              </>
+            )}
+            {canManage && (
+              <>
+                <div className="my-1 border-t border-slate-50"></div>
+                <Dropdown.Item
+                  onSelect={() => onOutletType?.(row)}
+                  className="hover:bg-blue-50 hover:text-blue-600"
+                >
+                  <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                      <Store className="w-4 h-4" />
+                    </div>
+                    <div className="flex flex-col items-start leading-tight">
+                      <span className="font-bold text-[13px]">Outlet Type</span>
+                      <span className="text-[11px] text-slate-400">
+                        Manage availability
+                      </span>
+                    </div>
+                  </button>
+                </Dropdown.Item>
+              </>
+            )}
           </Dropdown>
         ),
       },

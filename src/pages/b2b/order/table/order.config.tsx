@@ -19,6 +19,7 @@ const createTableConfig = ({
   onShip,
   onInvoice,
   onPay,
+  canManage,
 }: {
   onClick?: (row: B2BOrderDetail) => void;
   onEdit?: (row: B2BOrderDetail) => void;
@@ -26,6 +27,7 @@ const createTableConfig = ({
   onShip?: (row: B2BOrderDetail) => void;
   onInvoice?: (row: B2BOrderDetail) => void;
   onPay?: (row: B2BOrderDetail) => void;
+  canManage: boolean;
 }) => ({
   ...config,
   url: "/b2b/order",
@@ -124,7 +126,7 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
-          {row.document_status === "pending" && (
+          {canManage && row.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onEdit?.(row)}
@@ -177,7 +179,7 @@ const createTableConfig = ({
             </>
           )}
 
-          {row.payment_status === "unpaid" && (
+          {canManage && row.payment_status === "unpaid" && (
             <Dropdown.Item
               onSelect={() => onInvoice?.(row)}
               className='hover:bg-purple-50 hover:text-purple-600'
@@ -196,7 +198,7 @@ const createTableConfig = ({
             </Dropdown.Item>
           )}
 
-          {row.payment_status === "invoiced" && (
+          {canManage && row.payment_status === "invoiced" && (
             <Dropdown.Item
               onSelect={() => onPay?.(row)}
               className='hover:bg-emerald-50 hover:text-emerald-600'

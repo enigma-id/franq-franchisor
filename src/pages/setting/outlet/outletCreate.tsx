@@ -8,12 +8,15 @@ import { useEnigmaUI } from "@/components";
 
 import { Save } from "lucide-react";
 import { Button, Loading } from "@/components/ui";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const OutletCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { create, createResult } = useOutlet();
   const { showToast } = useEnigmaUI();
   const { isLoading: isCreating, isSuccess, reset: resetCreate } = createResult;
+  const canManage = useCan(ACTION.outlet);
 
   useEffect(() => {
     if (isSuccess) {
@@ -34,21 +37,23 @@ const OutletCreatePage: React.FC = () => {
         subtitle="Daftarkan outlet baru ke dalam sistem Franchisor."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="outlet-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="outlet-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

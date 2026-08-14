@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UnauthorizedLayout } from "@/components/app/route-layout/UnauthorizedLayout";
 import { AuthorizedLayout } from "@/components/app/route-layout/AuthorizedLayout";
+import { PermissionGuard } from "@/components/app";
+import { MENU } from "@/utils/permissions";
 import { useAppSelector, useAppMetadata } from "@/hooks";
 
 import SignInPage from "@/pages/signin";
@@ -102,197 +104,575 @@ export function AppRoutes() {
         }
       >
         {/* Dashboard */}
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PermissionGuard permission={MENU.dashboard}>
+              <DashboardPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Setting - Outlet */}
-        <Route path="/setting/outlet" element={<OutletListPage />} />
-        <Route path="/setting/outlet/create" element={<OutletCreatePage />} />
+        <Route
+          path="/setting/outlet"
+          element={
+            <PermissionGuard permission={MENU.outlet}>
+              <OutletListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/setting/outlet/create"
+          element={
+            <PermissionGuard permission={MENU.outlet}>
+              <OutletCreatePage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/setting/outlet/update/:id"
-          element={<OutletUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.outlet}>
+              <OutletUpdatePage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/setting/type/outlet" element={<OutletTypePage />} />
+        <Route
+          path="/setting/type/outlet"
+          element={
+            <PermissionGuard permission={MENU.outletType}>
+              <OutletTypePage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Setting - POS */}
-        <Route path="/setting/pos/channel" element={<POSChannelListPage />} />
+        <Route
+          path="/setting/pos/channel"
+          element={
+            <PermissionGuard permission={MENU.posChannel}>
+              <POSChannelListPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Setting - POS Category */}
-        <Route path="/setting/pos/category" element={<POSCategoryListPage />} />
+        <Route
+          path="/setting/pos/category"
+          element={
+            <PermissionGuard permission={MENU.posCategory}>
+              <POSCategoryListPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Setting - POS Menu */}
-        <Route path="/setting/pos/menu" element={<POSMenuListPage />} />
+        <Route
+          path="/setting/pos/menu"
+          element={
+            <PermissionGuard permission={MENU.posMenu}>
+              <POSMenuListPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/setting/pos/menu/create"
-          element={<POSMenuCreatePage />}
+          element={
+            <PermissionGuard permission={MENU.posMenu}>
+              <POSMenuCreatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/setting/pos/menu/update/:id"
-          element={<POSMenuUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.posMenu}>
+              <POSMenuUpdatePage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/setting/pos/menu/:id" element={<POSMenuDetailPage />} />
+        <Route
+          path="/setting/pos/menu/:id"
+          element={
+            <PermissionGuard permission={MENU.posMenu}>
+              <POSMenuDetailPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Setting - POS Payment */}
         <Route
           path="/setting/pos/payment"
-          element={<PaymentMethodListPage />}
+          element={
+            <PermissionGuard permission={MENU.posPayment}>
+              <PaymentMethodListPage />
+            </PermissionGuard>
+          }
         />
 
         {/* Inventory - Item & Catalog */}
-        <Route path="/inventory/item" element={<InventoryItemListPage />} />
+        <Route
+          path="/inventory/item"
+          element={
+            <PermissionGuard permission={MENU.inventoryItem}>
+              <InventoryItemListPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/inventory/item/create"
-          element={<InventoryItemCreatePage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryItem}>
+              <InventoryItemCreatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/inventory/item/:id"
-          element={<InventoryItemDetailPage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryItem}>
+              <InventoryItemDetailPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/inventory/item/update/:id"
-          element={<InventoryItemUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryItem}>
+              <InventoryItemUpdatePage />
+            </PermissionGuard>
+          }
         />
 
         <Route
           path="/inventory/catalog"
-          element={<InventoryCatalogListPage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryCatalog}>
+              <InventoryCatalogListPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/inventory/catalog/create"
-          element={<InventoryCatalogCreatePage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryCatalog}>
+              <InventoryCatalogCreatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/inventory/catalog/update/:id"
-          element={<InventoryCatalogUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryCatalog}>
+              <InventoryCatalogUpdatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/inventory/catalog/:id"
-          element={<InventoryCatalogDetailPage />}
+          element={
+            <PermissionGuard permission={MENU.inventoryCatalog}>
+              <InventoryCatalogDetailPage />
+            </PermissionGuard>
+          }
         />
 
         {/* Inventory - Warehouse */}
-        <Route path="/inventory/warehouse" element={<WarehouseListPage />} />
+        <Route
+          path="/inventory/warehouse"
+          element={
+            <PermissionGuard permission={MENU.warehouse}>
+              <WarehouseListPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Production - Plan */}
-        <Route path="/production/plan" element={<ProductionPlanListPage />} />
+        <Route
+          path="/production/plan"
+          element={
+            <PermissionGuard permission={MENU.productionPlan}>
+              <ProductionPlanListPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/production/plan/create"
-          element={<ProductionPlanCreatePage />}
+          element={
+            <PermissionGuard permission={MENU.productionPlan}>
+              <ProductionPlanCreatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/production/plan/:id"
-          element={<ProductionPlanDetailPage />}
+          element={
+            <PermissionGuard permission={MENU.productionPlan}>
+              <ProductionPlanDetailPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/production/plan/update/:id"
-          element={<ProductionPlanUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.productionPlan}>
+              <ProductionPlanUpdatePage />
+            </PermissionGuard>
+          }
         />
 
         {/* Production - Demand */}
         <Route
           path="/production/demand/production"
-          element={<DemandProductionPage />}
+          element={
+            <PermissionGuard permission={MENU.demand}>
+              <DemandProductionPage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/production/demand/item" element={<DemandItemPage />} />
+        <Route
+          path="/production/demand/item"
+          element={
+            <PermissionGuard permission={MENU.demand}>
+              <DemandItemPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Purchase - Supplier */}
-        <Route path="/purchase/supplier" element={<SupplierListPage />} />
+        <Route
+          path="/purchase/supplier"
+          element={
+            <PermissionGuard permission={MENU.supplier}>
+              <SupplierListPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/purchase/supplier/create"
-          element={<SupplierCreatePage />}
+          element={
+            <PermissionGuard permission={MENU.supplier}>
+              <SupplierCreatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/purchase/supplier/update/:id"
-          element={<SupplierUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.supplier}>
+              <SupplierUpdatePage />
+            </PermissionGuard>
+          }
         />
 
         {/* Purchase - Order */}
-        <Route path="/purchase/order" element={<PurchaseOrderListPage />} />
+        <Route
+          path="/purchase/order"
+          element={
+            <PermissionGuard permission={MENU.purchaseOrder}>
+              <PurchaseOrderListPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/purchase/order/create"
-          element={<PurchaseOrderCreatePage />}
+          element={
+            <PermissionGuard permission={MENU.purchaseOrder}>
+              <PurchaseOrderCreatePage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/purchase/order/:id"
-          element={<PurchaseOrderDetailPage />}
+          element={
+            <PermissionGuard permission={MENU.purchaseOrder}>
+              <PurchaseOrderDetailPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/purchase/order/update/:id"
-          element={<PurchaseOrderUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.purchaseOrder}>
+              <PurchaseOrderUpdatePage />
+            </PermissionGuard>
+          }
         />
 
         {/* Sales - Order */}
-        <Route path="/sales/order" element={<SalesOrderListPage />} />
-        <Route path="/sales/order/create" element={<SalesOrderCreatePage />} />
+        <Route
+          path="/sales/order"
+          element={
+            <PermissionGuard permission={MENU.salesOrder}>
+              <SalesOrderListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/sales/order/create"
+          element={
+            <PermissionGuard permission={MENU.salesOrder}>
+              <SalesOrderCreatePage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/sales/order/update/:id"
-          element={<SalesOrderUpdatePage />}
+          element={
+            <PermissionGuard permission={MENU.salesOrder}>
+              <SalesOrderUpdatePage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/sales/order/:id" element={<SalesOrderDetailPage />} />
+        <Route
+          path="/sales/order/:id"
+          element={
+            <PermissionGuard permission={MENU.salesOrder}>
+              <SalesOrderDetailPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Sales - Return */}
-        <Route path="/sales/return" element={<SalesReturnListPage />} />
-        <Route path="/sales/return/:id" element={<SalesReturnDetailPage />} />
+        <Route
+          path="/sales/return"
+          element={
+            <PermissionGuard permission={MENU.salesReturn}>
+              <SalesReturnListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/sales/return/:id"
+          element={
+            <PermissionGuard permission={MENU.salesReturn}>
+              <SalesReturnDetailPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Report */}
         <Route
           path="/report/pos/outstanding"
-          element={<PosOutstandingPage />}
+          element={
+            <PermissionGuard permission={MENU.reportPosOutstanding}>
+              <PosOutstandingPage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/report/pos/settlement" element={<POSSettlementPage />} />
-        <Route path="/report/pos/settlement/daily" element={<POSSettlementDailyPage />} />
+        <Route
+          path="/report/pos/settlement"
+          element={
+            <PermissionGuard permission={MENU.reportPosSettlement}>
+              <POSSettlementPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/report/pos/settlement/daily"
+          element={
+            <PermissionGuard permission={MENU.reportPosSettlement}>
+              <POSSettlementDailyPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/report/pos/cancelled-product-sales"
-          element={<CancelledProductSalesPage />}
+          element={
+            <PermissionGuard permission={MENU.reportCancelled}>
+              <CancelledProductSalesPage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/report/pos/product-item" element={<ProductItemPage />} />
+        <Route
+          path="/report/pos/product-item"
+          element={
+            <PermissionGuard permission={MENU.reportPosProductItem}>
+              <ProductItemPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/report/b2b/product-item"
-          element={<B2BProductItemPage />}
+          element={
+            <PermissionGuard permission={MENU.reportB2BProductItem}>
+              <B2BProductItemPage />
+            </PermissionGuard>
+          }
         />
-        <Route path="/report/b2b/settlement" element={<B2BSettlementPage />} />
-        <Route path="/report/b2b/settlement/daily" element={<B2BSettlementDailyPage />} />
+        <Route
+          path="/report/b2b/settlement"
+          element={
+            <PermissionGuard permission={MENU.reportB2BSettlement}>
+              <B2BSettlementPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/report/b2b/settlement/daily"
+          element={
+            <PermissionGuard permission={MENU.reportB2BSettlement}>
+              <B2BSettlementDailyPage />
+            </PermissionGuard>
+          }
+        />
         <Route
           path="/report/inventory/product-sales"
-          element={<ProductSalesPage />}
+          element={
+            <PermissionGuard permission={MENU.reportProductSales}>
+              <ProductSalesPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/report/b2b/product-sales"
-          element={<B2BProductSalesPage />}
+          element={
+            <PermissionGuard permission={MENU.reportB2BProductSales}>
+              <B2BProductSalesPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/report/inventory/material-sales"
-          element={<RawMaterialSalesPage />}
+          element={
+            <PermissionGuard permission={MENU.reportInventoryMaterialSales}>
+              <RawMaterialSalesPage />
+            </PermissionGuard>
+          }
         />
         <Route
           path="/report/inventory/warehouse-stock"
-          element={<WarehouseStockPage />}
+          element={
+            <PermissionGuard permission={MENU.reportWarehouseStock}>
+              <WarehouseStockPage />
+            </PermissionGuard>
+          }
         />
 
-        <Route path="/withdrawal" element={<WithdrawalList />} />
-        <Route path="/withdrawal/:id" element={<WithdrawalDetail />} />
+        <Route
+          path="/withdrawal"
+          element={
+            <PermissionGuard permission={MENU.withdrawal}>
+              <WithdrawalList />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/withdrawal/:id"
+          element={
+            <PermissionGuard permission={MENU.withdrawal}>
+              <WithdrawalDetail />
+            </PermissionGuard>
+          }
+        />
 
         {/* B2B Order */}
-        <Route path="/b2b/order" element={<B2BOrderListPage />} />
-        <Route path="/b2b/order/create" element={<B2BOrderCreatePage />} />
-        <Route path="/b2b/order/:id" element={<B2BOrderDetailPage />} />
-        <Route path="/b2b/order/update/:id" element={<B2BOrderUpdatePage />} />
+        <Route
+          path="/b2b/order"
+          element={
+            <PermissionGuard permission={MENU.b2bOrder}>
+              <B2BOrderListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/b2b/order/create"
+          element={
+            <PermissionGuard permission={MENU.b2bOrder}>
+              <B2BOrderCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/b2b/order/:id"
+          element={
+            <PermissionGuard permission={MENU.b2bOrder}>
+              <B2BOrderDetailPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/b2b/order/update/:id"
+          element={
+            <PermissionGuard permission={MENU.b2bOrder}>
+              <B2BOrderUpdatePage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Outlet Topup */}
-        <Route path="/outlet-topup" element={<OutletTopupListPage />} />
-        <Route path="/outlet-topup/:id" element={<OutletTopupDetailPage />} />
+        <Route
+          path="/outlet-topup"
+          element={
+            <PermissionGuard permission={MENU.outletTopup}>
+              <OutletTopupListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/outlet-topup/:id"
+          element={
+            <PermissionGuard permission={MENU.outletTopup}>
+              <OutletTopupDetailPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* User Management */}
-        <Route path="/user" element={<UserListPage />} />
-        <Route path="/user/create" element={<UserCreatePage />} />
-        <Route path="/user/update/:id" element={<UserUpdatePage />} />
-        <Route path="/user/group" element={<UserGroupListPage />} />
-        <Route path="/user/group/create" element={<UserGroupCreatePage />} />
+        <Route
+          path="/user"
+          element={
+            <PermissionGuard permission={MENU.user}>
+              <UserListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/user/create"
+          element={
+            <PermissionGuard permission={MENU.user}>
+              <UserCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/user/update/:id"
+          element={
+            <PermissionGuard permission={MENU.user}>
+              <UserUpdatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/usergroup"
+          element={
+            <PermissionGuard permission={MENU.usergroup}>
+              <UserGroupListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/usergroup/create"
+          element={
+            <PermissionGuard permission={MENU.usergroup}>
+              <UserGroupCreatePage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Franchisor Profile */}
         <Route path="/franchisor" element={<FranchisorProfilePage />} />
 
         {/* Member - Topup Bonus */}
-        <Route path="/setting/member/topup-bonus" element={<TopupBonusPage />} />
+        <Route
+          path="/setting/member/topup-bonus"
+          element={
+            <PermissionGuard permission={MENU.topupBonus}>
+              <TopupBonusPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

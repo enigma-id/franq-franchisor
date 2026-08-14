@@ -8,10 +8,12 @@ const createTableConfig = ({
   onView,
   onApprove,
   onReject,
+  canManage,
 }: {
   onView?: (row: WithdrawalRequest) => void;
   onApprove?: (row: WithdrawalRequest) => void;
   onReject?: (row: WithdrawalRequest) => void;
+  canManage: boolean;
 }) => ({
   ...config,
   url: "/withdrawal-request",
@@ -88,7 +90,7 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
-          {row.document_status === "pending" && (
+          {canManage && row.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onApprove?.(row)}

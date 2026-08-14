@@ -15,10 +15,13 @@ import createTableConfig from "./table/return.config";
 import type { TableConfig } from "@/services/table/const";
 import type { SalesReturnDetail } from "@/services/types";
 import { useSalesReturn } from "@/services/sales/hooks";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const SalesReturnListPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.salesReturn);
   const { approve, approveResult } = useSalesReturn();
   const [selectedRow, setSelectedRow] = useState<SalesReturnDetail | null>(
     null,
@@ -30,8 +33,9 @@ const SalesReturnListPage: React.FC = () => {
       createTableConfig({
         onView: (id) => navigate(`/sales/return/detail/${id}`),
         onApprove: (row) => setSelectedRow(row),
+        canManage,
       }),
-    [navigate],
+    [navigate, canManage],
   );
 
   const Table = useTable("sales_return", tableConfig as TableConfig<unknown>);

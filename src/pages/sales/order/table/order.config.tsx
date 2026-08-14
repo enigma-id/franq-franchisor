@@ -11,6 +11,7 @@ const createTableConfig = ({
   onPublish,
   onPaid,
   filter,
+  canManage,
 }: {
   onClick?: (row: SalesOrderDetail) => void;
   onRemove?: (row: SalesOrderDetail) => void;
@@ -18,6 +19,7 @@ const createTableConfig = ({
   onPublish?: (row: SalesOrderDetail) => void;
   onPaid?: (row: SalesOrderDetail) => void;
   filter?: Record<string, unknown>;
+  canManage?: boolean;
 }) => ({
   ...config,
   url: "/sales/order",
@@ -152,7 +154,7 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          {row?.document_status === "pending" && (
+          {canManage && row?.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onPublish?.(row)}
@@ -204,7 +206,7 @@ const createTableConfig = ({
           )}
 
 
-          {row?.payment_status === "unpaid" && row?.document_status === "published" && (
+          {canManage && row?.payment_status === "unpaid" && row?.document_status === "published" && (
             <Dropdown.Item
               onSelect={() => onPaid?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"

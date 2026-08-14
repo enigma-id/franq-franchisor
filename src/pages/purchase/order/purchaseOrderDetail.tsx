@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { usePurchaseOrderGuards } from "@/hooks";
 import { GuardedButton } from "@/components/app";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 export function PurchaseOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -117,6 +119,7 @@ export function PurchaseOrderDetailPage() {
 
   const data = detail?.data as PurchaseOrderDetail;
   const guards = usePurchaseOrderGuards(data);
+  const canManage = useCan(ACTION.purchaseOrder);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -125,7 +128,8 @@ export function PurchaseOrderDetailPage() {
         title={`Order #${data?.code}`}
         backTo={() => navigate("/purchase/order")}
         action={
-          <div className="flex gap-2">
+          canManage && (
+            <div className="flex gap-2">
             <GuardedButton
               allowed={guards.canEdit}
               reason="Hanya order tipe default dengan status pending yang dapat diperbaharui (Edit)."
@@ -165,7 +169,8 @@ export function PurchaseOrderDetailPage() {
             >
               <Trash2 className="w-4 h-4" />
             </GuardedButton>
-          </div>
+            </div>
+          )
         }
       />
       <Page.Body>

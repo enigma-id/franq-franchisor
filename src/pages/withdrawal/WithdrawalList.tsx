@@ -11,12 +11,15 @@ import { useNavigate } from "react-router-dom";
 import { useWithdrawal } from "@/services/withdrawal/hooks";
 import TableFilter from "./table/withdrawal.filter";
 import { useEnigmaUI } from "@/components";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 type ActionType = "approve" | "reject";
 
 export function WithdrawalList() {
   useDocumentMeta("Permintaan Penarikan | Sukabread Franchisee", "");
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.withdrawalRequest);
   const { showToast } = useEnigmaUI();
   const { approve, approveResult, reject, rejectResult } = useWithdrawal();
   const [selectedRow, setSelectedRow] = useState<WithdrawalRequest | null>(null);
@@ -67,7 +70,8 @@ export function WithdrawalList() {
     onView: handleView,
     onApprove: (row) => openConfirm(row, "approve"),
     onReject: (row) => openConfirm(row, "reject"),
-  }), [handleView, openConfirm]);
+    canManage,
+  }), [handleView, openConfirm, canManage]);
 
   const Table = useTable("withdrawal-list", tableConfig as TableConfig<unknown>);
 

@@ -7,10 +7,13 @@ import { useSalesOrder } from "@/services/sales/hooks";
 import { Save } from "lucide-react";
 import { useEnigmaUI } from "@/components";
 import { SalesOrderForm } from "./components/orderForm";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 export function SalesOrderCreate() {
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.salesOrder);
   const { create, createResult } = useSalesOrder();
   const { isLoading: isCreating, isSuccess, data: responseData } = createResult;
 
@@ -37,21 +40,23 @@ export function SalesOrderCreate() {
         subtitle="Buat transaksi penjualan baru untuk outlet waralaba."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="sales-order-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Order
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="sales-order-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Order
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 overflow-auto p-4 md:p-6">

@@ -8,10 +8,13 @@ import createTableConfig from "./table/user.config";
 import type { UserDetail } from "@/services/types";
 import TableFilter from "./table/user.filter";
 import { useNavigate } from "react-router-dom";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const UserListPage: React.FC = () => {
   useDocumentMeta("User | Sukabread Franchisee", "");
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.user);
 
   const handleView = useCallback(
     (row: UserDetail) => navigate(`/user/update/${row.id}`),
@@ -19,8 +22,8 @@ const UserListPage: React.FC = () => {
   );
 
   const tableConfig = useMemo(
-    () => createTableConfig({ onView: handleView }),
-    [handleView],
+    () => createTableConfig({ onView: handleView, canManage }),
+    [handleView, canManage],
   );
   const Table = useTable("user-list", tableConfig as TableConfig<unknown>);
 

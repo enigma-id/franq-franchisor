@@ -1,7 +1,9 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { signout } from "@/services/auth/slice";
+import { MENU, type MenuSlug } from "@/utils/permissions";
+import { useUserPermissions, hasPermission } from "@/utils/permission";
 import {
   LayoutDashboard,
   Package,
@@ -31,6 +33,8 @@ interface MenuChild {
   label: string;
   path: string;
   icon?: React.ReactNode;
+  /** Slug permission (MENU.*) — child disembunyikan jika user tak punya. */
+  permission?: MenuSlug;
 }
 
 interface MenuItem {
@@ -38,6 +42,7 @@ interface MenuItem {
   path?: string;
   icon: React.ReactNode;
   badge?: string;
+  permission?: MenuSlug;
   children?: MenuChild[];
 }
 
@@ -55,6 +60,7 @@ const menuSections: MenuSection[] = [
         label: "Dashboard",
         path: "/dashboard",
         icon: <LayoutDashboard size={18} />,
+        permission: MENU.dashboard,
       },
     ],
   },
@@ -65,26 +71,31 @@ const menuSections: MenuSection[] = [
         label: "B2B Order",
         path: "/b2b/order",
         icon: <ShoppingBag size={18} />,
+        permission: MENU.b2bOrder,
       },
       {
         label: "Sales Order",
         path: "/sales/order",
         icon: <ShoppingCart size={18} />,
+        permission: MENU.salesOrder,
       },
       {
         label: "Sales Return",
         path: "/sales/return",
         icon: <RefreshCcw size={18} />,
+        permission: MENU.salesReturn,
       },
       {
         label: "Withdrawal",
         path: "/withdrawal",
         icon: <ArrowDownLeft size={18} />,
+        permission: MENU.withdrawal,
       },
       {
         label: "Outlet Topup",
         path: "/outlet-topup",
         icon: <Wallet size={18} />,
+        permission: MENU.outletTopup,
       },
     ],
   },
@@ -95,16 +106,19 @@ const menuSections: MenuSection[] = [
         label: "Warehouse",
         path: "/inventory/warehouse",
         icon: <Building size={18} />,
+        permission: MENU.warehouse,
       },
       {
         label: "Inventory Item",
         path: "/inventory/item",
         icon: <Package size={18} />,
+        permission: MENU.inventoryItem,
       },
       {
         label: "Inventory Catalog",
         path: "/inventory/catalog",
         icon: <Grid size={18} />,
+        permission: MENU.inventoryCatalog,
       },
     ],
   },
@@ -114,6 +128,7 @@ const menuSections: MenuSection[] = [
       {
         label: "Demand",
         icon: <Factory size={18} />,
+        permission: MENU.demand,
         children: [
           { label: "Demand Production", path: "/production/demand/production" },
           { label: "Demand Item", path: "/production/demand/item" },
@@ -123,6 +138,7 @@ const menuSections: MenuSection[] = [
         label: "Production Plan",
         path: "/production/plan",
         icon: <Factory size={18} />,
+        permission: MENU.productionPlan,
       },
     ],
   },
@@ -133,11 +149,13 @@ const menuSections: MenuSection[] = [
         label: "Supplier",
         path: "/purchase/supplier",
         icon: <Users size={18} />,
+        permission: MENU.supplier,
       },
       {
         label: "Purchase Order",
         path: "/purchase/order",
         icon: <Receipt size={18} />,
+        permission: MENU.purchaseOrder,
       },
     ],
   },
@@ -148,13 +166,30 @@ const menuSections: MenuSection[] = [
         label: "POS Report",
         icon: <Monitor size={18} />,
         children: [
-          { label: "Outstanding", path: "/report/pos/outstanding" },
-          { label: "Settlement", path: "/report/pos/settlement" },
-          { label: "Product Sales", path: "/report/inventory/product-sales" },
-          { label: "Menu", path: "/report/pos/product-item" },
+          {
+            label: "Outstanding",
+            path: "/report/pos/outstanding",
+            permission: MENU.reportPosOutstanding,
+          },
+          {
+            label: "Settlement",
+            path: "/report/pos/settlement",
+            permission: MENU.reportPosSettlement,
+          },
+          {
+            label: "Product Sales",
+            path: "/report/inventory/product-sales",
+            permission: MENU.reportProductSales,
+          },
+          {
+            label: "Menu",
+            path: "/report/pos/product-item",
+            permission: MENU.reportPosProductItem,
+          },
           {
             label: "Transaction Cancel",
             path: "/report/pos/cancelled-product-sales",
+            permission: MENU.reportCancelled,
           },
         ],
       },
@@ -162,19 +197,36 @@ const menuSections: MenuSection[] = [
         label: "B2B Report",
         icon: <Building size={18} />,
         children: [
-          { label: "Settlement B2B", path: "/report/b2b/settlement" },
-          { label: "Product Sales B2B", path: "/report/b2b/product-sales" },
-          { label: "Menu B2B", path: "/report/b2b/product-item" },
+          {
+            label: "Settlement B2B",
+            path: "/report/b2b/settlement",
+            permission: MENU.reportB2BSettlement,
+          },
+          {
+            label: "Product Sales B2B",
+            path: "/report/b2b/product-sales",
+            permission: MENU.reportB2BProductSales,
+          },
+          {
+            label: "Menu B2B",
+            path: "/report/b2b/product-item",
+            permission: MENU.reportB2BProductItem,
+          },
         ],
       },
       {
         label: "Inventory & Sales",
         icon: <BarChart3 size={18} />,
         children: [
-          { label: "Product Sales", path: "/report/inventory/material-sales" },
+          {
+            label: "Product Sales",
+            path: "/report/inventory/material-sales",
+            permission: MENU.reportInventoryMaterialSales,
+          },
           {
             label: "Warehouse Stock",
             path: "/report/inventory/warehouse-stock",
+            permission: MENU.reportWarehouseStock,
           },
         ],
       },
@@ -192,23 +244,32 @@ const menuSections: MenuSection[] = [
         label: "Schema Bonus Topup",
         path: "/setting/member/topup-bonus",
         icon: <Gift size={18} />,
+        permission: MENU.topupBonus,
+      },
+      {
+        label: "User Management",
+        icon: <Users size={18} />,
+        children: [
+          { label: "User", path: "/user", permission: MENU.user },
+          { label: "Usergroup", path: "/usergroup", permission: MENU.usergroup },
+        ],
       },
       {
         label: "Outlet",
         icon: <Store size={18} />,
         children: [
-          { label: "Outlet List", path: "/setting/outlet" },
-          { label: "Tipe Outlet", path: "/setting/type/outlet" },
+          { label: "Outlet List", path: "/setting/outlet", permission: MENU.outlet },
+          { label: "Tipe Outlet", path: "/setting/type/outlet", permission: MENU.outletType },
         ],
       },
       {
         label: "POS",
         icon: <Monitor size={18} />,
         children: [
-          { label: "Channel", path: "/setting/pos/channel" },
-          { label: "Category", path: "/setting/pos/category" },
-          { label: "Menu", path: "/setting/pos/menu" },
-          { label: "Payment", path: "/setting/pos/payment" },
+          { label: "Channel", path: "/setting/pos/channel", permission: MENU.posChannel },
+          { label: "Category", path: "/setting/pos/category", permission: MENU.posCategory },
+          { label: "Menu", path: "/setting/pos/menu", permission: MENU.posMenu },
+          { label: "Payment", path: "/setting/pos/payment", permission: MENU.posPayment },
         ],
       },
     ],
@@ -234,6 +295,26 @@ function SidebarSection({
 }
 
 // ─── Nav helpers ──────────────────────────────────────────────────────────────
+
+/** Item diizinkan jika tanpa permission (selalu tampil) atau user punya slug. */
+function isItemAllowed(userPermissions: string[] | undefined, slug?: MenuSlug) {
+  return slug === undefined || hasPermission(userPermissions, slug);
+}
+
+function isChildAllowed(
+  userPermissions: string[] | undefined,
+  child: MenuChild,
+) {
+  return isItemAllowed(userPermissions, child.permission);
+}
+
+/** Parent item tetap tampil jika minimal satu child diizinkan. */
+function isParentAllowed(
+  userPermissions: string[] | undefined,
+  item: MenuItem,
+) {
+  return item.children!.some((c) => isChildAllowed(userPermissions, c));
+}
 
 function isPathActive(currentPath: string, itemPath?: string): boolean {
   if (!itemPath) return false;
@@ -373,12 +454,27 @@ export function AuthorizedLayout() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((s) => s.auth.session);
+  const userPermissions = useUserPermissions();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSignOut = () => {
     dispatch(signout());
     navigate("/signin");
   };
+
+  // Filter menu berdasarkan permission — super admin (tanpa permission) lihat semua.
+  const visibleSections = useMemo(() => {
+    return menuSections
+      .map((section) => {
+        const items = section.items.filter((item) =>
+          item.children
+            ? isParentAllowed(userPermissions, item)
+            : isItemAllowed(userPermissions, item.permission),
+        );
+        return items.length > 0 ? { ...section, items } : null;
+      })
+      .filter((s): s is MenuSection => s !== null);
+  }, [userPermissions]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-base-200">
@@ -441,7 +537,7 @@ export function AuthorizedLayout() {
           className="flex-1 overflow-y-auto pb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pt-4"
           aria-label="Sidebar navigation"
         >
-          {menuSections.map((section) => (
+          {visibleSections.map((section) => (
             <SidebarSection key={section.label} label={section.label}>
               <div className="space-y-1">
                 {section.items.map((item) =>

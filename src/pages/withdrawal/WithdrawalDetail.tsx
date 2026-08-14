@@ -8,10 +8,13 @@ import { Badge, Button, Modal, Input, Loading } from "@/components/ui";
 import { Send, XCircle, AlertCircle } from "lucide-react";
 import { useWithdrawal } from "@/services/withdrawal/hooks";
 import { useEnigmaUI } from "@/components";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 export function WithdrawalDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.withdrawalRequest);
   const { showToast } = useEnigmaUI();
   const { show, showResult, approve, approveResult, reject, rejectResult } =
     useWithdrawal();
@@ -111,7 +114,7 @@ export function WithdrawalDetail() {
         subtitle={`ID: ${data?.id ?? ""}`}
         backTo={() => navigate(-1)}
         action={
-          isPending ? (
+          isPending && canManage ? (
             <div className="flex items-center gap-2">
               <Button
                 variant="success"

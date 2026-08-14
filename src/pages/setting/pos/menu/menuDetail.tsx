@@ -10,11 +10,14 @@ import { Modal, useEnigmaUI } from "@/components";
 import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
 import Label from "@/components/app/print/label";
 import { usePrintWindow } from "@/utils/usePrintWindow";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const POSMenuDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { openModal, closeModal } = useEnigmaUI();
+  const canManage = useCan(ACTION.posMenu);
   const { show, showResult } = usePOSMenu();
   const { data, isLoading } = showResult;
 
@@ -127,12 +130,14 @@ const POSMenuDetailPage: React.FC = () => {
         backTo={() => navigate("/setting/pos/menu")}
         action={
           <div className="flex gap-4">
-            <Button
-              variant="primary"
-              onClick={() => navigate(`/setting/pos/menu/update/${id}`)}
-            >
-              Edit Menu
-            </Button>
+            {canManage && (
+              <Button
+                variant="primary"
+                onClick={() => navigate(`/setting/pos/menu/update/${id}`)}
+              >
+                Edit Menu
+              </Button>
+            )}
             <Button variant="primary" onClick={handleOpenPrint}>
               Print
             </Button>
@@ -339,14 +344,16 @@ const POSMenuDetailPage: React.FC = () => {
                     </div>
                     <h2 className="card-section-title">Outlet Types</h2>
                   </div>
-                  <Button
-                    variant="primary"
-                    styleType="ghost"
-                    onClick={() => openOutletType(menu)}
-                    size="sm"
-                  >
-                    <Edit size={14} />
-                  </Button>
+                  {canManage && (
+                    <Button
+                      variant="primary"
+                      styleType="ghost"
+                      onClick={() => openOutletType(menu)}
+                      size="sm"
+                    >
+                      <Edit size={14} />
+                    </Button>
+                  )}
                 </div>
 
                 <div className="flex-1 overflow-auto">

@@ -14,12 +14,15 @@ import {
   Edit,
 } from "lucide-react";
 import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const InventoryCatalogDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { openModal, closeModal } = useEnigmaUI();
   const { show, showResult } = useInventoryCatalog();
+  const canManage = useCan(ACTION.catalog);
   const { isLoading, data } = showResult;
 
   const catalog = data?.data as InventoryCatalogDetail;
@@ -64,12 +67,14 @@ const InventoryCatalogDetailPage: React.FC = () => {
         title={catalog.name}
         backTo={() => navigate("/inventory/catalog")}
         action={
-          <Button
-            variant="primary"
-            onClick={() => navigate(`/inventory/catalog/update/${id}`)}
-          >
-            Edit Katalog
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              onClick={() => navigate(`/inventory/catalog/update/${id}`)}
+            >
+              Edit Katalog
+            </Button>
+          )
         }
       />
       <Page.Body className="p-6 space-y-6">
@@ -361,14 +366,16 @@ const InventoryCatalogDetailPage: React.FC = () => {
                 </div>
                 <h2 className="card-section-title">Outlet Types</h2>
               </div>
-              <Button
-                variant="primary"
-                styleType="ghost"
-                onClick={() => openOutletType(catalog)}
-                size="sm"
-              >
-                <Edit size={14} />
-              </Button>
+              {canManage && (
+                <Button
+                  variant="primary"
+                  styleType="ghost"
+                  onClick={() => openOutletType(catalog)}
+                  size="sm"
+                >
+                  <Edit size={14} />
+                </Button>
+              )}
             </div>
 
             <div className="flex-1 overflow-auto">

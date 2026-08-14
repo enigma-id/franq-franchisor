@@ -10,6 +10,8 @@ import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { useSalesOrderGuards } from "@/hooks";
 import { GuardedButton } from "@/components/app";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 import {
   ArrowLeft,
   Store,
@@ -53,6 +55,7 @@ export default function SalesOrderDetailPage() {
   } | null>(null);
 
   const guards = useSalesOrderGuards(order);
+  const canManage = useCan(ACTION.salesOrder);
 
   useEffect(() => {
     if (id) show({ id });
@@ -167,7 +170,8 @@ export default function SalesOrderDetailPage() {
         title="Sales Order Detail"
         backTo={() => navigate(-1)}
         action={
-          <div className="flex gap-2">
+          canManage && (
+            <div className="flex gap-2">
             <GuardedButton
               allowed={guards.canEdit}
               reason="Hanya order tipe default dengan status pending yang dapat diperbaharui (Edit)."
@@ -207,7 +211,8 @@ export default function SalesOrderDetailPage() {
             >
               <Trash2 className="w-4 h-4" />
             </GuardedButton>
-          </div>
+            </div>
+          )
         }
       />
       <Page.Body>

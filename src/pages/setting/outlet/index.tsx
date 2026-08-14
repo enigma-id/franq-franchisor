@@ -12,10 +12,13 @@ import { useOutlet } from "@/services/outlet/hooks";
 import type { TableConfig } from "@/services/table/const";
 import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal.tsx";
 import type { OutletDetail } from "@/services/types/outlet.ts";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const OutletListPage: React.FC = () => {
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.outlet);
 
   const {
     remove: removeOutlet,
@@ -48,8 +51,9 @@ const OutletListPage: React.FC = () => {
         },
         onChangeChannel: (row) => openOutletType(row),
         onToggleActive: (row: any) => handleToggleActive(row),
+        canManage,
       }),
-    [],
+    [canManage],
   );
 
   const Table = useTable("outlet-list", tableConfig as TableConfig<unknown>);
@@ -133,14 +137,16 @@ const OutletListPage: React.FC = () => {
             </p>
           </Modal.Body>
           <Modal.Footer className="flex gap-2">
-            <Button
-              className="flex-1 rounded-xl"
-              variant="error"
-              onClick={() => handleDelete(row)}
-              isLoading={isDeleting}
-            >
-              Hapus
-            </Button>
+            {canManage && (
+              <Button
+                className="flex-1 rounded-xl"
+                variant="error"
+                onClick={() => handleDelete(row)}
+                isLoading={isDeleting}
+              >
+                Hapus
+              </Button>
+            )}
             <Button
               className="flex-1 rounded-xl"
               styleType="outline"
@@ -169,13 +175,15 @@ const OutletListPage: React.FC = () => {
         title="Daftar Outlet"
         subtitle="Kelola semua outlet yang terdaftar di sistem."
         action={
-          <Button
-            variant="primary"
-            onClick={() => navigate("/setting/outlet/create")}
-          >
-            <Plus size={18} />
-            Tambah Outlet
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              onClick={() => navigate("/setting/outlet/create")}
+            >
+              <Plus size={18} />
+              Tambah Outlet
+            </Button>
+          )
         }
       />
 
