@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UnauthorizedLayout } from "@/components/app/route-layout/UnauthorizedLayout";
@@ -5,6 +6,7 @@ import { AuthorizedLayout } from "@/components/app/route-layout/AuthorizedLayout
 import { PermissionGuard } from "@/components/app";
 import { MENU } from "@/utils/permissions";
 import { useAppSelector, useAppMetadata } from "@/hooks";
+import { useAuth } from "@/services/auth/hooks";
 
 import SignInPage from "@/pages/signin";
 import SignUpPage from "@/pages/signup";
@@ -74,7 +76,19 @@ import TopupBonusPage from "@/pages/setting/member/topupBonus";
 
 export function AppRoutes() {
   useAppMetadata();
+  const { loadProfile } = useAuth();
   const isAuthenticated = useAppSelector((s) => s.auth.authenticated);
+
+  // Saat refresh halaman (session ter-rehydrate dari persist), fetch ulang
+  // /profile/me supaya permission & usergroup_id user selalu fresh.
+  // Ref guard: cukup sekali per boot, jangan loop saat session di-update.
+  const didFetchProfile = useRef(false);
+  useEffect(() => {
+    if (isAuthenticated && !didFetchProfile.current) {
+      didFetchProfile.current = true;
+      loadProfile();
+    }
+  }, [isAuthenticated, loadProfile]);
 
   if (!isAuthenticated) {
     return (
