@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
-import { Badge } from "@/components/ui/badge";
-import { Dropdown } from "@/components/ui";
-import { Pencil, MoreVertical } from "lucide-react";
+import { Dropdown, Toggle } from "@/components/ui";
+import { Pencil, Trash, MoreVertical } from "lucide-react";
 import type { UserGroupDetail } from "@/services/types";
 
 const createTableConfig = ({
   onEdit,
+  onRemove,
+  onToggleActive,
   canManage,
 }: {
   onEdit?: (row: UserGroupDetail) => void;
+  onRemove?: (row: UserGroupDetail) => void;
+  onToggleActive?: (row: UserGroupDetail) => void;
   canManage?: boolean;
 }) => ({
   ...config,
@@ -22,15 +25,15 @@ const createTableConfig = ({
       class: "text-center",
       headerClass: "text-center",
       component: (row: UserGroupDetail) => (
-        <Badge variant={row.is_active ? "success" : "error"}>{row.is_active ? "Aktif" : "Nonaktif"}</Badge>
-      ),
-    },
-    created_at: {
-      title: "Dibuat",
-      sortable: true,
-      class: "text-sm",
-      component: (row: UserGroupDetail) => (
-        <span>{new Date(row.created_at).toLocaleDateString("id-ID")}</span>
+        <div className="flex justify-center items-center">
+          <Toggle
+            checked={!!row.is_active}
+            onChange={() => onToggleActive?.(row)}
+            variant="success"
+            size="sm"
+            disabled={!canManage}
+          />
+        </div>
       ),
     },
     action: {
@@ -58,10 +61,21 @@ const createTableConfig = ({
                   <Pencil className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Edit</span>
-                  <span className="text-[11px] text-slate-400">
-                    Ubah usergroup &amp; permission
-                  </span>
+                  <span className="font-bold text-[13px]">Update Usergroup</span>
+                </div>
+              </button>
+            </Dropdown.Item>
+            <div className="my-1 border-t border-slate-50"></div>
+            <Dropdown.Item
+              onSelect={() => onRemove?.(row)}
+              className="hover:bg-red-50 hover:text-red-600"
+            >
+              <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
+                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                  <Trash className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">Delete</span>
                 </div>
               </button>
             </Dropdown.Item>

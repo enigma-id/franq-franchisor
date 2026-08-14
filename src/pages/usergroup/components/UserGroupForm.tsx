@@ -64,6 +64,10 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
     });
   };
 
+  // Ubah slug module → label terbaca, mis. "report.warehouse-stock" → "report warehouse stock"
+  const humanizeLabel = (slug: string) =>
+    slug.split(".").join(" ").split("-").join(" ").trim();
+
   const handleToggleModule = (perms: PermissionItem[], checked: boolean) => {
     setCurrentPermissionIds((prev) => {
       let next = [...prev];
@@ -165,7 +169,7 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
                         />
                       </div>
                       <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
-                        {service} Service
+                        {humanizeLabel(service)} Service
                       </h4>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -226,7 +230,7 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
                                 htmlFor={`mod-${service}-${module}`}
                                 className="ml-3 text-xs font-semibold text-gray-800 capitalize cursor-pointer"
                               >
-                                {module}
+                                {humanizeLabel(module)}
                               </label>
                             </div>
 

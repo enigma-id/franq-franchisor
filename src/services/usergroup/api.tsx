@@ -44,6 +44,22 @@ export const userGroupApi = createApi({
         method: "DELETE",
       }),
     }),
+
+    activateUserGroup: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/usergroup/${id}/activate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    deactivateUserGroup: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/usergroup/${id}/deactivate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -53,4 +69,6 @@ export const {
   useCreateUserGroupMutation,
   useUpdateUserGroupMutation,
   useDeleteUserGroupMutation,
+  useActivateUserGroupMutation,
+  useDeactivateUserGroupMutation,
 } = userGroupApi;

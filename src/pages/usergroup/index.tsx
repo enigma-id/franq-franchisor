@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Page } from "@/components/app/layout";
 import { Button, Drawer } from "@/components/ui";
 import useTable from "@/services/table/hooks";
@@ -9,31 +9,58 @@ import createTableConfig from "./table/group.config";
 import { useUserGroup } from "@/services/usergroup/hooks";
 import { useEnigmaUI } from "@/components";
 import { UserGroupForm } from "./components/UserGroupForm";
-import { Save, ShieldCheck } from "lucide-react";
+import { Save, ShieldCheck, Trash2 } from "lucide-react";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import type { UserGroupDetail } from "@/services/types";
+import { Modal } from "@/components/ui";
 
 type DrawerMode = "create" | "edit";
 
 const UserGroupListPage: React.FC = () => {
   useDocumentMeta("Usergroup | Sukabread Franchisee", "");
   const { showToast } = useEnigmaUI();
-  const { create, createResult, show, update, updateResult } = useUserGroup();
+  const {
+    create,
+    createResult,
+    show,
+    update,
+    updateResult,
+    remove,
+    removeResult,
+    activate,
+    activateResult,
+    deactivate,
+    deactivateResult,
+  } = useUserGroup();
   const canManage = useCan(ACTION.usergroup);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>("create");
   const [editRow, setEditRow] = useState<UserGroupDetail | null>(null);
   const [editData, setEditData] = useState<any | null>(null);
+  const [deleteRow, setDeleteRow] = useState<UserGroupDetail | null>(null);
+
+  const handleToggleActive = useCallback(
+    (row: UserGroupDetail) => {
+      if (row.is_active) {
+        deactivate({ id: row.id });
+      } else {
+        activate({ id: row.id });
+      }
+    },
+    [activate, deactivate],
+  );
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
         onEdit: (row) => openEdit(row),
+        onRemove: (row) => setDeleteRow(row),
+        onToggleActive: handleToggleActive,
         canManage,
       }),
-    [canManage],
+    [canManage, handleToggleActive],
   );
   const Table = useTable(
     "user-group-list",
@@ -107,7 +134,51 @@ const UserGroupListPage: React.FC = () => {
     [editRow, update, showToast, closeDrawer, Table],
   );
 
-  const drawerTitle = drawerMode === "create" ? "Tambah Usergroup" : "Edit Usergroup";
+  const handleDelete = useCallback(async () => {
+    if (!deleteRow) return;
+    try {
+      await remove({ id: deleteRow.id });
+      showToast({
+        message: "Usergroup berhasil dihapus",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      setDeleteRow(null);
+      Table.boot();
+      removeResult.reset?.();
+    } catch {
+      /* handled */
+    }
+  }, [deleteRow, remove, showToast, Table, removeResult]);
+
+  useEffect(() => {
+    if (activateResult?.isSuccess) {
+      showToast({
+        message: "Usergroup berhasil diaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      activateResult.reset?.();
+    }
+  }, [activateResult, showToast, Table]);
+
+  useEffect(() => {
+    if (deactivateResult?.isSuccess) {
+      showToast({
+        message: "Usergroup berhasil dinonaktifkan",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      Table.boot();
+      deactivateResult.reset?.();
+    }
+  }, [deactivateResult, showToast, Table]);
+
+  const drawerTitle = drawerMode === "create" ? "Tambah Usergroup" : "Update Usergroup";
   const drawerSubtitle =
     drawerMode === "create"
       ? "Buat usergroup baru."
@@ -178,6 +249,35 @@ const UserGroupListPage: React.FC = () => {
           </div>
         </div>
       </Drawer>
+
+      {/* Modal: konfirmasi hapus usergroup */}
+      <Modal.Wrapper
+        open={!!deleteRow}
+        onClose={() => setDeleteRow(null)}
+        closeOnOutsideClick={false}
+      >
+        <Modal.Header>
+          <div className="text-lg font-bold text-slate-900">Hapus Usergroup</div>
+        </Modal.Header>
+        <Modal.Body className="text-sm text-slate-600">
+          Apakah Anda yakin ingin menghapus usergroup{" "}
+          <strong>{deleteRow?.name}</strong>? Tindakan ini tidak dapat
+          dibatalkan.
+        </Modal.Body>
+        <Modal.Footer className="flex justify-end gap-2">
+          <Button variant="secondary" onClick={() => setDeleteRow(null)}>
+            Batal
+          </Button>
+          <Button
+            variant="error"
+            onClick={handleDelete}
+            isLoading={removeResult?.isLoading}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Hapus
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
     </Page>
   );
 };
