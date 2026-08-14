@@ -5,6 +5,7 @@ export * from "./dashboard";
 export * from "./franchisor";
 export * from "./inventory";
 export * from "./outlet";
+export * from "./permission";
 export * from "./pos";
 export * from "./production";
 export * from "./purchase";

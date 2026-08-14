@@ -29,7 +29,8 @@ export interface UserDetail extends UserBase {
 
 export interface UserGroupBase {
   name: string;
-  permissions: Record<string, unknown>;
+  /** Array id permission (dari GET /permission) yang dipilih untuk grup. */
+  permissions: string[];
 }
 
 export type UserGroupCreateRequest = UserGroupBase;

@@ -54,6 +54,7 @@ const persistConfig = {
     "outletTopupApi",
     "userApi",
     "userGroupApi",
+    "permissionApi",
   ],
 };
 
