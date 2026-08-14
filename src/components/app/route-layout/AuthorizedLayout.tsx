@@ -102,16 +102,16 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    label: "Inventory & Warehouse",
+    label: "Master Data",
     items: [
       {
-        label: "Inventory Item",
+        label: "Item",
         path: "/inventory/item",
         icon: <Package size={18} />,
         permission: MENU.inventoryItem,
       },
       {
-        label: "Inventory Catalog",
+        label: "Catalog",
         path: "/inventory/catalog",
         icon: <Grid size={18} />,
         permission: MENU.inventoryCatalog,
@@ -341,8 +341,12 @@ function isParentAllowed(
   item: MenuItem,
   isSuperAdmin: boolean,
 ) {
-  return item.children!.some((c) =>
-    isItemAllowed(userPermissions, c, isSuperAdmin),
+  return item.children!.some(
+    (c) =>
+      // Child punya permission sendiri → gate sendiri.
+      // Child tanpa permission → mewarisi permission parent (mis. Demand).
+      isItemAllowed(userPermissions, c, isSuperAdmin) &&
+      (c.permission !== undefined || isItemAllowed(userPermissions, item, isSuperAdmin)),
   );
 }
 
@@ -402,14 +406,24 @@ function NavItem({
 function ParentItem({
   item,
   onNavigate,
+  userPermissions,
+  isSuperAdmin,
 }: {
   item: MenuItem;
   onNavigate: () => void;
+  userPermissions: string[] | undefined;
+  isSuperAdmin: boolean;
 }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
+  const visibleChildren = item.children?.filter(
+    (c) =>
+      isItemAllowed(userPermissions, c, isSuperAdmin) &&
+      (c.permission !== undefined ||
+        isItemAllowed(userPermissions, item, isSuperAdmin)),
+  );
   const isChildActive =
-    item.children?.some((c) => isPathActive(location.pathname, c.path)) ??
+    visibleChildren?.some((c) => isPathActive(location.pathname, c.path)) ??
     false;
 
   return (
@@ -451,7 +465,7 @@ function ParentItem({
         }`}
       >
         <div className='ml-9 pl-5 border-l border-base-300 space-y-1 py-1 mr-4'>
-          {item.children!.map((child) => {
+          {(visibleChildren ?? []).map((child) => {
             const isActive = isPathActive(location.pathname, child.path);
             return (
               <NavLink
@@ -578,6 +592,8 @@ export function AuthorizedLayout() {
                       key={item.label}
                       item={item}
                       onNavigate={() => setSidebarOpen(false)}
+                      userPermissions={userPermissions}
+                      isSuperAdmin={isSuperAdmin}
                     />
                   ) : (
                     <NavItem
