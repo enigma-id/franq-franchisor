@@ -105,12 +105,6 @@ const menuSections: MenuSection[] = [
     label: "Inventory & Warehouse",
     items: [
       {
-        label: "Warehouse",
-        path: "/inventory/warehouse",
-        icon: <Building size={18} />,
-        permission: MENU.warehouse,
-      },
-      {
         label: "Inventory Item",
         path: "/inventory/item",
         icon: <Package size={18} />,
@@ -254,25 +248,53 @@ const menuSections: MenuSection[] = [
         icon: <Users size={18} />,
         children: [
           { label: "User", path: "/user", permission: MENU.user },
-          { label: "Usergroup", path: "/usergroup", permission: MENU.usergroup },
+          {
+            label: "Usergroup",
+            path: "/usergroup",
+            permission: MENU.usergroup,
+          },
         ],
       },
       {
         label: "Outlet",
         icon: <Store size={18} />,
         children: [
-          { label: "Outlet List", path: "/setting/outlet", permission: MENU.outlet },
-          { label: "Tipe Outlet", path: "/setting/type/outlet", permission: MENU.outletType },
+          {
+            label: "Outlet List",
+            path: "/setting/outlet",
+            permission: MENU.outlet,
+          },
+          {
+            label: "Tipe Outlet",
+            path: "/setting/type/outlet",
+            permission: MENU.outletType,
+          },
         ],
       },
       {
         label: "POS",
         icon: <Monitor size={18} />,
         children: [
-          { label: "Channel", path: "/setting/pos/channel", permission: MENU.posChannel },
-          { label: "Category", path: "/setting/pos/category", permission: MENU.posCategory },
-          { label: "Menu", path: "/setting/pos/menu", permission: MENU.posMenu },
-          { label: "Payment", path: "/setting/pos/payment", permission: MENU.posPayment },
+          {
+            label: "Channel",
+            path: "/setting/pos/channel",
+            permission: MENU.posChannel,
+          },
+          {
+            label: "Category",
+            path: "/setting/pos/category",
+            permission: MENU.posCategory,
+          },
+          {
+            label: "Menu",
+            path: "/setting/pos/menu",
+            permission: MENU.posMenu,
+          },
+          {
+            label: "Payment",
+            path: "/setting/pos/payment",
+            permission: MENU.posPayment,
+          },
         ],
       },
     ],
@@ -288,8 +310,8 @@ function SidebarSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-8">
-      <p className="px-6 mb-3 text-[11px] font-bold uppercase tracking-widest text--base-content/60 select-none">
+    <div className='mb-8'>
+      <p className='px-6 mb-3 text-[11px] font-bold uppercase tracking-widest text--base-content/60 select-none'>
         {label}
       </p>
       {children}
@@ -307,7 +329,10 @@ function isItemAllowed(
 ) {
   // Item khusus super admin (mis. Profil Franchisor) hanya utk user tanpa usergroup
   if (item.superAdminOnly) return isSuperAdmin;
-  return item.permission === undefined || hasPermission(userPermissions, item.permission);
+  return (
+    item.permission === undefined ||
+    hasPermission(userPermissions, item.permission)
+  );
 }
 
 /** Parent item tetap tampil jika minimal satu child diizinkan. */
@@ -316,7 +341,9 @@ function isParentAllowed(
   item: MenuItem,
   isSuperAdmin: boolean,
 ) {
-  return item.children!.some((c) => isItemAllowed(userPermissions, c, isSuperAdmin));
+  return item.children!.some((c) =>
+    isItemAllowed(userPermissions, c, isSuperAdmin),
+  );
 }
 
 function isPathActive(currentPath: string, itemPath?: string): boolean {
@@ -330,8 +357,8 @@ function ActivePill({ active }: { active: boolean }) {
   if (!active) return null;
   return (
     <span
-      className="absolute right-0 top-1/2 -translate-y-1/2 w-[4px] h-[60%] bg-primary rounded-l-full"
-      aria-hidden="true"
+      className='absolute right-0 top-1/2 -translate-y-1/2 w-[4px] h-[60%] bg-primary rounded-l-full'
+      aria-hidden='true'
     />
   );
 }
@@ -358,7 +385,7 @@ function NavItem({
       >
         {item.icon}
       </span>
-      <span className="flex-1 truncate tracking-wide">{item.label}</span>
+      <span className='flex-1 truncate tracking-wide'>{item.label}</span>
       <ActivePill active={isActive} />
       {item.badge && (
         <span
@@ -382,12 +409,11 @@ function ParentItem({
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const isChildActive =
-    item.children?.some(
-      (c) => isPathActive(location.pathname, c.path),
-    ) ?? false;
+    item.children?.some((c) => isPathActive(location.pathname, c.path)) ??
+    false;
 
   return (
-    <div className="mb-1">
+    <div className='mb-1'>
       {/* Parent button */}
       <button
         onClick={() => setExpanded((p) => !p)}
@@ -409,7 +435,7 @@ function ParentItem({
         >
           {item.icon}
         </span>
-        <span className="flex-1 text-left truncate tracking-wide">
+        <span className='flex-1 text-left truncate tracking-wide'>
           {item.label}
         </span>
         <ChevronDown
@@ -424,7 +450,7 @@ function ParentItem({
           expanded ? "max-h-96 opacity-100 mt-2" : "max-h-0 opacity-0 mt-0"
         }`}
       >
-        <div className="ml-9 pl-5 border-l border-base-300 space-y-1 py-1 mr-4">
+        <div className='ml-9 pl-5 border-l border-base-300 space-y-1 py-1 mr-4'>
           {item.children!.map((child) => {
             const isActive = isPathActive(location.pathname, child.path);
             return (
@@ -441,7 +467,7 @@ function ParentItem({
                     {child.icon}
                   </span>
                 )}
-                <span className="truncate tracking--wide">{child.label}</span>
+                <span className='truncate tracking--wide'>{child.label}</span>
                 <ActivePill active={isActive} />
               </NavLink>
             );
@@ -483,19 +509,19 @@ export function AuthorizedLayout() {
   }, [userPermissions, isSuperAdmin]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-base-200">
+    <div className='flex h-screen overflow-hidden bg-base-200'>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-[2px]"
+          className='fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-[2px]'
           onClick={() => setSidebarOpen(false)}
-          aria-hidden="true"
+          aria-hidden='true'
         />
       )}
 
       {/* Sidebar — light primary tinted base */}
       <aside
-        aria-label="Main navigation"
+        aria-label='Main navigation'
         className={`
           fixed lg:static inset-y-0 left-0 z-40
           w-[270px] bg-[#F7F0ED] flex flex-col border-r border-primary/10
@@ -508,31 +534,31 @@ export function AuthorizedLayout() {
         }}
       >
         {/* Logo / Branding */}
-        <div className="relative flex items-center gap-3 px-6 py-8 shrink-0 border-b border-primary/10">
+        <div className='relative flex items-center gap-3 px-6 py-8 shrink-0 border-b border-primary/10'>
           {/* Brand icon */}
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white shadow-sm flex-shrink-0 overflow-hidden border border-primary/20 p-1">
+          <div className='w-10 h-10 rounded-2xl flex items-center justify-center bg-white shadow-sm flex-shrink-0 overflow-hidden border border-primary/20 p-1'>
             <img
-              src="/rabbit.png"
-              alt="Logo"
-              className="w-full h-full object-contain drop-shadow-sm"
+              src='/rabbit.png'
+              alt='Logo'
+              className='w-full h-full object-contain drop-shadow-sm'
             />
           </div>
 
           {/* Brand text */}
-          <div className="min-w-0">
-            <span className="font-black text-base-content text-[18px] leading-tight whitespace-nowrap tracking-wider uppercase">
+          <div className='min-w-0'>
+            <span className='font-black text-base-content text-[18px] leading-tight whitespace-nowrap tracking-wider uppercase'>
               Franchisor
             </span>
-            <span className="block text-[10px] text-base-content/60 whitespace-nowrap font-bold tracking-widest mt-0.5 uppercase">
+            <span className='block text-[10px] text-base-content/60 whitespace-nowrap font-bold tracking-widest mt-0.5 uppercase'>
               Portal Manajemen
             </span>
           </div>
 
           {/* Close button — mobile only */}
           <button
-            className="ml-auto p-1.5 rounded-lg text-base-content/60 hover:text-primary hover:bg-base-200 transition-colors cursor-pointer lg:hidden"
+            className='ml-auto p-1.5 rounded-lg text-base-content/60 hover:text-primary hover:bg-base-200 transition-colors cursor-pointer lg:hidden'
             onClick={() => setSidebarOpen(false)}
-            aria-label="Close sidebar"
+            aria-label='Close sidebar'
           >
             <X size={18} />
           </button>
@@ -540,12 +566,12 @@ export function AuthorizedLayout() {
 
         {/* Scrollable nav */}
         <nav
-          className="flex-1 overflow-y-auto pb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pt-4"
-          aria-label="Sidebar navigation"
+          className='flex-1 overflow-y-auto pb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pt-4'
+          aria-label='Sidebar navigation'
         >
           {visibleSections.map((section) => (
             <SidebarSection key={section.label} label={section.label}>
-              <div className="space-y-1">
+              <div className='space-y-1'>
                 {section.items.map((item) =>
                   item.children ? (
                     <ParentItem
@@ -567,24 +593,24 @@ export function AuthorizedLayout() {
         </nav>
 
         {/* User footer */}
-        <div className="p-5 shrink-0 border-t border-primary/10">
-          <div className="flex items-center gap-3 p-2.5 rounded-2xl border border-primary/10 bg-primary/5">
+        <div className='p-5 shrink-0 border-t border-primary/10'>
+          <div className='flex items-center gap-3 p-2.5 rounded-2xl border border-primary/10 bg-primary/5'>
             {/* Avatar */}
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary text-primary-content text-[15px] font-black flex-1shrink-0 shadow-sm">
+            <div className='w-10 h-10 rounded-xl flex items-center justify-center bg-primary text-primary-content text-[15px] font-black flex-1shrink-0 shadow-sm'>
               {user?.user?.name?.charAt(0)?.toUpperCase() ?? "U"}
             </div>
 
             {/* User info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-[14px] font-bold text-base-content truncate leading-tight">
+            <div className='flex-1 min-w-0'>
+              <div className='flex items-center gap-2'>
+                <p className='text-[14px] font-bold text-base-content truncate leading-tight'>
                   {user?.user?.name ?? "Demo"}
                 </p>
-                <span className="text-[8px] font-black bg-primary text-primary-content px-1.5 py-0.5 rounded uppercase tracking-wider">
+                <span className='text-[8px] font-black bg-primary text-primary-content px-1.5 py-0.5 rounded uppercase tracking-wider'>
                   Admin
                 </span>
               </div>
-              <p className="text-[11px] text-base-content/70 truncate mt-1 font-semibold tracking-wide">
+              <p className='text-[11px] text-base-content/70 truncate mt-1 font-semibold tracking-wide'>
                 {user?.user?.username ?? "demo@franchisee..."}
               </p>
             </div>
@@ -592,9 +618,9 @@ export function AuthorizedLayout() {
             {/* Logout */}
             <button
               onClick={handleSignOut}
-              className="w-10 h-10 rounded-xl border border-primary/10 bg-base-100 flex items-center justify-center text-base-content/70 hover:text-error hover:bg-error/10 transition-all duration-150 flex-1shrink-0 cursor-pointer shadow-sm"
-              title="Keluar"
-              aria-label="Sign out"
+              className='w-10 h-10 rounded-xl border border-primary/10 bg-base-100 flex items-center justify-center text-base-content/70 hover:text-error hover:bg-error/10 transition-all duration-150 flex-1shrink-0 cursor-pointer shadow-sm'
+              title='Keluar'
+              aria-label='Sign out'
             >
               <LogOut size={16} />
             </button>
@@ -603,32 +629,32 @@ export function AuthorizedLayout() {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      <div className='flex-1 flex flex-col overflow-hidden min-w-0'>
         {/* Mobile top bar */}
-        <header className="lg:hidden flex items-center gap-3 px-4 py-3.5 bg-base-100 border-b border-base-300 shrink-0">
+        <header className='lg:hidden flex items-center gap-3 px-4 py-3.5 bg-base-100 border-b border-base-300 shrink-0'>
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1.5 rounded-lg text-base-content/80 hover:bg-base-200 transition-colors cursor-pointer"
-            aria-label="Open sidebar"
+            className='p-1.5 rounded-lg text-base-content/80 hover:bg-base-200 transition-colors cursor-pointer'
+            aria-label='Open sidebar'
           >
             <Menu size={20} />
           </button>
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white shadow-sm flex-shrink-0 overflow-hidden border border-primary/20 p-1">
+          <div className='w-10 h-10 rounded-2xl flex items-center justify-center bg-white shadow-sm flex-shrink-0 overflow-hidden border border-primary/20 p-1'>
             <img
-              src="/rabbit.png"
-              alt="Logo"
-              className="w-full h-full object-contain drop-shadow-sm"
+              src='/rabbit.png'
+              alt='Logo'
+              className='w-full h-full object-contain drop-shadow-sm'
             />
           </div>
-          <span className="font-semibold text-base-content text-sm">
+          <span className='font-semibold text-base-content text-sm'>
             Franchisor Portal
           </span>
         </header>
 
         {/* Page content */}
         <main
-          className="flex-1 overflow-hidden"
-          id="main-content"
+          className='flex-1 overflow-hidden'
+          id='main-content'
           tabIndex={-1}
         >
           <Outlet key={location.pathname} />

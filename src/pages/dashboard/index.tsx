@@ -25,7 +25,6 @@ import { formatCurrency } from "@/utils";
 import { SummaryCard } from "@/components/app";
 import { useDashboard } from "@/services/dashboard/hooks";
 import SalesChart from "./components/SalesChart";
-import OutletMap from "./components/OutletMap";
 
 const THEMES = {
   green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
@@ -253,18 +252,13 @@ const DashboardPage: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Sales Chart + Outlet Map — side by side */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <div>
-                <SalesChart
-                  data={data?.sales_graph}
-                  isLoading={isLoading}
-                  title="Performa Penjualan Multi-Saluran"
-                />
-              </div>
-              <div>
-                <OutletMap outlets={data?.outlet_map} isLoading={isLoading} />
-              </div>
+            {/* Sales Chart */}
+            <div>
+              <SalesChart
+                data={data?.sales_graph}
+                isLoading={isLoading}
+                title="Performa Penjualan Multi-Saluran"
+              />
             </div>
 
             {/* Omset */}

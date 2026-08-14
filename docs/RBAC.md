@@ -68,7 +68,6 @@ export interface User {
 ### Master Data (Inventory & Warehouse)
 | Page / Menu | Slug | Route |
 |---|---|---|
-| Warehouse | `frontend.franchisor.master-data.warehouse` | `/inventory/warehouse` |
 | Inventory Item | `frontend.franchisor.master-data.item` | `/inventory/item` |
 | Inventory Catalog | `frontend.franchisor.master-data.catalog` | `/inventory/catalog` |
 

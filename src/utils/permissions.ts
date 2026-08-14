@@ -21,7 +21,6 @@ export const MENU = {
   supplier: "frontend.franchisor.purchase.supplier",
   purchaseOrder: "frontend.franchisor.purchase.purchase-order",
   // Master Data (Inventory & Warehouse)
-  warehouse: "frontend.franchisor.master-data.warehouse",
   inventoryItem: "frontend.franchisor.master-data.item",
   inventoryCatalog: "frontend.franchisor.master-data.catalog",
   // Production
@@ -36,8 +35,7 @@ export const MENU = {
   reportB2BSettlement: "frontend.franchisor.report.b2b.settlement",
   reportB2BProductSales: "frontend.franchisor.report.b2b.product-sales",
   reportB2BProductItem: "frontend.franchisor.report.b2b.product-item",
-  reportInventoryMaterialSales:
-    "frontend.franchisor.report.inventory-material-sales",
+  reportInventoryMaterialSales: "frontend.franchisor.report.material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
   // Setting
   outlet: "frontend.franchisor.setting.outlet",

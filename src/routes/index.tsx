@@ -27,7 +27,6 @@ import InventoryCatalogListPage from "@/pages/inventory/catalog";
 import InventoryCatalogCreatePage from "@/pages/inventory/catalog/catalogCreate";
 import InventoryCatalogUpdatePage from "@/pages/inventory/catalog/catalogUpdate";
 import InventoryCatalogDetailPage from "@/pages/inventory/catalog/catalogDetail";
-import WarehouseListPage from "@/pages/inventory/warehouse";
 import SupplierListPage from "@/pages/purchase/supplier";
 import SupplierCreatePage from "@/pages/purchase/supplier/supplierCreate";
 import SupplierUpdatePage from "@/pages/purchase/supplier/supplierUpdate";
@@ -271,16 +270,6 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.inventoryCatalog}>
               <InventoryCatalogDetailPage />
-            </PermissionGuard>
-          }
-        />
-
-        {/* Inventory - Warehouse */}
-        <Route
-          path="/inventory/warehouse"
-          element={
-            <PermissionGuard permission={MENU.warehouse}>
-              <WarehouseListPage />
             </PermissionGuard>
           }
         />
