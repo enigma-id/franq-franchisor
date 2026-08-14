@@ -16,7 +16,7 @@ export default function WarehouseStockPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Warehouse Stock"
+        title="Report Warehouse Stock"
         subtitle="Laporan stok barang di gudang."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">

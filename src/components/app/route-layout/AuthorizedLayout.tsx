@@ -167,27 +167,27 @@ const menuSections: MenuSection[] = [
         icon: <Monitor size={18} />,
         children: [
           {
-            label: "Outstanding",
+            label: "Report Outstanding",
             path: "/report/pos/outstanding",
             permission: MENU.reportPosOutstanding,
           },
           {
-            label: "Settlement",
+            label: "Report Settlement",
             path: "/report/pos/settlement",
             permission: MENU.reportPosSettlement,
           },
           {
-            label: "Product Sales",
+            label: "Report Product Sales",
             path: "/report/inventory/product-sales",
             permission: MENU.reportProductSales,
           },
           {
-            label: "Menu",
+            label: "Report Menu",
             path: "/report/pos/product-item",
             permission: MENU.reportPosProductItem,
           },
           {
-            label: "Transaction Cancel",
+            label: "Report Transaction Cancel",
             path: "/report/pos/cancelled-product-sales",
             permission: MENU.reportCancelled,
           },
@@ -198,17 +198,17 @@ const menuSections: MenuSection[] = [
         icon: <Building size={18} />,
         children: [
           {
-            label: "Settlement B2B",
+            label: "Report Settlement B2B",
             path: "/report/b2b/settlement",
             permission: MENU.reportB2BSettlement,
           },
           {
-            label: "Product Sales B2B",
+            label: "Report Product Sales B2B",
             path: "/report/b2b/product-sales",
             permission: MENU.reportB2BProductSales,
           },
           {
-            label: "Menu B2B",
+            label: "Report Menu B2B",
             path: "/report/b2b/product-item",
             permission: MENU.reportB2BProductItem,
           },
@@ -219,12 +219,12 @@ const menuSections: MenuSection[] = [
         icon: <BarChart3 size={18} />,
         children: [
           {
-            label: "Product Sales",
+            label: "Report Material Sales",
             path: "/report/inventory/material-sales",
             permission: MENU.reportInventoryMaterialSales,
           },
           {
-            label: "Warehouse Stock",
+            label: "Report Warehouse Stock",
             path: "/report/inventory/warehouse-stock",
             permission: MENU.reportWarehouseStock,
           },

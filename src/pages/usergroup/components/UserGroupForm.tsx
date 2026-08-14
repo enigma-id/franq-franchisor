@@ -153,6 +153,7 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
                     <div className="flex items-center space-x-3">
                       <div onClick={(e) => e.stopPropagation()}>
                         <Checkbox
+                          size="sm"
                           checked={isAllServiceSelected}
                           indeterminate={isSomeServiceSelected}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -208,6 +209,7 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
                             {/* Module Name & Select All */}
                             <div className="flex items-center w-48 mb-3 sm:mb-0 shrink-0">
                               <Checkbox
+                                size="sm"
                                 id={`mod-${service}-${module}`}
                                 checked={isAllModuleSelected}
                                 indeterminate={isSomeModuleSelected}
@@ -253,6 +255,7 @@ export const UserGroupForm: React.FC<UserGroupFormProps> = ({
                                     className="flex items-center space-x-2"
                                   >
                                     <Checkbox
+                                      size="sm"
                                       id={`perm-${perm.id}`}
                                       checked={checked}
                                       disabled={disabled}
