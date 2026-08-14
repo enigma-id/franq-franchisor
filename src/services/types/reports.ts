@@ -52,3 +52,17 @@ export interface ProductSalesRow {
   discount: number
   total_nett: number
 }
+
+// Outlet Maps
+export interface OutletMapHistory {
+  latitude: number
+  longitude: number
+  created_at: string
+}
+
+export interface OutletMapRow {
+  outlet: string
+  outlet_name: string
+  total_charges: number
+  historys: OutletMapHistory[]
+}

@@ -59,6 +59,7 @@ import PosOutstandingPage from "@/pages/report/outstanding";
 import CancelledProductSalesPage from "@/pages/report/cancelledProductSales";
 import ProductItemPage from "@/pages/report/productItem";
 import B2BProductItemPage from "@/pages/report/b2bProductItem";
+import OutletMapPage from "@/pages/report/outletMap";
 import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
 import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
 import { WithdrawalDetail } from "@/pages/withdrawal/WithdrawalDetail";
@@ -546,6 +547,14 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.reportWarehouseStock}>
               <WarehouseStockPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/report/outlet-maps"
+          element={
+            <PermissionGuard permission={MENU.reportOutletMap}>
+              <OutletMapPage />
             </PermissionGuard>
           }
         />

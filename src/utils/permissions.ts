@@ -37,6 +37,7 @@ export const MENU = {
   reportB2BProductItem: "frontend.franchisor.report.b2b.product-item",
   reportInventoryMaterialSales: "frontend.franchisor.report.material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
+  reportOutletMap: "frontend.franchisor.report.outlet-maps",
   // Setting
   outlet: "frontend.franchisor.setting.outlet",
   outletType: "frontend.franchisor.setting.outlet-type",

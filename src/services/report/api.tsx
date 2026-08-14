@@ -147,6 +147,14 @@ export const reportApi = createApi({
         params,
       }),
     }),
+
+    getOutletMap: builder.query({
+      query: (params) => ({
+        url: `/report/outlet-maps`,
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -165,6 +173,7 @@ export const {
   useLazyGetRawMaterialSalesQuery,
   useLazyGetRawMaterialSalesSummaryQuery,
   useLazyGetWarehouseStockQuery,
+  useLazyGetOutletMapQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
   useLazyGetProductItemQuery,

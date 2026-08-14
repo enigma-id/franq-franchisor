@@ -14,6 +14,7 @@ import {
   useLazyGetRawMaterialSalesQuery,
   useLazyGetRawMaterialSalesSummaryQuery,
   useLazyGetWarehouseStockQuery,
+  useLazyGetOutletMapQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
   useLazyGetProductItemQuery,
@@ -30,6 +31,7 @@ export const useReport = createCrudHook<any>({
     rawMaterial: useLazyGetRawMaterialSalesQuery,
     rawMaterialSummary: useLazyGetRawMaterialSalesSummaryQuery,
     warehouseStock: useLazyGetWarehouseStockQuery,
+    outletMap: useLazyGetOutletMapQuery,
   },
 });
 
