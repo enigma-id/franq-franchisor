@@ -26,6 +26,16 @@ const ProductionPlanListPage: React.FC = () => {
   const [selectedRow, setSelectedRow] = useState<ProductionPlanDetail | null>(null);
   const [actionType, setActionType] = useState<"publish" | "complete" | null>(null);
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+
+  // Auto-select warehouse ketika data hanya satu.
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1 && !warehouse) setWarehouse(items[0]);
+  }, [warehouseResult?.data?.data, warehouse]);
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(

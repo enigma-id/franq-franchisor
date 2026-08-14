@@ -62,6 +62,16 @@ const ProductionPlanDetailPage: React.FC = () => {
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
 
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+
+  // Auto-select warehouse ketika data hanya satu (modal publish/complete).
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1 && !warehouse) setWarehouse(items[0]);
+  }, [warehouseResult?.data?.data, warehouse]);
   const [editingPlanned, setEditingPlanned] = useState<{
     item: ProductionPlanItem;
     quantity: number;

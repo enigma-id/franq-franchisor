@@ -88,6 +88,21 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   const [outlet, setOutlet] = useState<OutletDetail | null>(null);
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
 
+  // Auto-select warehouse ketika data hanya satu.
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    if (initialData) return;
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1 && !warehouse) {
+      const item = items[0];
+      setWarehouse(item);
+      setFormData((prev) => ({ ...prev, warehouse_id: item?.id ?? "" }));
+    }
+  }, [warehouseResult?.data?.data, initialData, warehouse]);
+
   useEffect(() => {
     if (initialData) {
       const newItems = (initialData.items || []).map((item: any) => {

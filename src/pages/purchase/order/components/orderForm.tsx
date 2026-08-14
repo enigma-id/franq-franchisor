@@ -63,6 +63,26 @@ export function PurchaseOrderForm({
   );
   const [supplierSelected, setSupplierSelected] = useState<any | null>(null);
   const [warehouseSelected, setWarehouseSelected] = useState<any | null>(null);
+
+  // Auto-select warehouse ketika data hanya satu.
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20, is_active: "true" });
+  }, []);
+
+  useEffect(() => {
+    if (initialData) return;
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1 && !warehouseSelected) {
+      const item = items[0];
+      setWarehouseSelected(item);
+      setFormData((prev) => ({
+        ...prev,
+        warehouse_id: item?.id ?? "",
+        recipient_name: item?.name ?? prev.recipient_name,
+        address: item?.address ?? prev.address,
+      }));
+    }
+  }, [warehouseResult?.data?.data, initialData, warehouseSelected]);
   const [etaAt, setEtaAt] = useState<Dayjs | null>(dayjs().add(1, "day"));
   const [formData, setFormData] = useState({
     supplier_id: "",
