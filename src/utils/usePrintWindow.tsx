@@ -22,7 +22,10 @@ export function usePrintWindow({
   const rootRef = useRef<Root | null>(null);
   const [ready, setReady] = useState(false);
 
-  const open = (children: ReactNode, size?: { width?: number; height?: number }) => {
+  const open = (
+    children: ReactNode,
+    size?: { width?: number; height?: number },
+  ) => {
     if (!printWindow.current || printWindow.current.closed) {
       const w = size?.width ?? width;
       const h = size?.height ?? height;
