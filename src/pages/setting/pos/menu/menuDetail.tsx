@@ -8,7 +8,7 @@ import { formatCurrency, formatDateTime } from "@/utils";
 import type { POSMenuDetail } from "@/services/types";
 import { Modal, useEnigmaUI } from "@/components";
 import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
-import Label from "@/components/app/print/label";
+import Plan from "@/components/app/print/plan";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
@@ -72,7 +72,7 @@ const POSMenuDetailPage: React.FC = () => {
                 <button
                   className="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-xl"
                   onClick={() => {
-                    openPrint(<Label data={menu} />);
+                    openPrint(<Plan data={menu} />);
                     closeModal("select-channel-price");
                   }}
                 >
@@ -86,7 +86,7 @@ const POSMenuDetailPage: React.FC = () => {
                     key={cp.id}
                     className="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-xl"
                     onClick={() => {
-                      openPrint(<Label data={menu} channel_prices={cp} />);
+                      openPrint(<Plan data={menu} channel_prices={cp} />);
                       closeModal("select-channel-price");
                     }}
                   >
@@ -102,7 +102,7 @@ const POSMenuDetailPage: React.FC = () => {
         ),
       });
     } else {
-      openPrint(<Label data={menu} />);
+      openPrint(<Plan data={menu} />);
     }
   };
 
