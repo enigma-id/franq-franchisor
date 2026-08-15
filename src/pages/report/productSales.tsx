@@ -31,13 +31,13 @@ const OverviewCards = ({ data }: { data: any | null }) => {
       />
       <SummaryCard
         label="Total Discount"
-        value={currencyFormat(data.total_nett)}
+        value={currencyFormat(data.total_discount)}
         icon={Banknote}
         theme={THEMES.blue}
       />
       <SummaryCard
         label="Total Nett"
-        value={currencyFormat(data.total_discount)}
+        value={currencyFormat(data.total_nett)}
         icon={ArrowUpCircle}
         theme={THEMES.red}
       />
@@ -74,7 +74,7 @@ export default function ProductSalesPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Product Sales"
+        title="POS Product Sales"
         subtitle="Laporan penjualan produk retail."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">

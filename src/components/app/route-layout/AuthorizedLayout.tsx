@@ -188,17 +188,17 @@ const menuSections: MenuSection[] = [
         icon: <Building size={18} />,
         children: [
           {
-            label: "Report Settlement B2B",
+            label: "Report Settlement",
             path: "/report/b2b/settlement",
             permission: MENU.reportB2BSettlement,
           },
           {
-            label: "Report Product Sales B2B",
+            label: "Report Product Sales",
             path: "/report/b2b/product-sales",
             permission: MENU.reportB2BProductSales,
           },
           {
-            label: "Report Menu B2B",
+            label: "Report Menu",
             path: "/report/b2b/product-item",
             permission: MENU.reportB2BProductItem,
           },
@@ -209,7 +209,7 @@ const menuSections: MenuSection[] = [
         icon: <BarChart3 size={18} />,
         children: [
           {
-            label: "Report Material Sales",
+            label: "Report Product Sales",
             path: "/report/inventory/material-sales",
             permission: MENU.reportInventoryMaterialSales,
           },

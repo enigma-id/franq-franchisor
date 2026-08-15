@@ -87,7 +87,7 @@ export default function SettlementDailyPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title={`Settlement Daily — ${periode}`}
+        title={`POS Settlement Daily — ${periode}`}
         subtitle='Laporan penyelesaian pembayaran.'
         backTo={() => navigate(-1)}
       />

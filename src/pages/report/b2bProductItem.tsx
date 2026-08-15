@@ -68,7 +68,7 @@ export default function B2BProductItemPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Menu B2B"
+        title="Menu"
         subtitle="Laporan penjualan menu B2B."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">

@@ -30,19 +30,19 @@ const OverviewCards = ({ data }: { data: any | null }) => {
         theme={THEMES.purple}
       />
       <SummaryCard
-        label="Total Qty"
+        label="Total Qty Fulfilled"
         value={data.total_quantity_fulfilled}
         icon={Landmark}
         theme={THEMES.orange}
       />
       <SummaryCard
-        label="Total Discount"
+        label="Total Qty Ordered"
         value={data.total_quantity_ordered}
         icon={Banknote}
         theme={THEMES.blue}
       />
       <SummaryCard
-        label="Total Nett"
+        label="Total Orders"
         value={data.total_orders}
         icon={ArrowUpCircle}
         theme={THEMES.red}

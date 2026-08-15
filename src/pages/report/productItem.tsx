@@ -68,7 +68,7 @@ export default function ProductItemPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Menu"
+        title="POS Menu"
         subtitle="Laporan penjualan menu POS."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
