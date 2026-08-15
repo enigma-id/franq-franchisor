@@ -24,6 +24,7 @@ type B2BOrderFormData = {
   note: string;
   payment_ref: string;
   shipping_date: string;
+  invoice_date: string;
   discount_value: number;
   discount_percentage: number;
   is_discount_percentage: boolean;
@@ -59,6 +60,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
     note: "",
     payment_ref: "",
     shipping_date: dayjs().format("YYYY-MM-DD"),
+    invoice_date: dayjs().format("YYYY-MM-DD"),
     discount_value: 0,
     discount_percentage: 0,
     is_discount_percentage: false,
@@ -75,6 +77,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
   });
 
   const [shippingDate, setShippingDate] = useState<Dayjs | null>(dayjs());
+  const [invoiceDate, setInvoiceDate] = useState<Dayjs | null>(dayjs());
 
   const [channel, setChannel] = useState<RemoteOption | null>(null);
   const [pendingPriceRow, setPendingPriceRow] = useState<number | null>(null);
@@ -115,6 +118,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         note: initialData?.note || "",
         payment_ref: (initialData as any)?.payment_ref ?? "",
         shipping_date: dayjs(initialData?.shipping_date).format("YYYY-MM-DD"),
+        invoice_date: dayjs(initialData?.invoice_date).format("YYYY-MM-DD"),
         discount_value: initialData?.discount_value ?? 0,
         discount_percentage:
           (initialData as any)?.discount_percentage ??
@@ -128,6 +132,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
             : [{ menuSelected: null, menu_id: "", menu_name: "", quantity: 1, unit_price: 0 }],
       });
       setShippingDate(dayjs(initialData?.shipping_date));
+      setInvoiceDate(dayjs(initialData?.invoice_date));
     }
   }, [initialData]);
 
@@ -335,7 +340,6 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
             <DatePicker
               label="Tanggal Pengiriman"
               required
-              disablePast
               value={shippingDate || undefined}
               onChange={(date: unknown) => {
                 const next = date as Dayjs;
@@ -343,6 +347,19 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                 setFormData({
                   ...formData,
                   shipping_date: date ? (next as Dayjs).format("YYYY-MM-DD") : "",
+                });
+              }}
+            />
+            <DatePicker
+              label="Tanggal Invoice"
+              required
+              value={invoiceDate || undefined}
+              onChange={(date: unknown) => {
+                const next = date as Dayjs;
+                setInvoiceDate(next);
+                setFormData({
+                  ...formData,
+                  invoice_date: date ? (next as Dayjs).format("YYYY-MM-DD") : "",
                 });
               }}
             />

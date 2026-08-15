@@ -13,7 +13,7 @@ export const canReceiveB2b = (order: B2BOrderDetail): boolean =>
   order.document_status === "shipped";
 
 export const canInvoiceB2b = (order: B2BOrderDetail): boolean =>
-  order.document_status === "received" && order.payment_status === "unpaid";
+  order.payment_status === "unpaid";
 
 export const canPayB2b = (order: B2BOrderDetail): boolean =>
   order.payment_status === "invoiced";

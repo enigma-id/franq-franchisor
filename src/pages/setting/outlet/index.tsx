@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useMemo } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button } from "@/components/ui";
+import { Button, Drawer } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/outlet.config";
 import { Modal, useEnigmaUI } from "@/components";
@@ -11,14 +12,18 @@ import TableFilter from "./table/outlet.filter";
 import { useOutlet } from "@/services/outlet/hooks";
 import type { TableConfig } from "@/services/table/const";
 import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal.tsx";
+import { OutletUserForm } from "./components/OutletUserForm";
 import type { OutletDetail } from "@/services/types/outlet.ts";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
+import { useUser } from "@/services/user/hooks";
+import { UserRound, Save } from "lucide-react";
 
 const OutletListPage: React.FC = () => {
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const navigate = useNavigate();
   const canManage = useCan(ACTION.outlet);
+  const canManageUser = useCan(ACTION.user);
 
   const {
     remove: removeOutlet,
@@ -28,6 +33,17 @@ const OutletListPage: React.FC = () => {
     deactivate,
     deactivateResult: deactivateResult,
   } = useOutlet();
+
+  const {
+    get: getUsers,
+    update: updateUser,
+    updateResult: updateUserResult,
+  } = useUser();
+
+  const [userDrawerOpen, setUserDrawerOpen] = useState(false);
+  const [userEditData, setUserEditData] = useState<any | null>(null);
+  const [userLoading, setUserLoading] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const { isLoading: isDeleting, isSuccess: isDeleteSuccess } =
     removeOutletResult;
@@ -42,6 +58,23 @@ const OutletListPage: React.FC = () => {
     }
   };
 
+  const handleManageUser = async (row: OutletDetail) => {
+    setUserLoading(true);
+    setUserDrawerOpen(true);
+    try {
+      const res = await getUsers({ outlet_id: row.id });
+      const users = (res as any)?.data ?? [];
+      const user = users[0] ?? null;
+      setUserEditData(user);
+      setCurrentUserId(user?.id ?? null);
+    } catch {
+      setUserEditData(null);
+      setCurrentUserId(null);
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
   const tableConfig = useMemo(
     () =>
       createTableConfig({
@@ -51,9 +84,11 @@ const OutletListPage: React.FC = () => {
         },
         onChangeChannel: (row) => openOutletType(row),
         onToggleActive: (row: any) => handleToggleActive(row),
+        onManageUser: (row: any) => handleManageUser(row),
         canManage,
+        canManageUser,
       }),
-    [canManage],
+    [canManage, canManageUser, handleManageUser],
   );
 
   const Table = useTable("outlet-list", tableConfig as TableConfig<unknown>);
@@ -115,6 +150,22 @@ const OutletListPage: React.FC = () => {
       deactivateResult.reset?.();
     }
   }, [isDeactivateSuccess, Table, deactivateResult]);
+
+  // Update user outlet success → toast + close drawer
+  useEffect(() => {
+    if (updateUserResult?.isSuccess) {
+      showToast({
+        message: "User outlet berhasil diperbarui",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      setUserDrawerOpen(false);
+      setUserEditData(null);
+      setCurrentUserId(null);
+      updateUserResult.reset?.();
+    }
+  }, [updateUserResult, showToast]);
 
   const openDelete = (row: any) => {
     openModal({
@@ -199,6 +250,74 @@ const OutletListPage: React.FC = () => {
 
         <Table.Pagination />
       </Page.Body>
+
+      {/* Drawer: update user outlet */}
+      <Drawer
+        open={userDrawerOpen}
+        onClose={() => {
+          setUserDrawerOpen(false);
+          setUserEditData(null);
+          setCurrentUserId(null);
+        }}
+        position="right"
+        className="!w-[28rem]"
+      >
+        <div className="flex flex-col h-full">
+          <div className="p-5 border-b border-slate-100">
+            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <UserRound size={18} className="text-emerald-600" />
+              Update User Outlet
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Perbarui nama & password user pemilik outlet.
+            </p>
+          </div>
+          <div className="flex-1 overflow-y-auto p-5">
+            {userLoading ? (
+              <div className="flex flex-col items-center justify-center h-64 space-y-4">
+                <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
+                <p className="text-sm font-medium text-slate-500 animate-pulse">
+                  Memuat data user outlet...
+                </p>
+              </div>
+            ) : (
+              <OutletUserForm
+                id="outlet-user-form"
+                initialData={userEditData}
+                onSubmit={(data) => {
+                  if (!currentUserId) return;
+                  updateUser({
+                    id: currentUserId,
+                    payload: data as any,
+                  });
+                }}
+              />
+            )}
+          </div>
+          <div className="p-5 border-t border-slate-100 flex justify-end gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setUserDrawerOpen(false);
+                setUserEditData(null);
+                setCurrentUserId(null);
+              }}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              form="outlet-user-form"
+              variant="success"
+              disabled={userLoading || !currentUserId}
+              isLoading={updateUserResult?.isLoading}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Simpan Perubahan
+            </Button>
+          </div>
+        </div>
+      </Drawer>
     </Page>
   );
 };

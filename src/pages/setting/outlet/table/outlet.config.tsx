@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { OutletDetail } from "@/services/types/outlet";
 import { Dropdown, Toggle } from "@/components/ui";
-import { Edit, MoreVertical, Store, Trash } from "lucide-react";
+import { Edit, MoreVertical, Store, Trash, User } from "lucide-react";
 import config from "@/services/table/const";
 import { formatDateTime } from "@/utils";
 
@@ -13,7 +13,9 @@ const createTableConfig = ({
   onRemove,
   onChangeChannel,
   onToggleActive,
+  onManageUser,
   canManage,
+  canManageUser,
 }: {
   onRowClick?: (row: any) => void;
   lockFilter?: Record<string, unknown>;
@@ -22,7 +24,9 @@ const createTableConfig = ({
   onRemove?: (row: any) => void;
   onToggleActive?: (row: any) => void;
   onChangeChannel?: (row: any, channel?: any) => void;
+  onManageUser?: (row: any) => void;
   canManage?: boolean;
+  canManageUser?: boolean;
 }) => ({
   ...config,
   url: "/outlet",
@@ -198,6 +202,24 @@ const createTableConfig = ({
                   <span className="font-bold text-[13px]">POS Channel</span>
                   <span className="text-[11px] text-slate-400">
                     Manage availability
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          )}
+          {canManageUser && (
+            <Dropdown.Item
+              onSelect={() => onManageUser?.(row)}
+              className="hover:bg-emerald-50 hover:text-emerald-600"
+            >
+              <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                  <User className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">User</span>
+                  <span className="text-[11px] text-slate-400">
+                    Update user outlet
                   </span>
                 </div>
               </button>

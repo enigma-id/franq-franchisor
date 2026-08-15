@@ -80,6 +80,7 @@ const OutletUpdatePage: React.FC = () => {
             <OutletForm
               id="outlet-form"
               initialData={showResult.data?.data}
+              hideOwnerSection
               onSubmit={(data) => update({ id: id!, payload: data as any })}
             />
           )}

@@ -69,6 +69,7 @@ export const ACTION = {
   salesOrder: "svc-franchisor.sales-order.manage",
   production: "svc-franchisor.production.manage",
   b2b: "svc-franchisor.b2b.manage",
+  b2bCancel: "svc-franchisor.b2b.cancel",
   outletTopupRequest: "svc-franchisor.outlet-topup-request.manage",
   withdrawalRequest: "svc-franchisor.withdrawal-request.manage",
 } as const;

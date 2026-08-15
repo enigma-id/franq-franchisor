@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
-import { Loading, Button, Badge, Modal } from "@/components/ui";
+import { Loading, Button, Badge, Modal, Input } from "@/components/ui";
 import { useB2BOrder } from "@/services/b2b/hooks";
 import { useEnigmaUI } from "@/components";
 import { formatCurrency, formatDate, formatDateTime, getStatusVariant } from "@/utils";
@@ -20,6 +20,7 @@ import {
   Printer,
   Send,
   Receipt,
+  XCircle,
 } from "lucide-react";
 import type { B2BOrderDetail } from "@/services/types";
 import { useCan } from "@/utils/permission";
@@ -29,6 +30,7 @@ const B2BOrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const canManage = useCan(ACTION.b2b);
+  const canCancel = useCan(ACTION.b2bCancel);
 
   const { showToast } = useEnigmaUI();
   const {
@@ -42,6 +44,8 @@ const B2BOrderDetailPage: React.FC = () => {
     payResult,
     remove,
     removeResult,
+    cancel,
+    cancelResult,
   } = useB2BOrder();
   const order = showResult?.data?.data as B2BOrderDetail | undefined;
   const orderItems = order?.items ?? [];
@@ -58,11 +62,12 @@ const B2BOrderDetailPage: React.FC = () => {
   });
 
   const [confirmModal, setConfirmModal] = useState<{
-    type: "ship" | "invoice" | "pay" | "delete";
+    type: "ship" | "invoice" | "pay" | "delete" | "cancel";
     title: string;
     message: string;
     variant: "primary" | "error";
   } | null>(null);
+  const [cancelNote, setCancelNote] = useState("");
 
   useEffect(() => {
     if (id) show({ id });
@@ -78,7 +83,9 @@ const B2BOrderDetailPage: React.FC = () => {
           ? payResult
           : confirmModal?.type === "delete"
             ? removeResult
-            : null;
+            : confirmModal?.type === "cancel"
+              ? cancelResult
+              : null;
 
   useEffect(() => {
     if (activeResult?.isSuccess) {
@@ -119,11 +126,16 @@ const B2BOrderDetailPage: React.FC = () => {
       case "delete":
         await remove({ id });
         break;
+      case "cancel":
+        if (!cancelNote.trim()) return;
+        await cancel({ id, payload: { cancel_note: cancelNote.trim() } });
+        break;
     }
   };
 
-  const openConfirm = (type: "ship" | "invoice" | "pay" | "delete") => {
+  const openConfirm = (type: "ship" | "invoice" | "pay" | "delete" | "cancel") => {
     if (!canTransition[type]) return;
+    setCancelNote("");
     const labels: Record<
       string,
       { title: string; message: string; variant: "primary" | "error" }
@@ -149,6 +161,12 @@ const B2BOrderDetailPage: React.FC = () => {
         title: "Hapus Order",
         message:
           "Apakah Anda yakin ingin menghapus order ini? Tindakan ini tidak dapat dibatalkan.",
+        variant: "error",
+      },
+      cancel: {
+        title: "Batalkan Order",
+        message:
+          "Apakah Anda yakin ingin membatalkan order ini? Tindakan ini tidak dapat dibatalkan.",
         variant: "error",
       },
     };
@@ -197,6 +215,7 @@ const B2BOrderDetailPage: React.FC = () => {
     invoice: isUnpaid,
     pay: isInvoiced,
     delete: isPending,
+    cancel: !isPending || !isUnpaid,
   };
 
   return (
@@ -279,11 +298,24 @@ const B2BOrderDetailPage: React.FC = () => {
                 )}
               </>
             )}
+            {canCancel && (!isPending || !isUnpaid) && (
+              <Button
+                variant='error'
+                onClick={() => openConfirm("cancel")}
+                isLoading={cancelResult.isLoading}
+                disabled={!canTransition.cancel}
+                title='Cancel'
+              >
+                <XCircle className='w-4 h-4' />
+              </Button>
+            )}
           </div>
         }
       />
       <Page.Body>
-        <div className='grid grid-cols-1 gap-6'>
+        <div
+          className={`grid grid-cols-1 gap-6 ${order.cancel_note ? "lg:grid-cols-[2fr_1fr]" : ""}`}
+        >
           {/* Customer & Order Info */}
           <div className='card-info card-animate p-6'>
             <div className='card-section-header'>
@@ -330,6 +362,12 @@ const B2BOrderDetailPage: React.FC = () => {
                   </dd>
                 </div>
                 <div className='info-row'>
+                  <dt className='info-label'>Tanggal Invoice</dt>
+                  <dd className='info-value'>
+                    {order.invoice_date ? formatDate(order.invoice_date) : "-"}
+                  </dd>
+                </div>
+                <div className='info-row'>
                   <dt className='info-label'>Document Status</dt>
                   <dd className='info-value'>
                     <Badge
@@ -356,6 +394,34 @@ const B2BOrderDetailPage: React.FC = () => {
               </dl>
             </div>
           </div>
+
+          {/* Cancellation Info — hanya tampil jika order dibatalkan (ada cancel_note) */}
+          {order.cancel_note && (
+            <div className='card-info card-animate p-6'>
+              <div className='card-section-header'>
+                <div className='card-section-icon'>
+                  <XCircle size={18} />
+                </div>
+                <h2 className='card-section-title'>Informasi Pembatalan</h2>
+              </div>
+              <dl className='space-y-0'>
+                <div className='info-row'>
+                  <dt className='info-label'>Alasan</dt>
+                  <dd className='info-value'>{order.cancel_note || "-"}</dd>
+                </div>
+                <div className='info-row'>
+                  <dt className='info-label'>Dibatalkan Pada</dt>
+                  <dd className='info-value'>
+                    {order.cancelled_at ? formatDateTime(order.cancelled_at) : "-"}
+                  </dd>
+                </div>
+                <div className='info-row'>
+                  <dt className='info-label'>Dibatalkan Oleh</dt>
+                  <dd className='info-value'>{order.cancelled_by || "-"}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
         </div>
 
         {/* Items Table */}
@@ -478,7 +544,21 @@ const B2BOrderDetailPage: React.FC = () => {
         onClose={() => setConfirmModal(null)}
       >
         <Modal.Header>{confirmModal?.title}</Modal.Header>
-        <Modal.Body>{confirmModal?.message}</Modal.Body>
+        <Modal.Body>
+          {confirmModal?.message}
+          {confirmModal?.type === "cancel" && (
+            <div className='mt-4'>
+              <Input
+                type='textarea'
+                label='Alasan Pembatalan'
+                required
+                placeholder='Tuliskan alasan pembatalan order...'
+                value={cancelNote}
+                onChange={(e) => setCancelNote(e.target.value)}
+              />
+            </div>
+          )}
+        </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setConfirmModal(null)} variant='default'>
             Batal
@@ -487,6 +567,7 @@ const B2BOrderDetailPage: React.FC = () => {
             onClick={handleAction}
             variant={confirmModal?.variant === "error" ? "error" : "primary"}
             isLoading={!!activeResult?.isLoading}
+            disabled={confirmModal?.type === "cancel" && !cancelNote.trim()}
           >
             Konfirmasi
           </Button>

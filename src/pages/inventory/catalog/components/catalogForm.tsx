@@ -5,7 +5,6 @@ import { Input, RemoteSelect } from "@/components/ui";
 import { Plus, Trash2, Info, Ruler, Layers } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 import { Button, useEnigmaUI } from "@/components";
-import { currencyFormat } from "@/utils/common";
 import { useInventoryItem, useItemFractions } from "@/services/inventory/hooks";
 import type {
   InventoryCatalogDetail,
@@ -454,9 +453,7 @@ export function InventoryCatalogForm({
                       })
                     }
                     getLabel={(item: any) =>
-                      item
-                        ? `${item.alias_name || item.name} [${currencyFormat(item.base_price)}]`
-                        : ""
+                      item ? item.alias_name || item.name : ""
                     }
                     getValue={(item: any) => item?.id}
                     onChange={handleSingularItemChange}
