@@ -233,7 +233,7 @@ const ProductionPlanDetailPage: React.FC = () => {
     setCompleteItemModal({
       item,
       warehouse: isSingleWarehouse ? singleWarehouse : null,
-      quantityProduced: item.quantity_produced,
+      quantityProduced: item.quantity_planned,
     });
   };
 
