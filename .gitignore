@@ -27,3 +27,6 @@ dev-dist
 
 # Vercel and environment files
 .vercel
+
+# Local environment — never commit secrets
+.env

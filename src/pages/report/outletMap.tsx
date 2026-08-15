@@ -1,66 +1,57 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from "react";
-import L from "leaflet";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  Polyline,
-  AttributionControl,
-  useMap,
-} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useMemo, useRef, useState } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin, Loader2, MapPinned } from "lucide-react";
 import { Page } from "@/components/app/layout";
 import { useReport } from "@/services/report/hooks";
-import type { OutletMapRow, OutletMapHistory } from "@/services/types";
+import type { OutletMapRow } from "@/services/types";
 import { currencyFormat } from "@/utils";
 import clsx from "clsx";
 
-// Custom divIcon marker (inline SVG) — avoids bundler path issues with
-// Leaflet's default marker images that break in Vite dev/build.
-const historyIcon = L.divIcon({
-  className: "",
-  html: `<svg width="26" height="38" viewBox="0 0 30 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M15 0C6.716 0 0 6.716 0 15c0 11.25 15 29 15 29s15-17.75 15-29C30 6.716 23.284 0 15 0z" fill="#10b981" stroke="#ffffff" stroke-width="2.5"/>
-    <circle cx="15" cy="15" r="7" fill="#ffffff"/>
-  </svg>`,
-  iconSize: [26, 38],
-  iconAnchor: [13, 38],
-  popupAnchor: [0, -34],
-});
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
 
-// Distinct marker for the LATEST history point — bigger, red pin.
-const latestIcon = L.divIcon({
-  className: "",
-  html: `<svg width="36" height="50" viewBox="0 0 30 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M15 0C6.716 0 0 6.716 0 15c0 11.25 15 29 15 29s15-17.75 15-29C30 6.716 23.284 0 15 0z" fill="#ef4444" stroke="#ffffff" stroke-width="3"/>
-    <circle cx="15" cy="15" r="8" fill="#ffffff"/>
-  </svg>`,
-  iconSize: [36, 50],
-  iconAnchor: [18, 50],
-  popupAnchor: [0, -44],
-});
-
-// Fit map bounds to selected outlet's trail.
-function FitBounds({ points }: { points: OutletMapHistory[] }) {
-  const map = useMap();
-  useEffect(() => {
-    if (points.length === 0) return;
-    const bounds = L.latLngBounds(
-      points.map((p) => [p.latitude, p.longitude] as [number, number]),
-    );
-    map.fitBounds(bounds, { padding: [40, 40] });
-  }, [map, points]);
-  return null;
-}
+// History marker color — latest point gets a distinct (red) color like ShipmentMap.
+const HISTORY_COLOR = "#10b981";
+const LATEST_COLOR = "#ef4444";
 
 const validPoints = (row: OutletMapRow | undefined) =>
   (row?.historys ?? []).filter(
     (p) =>
       typeof p.latitude === "number" && typeof p.longitude === "number",
   );
+
+// Reusable popup HTML, styled like ShipmentMap.
+const buildPopupHtml = ({
+  outletName,
+  idx,
+  createdAt,
+  isLast,
+  color,
+}: {
+  outletName: string;
+  idx: number;
+  createdAt: string;
+  isLast: boolean;
+  color: string;
+}) => `
+  <div style="padding: 16px; font-family: 'Inter', sans-serif;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; padding-right: 28px;">
+      <div style="font-size: 14px; font-weight: 900; color: #111827; letter-spacing: -0.02em;">${outletName}</div>
+      ${isLast ? `<div style="font-size: 10px; font-weight: 800; color: ${color}; background: ${color}15; padding: 4px 8px; border-radius: 8px; text-transform: uppercase; border: 1px solid ${color}30; white-space: nowrap;">Posisi Terakhir</div>` : ""}
+    </div>
+    <div style="display: flex; gap: 10px; align-items: flex-start;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 3px;">
+        <div style="width: 9px; height: 9px; border-radius: 50%; background: ${color}; box-shadow: 0 0 0 3px ${color}22;"></div>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 10px; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Titik History</div>
+        <div style="font-size: 13px; font-weight: 700; color: #1f2937; line-height: 1.4;">Titik #${idx + 1}</div>
+        <div style="font-size: 11px; font-weight: 500; color: #6b7280; margin-top: 2px;">${createdAt}</div>
+      </div>
+    </div>
+  </div>
+`;
 
 export default function OutletMapPage() {
   const { outletMap, outletMapResult } = useReport();
@@ -88,11 +79,215 @@ export default function OutletMapPage() {
 
   const selected = rows.find((r) => r.outlet === activeId);
   const points = validPoints(selected);
-  const path = points.map((p) => [p.latitude, p.longitude] as [number, number]);
   const center: [number, number] =
-    path.length > 0 ? path[0] : [-6.2, 106.8166667];
+    points.length > 0
+      ? [points[0].longitude, points[0].latitude]
+      : [106.8166667, -6.2];
 
   const isLoading = outletMapResult?.isLoading;
+
+  // Map lifecycle — one init per mount.
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const popup = useRef<mapboxgl.Popup | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const hasInitializedLayers = useRef(false);
+
+  useEffect(() => {
+    if (!mapContainer.current || !MAPBOX_TOKEN) return;
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      accessToken: MAPBOX_TOKEN,
+      style: "mapbox://styles/mapbox/streets-v12",
+      center,
+      zoom: 12,
+      interactive: true,
+      attributionControl: false,
+    });
+
+    map.current.addControl(
+      new mapboxgl.NavigationControl({ showCompass: false }),
+      "top-right",
+    );
+
+    popup.current = new mapboxgl.Popup({
+      closeButton: true,
+      closeOnClick: false,
+      offset: 15,
+      maxWidth: "280px",
+      className: "outlet-mapbox-popup",
+    });
+
+    map.current.on("load", () => setIsLoaded(true));
+
+    return () => {
+      map.current?.remove();
+      map.current = null;
+    };
+  }, []);
+
+  // Draw trail + markers whenever points / selected outlet change.
+  useEffect(() => {
+    if (!map.current || !isLoaded) return;
+    const mapInstance = map.current;
+
+    const markerFeatures: GeoJSON.Feature[] = [];
+    const trailFeatures: GeoJSON.Feature[] = [];
+
+    points.forEach((p, idx) => {
+      const isLast = idx === points.length - 1;
+      const color = isLast ? LATEST_COLOR : HISTORY_COLOR;
+      markerFeatures.push({
+        type: "Feature",
+        properties: {
+          idx,
+          isLast,
+          color,
+          outletName: selected?.outlet_name ?? "Outlet",
+          createdAt: p.created_at,
+        },
+        geometry: { type: "Point", coordinates: [p.longitude, p.latitude] },
+      });
+
+      if (idx > 0) {
+        const prev = points[idx - 1];
+        trailFeatures.push({
+          type: "Feature",
+          properties: { color: HISTORY_COLOR },
+          geometry: {
+            type: "LineString",
+            coordinates: [
+              [prev.longitude, prev.latitude],
+              [p.longitude, p.latitude],
+            ],
+          },
+        });
+      }
+    });
+
+    // Clean up previous layers/sources.
+    ["outlet-trail", "outlet-markers", "outlet-markers-labels"].forEach(
+      (layerId) => {
+        if (mapInstance.getLayer(layerId)) mapInstance.removeLayer(layerId);
+      },
+    );
+    ["outlet-trail", "outlet-markers"].forEach((sourceId) => {
+      if (mapInstance.getSource(sourceId)) mapInstance.removeSource(sourceId);
+    });
+
+    if (markerFeatures.length === 0) return;
+
+    if (trailFeatures.length > 0) {
+      mapInstance.addSource("outlet-trail", {
+        type: "geojson",
+        data: { type: "FeatureCollection", features: trailFeatures },
+      });
+      mapInstance.addLayer({
+        id: "outlet-trail",
+        type: "line",
+        source: "outlet-trail",
+        paint: {
+          "line-color": HISTORY_COLOR,
+          "line-width": 3,
+          "line-opacity": 0.8,
+          "line-dasharray": [4, 3],
+        },
+      });
+    }
+
+    mapInstance.addSource("outlet-markers", {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: markerFeatures },
+    });
+
+    mapInstance.addLayer({
+      id: "outlet-markers",
+      type: "circle",
+      source: "outlet-markers",
+      paint: {
+        "circle-radius": ["case", ["get", "isLast"], 12, 8],
+        "circle-color": ["get", "color"],
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#ffffff",
+      },
+    });
+
+    mapInstance.addLayer({
+      id: "outlet-markers-labels",
+      type: "symbol",
+      source: "outlet-markers",
+      layout: {
+        "text-field": ["case", ["get", "isLast"], "●", ""],
+        "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+        "text-size": 9,
+        "text-anchor": "center",
+        "text-ignore-placement": true,
+      },
+      paint: { "text-color": "#ffffff" },
+    });
+
+    const onMapClick = (e: mapboxgl.MapMouseEvent) => {
+      const features = mapInstance.queryRenderedFeatures(e.point, {
+        layers: ["outlet-markers"],
+      });
+      if (!features || features.length === 0) return;
+
+      const feature = features[0];
+      const props = feature.properties as any;
+      const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [
+        number,
+        number,
+      ];
+
+      const html = buildPopupHtml({
+        outletName: props.outletName,
+        idx: props.idx,
+        createdAt: props.createdAt,
+        isLast: props.isLast,
+        color: props.color,
+      });
+
+      if (popup.current) {
+        popup.current.setLngLat(coordinates).setHTML(html).addTo(mapInstance);
+      }
+    };
+
+    const onMapMouseMove = (e: mapboxgl.MapMouseEvent) => {
+      const features = mapInstance.queryRenderedFeatures(e.point, {
+        layers: ["outlet-markers"],
+      });
+      mapInstance.getCanvas().style.cursor =
+        features.length > 0 ? "pointer" : "";
+    };
+
+    mapInstance.on("click", onMapClick);
+    mapInstance.on("mousemove", onMapMouseMove);
+
+    // Fit bounds once per outlet selection.
+    if (!hasInitializedLayers.current && markerFeatures.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      markerFeatures.forEach((f) => {
+        const coords = (f.geometry as GeoJSON.Point).coordinates as [
+          number,
+          number,
+        ];
+        bounds.extend(coords);
+      });
+      mapInstance.fitBounds(bounds, { padding: 50, maxZoom: 15 });
+      hasInitializedLayers.current = true;
+    }
+
+    return () => {
+      mapInstance.off("click", onMapClick);
+      mapInstance.off("mousemove", onMapMouseMove);
+    };
+  }, [points, selected, isLoaded]);
+
+  // Refit when switching outlet.
+  useEffect(() => {
+    hasInitializedLayers.current = false;
+  }, [activeId]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -106,9 +301,7 @@ export default function OutletMapPage() {
         <div className="w-full md:w-[380px] shrink-0 flex flex-col bg-white border border-slate-200/60 rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5">
             <MapPinned className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">
-              Daftar Outlet
-            </h3>
+            <h3 className="text-sm font-bold text-slate-800">Daftar Outlet</h3>
             <span className="ml-auto text-[11px] font-semibold text-slate-400">
               {rows.length} outlet
             </span>
@@ -172,67 +365,23 @@ export default function OutletMapPage() {
             </span>
           </div>
 
-          <div className="flex-1 min-h-0 relative outlet-map">
-            {!isLoading && rows.length > 0 ? (
-              <MapContainer
-                center={center}
-                zoom={13}
-                scrollWheelZoom
-                className="h-full w-full"
+          <div className="flex-1 min-h-0 relative">
+            {MAPBOX_TOKEN ? (
+              <div
+                ref={mapContainer}
+                className="absolute inset-0 w-full h-full"
                 style={{ minHeight: 400 }}
-                attributionControl={false}
-              >
-                <TileLayer
-                  attribution="&copy; OpenStreetMap contributors"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <AttributionControl position="bottomright" prefix={false} />
-                {path.length > 1 && (
-                  <Polyline
-                    positions={path}
-                    pathOptions={{
-                      color: "#10b981",
-                      weight: 3,
-                      opacity: 0.8,
-                      dashArray: "6 6",
-                    }}
-                  />
-                )}
-                {points.map((p, idx) => {
-                  const isLast = idx === points.length - 1;
-                  return (
-                    <Marker
-                      key={idx}
-                      position={[p.latitude, p.longitude]}
-                      icon={isLast ? latestIcon : historyIcon}
-                    >
-                      <Popup>
-                        <div className="text-sm">
-                          <p className="font-bold text-slate-800">
-                            {selected?.outlet_name}
-                          </p>
-                          <p className="text-xs text-slate-500 mt-0.5">
-                            Titik {idx + 1} · {p.created_at}
-                          </p>
-                          {isLast && (
-                            <p className="text-[11px] font-bold text-red-500 mt-1">
-                              Posisi Terakhir
-                            </p>
-                          )}
-                        </div>
-                      </Popup>
-                    </Marker>
-                  );
-                })}
-                <FitBounds points={points} />
-              </MapContainer>
+              />
             ) : (
               <div className="flex-1 flex items-center justify-center bg-slate-50/50 border-2 border-dashed border-slate-200 m-4 rounded-2xl h-[400px]">
                 <div className="text-center">
                   <MapPin className="w-8 h-8 text-slate-300 mx-auto mb-3" />
                   <p className="text-slate-400 font-medium">
-                    {isLoading ? "Memuat peta..." : "Data peta tidak tersedia"}
+                    Mapbox token belum dikonfigurasi
                   </p>
+                  <code className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                    VITE_MAPBOX_TOKEN
+                  </code>
                 </div>
               </div>
             )}
