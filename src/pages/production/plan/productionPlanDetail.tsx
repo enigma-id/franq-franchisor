@@ -426,7 +426,14 @@ const ProductionPlanDetailPage: React.FC = () => {
                         {idx + 1}
                       </td>
                       <td className='px-4 py-3 text-[15px] font-medium text-gray-700 '>
-                        {item.item?.name || "-"} ({item.item?.code || "-"})
+                        <div className='flex flex-col'>
+                          <span>{item.item?.name || "-"}</span>
+                          {item.item?.code && (
+                            <span className='text-[11px] text-slate-400'>
+                              {item.item.code}
+                            </span>
+                          )}
+                        </div>
                         {item.materials && item.materials.length > 0 && (
                           <div className='mt-2 space-y-1'>
                             <p className='text-[11px] font-bold text-slate-500 uppercase'>

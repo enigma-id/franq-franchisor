@@ -2,7 +2,7 @@ import type { ProductionPlanDetail } from "@/services/types/production";
 import { Badge, Dropdown } from "@/components/ui";
 import { Factory, Eye, Trash, MoreVertical, Send, Check } from "lucide-react";
 import config from "@/services/table/const";
-import { getStatusVariant, formatDate } from "@/utils";
+import { getStatusVariant, formatDate, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
   onView,
@@ -24,7 +24,12 @@ const createTableConfig = ({
       title: "Code",
       sortable: true,
       component: (row: ProductionPlanDetail) => (
-        <span className='font-bold text-slate-700'>{row.code}</span>
+        <div className='flex flex-col'>
+          <span className='font-bold text-slate-700'>{row.code}</span>
+          <span className='text-xs text-gray-500'>
+            {formatDateTime(row.created_at)} WIB
+          </span>
+        </div>
       ),
     },
     date: {

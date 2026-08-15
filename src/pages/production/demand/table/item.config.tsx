@@ -20,14 +20,9 @@ const createTableConfig = ({
       title: "Item",
       sortable: true,
       component: (row: DemandItemData) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-slate-700">{row.name}</span>
-          {row.alias_name && (
-            <span className="text-[11px] text-slate-400 font-medium">
-              {row.alias_name.trim()}
-            </span>
-          )}
-        </div>
+        <span className="font-bold text-slate-700">
+          {row.alias_name?.trim() || row.name}
+        </span>
       ),
     },
     stock_available: {

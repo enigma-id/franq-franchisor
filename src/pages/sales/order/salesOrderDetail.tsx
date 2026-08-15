@@ -9,7 +9,6 @@ import { useEnigmaUI } from "@/components";
 import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { useSalesOrderGuards } from "@/hooks";
-import { GuardedButton } from "@/components/app";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import {
@@ -157,12 +156,6 @@ export default function SalesOrderDetailPage() {
     );
   }
 
-  const totalQty =
-    orderItems?.reduce(
-      (sum: number, item: any) => sum + (item.quantity_ordered || 0),
-      0,
-    ) || 0;
-
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
@@ -172,25 +165,25 @@ export default function SalesOrderDetailPage() {
         action={
           canManage && (
             <div className="flex gap-2">
-            <GuardedButton
-              allowed={guards.canEdit}
-              reason="Hanya order tipe default dengan status pending yang dapat diperbaharui (Edit)."
-              variant="info"
-              onClick={() => navigate(`/sales/order/update/${order?.id}`)}
-              title="Edit"
-            >
-              <Edit className="w-4 h-4" />
-            </GuardedButton>
-            <GuardedButton
-              allowed={guards.canPublish}
-              reason="Hanya order tipe default dengan status pending yang dapat disetujui (publish)."
-              variant="primary"
-              onClick={handlePublish}
-              isLoading={publishResult.isLoading}
-              title="Publish"
-            >
-              <Send className="w-4 h-4" />
-            </GuardedButton>
+            {guards.canEdit && (
+              <Button
+                variant="info"
+                onClick={() => navigate(`/sales/order/update/${order?.id}`)}
+                title="Edit"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            )}
+            {guards.canPublish && (
+              <Button
+                variant="primary"
+                onClick={handlePublish}
+                isLoading={publishResult.isLoading}
+                title="Publish"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            )}
             {guards.canPay && (
               <Button
                 variant="success"
@@ -201,16 +194,16 @@ export default function SalesOrderDetailPage() {
                 <CreditCard className="w-4 h-4" />
               </Button>
             )}
-            <GuardedButton
-              allowed={guards.canDelete}
-              reason="Hanya order tipe default dengan status pending yang dapat dihapus."
-              variant="error"
-              onClick={handleDelete}
-              isLoading={removeResult.isLoading}
-              title="Hapus"
-            >
-              <Trash2 className="w-4 h-4" />
-            </GuardedButton>
+            {guards.canDelete && (
+              <Button
+                variant="error"
+                onClick={handleDelete}
+                isLoading={removeResult.isLoading}
+                title="Hapus"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
             </div>
           )
         }
@@ -377,9 +370,6 @@ export default function SalesOrderDetailPage() {
                   <th className="px-4 py-4 text-left text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
                     Produk
                   </th>
-                  <th className="px-4 py-4 text-left text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
-                    Tipe
-                  </th>
                   <th className="px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none">
                     Qty
                   </th>
@@ -413,9 +403,17 @@ export default function SalesOrderDetailPage() {
                           {idx + 1}
                         </td>
                         <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
-                          {item.catalog?.name || item.item?.name || "-"}
+                          <div className="flex flex-col">
+                            <span>
+                              {item.catalog?.name || item.item?.name || "-"}
+                            </span>
+                            <span className="text-[11px] text-slate-400">
+                              {(item.catalog?.code || item.item?.code || "") &&
+                                `${item.catalog?.code || item.item?.code}`}
+                            </span>
+                          </div>
                         </td>
-                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700">
+                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right whitespace-nowrap">
                           {item.catalog?.is_bundle ? (
                             <Badge
                               variant="info"
@@ -425,13 +423,15 @@ export default function SalesOrderDetailPage() {
                               Bundle
                             </Badge>
                           ) : (
-                            item.fraction?.name ||
-                            item.item?.default_fraction ||
-                            "-"
+                            <>
+                              {item.quantity_ordered}{" "}
+                              <span className="text-[12px] text-slate-400">
+                                {item.fraction?.name ||
+                                  item.item?.default_fraction ||
+                                  "PCS"}
+                              </span>
+                            </>
                           )}
-                        </td>
-                        <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
-                          {item.quantity_ordered}
                         </td>
                         <td className="px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right">
                           {item.quantity_fulfilled}
@@ -464,13 +464,13 @@ export default function SalesOrderDetailPage() {
                                 </span>
                               </div>
                             </td>
-                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500">
-                              {bundle.fraction?.name ||
-                                bundle.item?.default_fraction ||
-                                "-"}
-                            </td>
-                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500 text-right">
-                              {bundle.quantity_ordered}
+                            <td className="px-4 py-2 align-middle text-[12px] text-gray-500 text-right whitespace-nowrap">
+                              {bundle.quantity_ordered}{" "}
+                              <span className="text-slate-400">
+                                {bundle.fraction?.name ||
+                                  bundle.item?.default_fraction ||
+                                  "PCS"}
+                              </span>
                             </td>
                             <td className="px-4 py-2 align-middle text-[12px] text-gray-500 text-right">
                               {bundle.quantity_fulfilled}
@@ -487,58 +487,46 @@ export default function SalesOrderDetailPage() {
                   ))
                 )}
               </tbody>
-              <tfoot className="border-t border-slate-200">
-                {/* Subtotal */}
-                <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td className="px-4 py-3 text-slate-600" colSpan={4}>
-                    Subtotal
-                  </td>
-                  <td className="px-4 py-3 text-right text-slate-700">
-                    {totalQty} item(s)
-                  </td>
-                  <td className="px-4 py-3" />
-                  <td className="px-4 py-3 text-right text-slate-800 mono">
-                    {formatCurrency(order.subtotal_nett || 0)}
-                  </td>
-                </tr>
-                {/* Shipping Charges */}
-                <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td
-                    className="px-4 py-3 text-slate-600 text-right"
-                    colSpan={6}
-                  >
-                    Shipping Charges
-                  </td>
-                  <td className="px-4 py-3 text-right text-slate-800 mono">
-                    {formatCurrency(order.shipping_charges || 0)}
-                  </td>
-                </tr>
-                {/* Tax (PPN) */}
-                <tr className="bg-slate-50/50 font-semibold border-b border-slate-100">
-                  <td
-                    className="px-4 py-3 text-slate-600 text-right"
-                    colSpan={6}
-                  >
-                    Tax
-                  </td>
-                  <td className="px-4 py-3 text-right text-slate-800 mono">
-                    {formatCurrency(order.subtotal_tax || 0)}
-                  </td>
-                </tr>
-                {/* Total Bill */}
-                <tr className="bg-slate-100 font-bold border-t border-slate-200">
-                  <td
-                    className="px-4 py-3.5 text-slate-800 text-right text-[14px]"
-                    colSpan={6}
-                  >
-                    Total Bill
-                  </td>
-                  <td className="px-4 py-3.5 text-right text-slate-900 text-[14px] mono">
-                    {formatCurrency(order.total_charges || 0)}
-                  </td>
-                </tr>
-              </tfoot>
             </table>
+          </div>
+          {/* Note (left) + Nominal Summary (right) */}
+          <div className="flex flex-col md:flex-row gap-6 p-5 border-t border-slate-100">
+            <div className="flex-1">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Catatan
+              </span>
+              <p className="mt-1 text-sm text-slate-700 whitespace-pre-wrap">
+                {order.note || "-"}
+              </p>
+            </div>
+            <div className="md:w-80 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">Subtotal</span>
+                <span className="font-semibold text-slate-800 mono">
+                  {formatCurrency(order.subtotal_nett || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">Shipping Charges</span>
+                <span className="font-semibold text-slate-800 mono">
+                  {formatCurrency(order.shipping_charges || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">Tax</span>
+                <span className="font-semibold text-slate-800 mono">
+                  {formatCurrency(order.subtotal_tax || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
+                <span className="text-base font-bold text-slate-800">
+                  Total Bill
+                </span>
+                <span className="text-base font-bold text-slate-900 mono">
+                  {formatCurrency(order.total_charges || 0)}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </Page.Body>
