@@ -138,6 +138,7 @@ const createTableConfig = ({
       title: "",
       class: "text-right",
       align: "right",
+      sortable: false,
       component: (row: OutletDetail) => (
         <Dropdown
           trigger={
