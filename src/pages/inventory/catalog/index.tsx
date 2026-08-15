@@ -211,7 +211,7 @@ const InventoryCatalogListPage: React.FC = () => {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Inventory & Warehouse"
-        title="Inventory Katalog"
+        title="Master Katalog"
         subtitle="Kelola katalog produk untuk distribusi."
         action={
           canManage && (

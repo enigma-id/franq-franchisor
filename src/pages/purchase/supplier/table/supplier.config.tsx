@@ -84,6 +84,8 @@ const createTableConfig = ({
     },
     bank_info: {
       title: "Rekening Bank",
+      sortable: true,
+      alias: "bank_name",
       component: (row: any) => (
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5 text-slate-700 font-bold">

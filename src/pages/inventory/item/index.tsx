@@ -138,7 +138,7 @@ export function InventoryItem() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Inventory & Warehouse"
-        title="Inventory Item"
+        title="Master Item"
         subtitle="Daftar item inventori."
         action={
           canManage && (
