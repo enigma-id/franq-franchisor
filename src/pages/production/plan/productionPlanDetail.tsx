@@ -15,7 +15,6 @@ import {
   CheckCircle,
   Pencil,
 } from "lucide-react";
-import dayjs from "dayjs";
 import { formatDate } from "@/utils";
 import type {
   ProductionPlanDetail,

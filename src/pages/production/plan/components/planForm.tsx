@@ -12,6 +12,7 @@ import { useAppSelector } from "@/hooks";
 import { dateFormat } from "@/utils";
 
 type ProductionPlanFormItem = {
+  id?: string;
   item_id: string;
   itemSelected: unknown | null;
   quantity: number;
