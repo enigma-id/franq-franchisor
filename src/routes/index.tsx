@@ -60,14 +60,12 @@ import B2BProductItemPage from "@/pages/report/b2bProductItem";
 import OutletMapPage from "@/pages/report/outletMap";
 import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
 import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
-import { WithdrawalDetail } from "@/pages/withdrawal/WithdrawalDetail";
 import { PurchaseOrderDetailPage } from "@/pages/purchase/order/purchaseOrderDetail";
 import B2BOrderListPage from "@/pages/b2b/order";
 import B2BOrderCreatePage from "@/pages/b2b/order/b2bOrderCreate";
 import B2BOrderDetailPage from "@/pages/b2b/order/b2bOrderDetail";
 import B2BOrderUpdatePage from "@/pages/b2b/order/b2bOrderUpdate";
 import OutletTopupListPage from "@/pages/outletTopup";
-import OutletTopupDetailPage from "@/pages/outletTopup/outletTopupDetail";
 import UserListPage from "@/pages/user";
 import UserGroupListPage from "@/pages/usergroup";
 import FranchisorProfilePage from "@/pages/franchisor";
@@ -548,14 +546,6 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
-        <Route
-          path="/withdrawal/:id"
-          element={
-            <PermissionGuard permission={MENU.withdrawal}>
-              <WithdrawalDetail />
-            </PermissionGuard>
-          }
-        />
 
         {/* B2B Order */}
         <Route
@@ -597,14 +587,6 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.outletTopup}>
               <OutletTopupListPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path="/outlet-topup/:id"
-          element={
-            <PermissionGuard permission={MENU.outletTopup}>
-              <OutletTopupDetailPage />
             </PermissionGuard>
           }
         />

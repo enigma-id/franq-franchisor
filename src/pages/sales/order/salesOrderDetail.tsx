@@ -16,7 +16,6 @@ import {
   Store,
   Hash,
   AlertCircle,
-  Wallet,
   ListOrdered,
   CreditCard,
   Trash2,
@@ -209,7 +208,7 @@ export default function SalesOrderDetailPage() {
         }
       />
       <Page.Body>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Outlet Info */}
           <div className="card-info card-animate p-6 flex flex-col justify-between">
             <div>
@@ -317,34 +316,6 @@ export default function SalesOrderDetailPage() {
             </dl>
           </div>
 
-          {/* Payment Info */}
-          <div className="card-info card-animate p-6">
-            <div className="card-section-header">
-              <div className="card-section-icon">
-                <Wallet size={18} />
-              </div>
-              <h2 className="card-section-title">Pembayaran</h2>
-            </div>
-            <dl className="space-y-1">
-              <div className="info-row">
-                <dt className="info-label">Jatuh Tempo</dt>
-                <dd className="info-value">
-                  {order.payment_expired_at &&
-                  order.payment_expired_at !== "0001-01-01T00:00:00Z"
-                    ? formatDateTime(order.payment_expired_at)
-                    : "-"}
-                </dd>
-              </div>
-              {order.paid_at && order.paid_at !== "0001-01-01T00:00:00Z" && (
-                <div className="info-row">
-                  <dt className="info-label">Dibayar</dt>
-                  <dd className="info-value">
-                    {formatDateTime(order.paid_at)}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
         </div>
 
         {/* Order Items Table */}

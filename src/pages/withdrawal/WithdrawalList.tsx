@@ -7,7 +7,6 @@ import type { TableConfig } from "@/services/table/const";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import createTableConfig from "./table/withdrawal.config";
 import type { WithdrawalRequest } from "@/services/types";
-import { useNavigate } from "react-router-dom";
 import { useWithdrawal } from "@/services/withdrawal/hooks";
 import TableFilter from "./table/withdrawal.filter";
 import { useEnigmaUI } from "@/components";
@@ -18,7 +17,6 @@ type ActionType = "approve" | "reject";
 
 export function WithdrawalList() {
   useDocumentMeta("Permintaan Penarikan | Sukabread Franchisee", "");
-  const navigate = useNavigate();
   const canManage = useCan(ACTION.withdrawalRequest);
   const { showToast } = useEnigmaUI();
   const { approve, approveResult, reject, rejectResult } = useWithdrawal();
@@ -26,11 +24,6 @@ export function WithdrawalList() {
   const [actionType, setActionType] = useState<ActionType | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
-
-  const handleView = useCallback(
-    (row: WithdrawalRequest) => navigate(`/withdrawal/${row.id}`),
-    [navigate],
-  );
 
   const openConfirm = useCallback((row: WithdrawalRequest, type: ActionType) => {
     setSelectedRow(row);
@@ -67,11 +60,10 @@ export function WithdrawalList() {
   }, [actionType, approveResult, rejectResult]);
 
   const tableConfig = useMemo(() => createTableConfig({
-    onView: handleView,
     onApprove: (row) => openConfirm(row, "approve"),
     onReject: (row) => openConfirm(row, "reject"),
     canManage,
-  }), [handleView, openConfirm, canManage]);
+  }), [openConfirm, canManage]);
 
   const Table = useTable("withdrawal-list", tableConfig as TableConfig<unknown>);
 

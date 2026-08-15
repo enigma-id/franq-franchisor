@@ -6,7 +6,6 @@ import type { TableConfig } from "@/services/table/const";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import createTableConfig from "./table/topup.config";
 import type { OutletTopupDetail } from "@/services/types";
-import { useNavigate } from "react-router-dom";
 import { useOutletTopup } from "@/services/outletTopup/hooks";
 import TableFilter from "./table/topup.filter";
 import { useEnigmaUI } from "@/components";
@@ -17,7 +16,6 @@ type ActionType = "approve" | "reject";
 
 const OutletTopupListPage: React.FC = () => {
   useDocumentMeta("Topup Outlet | Sukabread Franchisee", "");
-  const navigate = useNavigate();
   const canManage = useCan(ACTION.outletTopupRequest);
   const { showToast } = useEnigmaUI();
   const { approve, approveResult, reject, rejectResult } = useOutletTopup();
@@ -25,11 +23,6 @@ const OutletTopupListPage: React.FC = () => {
   const [actionType, setActionType] = useState<ActionType | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
-
-  const handleView = useCallback(
-    (row: OutletTopupDetail) => navigate(`/outlet-topup/${row.id}`),
-    [navigate],
-  );
 
   const openConfirm = useCallback((row: OutletTopupDetail, type: ActionType) => {
     setSelectedRow(row);
@@ -65,11 +58,10 @@ const OutletTopupListPage: React.FC = () => {
   }, [actionType, approveResult, rejectResult]);
 
   const tableConfig = useMemo(() => createTableConfig({
-    onView: handleView,
     onApprove: (row) => openConfirm(row, "approve"),
     onReject: (row) => openConfirm(row, "reject"),
     canManage,
-  }), [handleView, openConfirm, canManage]);
+  }), [openConfirm, canManage]);
 
   const Table = useTable("outlet-topup-list", tableConfig as TableConfig<unknown>);
 

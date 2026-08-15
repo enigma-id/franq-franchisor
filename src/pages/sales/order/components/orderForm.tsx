@@ -6,7 +6,6 @@ import {
   Input,
   RemoteSelect,
   DatePicker,
-  Checkbox,
   Button,
 } from "@/components/ui";
 import { useOutlet } from "@/services/outlet/hooks";
@@ -221,6 +220,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
 
     const payload = {
       ...formData,
+      self_pickup: true,
       shipping_charges: formData.shipping_charges ?? 0,
       items: formData.items.map((item) => ({
         catalog_id: item.catalog_id,
@@ -328,25 +328,6 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             }
             error={FormState?.errors?.recipient_address as string}
           />
-          <Input
-            type="textarea"
-            label="Catatan"
-            placeholder="Tambahkan catatan transaksi..."
-            value={formData.note}
-            onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-          />
-
-          <Checkbox
-            label="Self Pickup"
-            checked={formData.self_pickup}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                self_pickup: e.target.checked,
-              }))
-            }
-            variant="primary"
-          />
         </div>
       </div>
 
@@ -366,6 +347,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
                   <th className="px-4 py-3 w-12 text-center">#</th>
                   <th className="px-4 py-3 min-w-[320px]">Katalog Barang</th>
+                  <th className="px-4 py-3 w-28 text-right">Harga</th>
                   <th className="px-4 py-3 w-28 text-center">Satuan (Qty)</th>
                   <th className="px-4 py-3 w-12 text-center"></th>
                 </tr>
@@ -387,17 +369,20 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
                         fetchData={(page, search) =>
                           getCatalogs({ page, search, is_active: "true" })
                         }
-                        getLabel={(item: any) =>
-                          item
-                            ? `${item.name} [${currencyFormat(item.unit_price)}]`
-                            : ""
-                        }
+                        getLabel={(item: any) => item?.name ?? ""}
                         getValue={(item: any) => item?.id}
                         onChange={(item: any) => handleItemChange(idx, item)}
                         onClear={() => handleItemClear(idx)}
                         required
                         error={getErrorItem(idx, "catalog_id")}
                       />
+                    </td>
+                    <td className="px-4 py-3 align-top text-right text-sm font-semibold text-slate-600 pt-5">
+                      {item.catalogSelected
+                        ? currencyFormat(
+                            (item.catalogSelected as any)?.unit_price ?? 0,
+                          )
+                        : "-"}
                     </td>
                     <td className="px-4 py-3 align-top">
                       <Input
@@ -436,6 +421,42 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
               <Plus className="w-4 h-4" />
               Tambah Item
             </button>
+          </div>
+
+          {/* Catatan | Summary */}
+          <div className="bg-slate-50 border-t border-slate-200 p-5 rounded-b-xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Catatan - left */}
+              <div>
+                <Input
+                  type="textarea"
+                  placeholder="Tambahkan catatan transaksi..."
+                  value={formData.note}
+                  onChange={(e) =>
+                    setFormData({ ...formData, note: e.target.value })
+                  }
+                />
+              </div>
+              {/* Summary - right */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center pt-1">
+                  <span className="text-base font-bold text-slate-800">
+                    Total
+                  </span>
+                  <span className="text-xl font-bold text-emerald-600 mono">
+                    {currencyFormat(
+                      formData.items.reduce(
+                        (sum, item) =>
+                          sum +
+                          ((item.catalogSelected as any)?.unit_price ?? 0) *
+                            item.quantity_ordered,
+                        0,
+                      ),
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
