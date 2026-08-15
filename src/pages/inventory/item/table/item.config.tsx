@@ -5,6 +5,11 @@ import { Toggle } from "@/components/ui";
 import type { InventoryItemDetail } from "@/services/types/inventory";
 import { formatCurrency } from "@/utils";
 
+const ITEM_TYPE_LABEL: Record<string, string> = {
+  raw_material: "Raw Material",
+  finished_goods: "Finished Goods",
+};
+
 const createTableConfig = ({
   lockFilter,
   filter,
@@ -49,6 +54,21 @@ const createTableConfig = ({
             </span>
           )}
         </div>
+      ),
+    },
+    type: {
+      title: "Tipe",
+      sortable: true,
+      component: (row: InventoryItemDetail) => (
+        <span
+          className={
+            row?.type === "finished_goods"
+              ? "text-[10px] px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full font-medium"
+              : "text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium"
+          }
+        >
+          {ITEM_TYPE_LABEL[row?.type] ?? row?.type ?? "-"}
+        </span>
       ),
     },
     base_price: {

@@ -6,6 +6,11 @@ import { Badge, Button, Loading } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { InventoryItemDetail } from "@/services/types";
 import { Package, Factory } from "lucide-react";
+
+const ITEM_TYPE_LABEL: Record<string, string> = {
+  raw_material: "Raw Material",
+  finished_goods: "Finished Goods",
+};
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
@@ -70,6 +75,15 @@ const InventoryItemDetailPage: React.FC = () => {
                 <Badge variant="default">
                   Category: {item.category || "-"}
                 </Badge>
+                <span
+                  className={
+                    item.type === "finished_goods"
+                      ? "inline-flex items-center text-[10px] px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full font-medium"
+                      : "inline-flex items-center text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-medium"
+                  }
+                >
+                  {ITEM_TYPE_LABEL[item.type] ?? item.type ?? "-"}
+                </span>
               </div>
             </div>
             <dl className="grid grid-cols-2 gap-x-4 mt-6">
@@ -121,6 +135,12 @@ const InventoryItemDetailPage: React.FC = () => {
               <h2 className="card-section-title">Item Configuration</h2>
             </div>
             <dl className="space-y-1">
+              <div className="info-row">
+                <dt className="info-label">Type</dt>
+                <dd className="info-value">
+                  {ITEM_TYPE_LABEL[item.type] ?? item.type ?? "-"}
+                </dd>
+              </div>
               <div className="info-row">
                 <dt className="info-label">Picking Strategy</dt>
                 <dd className="info-value">

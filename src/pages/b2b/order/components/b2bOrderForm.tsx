@@ -475,7 +475,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              Tambah Baris
+              Tambah Item
             </button>
           </div>
 

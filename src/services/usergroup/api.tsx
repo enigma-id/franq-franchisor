@@ -39,9 +39,10 @@ export const userGroupApi = createApi({
     }),
 
     deleteUserGroup: builder.mutation({
-      query: (id) => ({
+      query: ({ id, payload = {} }) => ({
         url: `/usergroup/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 

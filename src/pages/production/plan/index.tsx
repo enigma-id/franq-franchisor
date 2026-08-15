@@ -175,7 +175,7 @@ const ProductionPlanListPage: React.FC = () => {
               onClick={() => navigate("/production/plan/create")}
             >
               <Plus size={18} className="mr-2" />
-              Buat Rencana
+              Buat Rencana Produksi
             </Button>
           )
         }

@@ -79,6 +79,10 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
     }
   }, [warehouseResult?.data?.data, initialData, warehouse]);
 
+  // Disable select warehouse ketika hanya ada satu warehouse.
+  const isSingleWarehouse =
+    (warehouseResult?.data?.data as any[] | undefined)?.length === 1;
+
   useEffect(() => {
     if (initialData) {
       const newItems = (initialData.items || []).map((data: any) => {
@@ -161,12 +165,13 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative z-10">
-        <div className="space-y-2">
+    <form id={id} onSubmit={handleSubmit} className='space-y-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative z-10'>
+        <div className='space-y-2'>
           <RemoteSelect
-            label="Pilih Warehouse"
-            placeholder="Cari warehouse..."
+            label='Pilih Warehouse'
+            placeholder='Cari warehouse...'
+            disabled={isSingleWarehouse}
             hook={warehouseResult as any}
             fetchData={(page, search) => getWarehouse({ page, search })}
             getLabel={(item: any) => item?.name}
@@ -183,9 +188,9 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
           />
         </div>
 
-        <div className="space-y-2">
+        <div className='space-y-2'>
           <DatePicker
-            label="Tanggal Produksi"
+            label='Tanggal Produksi'
             value={production_date || undefined}
             onChange={(date: any) => {
               setProductionDate(date as Dayjs);
@@ -200,31 +205,31 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-visible relative">
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-          <h3 className="font-bold text-slate-700">Daftar Item Produksi</h3>
+      <div className='bg-white rounded-xl border border-slate-200 shadow-sm overflow-visible relative'>
+        <div className='px-6 py-4 border-b border-slate-100 bg-slate-50/50'>
+          <h3 className='font-bold text-slate-700'>Daftar Item Produksi</h3>
         </div>
-        <table className="w-full text-left border-collapse min-w-150">
+        <table className='w-full text-left border-collapse min-w-150'>
           <thead>
-            <tr className="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
-              <th className="px-6 py-3 w-10 text-center">#</th>
-              <th className="px-6 py-3">Produk Catalog</th>
-              <th className="px-6 py-3 w-32">Quantity</th>
-              <th className="px-6 py-3 w-16 text-center"></th>
+            <tr className='bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200'>
+              <th className='px-6 py-3 w-10 text-center'>#</th>
+              <th className='px-6 py-3'>Produk Catalog</th>
+              <th className='px-6 py-3 w-32'>Quantity</th>
+              <th className='px-6 py-3 w-16 text-center'></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className='divide-y divide-slate-100'>
             {formData.items.map((item, index) => (
               <tr
                 key={index}
-                className="hover:bg-slate-50/50 transition-colors"
+                className='hover:bg-slate-50/50 transition-colors'
               >
-                <td className="px-6 py-4 text-center text-xs font-semibold text-slate-400">
+                <td className='px-6 py-4 text-center text-xs font-semibold text-slate-400'>
                   {index + 1}
                 </td>
-                <td className="px-6 py-4">
+                <td className='px-6 py-4'>
                   <RemoteSelect
-                    placeholder="Pilih Produk Catalog..."
+                    placeholder='Pilih Produk Catalog...'
                     value={item.itemSelected}
                     hook={catalogsResult as any}
                     fetchData={(page, search) =>
@@ -257,9 +262,9 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                     error={getErrorItem(index, "item_id")}
                   />
                 </td>
-                <td className="px-6 py-4">
+                <td className='px-6 py-4'>
                   <Input
-                    type="number"
+                    type='number'
                     min={1}
                     value={item.quantity}
                     onChange={(e) =>
@@ -272,10 +277,10 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                     error={getErrorItem(index, "quantity")}
                   />
                 </td>
-                <td className="px-6 py-4 text-center">
+                <td className='px-6 py-4 text-center'>
                   <Button
-                    variant="error"
-                    styleType="ghost"
+                    variant='error'
+                    styleType='ghost'
                     onClick={() => removeItem(index)}
                   >
                     <Trash2 size={18} />
@@ -285,16 +290,15 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             ))}
           </tbody>
         </table>
-        <div className="px-6 py-4 border-t border-slate-100">
-          <Button
-            variant="success"
+        <div className='px-6 py-4 border-t border-slate-100'>
+          <button
+            type='button'
             onClick={addItem}
-            size="sm"
-            styleType="soft"
+            className='w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer'
           >
             <Plus size={14} />
-            Tambah Baris
-          </Button>
+            Tambah Item
+          </button>
         </div>
       </div>
     </form>

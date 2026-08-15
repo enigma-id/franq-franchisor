@@ -446,7 +446,12 @@ export function InventoryCatalogForm({
                     value={singularItem}
                     hook={inventoryItemsResult as any}
                     fetchData={(page, search) =>
-                      getInventoryItems({ page, search, status: "active" })
+                      getInventoryItems({
+                        page,
+                        search,
+                        status: "active",
+                        in_catalog: false,
+                      })
                     }
                     getLabel={(item: any) =>
                       item

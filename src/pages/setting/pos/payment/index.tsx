@@ -452,7 +452,9 @@ const PaymentMethodListPage: React.FC = () => {
                       required
                       value={formData.name}
                       disabled={
-                        provider?.value === "cash" || provider?.value === "qris"
+                        provider?.value === "cash" ||
+                        provider?.value === "qris" ||
+                        provider?.value === "saldo"
                       }
                       onChange={(e) =>
                         setFormData((prev) => ({

@@ -103,6 +103,10 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
     }
   }, [warehouseResult?.data?.data, initialData, warehouse]);
 
+  // Disable select warehouse ketika hanya ada satu warehouse.
+  const isSingleWarehouse =
+    (warehouseResult?.data?.data as any[] | undefined)?.length === 1;
+
   useEffect(() => {
     if (initialData) {
       const newItems = (initialData.items || []).map((item: any) => {
@@ -245,6 +249,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
           <RemoteSelect<WarehouseDetail>
             label="Warehouse"
             required
+            disabled={isSingleWarehouse}
             hook={warehouseResult as any}
             fetchData={(page, search) => getWarehouse({ page, search })}
             getLabel={(item: any) => item?.name}
@@ -426,10 +431,10 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
             <button
               type="button"
               onClick={addItemRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              Tambah Baris
+              Tambah Item
             </button>
           </div>
         </div>

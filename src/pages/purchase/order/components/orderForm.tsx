@@ -83,6 +83,10 @@ export function PurchaseOrderForm({
       }));
     }
   }, [warehouseResult?.data?.data, initialData, warehouseSelected]);
+
+  // Disable select warehouse ketika hanya ada satu warehouse.
+  const isSingleWarehouse =
+    (warehouseResult?.data?.data as any[] | undefined)?.length === 1;
   const [etaAt, setEtaAt] = useState<Dayjs | null>(dayjs().add(1, "day"));
   const [formData, setFormData] = useState({
     supplier_id: "",
@@ -419,6 +423,7 @@ export function PurchaseOrderForm({
           <RemoteSelect<WarehouseDetail>
             label="Warehouse"
             placeholder="Pilih Warehouse"
+            disabled={isSingleWarehouse}
             value={warehouseSelected}
             hook={warehouseResult as any}
             fetchData={(page, search) =>
@@ -665,10 +670,10 @@ export function PurchaseOrderForm({
           <button
             type="button"
             onClick={addItemRow}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            Tambah Baris
+            Tambah Item
           </button>
         </div>
 
