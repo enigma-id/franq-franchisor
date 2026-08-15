@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
-import { currencyFormat } from "@/utils";
+import { currencyFormat, formatDateTime } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
@@ -37,6 +37,14 @@ const createTableConfig = ({
       periode: {
         title: "Date",
         component: (row: any) => row.date,
+      },
+      started_at: {
+        title: "Mulai",
+        component: (row: any) => formatDateTime(row.started_at),
+      },
+      finished_at: {
+        title: "Selesai",
+        component: (row: any) => formatDateTime(row.finished_at),
       },
       ...dynamic,
     };
