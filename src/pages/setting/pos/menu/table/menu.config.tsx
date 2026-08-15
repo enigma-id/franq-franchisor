@@ -141,6 +141,7 @@ const createTableConfig = ({
       title: "",
       headerClass: "text-right",
       class: "text-right",
+      sortable: false,
       component: (row: POSMenuDetail) => (
         <Dropdown
           trigger={

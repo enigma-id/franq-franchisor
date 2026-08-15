@@ -45,6 +45,7 @@ const createTableConfig = ({
     type: {
       title: "Type",
       sortable: true,
+      alias: "outlet_type:name",
       component: (row: OutletDetail) => (
         <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-medium">
           {row?.outlet_type?.name ?? "-"}

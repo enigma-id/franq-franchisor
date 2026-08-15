@@ -144,6 +144,7 @@ const createTableConfig = ({
     },
     action: {
       title: "",
+      sortable: false,
       component: (row: InventoryItemDetail) => (
         <Dropdown
           trigger={
