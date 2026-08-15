@@ -19,7 +19,7 @@ const createTableConfig = ({
       title: "Code",
       sortable: true,
       component: (row: any) => (
-        <span className="font-semibold text-sm">{row?.code ?? "-"}</span>
+        <span className='font-semibold text-sm'>{row?.code ?? "-"}</span>
       ),
     },
     date: {
@@ -31,7 +31,7 @@ const createTableConfig = ({
       title: "Outlet",
       sortable: true,
       component: (row: any) => (
-        <span className="font-semibold uppercase text-sm">
+        <span className='font-semibold uppercase text-sm'>
           {row?.outlet ?? "-"}
         </span>
       ),
@@ -40,7 +40,7 @@ const createTableConfig = ({
       title: "Kasir",
       sortable: true,
       component: (row: any) => (
-        <span className="font-semibold uppercase text-sm">
+        <span className='font-semibold uppercase text-sm'>
           {row?.cashier ?? "-"}
         </span>
       ),
@@ -49,20 +49,12 @@ const createTableConfig = ({
       title: "Bill Name",
       sortable: true,
       component: (row: any) => (
-        <span className="font-semibold uppercase text-sm">
+        <span className='font-semibold uppercase text-sm'>
           {row?.bill_name ?? "-"}
         </span>
       ),
     },
-    membership: {
-      title: "Customer",
-      sortable: true,
-      component: (row: any) => (
-        <span className="font-semibold uppercase text-sm">
-          {row?.membership?.name?.toUpperCase() ?? "-"}
-        </span>
-      ),
-    },
+
     total_charges: {
       title: "Total Charges",
       align: "right",

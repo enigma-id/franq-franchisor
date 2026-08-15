@@ -32,6 +32,7 @@ const createTableConfig = ({
         align: "right",
         headerClass: "text-right",
         class: "text-right",
+        sortable: false,
         component: (row: any) => {
           const vals = row.nominals ?? [];
           return vals[index] !== undefined ? currencyFormat(vals[index]) : "-";
@@ -42,12 +43,14 @@ const createTableConfig = ({
     return {
       periode: {
         title: "Periode",
+        sortable: false,
         component: (row: any) => row.periode,
       },
       ...dynamic,
       action: {
         title: "",
         width: 40,
+        sortable: false,
         component: () => (
           <ChevronRight size={16} className="text-base-content/30" />
         ),

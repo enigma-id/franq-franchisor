@@ -35,6 +35,7 @@ const createTableConfig = ({
     return {
       periode: {
         title: "Date",
+        sortable: false,
         component: (row: any) => row.date,
       },
       ...dynamic,

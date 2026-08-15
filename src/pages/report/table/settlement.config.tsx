@@ -44,12 +44,14 @@ const createTableConfig = ({
     return {
       date: {
         title: "Date",
+        sortable: false,
         component: (row: any) => row.date,
       },
       ...dynamic,
       action: {
         title: "",
         width: 40,
+        sortable: false,
         component: () => (
           <ChevronRight size={16} className='text-base-content/30' />
         ),

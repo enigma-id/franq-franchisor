@@ -36,14 +36,17 @@ const createTableConfig = ({
     return {
       periode: {
         title: "Date",
+        sortable: false,
         component: (row: any) => row.date,
       },
       started_at: {
         title: "Mulai",
+        sortable: false,
         component: (row: any) => formatDateTime(row.started_at),
       },
       finished_at: {
         title: "Selesai",
+        sortable: false,
         component: (row: any) => formatDateTime(row.finished_at),
       },
       ...dynamic,

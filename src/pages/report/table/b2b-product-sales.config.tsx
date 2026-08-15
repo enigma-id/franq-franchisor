@@ -1,5 +1,5 @@
 import config from "@/services/table/const";
-import { currencyFormat } from "@/utils";
+import { currencyFormat, formatDate } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
@@ -15,7 +15,7 @@ const createTableConfig = ({
       title: "Date",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm">{row?.date ? new Date(row.date).toLocaleDateString() : "-"}</span>
+        <span className="text-sm">{formatDate(row?.date)}</span>
       ),
     },
     code: {
