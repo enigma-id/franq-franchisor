@@ -3,6 +3,7 @@ import {
   useLazyGetPlansQuery,
   useLazyGetPlanQuery,
   useCreatePlanMutation,
+  useUpdatePlanMutation,
   useDeletePlanMutation,
   usePublishPlanMutation,
   useCompletePlanMutation,
@@ -15,6 +16,7 @@ export const useProductionPlan = createCrudHook<ProductionPlanDetail>({
   useLazyGetQuery: useLazyGetPlansQuery,
   useLazyShowQuery: useLazyGetPlanQuery,
   useCreateMutation: useCreatePlanMutation,
+  useUpdateMutation: useUpdatePlanMutation,
   useRemoveMutation: useDeletePlanMutation,
   customOperations: {
     publish: { hook: usePublishPlanMutation },

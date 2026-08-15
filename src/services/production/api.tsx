@@ -45,6 +45,18 @@ export const productionApi = createApi({
     }),
 
     /**
+     * PUT /production/plan/:id
+     * Update production plan
+     */
+    updatePlan: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/production/plan/${id}`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /**
      * DELETE /production/plan/:id
      * Delete production plan
      */
@@ -112,6 +124,7 @@ export const {
   useLazyGetPlansQuery,
   useLazyGetPlanQuery,
   useCreatePlanMutation,
+  useUpdatePlanMutation,
   useDeletePlanMutation,
   usePublishPlanMutation,
   useCompletePlanMutation,
