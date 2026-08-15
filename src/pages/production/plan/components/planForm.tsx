@@ -89,6 +89,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
     if (initialData) {
       const newItems = (initialData.items || []).map((data: any) => {
         return {
+          id: data?.id,
           itemSelected: data?.item,
           item_id: data?.item_id,
           quantity: data?.quantity_planned,
@@ -152,6 +153,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
       ...formData,
       production_date: dateFormat(formData.production_date, "YYYY-MM-DD"),
       items: formData?.items.map((data) => ({
+        id: data?.id,
         item_id: data?.item_id,
         quantity: data?.quantity,
       })),
