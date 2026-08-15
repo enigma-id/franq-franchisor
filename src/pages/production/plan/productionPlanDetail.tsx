@@ -16,13 +16,13 @@ import {
   Pencil,
 } from "lucide-react";
 import dayjs from "dayjs";
+import { formatDate } from "@/utils";
 import type {
   ProductionPlanDetail,
   ProductionPlanItem,
   WarehouseDetail,
 } from "@/services/types";
 import { useProductionPlanGuards } from "@/hooks/useProductionPlanGuards";
-import { GuardedButton } from "@/components/app";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
@@ -286,36 +286,45 @@ const ProductionPlanDetailPage: React.FC = () => {
         action={
           canManage && (
             <div className='flex gap-2'>
-              <GuardedButton
-                allowed={guards.canPublish}
-                reason='Hanya rencana dengan status pending yang dapat disetujui.'
-                variant='primary'
-                onClick={handlePublish}
-                isLoading={publishResult.isLoading}
-                title='Publish'
-              >
-                <Send className='w-4 h-4' />
-              </GuardedButton>
-              <GuardedButton
-                allowed={guards.canComplete}
-                reason='Hanya rencana dengan status published yang dapat diselesaikan.'
-                variant='success'
-                onClick={handleComplete}
-                isLoading={completeResult.isLoading}
-                title='Complete'
-              >
-                <CheckCircle className='w-4 h-4' />
-              </GuardedButton>
-              <GuardedButton
-                allowed={guards.canDelete}
-                reason='Hanya rencana dengan status pending yang dapat dihapus.'
-                variant='error'
-                onClick={handleDelete}
-                isLoading={removeResult.isLoading}
-                title='Delete'
-              >
-                <Trash2 className='w-4 h-4' />
-              </GuardedButton>
+              {guards.canEdit && (
+                <Button
+                  variant='info'
+                  onClick={() => navigate(`/production/plan/update/${plan?.id}`)}
+                  title='Edit'
+                >
+                  <Pencil className='w-4 h-4' />
+                </Button>
+              )}
+              {guards.canPublish && (
+                <Button
+                  variant='primary'
+                  onClick={handlePublish}
+                  isLoading={publishResult.isLoading}
+                  title='Publish'
+                >
+                  <Send className='w-4 h-4' />
+                </Button>
+              )}
+              {guards.canComplete && (
+                <Button
+                  variant='success'
+                  onClick={handleComplete}
+                  isLoading={completeResult.isLoading}
+                  title='Complete'
+                >
+                  <CheckCircle className='w-4 h-4' />
+                </Button>
+              )}
+              {guards.canDelete && (
+                <Button
+                  variant='error'
+                  onClick={handleDelete}
+                  isLoading={removeResult.isLoading}
+                  title='Delete'
+                >
+                  <Trash2 className='w-4 h-4' />
+                </Button>
+              )}
             </div>
           )
         }
@@ -343,7 +352,7 @@ const ProductionPlanDetailPage: React.FC = () => {
               <div className='info-row'>
                 <dt className='info-label'>Tanggal Produksi</dt>
                 <dd className='info-value'>
-                  {dayjs(plan.production_date).format("DD MMM YYYY")}
+                  {formatDate(plan.production_date)}
                 </dd>
               </div>
               <div className='info-row'>

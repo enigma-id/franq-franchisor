@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { Badge, Button, Loading, useEnigmaUI } from "@/components";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDateTime } from "@/utils";
 import type { InventoryCatalogDetail } from "@/services/types";
 import {
   Package,
@@ -424,11 +424,11 @@ const InventoryCatalogDetailPage: React.FC = () => {
               </div>
               <div className="info-row">
                 <dt className="info-label">Created</dt>
-                <dd className="info-value">{formatDate(catalog.created_at)}</dd>
+                <dd className="info-value">{formatDateTime(catalog.created_at)}</dd>
               </div>
               <div className="info-row">
                 <dt className="info-label">Updated</dt>
-                <dd className="info-value">{formatDate(catalog.updated_at)}</dd>
+                <dd className="info-value">{formatDateTime(catalog.updated_at)}</dd>
               </div>
             </dl>
           </div>

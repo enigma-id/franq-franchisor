@@ -81,12 +81,6 @@ export type DocumentStatusProductionPlan =
 export type DocumentStatusProductionItem = "new" | "completed";
 export type FulfillmentStatus = "new" | "partial" | "fulfilled";
 export type ApprovalStatus = "pending" | "approved" | "rejected";
-export type SalesReturnStatus =
-  | "pending"
-  | "approved"
-  | "awaiting_approval"
-  | "active"
-  | "rejected";
 
 /**
  * Type guard to check if an error is an ApiError

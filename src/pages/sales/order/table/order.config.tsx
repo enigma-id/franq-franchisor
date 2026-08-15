@@ -1,5 +1,5 @@
 import config from "@/services/table/const";
-import { dateFormat, getStatusVariant, formatDateTime } from "@/utils";
+import { formatDate, getStatusVariant, formatDateTime } from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { Edit, Eye, MoreVertical, Trash, Check, CreditCard } from "lucide-react";
@@ -33,7 +33,7 @@ const createTableConfig = ({
           <div>
             <span className="font-medium block">{row.code}</span>
             <span className="text-xs text-gray-500 block">
-              {formatDateTime(row.created_at)} WIB
+              {formatDateTime(row.created_at)}
             </span>
           </div>
         </div>
@@ -77,7 +77,7 @@ const createTableConfig = ({
       align: "center",
       component: (row: SalesOrderDetail) => (
         <span className="font-medium">
-          {dateFormat(row.shipping_date, "DD/MM/YYYY")}
+          {formatDate(row.shipping_date)}
         </span>
       ),
     },

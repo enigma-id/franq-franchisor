@@ -1,7 +1,7 @@
 import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
 import type { B2BOrderDetail } from "@/services/types";
-import { getStatusVariant } from "@/utils";
+import { getStatusVariant, formatDate, formatDateTime } from "@/utils";
 import {
   Eye,
   MoreVertical,
@@ -40,7 +40,7 @@ const createTableConfig = ({
         <div>
           <span className='font-medium block'>{row.code}</span>
           <span className='text-xs text-gray-500 block'>
-            {new Date(row.created_at).toLocaleDateString("id-ID")}
+            {formatDateTime(row.created_at)}
           </span>
         </div>
       ),
@@ -91,7 +91,7 @@ const createTableConfig = ({
       sortable: true,
       class: "text-sm",
       component: (row: B2BOrderDetail) => (
-        <span>{new Date(row.shipping_date).toLocaleDateString("id-ID")}</span>
+        <span>{formatDate(row.shipping_date)}</span>
       ),
     },
     action: {

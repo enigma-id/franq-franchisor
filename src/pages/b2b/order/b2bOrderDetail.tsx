@@ -5,7 +5,7 @@ import { Page } from "@/components/app/layout";
 import { Loading, Button, Badge, Modal } from "@/components/ui";
 import { useB2BOrder } from "@/services/b2b/hooks";
 import { useEnigmaUI } from "@/components";
-import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
+import { formatCurrency, formatDate, formatDateTime, getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { B2BInvoicePrint } from "./components/B2BInvoicePrint";
 import { B2BDOPrint } from "./components/B2BDOPrint";
@@ -320,13 +320,13 @@ const B2BOrderDetailPage: React.FC = () => {
                 <div className='info-row'>
                   <dt className='info-label'>Tanggal Order</dt>
                   <dd className='info-value'>
-                    {formatDate(order.created_at, "DD MMM YYYY, HH:mm")}
+                    {formatDateTime(order.created_at)}
                   </dd>
                 </div>
                 <div className='info-row'>
                   <dt className='info-label'>Tanggal Kirim</dt>
                   <dd className='info-value'>
-                    {formatDate(order.shipping_date, "DD MMM YYYY")}
+                    {formatDate(order.shipping_date)}
                   </dd>
                 </div>
                 <div className='info-row'>

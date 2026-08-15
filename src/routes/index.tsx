@@ -39,8 +39,6 @@ import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
 import SalesOrderUpdatePage from "@/pages/sales/order/salesOrderUpdate";
 import SalesOrderListPage from "@/pages/sales/order";
 import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
-import SalesReturnListPage from "@/pages/sales/return";
-import SalesReturnDetailPage from "@/pages/sales/return/salesReturnDetail";
 import ProductionPlanListPage from "@/pages/production/plan";
 import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
 import ProductionPlanDetailPage from "@/pages/production/plan/productionPlanDetail";
@@ -435,23 +433,6 @@ export function AppRoutes() {
           }
         />
 
-        {/* Sales - Return */}
-        <Route
-          path="/sales/return"
-          element={
-            <PermissionGuard permission={MENU.salesReturn}>
-              <SalesReturnListPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path="/sales/return/:id"
-          element={
-            <PermissionGuard permission={MENU.salesReturn}>
-              <SalesReturnDetailPage />
-            </PermissionGuard>
-          }
-        />
 
         {/* Report */}
         <Route

@@ -6,8 +6,7 @@ import { Badge, Button, Modal, Input, Loading } from "@/components/ui";
 import { Send, XCircle, AlertCircle } from "lucide-react";
 import { useOutletTopup } from "@/services/outletTopup/hooks";
 import { useEnigmaUI } from "@/components";
-import dayjs from "dayjs";
-import { currencyFormat, getStatusVariant } from "@/utils";
+import { currencyFormat, getStatusVariant, formatDateTime } from "@/utils";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
@@ -155,7 +154,7 @@ const OutletTopupDetailPage: React.FC = () => {
             <span className="text-slate-500">Tanggal</span>
             <span>
               {data?.created_at
-                ? dayjs(data.created_at).format("DD MMM YYYY, HH:mm")
+                ? formatDateTime(data.created_at)
                 : "-"}
             </span>
           </div>

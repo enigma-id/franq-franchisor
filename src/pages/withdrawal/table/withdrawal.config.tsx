@@ -2,7 +2,7 @@ import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
 import { Eye, MoreVertical, CheckCircle2, XCircle } from "lucide-react";
 import type { WithdrawalRequest } from "@/services/types";
-import { currencyFormat, getStatusVariant } from "@/utils";
+import { currencyFormat, getStatusVariant, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
   onView,
@@ -58,7 +58,7 @@ const createTableConfig = ({
       sortable: true,
       class: "text-sm",
       component: (row: WithdrawalRequest) => (
-        <span>{new Date(row.created_at).toLocaleDateString("id-ID")}</span>
+        <span>{formatDateTime(row.created_at)}</span>
       ),
     },
     action: {

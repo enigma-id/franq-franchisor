@@ -5,7 +5,7 @@ import { Page } from "@/components/app/layout";
 import { Button, Badge, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import { usePurchaseOrder } from "@/services/purchase/hooks";
-import { formatCurrency, getStatusVariant } from "@/utils";
+import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
 import type { PurchaseOrderDetail } from "@/services/types/purchase";
 import {
   Store,
@@ -248,7 +248,7 @@ export function PurchaseOrderDetailPage() {
                 <dt className="info-label">ETA Date</dt>
                 <dd className="info-value">
                   {data?.eta_date
-                    ? new Date(data.eta_date).toLocaleDateString()
+                    ? formatDate(data.eta_date)
                     : "-"}
                 </dd>
               </div>

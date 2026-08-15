@@ -1,6 +1,7 @@
 import config from "@/services/table/const";
 import { Dropdown, Toggle } from "@/components/ui";
 import { Pencil, ShieldCheck, MoreVertical } from "lucide-react";
+import { formatDateTime } from "@/utils";
 import type { UserDetail } from "@/services/types";
 
 const createTableConfig = ({
@@ -55,7 +56,7 @@ const createTableConfig = ({
       component: (row: UserDetail) => (
         <span>
           {row.last_activity_at
-            ? new Date(row.last_activity_at).toLocaleDateString("id-ID")
+            ? formatDateTime(row.last_activity_at)
             : "-"}
         </span>
       ),

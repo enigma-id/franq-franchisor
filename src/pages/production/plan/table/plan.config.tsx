@@ -1,17 +1,19 @@
 import type { ProductionPlanDetail } from "@/services/types/production";
 import { Badge, Dropdown } from "@/components/ui";
-import { Factory, Eye, Trash, MoreVertical, Send, Check } from "lucide-react";
+import { Factory, Eye, Trash, MoreVertical, Send, Check, Edit } from "lucide-react";
 import config from "@/services/table/const";
 import { getStatusVariant, formatDate, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
   onView,
+  onEdit,
   onRemove,
   onPublish,
   onComplete,
   canManage,
 }: {
   onView: (id: string) => void;
+  onEdit?: (id: string) => void;
   onRemove: (v: ProductionPlanDetail) => void;
   onPublish?: (row: ProductionPlanDetail) => void;
   onComplete?: (row: ProductionPlanDetail) => void;
@@ -27,7 +29,7 @@ const createTableConfig = ({
         <div className='flex flex-col'>
           <span className='font-bold text-slate-700'>{row.code}</span>
           <span className='text-xs text-gray-500'>
-            {formatDateTime(row.created_at)} WIB
+            {formatDateTime(row.created_at)}
           </span>
         </div>
       ),
@@ -42,7 +44,7 @@ const createTableConfig = ({
           </div>
           <div className='flex flex-col'>
             <span className='font-bold text-slate-700'>
-              {formatDate(row.production_date, "DD MMM YYYY")}
+              {formatDate(row.production_date)}
             </span>
           </div>
         </div>
@@ -104,6 +106,23 @@ const createTableConfig = ({
 
           {canManage && row.document_status === "pending" && (
             <>
+              <Dropdown.Item
+                onSelect={() => onEdit?.(row.id)}
+                className='hover:bg-amber-50 hover:text-amber-600'
+              >
+                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left'>
+                  <div className='w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600'>
+                    <Edit className='w-4 h-4' />
+                  </div>
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Edit</span>
+                    <span className='text-[11px] text-slate-400'>
+                      Modify production plan
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+
               <Dropdown.Item
                 onSelect={() => onPublish?.(row)}
                 className='hover:bg-emerald-50 hover:text-emerald-600'

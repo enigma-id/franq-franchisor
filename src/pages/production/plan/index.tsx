@@ -42,7 +42,7 @@ const ProductionPlanListPage: React.FC = () => {
     () =>
       createTableConfig({
         onView: (id) => navigate(`/production/plan/${id}`),
-        // onEdit: (id) => navigate(`/production/plan/update/${id}`),
+        onEdit: (id) => navigate(`/production/plan/update/${id}`),
         onRemove: (v) => openDelete(v),
         onPublish: (row) => openConfirmModal(row, "publish"),
         onComplete: (row) => openConfirmModal(row, "complete"),

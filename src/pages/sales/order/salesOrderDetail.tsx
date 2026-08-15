@@ -6,7 +6,7 @@ import { Page } from "@/components/app/layout";
 import { Loading, Button, Badge, Modal } from "@/components/ui";
 import { useSalesOrder } from "@/services/sales/hooks";
 import { useEnigmaUI } from "@/components";
-import { formatCurrency, formatDate, getStatusVariant } from "@/utils";
+import { formatCurrency, formatDate, formatDateTime, getStatusVariant } from "@/utils";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { useSalesOrderGuards } from "@/hooks";
 import { useCan } from "@/utils/permission";
@@ -269,13 +269,13 @@ export default function SalesOrderDetailPage() {
               <div className="info-row">
                 <dt className="info-label">Tanggal Order</dt>
                 <dd className="info-value">
-                  {formatDate(order.created_at, "DD MMM YYYY, HH:mm")}
+                  {formatDateTime(order.created_at)}
                 </dd>
               </div>
               <div className="info-row">
                 <dt className="info-label">Tanggal Kirim</dt>
                 <dd className="info-value">
-                  {formatDate(order.shipping_date, "DD MMM YYYY")}
+                  {formatDate(order.shipping_date)}
                 </dd>
               </div>
               <div className="info-row">
@@ -331,7 +331,7 @@ export default function SalesOrderDetailPage() {
                 <dd className="info-value">
                   {order.payment_expired_at &&
                   order.payment_expired_at !== "0001-01-01T00:00:00Z"
-                    ? formatDate(order.payment_expired_at, "DD MMM YYYY, HH:mm")
+                    ? formatDateTime(order.payment_expired_at)
                     : "-"}
                 </dd>
               </div>
@@ -339,7 +339,7 @@ export default function SalesOrderDetailPage() {
                 <div className="info-row">
                   <dt className="info-label">Dibayar</dt>
                   <dd className="info-value">
-                    {formatDate(order.paid_at, "DD MMM YYYY, HH:mm")}
+                    {formatDateTime(order.paid_at)}
                   </dd>
                 </div>
               )}

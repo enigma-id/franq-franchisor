@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from "react";
-import { formatDate } from "@/utils";
+import { formatDate, formatDateTime } from "@/utils";
 import type { B2BOrderDetail } from "@/services/types";
 import logoImg from "../../../../../public/logo.png";
 
@@ -191,7 +191,7 @@ export function B2BDOPrint({ order }: Props) {
             </div>
             <div style={styles.dates}>
               <strong>Tgl Order:</strong>
-              <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
+              <span>{formatDateTime(order.created_at)}</span>
               <strong>Tgl Kirim:</strong>
               <span>{formatDate(order.shipping_date, "DD/MM/YYYY")}</span>
             </div>

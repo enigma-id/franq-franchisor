@@ -3,7 +3,7 @@ import type { OutletDetail } from "@/services/types/outlet";
 import { Dropdown, Toggle } from "@/components/ui";
 import { Edit, MoreVertical, Store, Trash } from "lucide-react";
 import config from "@/services/table/const";
-import { formatDate } from "@/utils";
+import { formatDateTime } from "@/utils";
 
 const createTableConfig = ({
   onRowClick,
@@ -113,7 +113,7 @@ const createTableConfig = ({
       align: "right",
       component: (row: OutletDetail) => (
         <span className="text-[13px] text-slate-500 font-medium">
-          {formatDate(row.created_at, "D MMMM YYYY")}
+          {formatDateTime(row.created_at)}
         </span>
       ),
     },

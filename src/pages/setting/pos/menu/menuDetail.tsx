@@ -4,7 +4,7 @@ import { Edit, Loader2, Package, Store } from "lucide-react";
 import { Page } from "@/components/app/layout";
 import { usePOSMenu } from "@/services/pos/hooks";
 import { Button, Badge } from "@/components/ui";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDateTime } from "@/utils";
 import type { POSMenuDetail } from "@/services/types";
 import { Modal, useEnigmaUI } from "@/components";
 import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
@@ -209,11 +209,11 @@ const POSMenuDetailPage: React.FC = () => {
               </div>
               <div className="info-row">
                 <dt className="info-label">Created At</dt>
-                <dd className="info-value">{formatDate(menu.created_at)}</dd>
+                <dd className="info-value">{formatDateTime(menu.created_at)}</dd>
               </div>
               <div className="info-row">
                 <dt className="info-label">Updated At</dt>
-                <dd className="info-value">{formatDate(menu.updated_at)}</dd>
+                <dd className="info-value">{formatDateTime(menu.updated_at)}</dd>
               </div>
             </dl>
           </div>

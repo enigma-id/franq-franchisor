@@ -69,27 +69,7 @@ export const salesApi = createApi({
       }),
     }),
 
-    // ===================================================
-
-    /** GET /sales/return/:id - Get sales return detail */
-    getSalesReturn: builder.query({
-      query: ({ id, ...params }) => ({
-        url: `/sales/return/${id}`,
-        method: "GET",
-        params,
-      }),
-    }),
-
-    /** PUT /sales/return/:id/approve - Approve sales return */
-    approveSalesReturn: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/sales/return/${id}/approve`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-}),
+  }),
 });
 
 export const {
@@ -100,7 +80,4 @@ export const {
   usePublishSalesOrderMutation,
   usePaidSalesOrderMutation,
   useCancelSalesOrderMutation,
-  //
-  useLazyGetSalesReturnQuery,
-  useApproveSalesReturnMutation,
 } = salesApi;

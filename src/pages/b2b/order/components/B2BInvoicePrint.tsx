@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from "react";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDateTime } from "@/utils";
 import type { B2BOrderDetail } from "@/services/types";
 import logoImg from "../../../../../public/logo.png";
 
@@ -188,7 +188,7 @@ export function B2BInvoicePrint({ order }: Props) {
             </div>
             <div style={styles.dates}>
               <strong>Tanggal:</strong>
-              <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
+              <span>{formatDateTime(order.created_at)}</span>
               <strong>Payment Ref:</strong>
               <span>{order.payment_ref || "-"}</span>
             </div>

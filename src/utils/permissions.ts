@@ -14,7 +14,6 @@ export const MENU = {
   // Sales
   b2bOrder: "frontend.franchisor.sales.b2b-order",
   salesOrder: "frontend.franchisor.sales.sales-order",
-  salesReturn: "frontend.franchisor.sales.sales-return",
   withdrawal: "frontend.franchisor.sales.withdrawal",
   outletTopup: "frontend.franchisor.sales.outlet-topup",
   // Purchase
@@ -68,7 +67,6 @@ export const ACTION = {
   memberTopup: "svc-franchisor.member-topup.manage",
   purchaseOrder: "svc-franchisor.purchase-order.manage",
   salesOrder: "svc-franchisor.sales-order.manage",
-  salesReturn: "svc-franchisor.sales-return.manage",
   production: "svc-franchisor.production.manage",
   b2b: "svc-franchisor.b2b.manage",
   outletTopupRequest: "svc-franchisor.outlet-topup-request.manage",

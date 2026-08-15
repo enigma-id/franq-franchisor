@@ -48,10 +48,12 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
   const [formData, setFormData] = useState<{
     warehouse_id: string;
     production_date: string;
+    note?: string;
     items: ProductionPlanFormItem[];
   }>({
     warehouse_id: "",
     production_date: new Date().toISOString(),
+    note: "",
     items: [
       {
         item_id: "",
@@ -99,6 +101,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             ? initialData?.warehouse_id
             : "",
         production_date: initialData.production_date,
+        note: initialData?.note || "",
         items: newItems,
       });
 
@@ -152,6 +155,7 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
         item_id: data?.item_id,
         quantity: data?.quantity,
       })),
+      note: formData.note || "",
     };
     onSubmit(payload);
   };
@@ -201,6 +205,18 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             }}
             required
             error={FormState?.errors?.eta_date as string}
+          />
+        </div>
+
+        <div className='md:col-span-2 space-y-2'>
+          <Input
+            type='textarea'
+            label='Catatan'
+            placeholder='Tambahkan catatan rencana produksi...'
+            value={formData.note || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, note: e.target.value }))
+            }
           />
         </div>
       </div>

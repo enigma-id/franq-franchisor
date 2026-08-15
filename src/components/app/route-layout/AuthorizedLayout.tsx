@@ -18,7 +18,6 @@ import {
   Grid,
   Building,
   Factory,
-  RefreshCcw,
   Monitor,
   BarChart3,
   MapPinned,
@@ -81,12 +80,6 @@ const menuSections: MenuSection[] = [
         path: "/sales/order",
         icon: <ShoppingCart size={18} />,
         permission: MENU.salesOrder,
-      },
-      {
-        label: "Sales Return",
-        path: "/sales/return",
-        icon: <RefreshCcw size={18} />,
-        permission: MENU.salesReturn,
       },
       {
         label: "Withdrawal",
