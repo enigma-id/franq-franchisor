@@ -1,6 +1,6 @@
 import { Page } from "@/components/app/layout";
 import { useMemo } from "react";
-import createTableConfig from "../table/demand-production.config";
+import createTableConfig from "./table/production.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import TableFilter from "./table/production.filter";
