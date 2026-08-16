@@ -81,7 +81,7 @@ const B2BOrderListPage: React.FC = () => {
         break;
       case "cancel":
         if (!cancelNote.trim()) return;
-        await cancel({ id, payload: { cancel_note: cancelNote.trim() } });
+        await cancel({ id, payload: { cancelled_reason: cancelNote.trim() } });
         break;
     }
   }, [selectedRow, actionType, ship, invoice, pay, remove, cancel, cancelNote]);

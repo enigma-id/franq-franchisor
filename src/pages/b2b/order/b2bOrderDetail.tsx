@@ -128,7 +128,7 @@ const B2BOrderDetailPage: React.FC = () => {
         break;
       case "cancel":
         if (!cancelNote.trim()) return;
-        await cancel({ id, payload: { cancel_note: cancelNote.trim() } });
+        await cancel({ id, payload: { cancelled_reason: cancelNote.trim() } });
         break;
     }
   };
@@ -314,7 +314,7 @@ const B2BOrderDetailPage: React.FC = () => {
       />
       <Page.Body>
         <div
-          className={`grid grid-cols-1 gap-6 ${order.cancel_note ? "lg:grid-cols-[2fr_1fr]" : ""}`}
+          className={`grid grid-cols-1 gap-6 ${order.cancelled_reason ? "lg:grid-cols-[2fr_1fr]" : ""}`}
         >
           {/* Customer & Order Info */}
           <div className='card-info card-animate p-6'>
@@ -395,8 +395,8 @@ const B2BOrderDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Cancellation Info — hanya tampil jika order dibatalkan (ada cancel_note) */}
-          {order.cancel_note && (
+          {/* Cancellation Info — hanya tampil jika order dibatalkan (ada cancelled_reason) */}
+          {order.cancelled_reason && (
             <div className='card-info card-animate p-6'>
               <div className='card-section-header'>
                 <div className='card-section-icon'>
@@ -407,7 +407,7 @@ const B2BOrderDetailPage: React.FC = () => {
               <dl className='space-y-0'>
                 <div className='info-row'>
                   <dt className='info-label'>Alasan</dt>
-                  <dd className='info-value'>{order.cancel_note || "-"}</dd>
+                  <dd className='info-value'>{order.cancelled_reason || "-"}</dd>
                 </div>
                 <div className='info-row'>
                   <dt className='info-label'>Dibatalkan Pada</dt>

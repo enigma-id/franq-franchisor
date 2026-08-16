@@ -62,7 +62,7 @@ export interface B2BOrderDetail {
   paid_at: string;
   received_at: string;
   /** Diisi saat order dibatalkan (cancel). */
-  cancel_note?: string;
+  cancelled_reason?: string;
   cancelled_at?: string;
   cancelled_by?: string;
   is_deleted: boolean;
