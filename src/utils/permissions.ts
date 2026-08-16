@@ -30,7 +30,9 @@ export const MENU = {
   reportPosSettlement: "frontend.franchisor.report.pos-settlement",
   reportProductSales: "frontend.franchisor.report.product-sales",
   reportPosProductItem: "frontend.franchisor.report.pos-product-item",
-  reportCancelled: "frontend.franchisor.report.cancelled",
+  reportTransactionCancelled:
+    "frontend.franchisor.report.transaction-cancelled",
+  reportPosTopupCancelled: "frontend.franchisor.report.pos-topup-cancelled",
   reportB2BSettlement: "frontend.franchisor.report.b2b.settlement",
   reportB2BProductSales: "frontend.franchisor.report.b2b.product-sales",
   reportB2BProductItem: "frontend.franchisor.report.b2b.product-item",

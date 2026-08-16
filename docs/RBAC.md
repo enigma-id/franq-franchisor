@@ -85,6 +85,7 @@ export interface User {
 | Report Product Sales | `frontend.franchisor.report.product-sales` | `/report/inventory/product-sales` |
 | Report POS Product Item | `frontend.franchisor.report.pos-product-item` | `/report/pos/product-item` |
 | Report Transaction Cancel | `frontend.franchisor.report.cancelled` | `/report/pos/cancelled-product-sales` |
+| Report Topup Cancelled | `frontend.franchisor.report.pos-topup-cancelled` | `/report/topup-cancelled` |
 | Report Settlement B2B | `frontend.franchisor.report.b2b.settlement` | `/report/b2b/settlement`, `/report/b2b/settlement/daily` |
 | Report Product Sales B2B | `frontend.franchisor.report.b2b.product-sales` | `/report/b2b/product-sales` |
 | Report Menu B2B | `frontend.franchisor.report.b2b.product-item` | `/report/b2b/product-item` |

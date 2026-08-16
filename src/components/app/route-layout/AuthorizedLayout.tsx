@@ -179,7 +179,12 @@ const menuSections: MenuSection[] = [
           {
             label: "Report Transaction Cancel",
             path: "/report/pos/cancelled-product-sales",
-            permission: MENU.reportCancelled,
+            permission: MENU.reportTransactionCancelled,
+          },
+          {
+            label: "Report Topup Cancelled",
+            path: "/report/topup-cancelled",
+            permission: MENU.reportPosTopupCancelled,
           },
         ],
       },
@@ -346,7 +351,8 @@ function isParentAllowed(
       // Child punya permission sendiri → gate sendiri.
       // Child tanpa permission → mewarisi permission parent (mis. Demand).
       isItemAllowed(userPermissions, c, isSuperAdmin) &&
-      (c.permission !== undefined || isItemAllowed(userPermissions, item, isSuperAdmin)),
+      (c.permission !== undefined ||
+        isItemAllowed(userPermissions, item, isSuperAdmin)),
   );
 }
 

@@ -55,6 +55,7 @@ import ProductSalesPage from "@/pages/report/productSales";
 import WarehouseStockPage from "@/pages/report/warehouseStock";
 import PosOutstandingPage from "@/pages/report/outstanding";
 import CancelledProductSalesPage from "@/pages/report/cancelledProductSales";
+import TopupCancelledPage from "@/pages/report/topupCancelled";
 import ProductItemPage from "@/pages/report/productItem";
 import B2BProductItemPage from "@/pages/report/b2bProductItem";
 import OutletMapPage from "@/pages/report/outletMap";
@@ -92,9 +93,9 @@ export function AppRoutes() {
       <Routes>
         {/* Public routes — wrapped in UnauthorizedLayout */}
         <Route element={<UnauthorizedLayout />}>
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="*" element={<Navigate to="/signin" replace />} />
+          <Route path='/signin' element={<SignInPage />} />
+          <Route path='/signup' element={<SignUpPage />} />
+          <Route path='*' element={<Navigate to='/signin' replace />} />
         </Route>
       </Routes>
     );
@@ -112,7 +113,7 @@ export function AppRoutes() {
       >
         {/* Dashboard */}
         <Route
-          path="/dashboard"
+          path='/dashboard'
           element={
             <PermissionGuard permission={MENU.dashboard}>
               <DashboardPage />
@@ -122,7 +123,7 @@ export function AppRoutes() {
 
         {/* Setting - Outlet */}
         <Route
-          path="/setting/outlet"
+          path='/setting/outlet'
           element={
             <PermissionGuard permission={MENU.outlet}>
               <OutletListPage />
@@ -130,7 +131,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/setting/outlet/create"
+          path='/setting/outlet/create'
           element={
             <PermissionGuard permission={MENU.outlet}>
               <OutletCreatePage />
@@ -138,7 +139,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/setting/outlet/update/:id"
+          path='/setting/outlet/update/:id'
           element={
             <PermissionGuard permission={MENU.outlet}>
               <OutletUpdatePage />
@@ -146,7 +147,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/setting/type/outlet"
+          path='/setting/type/outlet'
           element={
             <PermissionGuard permission={MENU.outletType}>
               <OutletTypePage />
@@ -156,7 +157,7 @@ export function AppRoutes() {
 
         {/* Setting - POS */}
         <Route
-          path="/setting/pos/channel"
+          path='/setting/pos/channel'
           element={
             <PermissionGuard permission={MENU.posChannel}>
               <POSChannelListPage />
@@ -166,7 +167,7 @@ export function AppRoutes() {
 
         {/* Setting - POS Category */}
         <Route
-          path="/setting/pos/category"
+          path='/setting/pos/category'
           element={
             <PermissionGuard permission={MENU.posCategory}>
               <POSCategoryListPage />
@@ -176,7 +177,7 @@ export function AppRoutes() {
 
         {/* Setting - POS Menu */}
         <Route
-          path="/setting/pos/menu"
+          path='/setting/pos/menu'
           element={
             <PermissionGuard permission={MENU.posMenu}>
               <POSMenuListPage />
@@ -184,7 +185,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/setting/pos/menu/create"
+          path='/setting/pos/menu/create'
           element={
             <PermissionGuard permission={MENU.posMenu}>
               <POSMenuCreatePage />
@@ -192,7 +193,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/setting/pos/menu/update/:id"
+          path='/setting/pos/menu/update/:id'
           element={
             <PermissionGuard permission={MENU.posMenu}>
               <POSMenuUpdatePage />
@@ -200,7 +201,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/setting/pos/menu/:id"
+          path='/setting/pos/menu/:id'
           element={
             <PermissionGuard permission={MENU.posMenu}>
               <POSMenuDetailPage />
@@ -210,7 +211,7 @@ export function AppRoutes() {
 
         {/* Setting - POS Payment */}
         <Route
-          path="/setting/pos/payment"
+          path='/setting/pos/payment'
           element={
             <PermissionGuard permission={MENU.posPayment}>
               <PaymentMethodListPage />
@@ -220,7 +221,7 @@ export function AppRoutes() {
 
         {/* Inventory - Item & Catalog */}
         <Route
-          path="/inventory/item"
+          path='/inventory/item'
           element={
             <PermissionGuard permission={MENU.inventoryItem}>
               <InventoryItemListPage />
@@ -228,7 +229,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/inventory/item/create"
+          path='/inventory/item/create'
           element={
             <PermissionGuard permission={MENU.inventoryItem}>
               <InventoryItemCreatePage />
@@ -236,7 +237,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/inventory/item/:id"
+          path='/inventory/item/:id'
           element={
             <PermissionGuard permission={MENU.inventoryItem}>
               <InventoryItemDetailPage />
@@ -244,7 +245,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/inventory/item/update/:id"
+          path='/inventory/item/update/:id'
           element={
             <PermissionGuard permission={MENU.inventoryItem}>
               <InventoryItemUpdatePage />
@@ -253,7 +254,7 @@ export function AppRoutes() {
         />
 
         <Route
-          path="/inventory/catalog"
+          path='/inventory/catalog'
           element={
             <PermissionGuard permission={MENU.inventoryCatalog}>
               <InventoryCatalogListPage />
@@ -261,7 +262,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/inventory/catalog/create"
+          path='/inventory/catalog/create'
           element={
             <PermissionGuard permission={MENU.inventoryCatalog}>
               <InventoryCatalogCreatePage />
@@ -269,7 +270,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/inventory/catalog/update/:id"
+          path='/inventory/catalog/update/:id'
           element={
             <PermissionGuard permission={MENU.inventoryCatalog}>
               <InventoryCatalogUpdatePage />
@@ -277,7 +278,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/inventory/catalog/:id"
+          path='/inventory/catalog/:id'
           element={
             <PermissionGuard permission={MENU.inventoryCatalog}>
               <InventoryCatalogDetailPage />
@@ -287,7 +288,7 @@ export function AppRoutes() {
 
         {/* Production - Plan */}
         <Route
-          path="/production/plan"
+          path='/production/plan'
           element={
             <PermissionGuard permission={MENU.productionPlan}>
               <ProductionPlanListPage />
@@ -295,7 +296,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/production/plan/create"
+          path='/production/plan/create'
           element={
             <PermissionGuard permission={MENU.productionPlan}>
               <ProductionPlanCreatePage />
@@ -303,7 +304,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/production/plan/:id"
+          path='/production/plan/:id'
           element={
             <PermissionGuard permission={MENU.productionPlan}>
               <ProductionPlanDetailPage />
@@ -311,7 +312,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/production/plan/update/:id"
+          path='/production/plan/update/:id'
           element={
             <PermissionGuard permission={MENU.productionPlan}>
               <ProductionPlanUpdatePage />
@@ -321,7 +322,7 @@ export function AppRoutes() {
 
         {/* Production - Demand */}
         <Route
-          path="/production/demand/production"
+          path='/production/demand/production'
           element={
             <PermissionGuard permission={MENU.demand}>
               <DemandProductionPage />
@@ -329,7 +330,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/production/demand/item"
+          path='/production/demand/item'
           element={
             <PermissionGuard permission={MENU.demand}>
               <DemandItemPage />
@@ -339,7 +340,7 @@ export function AppRoutes() {
 
         {/* Purchase - Supplier */}
         <Route
-          path="/purchase/supplier"
+          path='/purchase/supplier'
           element={
             <PermissionGuard permission={MENU.supplier}>
               <SupplierListPage />
@@ -347,7 +348,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/purchase/supplier/create"
+          path='/purchase/supplier/create'
           element={
             <PermissionGuard permission={MENU.supplier}>
               <SupplierCreatePage />
@@ -355,7 +356,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/purchase/supplier/update/:id"
+          path='/purchase/supplier/update/:id'
           element={
             <PermissionGuard permission={MENU.supplier}>
               <SupplierUpdatePage />
@@ -365,7 +366,7 @@ export function AppRoutes() {
 
         {/* Purchase - Order */}
         <Route
-          path="/purchase/order"
+          path='/purchase/order'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
               <PurchaseOrderListPage />
@@ -373,7 +374,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/purchase/order/create"
+          path='/purchase/order/create'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
               <PurchaseOrderCreatePage />
@@ -381,7 +382,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/purchase/order/:id"
+          path='/purchase/order/:id'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
               <PurchaseOrderDetailPage />
@@ -389,7 +390,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/purchase/order/update/:id"
+          path='/purchase/order/update/:id'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
               <PurchaseOrderUpdatePage />
@@ -399,7 +400,7 @@ export function AppRoutes() {
 
         {/* Sales - Order */}
         <Route
-          path="/sales/order"
+          path='/sales/order'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
               <SalesOrderListPage />
@@ -407,7 +408,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/sales/order/create"
+          path='/sales/order/create'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
               <SalesOrderCreatePage />
@@ -415,7 +416,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/sales/order/update/:id"
+          path='/sales/order/update/:id'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
               <SalesOrderUpdatePage />
@@ -423,7 +424,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/sales/order/:id"
+          path='/sales/order/:id'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
               <SalesOrderDetailPage />
@@ -431,10 +432,9 @@ export function AppRoutes() {
           }
         />
 
-
         {/* Report */}
         <Route
-          path="/report/pos/outstanding"
+          path='/report/pos/outstanding'
           element={
             <PermissionGuard permission={MENU.reportPosOutstanding}>
               <PosOutstandingPage />
@@ -442,7 +442,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/pos/settlement"
+          path='/report/pos/settlement'
           element={
             <PermissionGuard permission={MENU.reportPosSettlement}>
               <POSSettlementPage />
@@ -450,7 +450,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/pos/settlement/daily"
+          path='/report/pos/settlement/daily'
           element={
             <PermissionGuard permission={MENU.reportPosSettlement}>
               <POSSettlementDailyPage />
@@ -458,15 +458,23 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/pos/cancelled-product-sales"
+          path='/report/pos/cancelled-product-sales'
           element={
-            <PermissionGuard permission={MENU.reportCancelled}>
+            <PermissionGuard permission={MENU.reportTransactionCancelled}>
               <CancelledProductSalesPage />
             </PermissionGuard>
           }
         />
         <Route
-          path="/report/pos/product-item"
+          path='/report/topup-cancelled'
+          element={
+            <PermissionGuard permission={MENU.reportPosTopupCancelled}>
+              <TopupCancelledPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/pos/product-item'
           element={
             <PermissionGuard permission={MENU.reportPosProductItem}>
               <ProductItemPage />
@@ -474,7 +482,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/b2b/product-item"
+          path='/report/b2b/product-item'
           element={
             <PermissionGuard permission={MENU.reportB2BProductItem}>
               <B2BProductItemPage />
@@ -482,7 +490,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/b2b/settlement"
+          path='/report/b2b/settlement'
           element={
             <PermissionGuard permission={MENU.reportB2BSettlement}>
               <B2BSettlementPage />
@@ -490,7 +498,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/b2b/settlement/daily"
+          path='/report/b2b/settlement/daily'
           element={
             <PermissionGuard permission={MENU.reportB2BSettlement}>
               <B2BSettlementDailyPage />
@@ -498,7 +506,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/inventory/product-sales"
+          path='/report/inventory/product-sales'
           element={
             <PermissionGuard permission={MENU.reportProductSales}>
               <ProductSalesPage />
@@ -506,7 +514,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/b2b/product-sales"
+          path='/report/b2b/product-sales'
           element={
             <PermissionGuard permission={MENU.reportB2BProductSales}>
               <B2BProductSalesPage />
@@ -514,7 +522,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/inventory/material-sales"
+          path='/report/inventory/material-sales'
           element={
             <PermissionGuard permission={MENU.reportInventoryMaterialSales}>
               <RawMaterialSalesPage />
@@ -522,7 +530,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/inventory/warehouse-stock"
+          path='/report/inventory/warehouse-stock'
           element={
             <PermissionGuard permission={MENU.reportWarehouseStock}>
               <WarehouseStockPage />
@@ -530,7 +538,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/report/outlet-maps"
+          path='/report/outlet-maps'
           element={
             <PermissionGuard permission={MENU.reportOutletMap}>
               <OutletMapPage />
@@ -539,7 +547,7 @@ export function AppRoutes() {
         />
 
         <Route
-          path="/withdrawal"
+          path='/withdrawal'
           element={
             <PermissionGuard permission={MENU.withdrawal}>
               <WithdrawalList />
@@ -549,7 +557,7 @@ export function AppRoutes() {
 
         {/* B2B Order */}
         <Route
-          path="/b2b/order"
+          path='/b2b/order'
           element={
             <PermissionGuard permission={MENU.b2bOrder}>
               <B2BOrderListPage />
@@ -557,7 +565,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/b2b/order/create"
+          path='/b2b/order/create'
           element={
             <PermissionGuard permission={MENU.b2bOrder}>
               <B2BOrderCreatePage />
@@ -565,7 +573,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/b2b/order/:id"
+          path='/b2b/order/:id'
           element={
             <PermissionGuard permission={MENU.b2bOrder}>
               <B2BOrderDetailPage />
@@ -573,7 +581,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/b2b/order/update/:id"
+          path='/b2b/order/update/:id'
           element={
             <PermissionGuard permission={MENU.b2bOrder}>
               <B2BOrderUpdatePage />
@@ -583,7 +591,7 @@ export function AppRoutes() {
 
         {/* Outlet Topup */}
         <Route
-          path="/outlet-topup"
+          path='/outlet-topup'
           element={
             <PermissionGuard permission={MENU.outletTopup}>
               <OutletTopupListPage />
@@ -593,7 +601,7 @@ export function AppRoutes() {
 
         {/* User Management */}
         <Route
-          path="/user"
+          path='/user'
           element={
             <PermissionGuard permission={MENU.user}>
               <UserListPage />
@@ -601,7 +609,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/usergroup"
+          path='/usergroup'
           element={
             <PermissionGuard permission={MENU.usergroup}>
               <UserGroupListPage />
@@ -610,11 +618,11 @@ export function AppRoutes() {
         />
 
         {/* Franchisor Profile */}
-        <Route path="/franchisor" element={<FranchisorProfilePage />} />
+        <Route path='/franchisor' element={<FranchisorProfilePage />} />
 
         {/* Member - Topup Bonus */}
         <Route
-          path="/setting/member/topup-bonus"
+          path='/setting/member/topup-bonus'
           element={
             <PermissionGuard permission={MENU.topupBonus}>
               <TopupBonusPage />
@@ -623,7 +631,7 @@ export function AppRoutes() {
         />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path='*' element={<Navigate to='/dashboard' replace />} />
       </Route>
     </Routes>
   );

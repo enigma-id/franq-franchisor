@@ -110,6 +110,21 @@ export const reportApi = createApi({
       }),
     }),
 
+    getTopupCancelled: builder.query({
+      query: (params) => ({
+        url: `/report/topup-cancelled`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getTopupCancelledSummary: builder.query({
+      query: (params) => ({
+        url: `/report/topup-cancelled/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
     getProductItem: builder.query({
       query: (params) => ({
         url: `/report/product-item`,
@@ -176,6 +191,8 @@ export const {
   useLazyGetOutletMapQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
+  useLazyGetTopupCancelledQuery,
+  useLazyGetTopupCancelledSummaryQuery,
   useLazyGetProductItemQuery,
   useLazyGetProductItemSummaryQuery,
   useLazyGetB2BProductItemQuery,
