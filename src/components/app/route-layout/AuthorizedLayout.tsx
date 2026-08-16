@@ -182,7 +182,7 @@ const menuSections: MenuSection[] = [
             permission: MENU.reportTransactionCancelled,
           },
           {
-            label: "Report Topup Cancelled",
+            label: "Report Topup Cancel",
             path: "/report/topup-cancelled",
             permission: MENU.reportPosTopupCancelled,
           },

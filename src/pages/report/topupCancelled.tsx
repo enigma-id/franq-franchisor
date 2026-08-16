@@ -66,7 +66,7 @@ export default function TopupCancelledPage() {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Report"
-        title="Topup Cancelled"
+        title="Topup Cancel"
         subtitle="Laporan topup member POS yang dibatalkan."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">
