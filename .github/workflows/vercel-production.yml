@@ -29,7 +29,7 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.PROD_VERCEL_TOKEN }}
         env:
-          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.PROD_VERCEL_TOKEN }}

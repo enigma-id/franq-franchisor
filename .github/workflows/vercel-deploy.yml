@@ -29,7 +29,7 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --local-config=vercel.sandbox.json --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --local-config=vercel.sandbox.json --token=${{ secrets.VERCEL_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --local-config=vercel.sandbox.json --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --local-config=vercel.sandbox.json --token=${{ secrets.VERCEL_TOKEN }}
