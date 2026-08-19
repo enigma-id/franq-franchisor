@@ -111,9 +111,10 @@ export const outletApi = createApi({
      * List outlet types
      */
     getOutletTypes: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/outlet/type",
         method: "GET",
+        params,
       }),
     }),
 

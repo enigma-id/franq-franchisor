@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
-import createTableConfig from "./table/b2b-product-item.config";
+import createTableConfig from "./table/product-item.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import TableFilter from "./table/b2b-product-item.filter";
-import { useB2BReport } from "@/services/report/hooks";
+import TableFilter from "./table/product-item.filter";
+import { usePOSReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
@@ -39,10 +39,10 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
-export default function B2BProductItemPage() {
+export default function POSProductItemPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
   const Table = useTable(
-    "report_b2b_product_item",
+    "report_product_item",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -56,7 +56,7 @@ export default function B2BProductItemPage() {
 
   const currentFilterString = JSON.stringify(currentFilter);
 
-  const { productItemSummary, productItemSummaryResult } = useB2BReport();
+  const { productItemSummary, productItemSummaryResult } = usePOSReport();
   const { data: summaryResult } = productItemSummaryResult;
 
   useEffect(() => {
@@ -69,8 +69,8 @@ export default function B2BProductItemPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='B2B Menu'
-        subtitle='Laporan penjualan menu B2B.'
+        title='POS Menu'
+        subtitle='Laporan penjualan menu POS.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
@@ -80,7 +80,7 @@ export default function B2BProductItemPage() {
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'
-          emptyDescription='Data penjualan menu B2B akan muncul di sini.'
+          emptyDescription='Data penjualan menu akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

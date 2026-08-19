@@ -1,37 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import type { RootState } from "@/services/store";
-import createTableConfig from "./table/settlement.config";
-import TableFilter from "./table/settlement.filter";
+import createTableConfig from "./table/settlement.daily.config";
+import TableFilter from "./table/settlement.daily.filter";
 import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-export default function SettlementMonthlyPage() {
+export default function MitraSettlementDailyPage() {
+  const [params] = useSearchParams();
   const navigate = useNavigate();
+  const periode = params.get("periode");
+  const outletId = params.get("outlet_id");
 
-  const activeOutletId = useSelector(
-    (state: RootState) => state?.table?.data?.pos_settlement?.filter?.outlet_id,
-  );
+  useEffect(() => {
+    if (!periode) navigate("/report/mitra/settlement", { replace: true });
+  }, [periode, navigate]);
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      filter: { periode: new Date().getFullYear() },
-      onRowClick: (row: any) =>
-        navigate(
-          `/report/pos/settlement/daily?periode=${row.date}${
-            activeOutletId ? `&outlet_id=${activeOutletId}` : ""
-          }`,
-        ),
+      lockedFilter: { periode_type: "monthly" },
+      filter: { periode: periode ?? "", outlet_id: outletId ?? "" },
     });
-  }, [navigate, activeOutletId]);
+  }, [periode, outletId]);
 
-  const Table = useTable("pos_settlement", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "mitra_pos_settlement_daily",
+    tableConfig as TableConfig<unknown>,
+  );
 
   const currentFilter = useMemo(() => {
     return {
@@ -89,14 +88,15 @@ export default function SettlementMonthlyPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='POS Settlement'
+        title={`POS Settlement Daily — ${periode}`}
         subtitle='Laporan penyelesaian pembayaran.'
+        backTo={() => navigate(-1)}
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable hideSearch>
-          <TableFilter table={Table} />
+          <TableFilter table={Table} periode={periode ?? ""} />
         </Table.Tools>
 
         <Table.Render

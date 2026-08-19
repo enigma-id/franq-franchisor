@@ -25,17 +25,25 @@ export const MENU = {
   // Production
   demand: "frontend.franchisor.production.demand",
   productionPlan: "frontend.franchisor.production.production-plan",
-  // Report
-  reportPosOutstanding: "frontend.franchisor.report.pos-outstanding",
-  reportPosSettlement: "frontend.franchisor.report.pos-settlement",
-  reportProductSales: "frontend.franchisor.report.product-sales",
-  reportPosProductItem: "frontend.franchisor.report.pos-product-item",
-  reportTransactionCancelled:
-    "frontend.franchisor.report.transaction-cancelled",
-  reportPosTopupCancelled: "frontend.franchisor.report.pos-topup-cancelled",
+  // Report POS
+  reportPosOutstanding: "frontend.franchisor.report.pos.outstanding",
+  reportPosSettlement: "frontend.franchisor.report.pos.settlement",
+  reportPosProductSales: "frontend.franchisor.report.pos.product-sales",
+  reportPosProductItem: "frontend.franchisor.report.pos.product-item",
+  reportPosTransactionCancelled:
+    "frontend.franchisor.report.pos.transaction-cancelled",
+  reportPosTopupCancelled: "frontend.franchisor.report.pos.topup-cancelled",
+
+  // Report Mitra
+  reportMitraSettlement: "frontend.franchisor.report.mitra.settlement",
+  reportMitraProductSales: "frontend.franchisor.report.mitra.product-sales",
+  reportMitraProductItem: "frontend.franchisor.report.mitra.product-item",
+
+  // Report B2B
   reportB2BSettlement: "frontend.franchisor.report.b2b.settlement",
   reportB2BProductSales: "frontend.franchisor.report.b2b.product-sales",
   reportB2BProductItem: "frontend.franchisor.report.b2b.product-item",
+
   reportInventoryMaterialSales: "frontend.franchisor.report.material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
   reportOutletMap: "frontend.franchisor.report.outlet-maps",

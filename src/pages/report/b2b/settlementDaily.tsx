@@ -1,27 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import createTableConfig from "./table/b2b-settlement.config";
-import TableFilter from "./table/b2b.settlement.filter"; // Reuse monthly filter pattern
+import createTableConfig from "./table/settlement.daily.config";
+import { useLazyGetB2BSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
-import { useB2BReport } from "@/services/report/hooks";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-export default function B2BSettlementPage() {
+export default function B2BSettlementDailyPage() {
+  const [params] = useSearchParams();
   const navigate = useNavigate();
-  const tableConfig = useMemo(
-    () =>
-      createTableConfig({
-        filter: { periode: new Date().getFullYear() },
-        onRowClick: (row: any) =>
-          navigate(`/report/b2b/settlement/daily?periode=${row.periode}`),
-      }),
-    [navigate],
-  );
+  const periode = params.get("periode");
 
-  const Table = useTable("b2b_settlement", tableConfig as TableConfig<unknown>);
+  useEffect(() => {
+    if (!periode) navigate("/report/b2b/settlement", { replace: true });
+  }, [periode, navigate]);
+
+  const tableConfig = useMemo(() => {
+    return createTableConfig({
+      lockedFilter: { periode_type: "monthly" },
+      filter: { periode: periode ?? "" },
+    });
+  }, [periode]);
+
+  const Table = useTable(
+    "b2b_settlement_daily",
+    tableConfig as TableConfig<unknown>,
+  );
 
   const currentFilter = useMemo(() => {
     return {
@@ -31,23 +38,22 @@ export default function B2BSettlementPage() {
   }, [Table.State?.lockedFilter, Table.State?.filter]);
 
   const currentFilterString = JSON.stringify(currentFilter);
-  const { settlementSummary, settlementSummaryResult } = useB2BReport();
-  const { data: summaryResult, isLoading } = settlementSummaryResult;
+  const [triggerSummary, { data: summaryResponse }] =
+    useLazyGetB2BSettlementSummaryQuery();
 
   useEffect(() => {
     if (Table.State) {
-      settlementSummary(JSON.parse(currentFilterString));
+      triggerSummary(JSON.parse(currentFilterString));
     }
-  }, [currentFilterString, Table.State !== undefined]);
+  }, [currentFilterString, triggerSummary, Table.State !== undefined]);
 
   const summary = useMemo(() => {
-    if (isLoading) return [];
-    const d = summaryResult?.data;
+    if (!summaryResponse?.data) return [];
+    const d = summaryResponse.data;
 
     if (Array.isArray(d)) {
       if (d.length === 0) return [];
 
-      // Determine the key set from first row that has data
       let keys: string[] = [];
       const firstRow = d.find((r: any) => r.payment_statuses?.length > 0);
       if (firstRow?.payment_statuses) {
@@ -59,7 +65,6 @@ export default function B2BSettlementPage() {
       }
 
       if (keys.length > 0) {
-        // Aggregate nominals across all rows
         return keys.map((key: string, i: number) => {
           const total = d.reduce(
             (sum: number, row: any) => sum + (row.nominals?.[i] ?? 0),
@@ -95,21 +100,20 @@ export default function B2BSettlementPage() {
     }
 
     return [];
-  }, [settlementSummaryResult]);
+  }, [summaryResponse]);
 
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='B2B Settlement'
+        title={`B2B Settlement Daily — ${periode}`}
         subtitle='Laporan penyelesaian pembayaran B2B.'
+        backTo={() => navigate(-1)}
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
-        <Table.Tools downloadable hideSearch>
-          <TableFilter table={Table} />
-        </Table.Tools>
+        <Table.Tools downloadable hideSearch />
 
         <Table.Render
           emptyTitle='No B2B Settlement Data'

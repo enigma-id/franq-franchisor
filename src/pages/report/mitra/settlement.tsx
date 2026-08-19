@@ -1,34 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import createTableConfig from "./table/settlement.daily.config";
-import TableFilter from "./table/settlement.daily.filter";
+import type { RootState } from "@/services/store";
+import createTableConfig from "./table/settlement.config";
+import TableFilter from "./table/settlement.filter";
 import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function SettlementDailyPage() {
-  const [params] = useSearchParams();
+export default function MitraSettlementMonthlyPage() {
   const navigate = useNavigate();
-  const periode = params.get("periode");
-  const outletId = params.get("outlet_id");
 
-  useEffect(() => {
-    if (!periode) navigate("/report/pos/settlement", { replace: true });
-  }, [periode, navigate]);
+  const activeOutletId = useSelector(
+    (state: RootState) =>
+      state?.table?.data?.mitra_pos_settlement?.filter?.outlet_id,
+  );
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      lockedFilter: { periode_type: "monthly" },
-      filter: { periode: periode ?? "", outlet_id: outletId ?? "" },
+      filter: { periode: new Date().getFullYear(), is_mitra: true },
+      onRowClick: (row: any) =>
+        navigate(
+          `/report/mitra/settlement/daily?periode=${row.date}${
+            activeOutletId ? `&outlet_id=${activeOutletId}` : ""
+          }`,
+        ),
     });
-  }, [periode, outletId]);
+  }, [navigate, activeOutletId]);
 
   const Table = useTable(
-    "pos_settlement_daily",
+    "mitra_pos_settlement",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -88,15 +93,14 @@ export default function SettlementDailyPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title={`POS Settlement Daily — ${periode}`}
+        title='POS Settlement'
         subtitle='Laporan penyelesaian pembayaran.'
-        backTo={() => navigate(-1)}
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable hideSearch>
-          <TableFilter table={Table} periode={periode ?? ""} />
+          <TableFilter table={Table} />
         </Table.Tools>
 
         <Table.Render

@@ -1,46 +1,54 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
-import createTableConfig from "./table/topup-cancelled.config";
+import createTableConfig from "./table/cancelled-product-sales.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import TableFilter from "./table/topup-cancelled.filter";
+import TableFilter from "./table/cancelled-product-sales.filter";
 import { usePOSReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
-import { Banknote, XCircle } from "lucide-react";
+import { ArrowUpCircle, Banknote, Landmark } from "lucide-react";
 
 const THEMES: Record<string, any> = {
+  blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
   green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
   red: { text: "text-red-500", iconBg: "#fee2e2", wave: "#ef4444" },
   purple: { text: "text-purple-500", iconBg: "#f3e8ff", wave: "#a855f7" },
+  orange: { text: "text-orange-500", iconBg: "#ffedd5", wave: "#f97316" },
 };
 
 const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
       <SummaryCard
-        label='Total Nominal'
-        value={currencyFormat(data.total_nominal)}
-        icon={Banknote}
-        theme={THEMES.green}
+        label='Total Qty'
+        value={data.total_qty}
+        icon={Landmark}
+        theme={THEMES.orange}
       />
       <SummaryCard
-        label='Total Count'
-        value={data.total_count}
-        icon={XCircle}
+        label='Total Discount'
+        value={currencyFormat(data.total_nett)}
+        icon={Banknote}
+        theme={THEMES.blue}
+      />
+      <SummaryCard
+        label='Total Nett'
+        value={currencyFormat(data.total_discount)}
+        icon={ArrowUpCircle}
         theme={THEMES.red}
       />
     </div>
   );
 };
 
-export default function TopupCancelledPage() {
+export default function POSCancelledProductSalesPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
   const Table = useTable(
-    "report_topup_cancelled",
+    "report_cancelled_product_sales",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -54,11 +62,12 @@ export default function TopupCancelledPage() {
 
   const currentFilterString = JSON.stringify(currentFilter);
 
-  const { topupCancelledSummary, topupCancelledSummaryResult } = usePOSReport();
-  const { data: summaryResult } = topupCancelledSummaryResult;
+  const { cancelledProductSalesSummary, cancelledProductSalesSummaryResult } =
+    usePOSReport();
+  const { data: summaryResult } = cancelledProductSalesSummaryResult;
 
   useEffect(() => {
-    topupCancelledSummary(JSON.parse(currentFilterString));
+    cancelledProductSalesSummary(JSON.parse(currentFilterString));
   }, [currentFilterString, Table.State !== undefined]);
 
   const summary = summaryResult?.data;
@@ -67,8 +76,8 @@ export default function TopupCancelledPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Topup Cancel'
-        subtitle='Laporan topup member POS yang dibatalkan.'
+        title='Transaction Cancel'
+        subtitle='Laporan transaksi POS yang dibatalkan.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
@@ -78,7 +87,7 @@ export default function TopupCancelledPage() {
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'
-          emptyDescription='Data topup yang dibatalkan akan muncul di sini.'
+          emptyDescription='Data transaksi yang dibatalkan akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

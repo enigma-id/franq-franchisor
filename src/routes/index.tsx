@@ -11,62 +11,89 @@ import { useAuth } from "@/services/auth/hooks";
 import SignInPage from "@/pages/signin";
 import SignUpPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
+
 import OutletListPage from "@/pages/setting/outlet";
 import OutletCreatePage from "@/pages/setting/outlet/outletCreate";
 import OutletUpdatePage from "@/pages/setting/outlet/outletUpdate";
+
 import OutletTypePage from "@/pages/setting/type";
 import POSChannelListPage from "@/pages/setting/pos/channel";
 import POSCategoryListPage from "@/pages/setting/pos/category";
+
 import POSMenuListPage from "@/pages/setting/pos/menu";
 import POSMenuCreatePage from "@/pages/setting/pos/menu/menuCreate";
 import POSMenuDetailPage from "@/pages/setting/pos/menu/menuDetail";
+import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
+
 import PaymentMethodListPage from "@/pages/setting/pos/payment";
+
 import InventoryItemListPage from "@/pages/inventory/item";
 import InventoryItemCreatePage from "@/pages/inventory/item/itemCreate";
 import InventoryItemUpdatePage from "@/pages/inventory/item/itemUpdate";
 import InventoryItemDetailPage from "@/pages/inventory/item/itemDetail";
+
 import InventoryCatalogListPage from "@/pages/inventory/catalog";
 import InventoryCatalogCreatePage from "@/pages/inventory/catalog/catalogCreate";
 import InventoryCatalogUpdatePage from "@/pages/inventory/catalog/catalogUpdate";
 import InventoryCatalogDetailPage from "@/pages/inventory/catalog/catalogDetail";
+
 import SupplierListPage from "@/pages/purchase/supplier";
+
 import SupplierCreatePage from "@/pages/purchase/supplier/supplierCreate";
 import SupplierUpdatePage from "@/pages/purchase/supplier/supplierUpdate";
+
 import PurchaseOrderListPage from "@/pages/purchase/order";
 import PurchaseOrderCreatePage from "@/pages/purchase/order/purchaseOrderCreate";
 import PurchaseOrderUpdatePage from "@/pages/purchase/order/purchaseOrderUpdate";
+import PurchaseOrderDetailPage from "@/pages/purchase/order/purchaseOrderDetail";
+
 import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
 import SalesOrderUpdatePage from "@/pages/sales/order/salesOrderUpdate";
 import SalesOrderListPage from "@/pages/sales/order";
 import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
+
 import ProductionPlanListPage from "@/pages/production/plan";
 import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
 import ProductionPlanDetailPage from "@/pages/production/plan/productionPlanDetail";
 import ProductionPlanUpdatePage from "@/pages/production/plan/productionPlanUpdate";
+
 import DemandProductionPage from "@/pages/production/demand/demandProduction";
 import DemandItemPage from "@/pages/production/demand/demandItem";
-import POSSettlementPage from "@/pages/report/posSettlement";
-import POSSettlementDailyPage from "@/pages/report/posSettlementDaily";
-import B2BSettlementPage from "@/pages/report/b2bSettlement";
-import B2BSettlementDailyPage from "@/pages/report/b2bSettlementDaily";
-import B2BProductSalesPage from "@/pages/report/b2bProductSales";
-import RawMaterialSalesPage from "@/pages/report/rawMaterialSales";
-import ProductSalesPage from "@/pages/report/productSales";
-import WarehouseStockPage from "@/pages/report/warehouseStock";
-import PosOutstandingPage from "@/pages/report/outstanding";
-import CancelledProductSalesPage from "@/pages/report/cancelledProductSales";
-import TopupCancelledPage from "@/pages/report/topupCancelled";
-import ProductItemPage from "@/pages/report/productItem";
-import B2BProductItemPage from "@/pages/report/b2bProductItem";
+
+// ==== REPORT B2B ===== //
+import B2BProductItemPage from "@/pages/report/b2b/productItem";
+import B2BSettlementPage from "@/pages/report/b2b/settlement";
+import B2BSettlementDailyPage from "@/pages/report/b2b/settlementDaily";
+import B2BProductSalesPage from "@/pages/report/b2b/productSales";
+
+// ==== REPORT POS ===== //
+import PosOutstandingPage from "@/pages/report/pos/outstanding";
+import POSSettlementPage from "@/pages/report/pos/settlement";
+import POSSettlementDailyPage from "@/pages/report/pos/settlementDaily";
+import POSCancelledProductSalesPage from "@/pages/report/pos/cancelledProductSales";
+import POSProductSalesPage from "@/pages/report/pos/productSales";
+import POSProductItemPage from "@/pages/report/pos/productItem";
+import POSTopupCancelledPage from "@/pages/report/pos/topupCancelled";
+
+// ==== REPORT POS ===== //
+import MitraSettlementPage from "@/pages/report/mitra/settlement";
+import MitraSettlementDailyPage from "@/pages/report/mitra/settlementDaily";
+import MitraProductSalesPage from "@/pages/report/mitra/productSales";
+import MitraProductItemPage from "@/pages/report/mitra/productItem";
+
+// ==== REPORT FRANCHISOR ====//
+import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
+import WarehouseStockPage from "@/pages/report/franchisor/warehouseStock";
 import OutletMapPage from "@/pages/report/outletMap";
-import POSMenuUpdatePage from "@/pages/setting/pos/menu/menuUpdate";
-import { WithdrawalList } from "@/pages/withdrawal/WithdrawalList";
-import { PurchaseOrderDetailPage } from "@/pages/purchase/order/purchaseOrderDetail";
+
+import WithdrawalList from "@/pages/withdrawal/WithdrawalList";
+import OutletTopupListPage from "@/pages/outletTopup";
+
 import B2BOrderListPage from "@/pages/b2b/order";
 import B2BOrderCreatePage from "@/pages/b2b/order/b2bOrderCreate";
 import B2BOrderDetailPage from "@/pages/b2b/order/b2bOrderDetail";
 import B2BOrderUpdatePage from "@/pages/b2b/order/b2bOrderUpdate";
-import OutletTopupListPage from "@/pages/outletTopup";
+
 import UserListPage from "@/pages/user";
 import UserGroupListPage from "@/pages/usergroup";
 import FranchisorProfilePage from "@/pages/franchisor";
@@ -432,7 +459,7 @@ export function AppRoutes() {
           }
         />
 
-        {/* Report */}
+        {/* Report POS */}
         <Route
           path='/report/pos/outstanding'
           element={
@@ -460,16 +487,16 @@ export function AppRoutes() {
         <Route
           path='/report/pos/cancelled-product-sales'
           element={
-            <PermissionGuard permission={MENU.reportTransactionCancelled}>
-              <CancelledProductSalesPage />
+            <PermissionGuard permission={MENU.reportPosTransactionCancelled}>
+              <POSCancelledProductSalesPage />
             </PermissionGuard>
           }
         />
         <Route
-          path='/report/topup-cancelled'
+          path='/report/pos/topup-cancelled'
           element={
             <PermissionGuard permission={MENU.reportPosTopupCancelled}>
-              <TopupCancelledPage />
+              <POSTopupCancelledPage />
             </PermissionGuard>
           }
         />
@@ -477,10 +504,54 @@ export function AppRoutes() {
           path='/report/pos/product-item'
           element={
             <PermissionGuard permission={MENU.reportPosProductItem}>
-              <ProductItemPage />
+              <POSProductItemPage />
             </PermissionGuard>
           }
         />
+        <Route
+          path='/report/pos/product-sales'
+          element={
+            <PermissionGuard permission={MENU.reportPosProductSales}>
+              <POSProductSalesPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Report Mitra */}
+        <Route
+          path='/report/mitra/settlement'
+          element={
+            <PermissionGuard permission={MENU.reportMitraSettlement}>
+              <MitraSettlementPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/mitra/settlement/daily'
+          element={
+            <PermissionGuard permission={MENU.reportMitraSettlement}>
+              <MitraSettlementDailyPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/mitra/product-item'
+          element={
+            <PermissionGuard permission={MENU.reportMitraProductItem}>
+              <MitraProductItemPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/mitra/product-sales'
+          element={
+            <PermissionGuard permission={MENU.reportMitraProductSales}>
+              <MitraProductSalesPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Report B2B */}
         <Route
           path='/report/b2b/product-item'
           element={
@@ -506,14 +577,6 @@ export function AppRoutes() {
           }
         />
         <Route
-          path='/report/inventory/product-sales'
-          element={
-            <PermissionGuard permission={MENU.reportProductSales}>
-              <ProductSalesPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
           path='/report/b2b/product-sales'
           element={
             <PermissionGuard permission={MENU.reportB2BProductSales}>
@@ -521,6 +584,8 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
+
+        {/* Report Franchisor */}
         <Route
           path='/report/inventory/material-sales'
           element={

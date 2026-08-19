@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
-import createTableConfig from "./table/raw-material-sales.config";
+import createTableConfig from "./table/product-item.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import TableFilter from "./table/product-sales.filter"; // Reuse product sales filter pattern
-import { useReport } from "@/services/report/hooks";
+import TableFilter from "./table/product-item.filter";
+import { useB2BReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
-import { ArrowUpCircle, Banknote, Landmark } from "lucide-react";
+import { Banknote, Landmark } from "lucide-react";
 
 const THEMES: Record<string, any> = {
   blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
@@ -22,39 +22,27 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-6'>
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
       <SummaryCard
-        label='Total Nett'
-        value={currencyFormat(data.total_nett)}
-        icon={ArrowUpCircle}
-        theme={THEMES.purple}
-      />
-      <SummaryCard
-        label='Total Qty Fulfilled'
-        value={data.total_quantity_fulfilled}
+        label='Total Qty'
+        value={data.total_qty}
         icon={Landmark}
         theme={THEMES.orange}
       />
       <SummaryCard
-        label='Total Qty Ordered'
-        value={data.total_quantity_ordered}
+        label='Total Nett'
+        value={currencyFormat(data.total_nett)}
         icon={Banknote}
         theme={THEMES.blue}
-      />
-      <SummaryCard
-        label='Total Orders'
-        value={data.total_orders}
-        icon={ArrowUpCircle}
-        theme={THEMES.red}
       />
     </div>
   );
 };
 
-export default function RawMaterialSalesPage() {
+export default function B2BProductItemPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
   const Table = useTable(
-    "report_raw_material_sales",
+    "report_b2b_product_item",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -68,11 +56,11 @@ export default function RawMaterialSalesPage() {
 
   const currentFilterString = JSON.stringify(currentFilter);
 
-  const { rawMaterialSummary, rawMaterialSummaryResult } = useReport();
-  const { data: summaryResult } = rawMaterialSummaryResult;
+  const { productItemSummary, productItemSummaryResult } = useB2BReport();
+  const { data: summaryResult } = productItemSummaryResult;
 
   useEffect(() => {
-    rawMaterialSummary(JSON.parse(currentFilterString));
+    productItemSummary(JSON.parse(currentFilterString));
   }, [currentFilterString, Table.State !== undefined]);
 
   const summary = summaryResult?.data;
@@ -81,8 +69,8 @@ export default function RawMaterialSalesPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Product Sales'
-        subtitle='Laporan penjualan produk.'
+        title='B2B Menu'
+        subtitle='Laporan penjualan menu B2B.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
@@ -92,7 +80,7 @@ export default function RawMaterialSalesPage() {
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'
-          emptyDescription='Data penjualan produk akan muncul di sini.'
+          emptyDescription='Data penjualan menu B2B akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

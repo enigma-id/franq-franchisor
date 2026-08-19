@@ -45,7 +45,7 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
-export default function ProductSalesPage() {
+export default function POSProductSalesPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
   const Table = useTable(
     "report_product_sales",

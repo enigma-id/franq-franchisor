@@ -26,6 +26,8 @@ import {
   Wallet,
   UserCircle,
   Gift,
+  UsersRound,
+  UserRound,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -168,8 +170,8 @@ const menuSections: MenuSection[] = [
           },
           {
             label: "Report Product Sales",
-            path: "/report/inventory/product-sales",
-            permission: MENU.reportProductSales,
+            path: "/report/pos/product-sales",
+            permission: MENU.reportPosProductSales,
           },
           {
             label: "Report Menu",
@@ -179,12 +181,33 @@ const menuSections: MenuSection[] = [
           {
             label: "Report Transaction Cancel",
             path: "/report/pos/cancelled-product-sales",
-            permission: MENU.reportTransactionCancelled,
+            permission: MENU.reportPosTransactionCancelled,
           },
           {
             label: "Report Topup Cancel",
-            path: "/report/topup-cancelled",
+            path: "/report/pos/topup-cancelled",
             permission: MENU.reportPosTopupCancelled,
+          },
+        ],
+      },
+      {
+        label: "Mitra Report",
+        icon: <UserRound size={18} />,
+        children: [
+          {
+            label: "Report Settlement",
+            path: "/report/mitra/settlement",
+            permission: MENU.reportMitraSettlement,
+          },
+          {
+            label: "Report Product Sales",
+            path: "/report/mitra/product-sales",
+            permission: MENU.reportMitraProductSales,
+          },
+          {
+            label: "Report Menu",
+            path: "/report/mitra/product-item",
+            permission: MENU.reportMitraProductItem,
           },
         ],
       },

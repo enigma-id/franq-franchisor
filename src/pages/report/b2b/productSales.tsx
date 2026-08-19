@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
-import createTableConfig from "./table/cancelled-product-sales.config";
+import createTableConfig from "./table/product-sales.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import TableFilter from "./table/cancelled-product-sales.filter";
-import { usePOSReport } from "@/services/report/hooks";
+import TableFilter from "../pos/table/product-sales.filter"; // Reuse product sales filter pattern
+import { useB2BReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
@@ -45,10 +45,10 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
-export default function CancelledProductSalesPage() {
+export default function B2BProductSalesPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
   const Table = useTable(
-    "report_cancelled_product_sales",
+    "report_b2b_product_sales",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -62,12 +62,11 @@ export default function CancelledProductSalesPage() {
 
   const currentFilterString = JSON.stringify(currentFilter);
 
-  const { cancelledProductSalesSummary, cancelledProductSalesSummaryResult } =
-    usePOSReport();
-  const { data: summaryResult } = cancelledProductSalesSummaryResult;
+  const { productSalesSummary, productSalesSummaryResult } = useB2BReport();
+  const { data: summaryResult } = productSalesSummaryResult;
 
   useEffect(() => {
-    cancelledProductSalesSummary(JSON.parse(currentFilterString));
+    productSalesSummary(JSON.parse(currentFilterString));
   }, [currentFilterString, Table.State !== undefined]);
 
   const summary = summaryResult?.data;
@@ -76,8 +75,8 @@ export default function CancelledProductSalesPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Transaction Cancel'
-        subtitle='Laporan transaksi POS yang dibatalkan.'
+        title='B2B Product Sales'
+        subtitle='Laporan penjualan produk B2B.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
@@ -87,7 +86,7 @@ export default function CancelledProductSalesPage() {
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'
-          emptyDescription='Data transaksi yang dibatalkan akan muncul di sini.'
+          emptyDescription='Data penjualan produk B2B akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
-import createTableConfig from "./table/b2b-product-sales.config";
+import createTableConfig from "./table/product-sales.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
-import TableFilter from "./table/product-sales.filter"; // Reuse product sales filter pattern
-import { useB2BReport } from "@/services/report/hooks";
+import TableFilter from "./table/product-sales.filter";
+import { useReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
-import { currencyFormat } from "@/utils";
 import { ArrowUpCircle, Banknote, Landmark } from "lucide-react";
+import { currencyFormat } from "@/utils";
 
 const THEMES: Record<string, any> = {
   blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
@@ -31,13 +31,13 @@ const OverviewCards = ({ data }: { data: any | null }) => {
       />
       <SummaryCard
         label='Total Discount'
-        value={currencyFormat(data.total_nett)}
+        value={currencyFormat(data.total_discount)}
         icon={Banknote}
         theme={THEMES.blue}
       />
       <SummaryCard
         label='Total Nett'
-        value={currencyFormat(data.total_discount)}
+        value={currencyFormat(data.total_nett)}
         icon={ArrowUpCircle}
         theme={THEMES.red}
       />
@@ -45,10 +45,16 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
-export default function B2BProductSalesPage() {
-  const tableConfig = useMemo(() => createTableConfig({}), []);
+export default function MitraProductSalesPage() {
+  const tableConfig = useMemo(
+    () =>
+      createTableConfig({
+        filter: { is_mitra: true },
+      }),
+    [],
+  );
   const Table = useTable(
-    "report_b2b_product_sales",
+    "mitra_report_product_sales",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -62,7 +68,7 @@ export default function B2BProductSalesPage() {
 
   const currentFilterString = JSON.stringify(currentFilter);
 
-  const { productSalesSummary, productSalesSummaryResult } = useB2BReport();
+  const { productSalesSummary, productSalesSummaryResult } = useReport();
   const { data: summaryResult } = productSalesSummaryResult;
 
   useEffect(() => {
@@ -75,8 +81,8 @@ export default function B2BProductSalesPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='B2B Product Sales'
-        subtitle='Laporan penjualan produk B2B.'
+        title='POS Product Sales'
+        subtitle='Laporan penjualan produk retail.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
@@ -86,7 +92,7 @@ export default function B2BProductSalesPage() {
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'
-          emptyDescription='Data penjualan produk B2B akan muncul di sini.'
+          emptyDescription='Data penjualan produk akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>
