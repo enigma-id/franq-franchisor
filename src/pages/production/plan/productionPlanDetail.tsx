@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Badge, Button, Modal, RemoteSelect } from "@/components/ui";
+import { Badge, Button, Modal } from "@/components/ui";
 import { Input, useEnigmaUI } from "@/components";
 import { useProductionPlan } from "@/services/production/hooks";
 import {
@@ -26,7 +26,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { useWarehouse } from "@/services/warehouse/hooks";
-import { useAppSelector } from "@/hooks";
 import { getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { useCan } from "@/utils/permission";
@@ -37,7 +36,6 @@ const ProductionPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const canManage = useCan(ACTION.production);
-  const FormState = useAppSelector((s) => s.form);
   const { open: openPrint } = usePrintWindow({
     title: "Print Preview",
     autoClose: true,
@@ -173,7 +171,7 @@ const ProductionPlanDetailPage: React.FC = () => {
       title: "Konfirmasi Setujui",
       message: "Apakah Anda yakin ingin menyetujui rencana produksi ini?",
       variant: "success",
-      onConfirm: (v) => {
+      onConfirm: () => {
         if (id) {
           publish({ id });
         }

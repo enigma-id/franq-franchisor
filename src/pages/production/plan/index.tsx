@@ -8,7 +8,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button, Modal, RemoteSelect } from "@/components/ui";
+import { Button, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import useTable from "@/services/table/hooks";
 import { useProductionPlan } from "@/services/production/hooks";
@@ -18,14 +18,12 @@ import TableFilter from "./table/plan.filter";
 import type { ProductionPlanDetail } from "@/services/types/production";
 import type { WarehouseDetail } from "@/services/types/warehouse";
 import type { TableConfig } from "@/services/table/const";
-import { useAppSelector } from "@/hooks";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
 const ProductionPlanListPage: React.FC = () => {
   const navigate = useNavigate();
   const canManage = useCan(ACTION.production);
-  const FormState = useAppSelector((s) => s.form);
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const {
     remove: removePlan,

@@ -31,13 +31,13 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   };
 
   return (
-    <div className="w-56">
+    <div className='w-56'>
       <DatePicker
-        label=""
-        mode="single"
+        label=''
+        mode='single'
         value={date}
         onChange={handleChange}
-        placeholder="Filter Tanggal"
+        placeholder='Filter Tanggal'
       />
     </div>
   );
