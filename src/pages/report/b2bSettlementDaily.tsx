@@ -5,7 +5,6 @@ import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import createTableConfig from "./table/b2b-settlement.daily.config";
-import TableFilter from "./table/settlement.daily.filter";
 import { useLazyGetB2BSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -68,8 +67,7 @@ export default function B2BSettlementDailyPage() {
       if (keys.length > 0) {
         return keys.map((key: string, i: number) => {
           const total = d.reduce(
-            (sum: number, row: any) =>
-              sum + (row.nominals?.[i] ?? 0),
+            (sum: number, row: any) => sum + (row.nominals?.[i] ?? 0),
             0,
           );
           return { method: key, total };
@@ -115,9 +113,7 @@ export default function B2BSettlementDailyPage() {
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
-        <Table.Tools downloadable>
-          <TableFilter table={Table} periode={periode ?? ""} />
-        </Table.Tools>
+        <Table.Tools downloadable hideSearch />
 
         <Table.Render
           emptyTitle='No B2B Settlement Data'

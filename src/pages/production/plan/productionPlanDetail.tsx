@@ -15,7 +15,7 @@ import {
   CheckCircle,
   Pencil,
 } from "lucide-react";
-import { formatDate } from "@/utils";
+import { formatDate, getTypeVariant } from "@/utils";
 import type {
   ProductionPlanDetail,
   ProductionPlanItem,
@@ -84,9 +84,6 @@ const ProductionPlanDetailPage: React.FC = () => {
 
   const { data, isLoading } = showResult;
   const plan = data?.data as ProductionPlanDetail;
-  const hasWarehouse =
-    plan?.warehouse_id &&
-    plan?.warehouse_id !== "00000000-0000-0000-0000-000000000000";
   const guards = useProductionPlanGuards(plan);
 
   const [confirmModal, setConfirmModal] = useState<{
@@ -177,9 +174,8 @@ const ProductionPlanDetailPage: React.FC = () => {
       message: "Apakah Anda yakin ingin menyetujui rencana produksi ini?",
       variant: "success",
       onConfirm: (v) => {
-        const payload = { warehouse_id: v?.id };
         if (id) {
-          publish({ id, payload });
+          publish({ id });
         }
       },
     });
@@ -249,7 +245,6 @@ const ProductionPlanDetailPage: React.FC = () => {
     completeItem({
       id: completeItemModal.item.id,
       payload: {
-        warehouse_id: completeItemModal.warehouse.id,
         quantity_produced: completeItemModal.quantityProduced,
       },
     });
@@ -288,7 +283,9 @@ const ProductionPlanDetailPage: React.FC = () => {
               {guards.canEdit && (
                 <Button
                   variant='info'
-                  onClick={() => navigate(`/production/plan/update/${plan?.id}`)}
+                  onClick={() =>
+                    navigate(`/production/plan/update/${plan?.id}`)
+                  }
                   title='Edit'
                 >
                   <Pencil className='w-4 h-4' />
@@ -345,9 +342,24 @@ const ProductionPlanDetailPage: React.FC = () => {
                 <dd className='info-value'>{plan.code}</dd>
               </div>
               <div className='info-row'>
-                <dt className='info-label'>Produksi</dt>
-                <dd className='info-value'>{plan.warehouse_name || "-"}</dd>
+                <dt className='info-label'>Type</dt>
+                <dd className='info-value'>
+                  <Badge
+                    variant={getTypeVariant(plan.type)}
+                    size='xs'
+                    className='px-2.5 font-semibold text-[10px] tracking-wider'
+                  >
+                    {plan.type?.replace("_", " ")}
+                  </Badge>
+                </dd>
               </div>
+              {plan?.warehouse_name && (
+                <div className='info-row'>
+                  <dt className='info-label'>Produksi</dt>
+                  <dd className='info-value'>{plan.warehouse_name || "-"}</dd>
+                </div>
+              )}
+
               <div className='info-row'>
                 <dt className='info-label'>Tanggal Produksi</dt>
                 <dd className='info-value'>
@@ -525,25 +537,7 @@ const ProductionPlanDetailPage: React.FC = () => {
         onClose={() => setConfirmModal(null)}
       >
         <Modal.Header>{confirmModal?.title}</Modal.Header>
-        <Modal.Body>
-          {confirmModal?.message}
-          {confirmModal?.type === "publish" && !hasWarehouse && (
-            <div className='mt-4'>
-              <RemoteSelect<WarehouseDetail>
-                label='Warehouse'
-                required
-                disabled={isSingleWarehouse}
-                hook={warehouseResult as any}
-                fetchData={(page, search) => getWarehouse({ page, search })}
-                getLabel={(item: any) => item?.name}
-                value={warehouse}
-                onChange={(item: WarehouseDetail) => setWarehouse(item)}
-                placeholder='Pilih warehouse'
-                error={FormState?.errors?.warehouse_id as string}
-              />
-            </div>
-          )}
-        </Modal.Body>
+        <Modal.Body>{confirmModal?.message}</Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setConfirmModal(null)} variant='default'>
             Batal
@@ -613,22 +607,6 @@ const ProductionPlanDetailPage: React.FC = () => {
                     : null,
                 )
               }
-            />
-            <RemoteSelect<WarehouseDetail>
-              label='Warehouse Tujuan'
-              required
-              disabled={isSingleWarehouse}
-              hook={warehouseResult as any}
-              fetchData={(page, search) => getWarehouse({ page, search })}
-              getLabel={(item: any) => item?.name}
-              value={completeItemModal?.warehouse ?? null}
-              onChange={(item: WarehouseDetail) =>
-                setCompleteItemModal((prev) =>
-                  prev ? { ...prev, warehouse: item } : null,
-                )
-              }
-              placeholder='Pilih warehouse'
-              error={FormState?.errors?.warehouse_id as string}
             />
           </div>
         </Modal.Body>

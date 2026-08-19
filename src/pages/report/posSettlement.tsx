@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
+import type { RootState } from "@/services/store";
 import createTableConfig from "./table/settlement.config";
 import TableFilter from "./table/settlement.filter";
 import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
@@ -13,13 +15,21 @@ import { useNavigate } from "react-router-dom";
 export default function SettlementMonthlyPage() {
   const navigate = useNavigate();
 
+  const activeOutletId = useSelector(
+    (state: RootState) => state?.table?.data?.pos_settlement?.filter?.outlet_id,
+  );
+
   const tableConfig = useMemo(() => {
     return createTableConfig({
       filter: { periode: new Date().getFullYear() },
       onRowClick: (row: any) =>
-        navigate(`/report/pos/settlement/daily?periode=${row.date}`),
+        navigate(
+          `/report/pos/settlement/daily?periode=${row.date}${
+            activeOutletId ? `&outlet_id=${activeOutletId}` : ""
+          }`,
+        ),
     });
-  }, [navigate]);
+  }, [navigate, activeOutletId]);
 
   const Table = useTable("pos_settlement", tableConfig as TableConfig<unknown>);
 
@@ -84,7 +94,7 @@ export default function SettlementMonthlyPage() {
       <Page.Body className="flex-1 flex flex-col min-h-0 ">
         <SettlementSummaryCards summary={summary} />
 
-        <Table.Tools downloadable>
+        <Table.Tools downloadable hideSearch>
           <TableFilter table={Table} />
         </Table.Tools>
 

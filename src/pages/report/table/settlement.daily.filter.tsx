@@ -24,22 +24,38 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, periode }) => {
     [table.State?.filter],
   );
 
-  const { get: getOutlet, getResult } = useOutlet();
+  const { get: getOutlet, getResult, show: showOutlet, showResult } =
+    useOutlet();
   const [outlet, setOutlet] = useState<any | null>(null);
 
   useEffect(() => {
     getOutlet({ page: 1, limit: 20, status: "active" });
   }, []);
 
+  // Resolve selected outlet from the active-outlet list so the filter displays it.
+  // If the outlet isn't in the first page, fetch it directly by id.
   useEffect(() => {
-    if (current.outlet_id && getResult?.data?.data) {
-      const outlets = getResult.data.data as any[];
-      const found = outlets.find((c: any) => c.id === current.outlet_id);
-      if (found) setOutlet(found);
-    } else if (!current.outlet_id) {
+    if (!current.outlet_id) {
       setOutlet(null);
+      return;
     }
-  }, [current.outlet_id, getResult?.data?.data]);
+
+    const outlets = getResult?.data?.data as any[] | undefined;
+    const found = outlets?.find((c: any) => c.id === current.outlet_id);
+    if (found) {
+      setOutlet(found);
+    } else {
+      const shown = showResult?.data?.data as any | undefined;
+      if (!shown) showOutlet(current.outlet_id);
+    }
+  }, [current.outlet_id, getResult?.data?.data, showResult?.data?.data]);
+
+  useEffect(() => {
+    const shown = showResult?.data?.data as any | undefined;
+    if (shown && String(shown.id) === String(current.outlet_id)) {
+      setOutlet(shown);
+    }
+  }, [showResult?.data?.data, current.outlet_id]);
 
   const buildFilters = () => ({
     outlet_id: outlet?.id ?? "",

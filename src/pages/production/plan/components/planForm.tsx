@@ -10,6 +10,14 @@ import { useWarehouse } from "@/services/warehouse/hooks";
 import type { ProductionPlanDetail, WarehouseDetail } from "@/services/types";
 import { useAppSelector } from "@/hooks";
 import { dateFormat } from "@/utils";
+import type { SelectOptionValue } from "@/services/types/table";
+import { getOptionByValue } from "@/utils/helper";
+
+const TYPES = [
+  { value: "mitra", label: "Mitra" },
+  { value: "b2b", label: "B2B" },
+  { value: "sukabread", label: "Sukabread" },
+];
 
 type ProductionPlanFormItem = {
   id?: string;
@@ -20,6 +28,7 @@ type ProductionPlanFormItem = {
 
 type ProductionPlanFormRequest = {
   warehouse_id: string;
+  type: string;
   production_date: string;
   note?: string;
   items: Array<{
@@ -48,11 +57,13 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
 
   const [formData, setFormData] = useState<{
     warehouse_id: string;
+    type: string;
     production_date: string;
     note?: string;
     items: ProductionPlanFormItem[];
   }>({
     warehouse_id: "",
+    type: "mitra",
     production_date: new Date().toISOString(),
     note: "",
     items: [
@@ -66,6 +77,10 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
 
   const [production_date, setProductionDate] = useState<Dayjs | null>(dayjs());
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+  const [typeSelected, setTypeSelected] = useState<SelectOptionValue | null>({
+    value: "mitra",
+    label: "Mitra",
+  });
 
   // Auto-select warehouse ketika data hanya satu.
   useEffect(() => {
@@ -75,12 +90,23 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
   useEffect(() => {
     if (initialData) return;
     const items = warehouseResult?.data?.data as any[] | undefined;
-    if (items?.length === 1 && !warehouse) {
+    if (items?.length === 1) {
       const item = items[0];
       setWarehouse(item);
       setFormData((prev) => ({ ...prev, warehouse_id: item?.id || "" }));
     }
-  }, [warehouseResult?.data?.data, initialData, warehouse]);
+  }, [warehouseResult?.data?.data, initialData]);
+
+  useEffect(() => {
+    if (typeSelected?.value === "mitra") {
+      const items = warehouseResult?.data?.data as any[] | undefined;
+      if (items?.length === 1) {
+        const item = items[0];
+        setWarehouse(item);
+        setFormData((prev) => ({ ...prev, warehouse_id: item?.id || "" }));
+      }
+    }
+  }, [typeSelected]);
 
   // Disable select warehouse ketika hanya ada satu warehouse.
   const isSingleWarehouse =
@@ -102,12 +128,14 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
           initialData?.warehouse_id !== "00000000-0000-0000-0000-000000000000"
             ? initialData?.warehouse_id
             : "",
+        type: initialData.type,
         production_date: initialData.production_date,
         note: initialData?.note || "",
         items: newItems,
       });
 
       setProductionDate(dayjs(initialData.production_date));
+      setTypeSelected(getOptionByValue(TYPES, initialData.type));
 
       setWarehouse({
         id:
@@ -126,6 +154,17 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
       });
     }
   }, [initialData]);
+
+  const onChangeType = (val: any) => {
+    setTypeSelected(val);
+    setWarehouse(null);
+
+    setFormData((prev) => ({
+      ...prev,
+      type: val?.value as any,
+      warehouse_id: "",
+    }));
+  };
 
   const addItem = () => {
     setFormData((prev) => ({
@@ -175,24 +214,43 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
     <form id={id} onSubmit={handleSubmit} className='space-y-6'>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative z-10'>
         <div className='space-y-2'>
-          <RemoteSelect
-            label='Pilih Warehouse'
-            placeholder='Cari warehouse...'
-            disabled={isSingleWarehouse}
-            hook={warehouseResult as any}
-            fetchData={(page, search) => getWarehouse({ page, search })}
-            getLabel={(item: any) => item?.name}
-            value={warehouse}
-            onChange={(item: any) => {
-              setWarehouse(item);
-              setFormData((prev) => ({
-                ...prev,
-                warehouse_id: item?.id || "",
-              }));
-            }}
+          <RemoteSelect<SelectOptionValue>
+            label='Tipe'
+            placeholder='Pilih Tipe...'
             required
-            error={FormState?.errors?.warehouse_id as string}
+            data={TYPES}
+            value={typeSelected}
+            getLabel={(item: any) => item?.label || ""}
+            getValue={(item: any) => item?.value}
+            onChange={(val) => {
+              onChangeType(val);
+            }}
+            onClear={() => {
+              onChangeType(null);
+            }}
+            error={FormState?.errors?.type as string}
           />
+
+          {typeSelected?.value === "mitra" && (
+            <RemoteSelect
+              label='Pilih Warehouse'
+              placeholder='Cari warehouse...'
+              disabled={isSingleWarehouse}
+              hook={warehouseResult as any}
+              fetchData={(page, search) => getWarehouse({ page, search })}
+              getLabel={(item: any) => item?.name}
+              value={warehouse}
+              onChange={(item: any) => {
+                setWarehouse(item);
+                setFormData((prev) => ({
+                  ...prev,
+                  warehouse_id: item?.id || "",
+                }));
+              }}
+              required
+              error={FormState?.errors?.warehouse_id as string}
+            />
+          )}
         </div>
 
         <div className='space-y-2'>

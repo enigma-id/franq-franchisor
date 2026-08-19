@@ -13,22 +13,21 @@ export default function DemandItemPage() {
     [],
   );
   const Table = useTable("demand_item", tableConfig as TableConfig<unknown>);
-  console.log("[DemandItem] initial filter:", Table.State?.filter);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Production"
-        title="Item Demand"
-        subtitle="Daftar rekapitulasi permintaan per item"
+        category='Production'
+        title='Item Demand'
+        subtitle='Daftar rekapitulasi permintaan per item'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Belum Ada Data"
-          emptyDescription="Data permintaan item akan muncul di sini."
+          emptyTitle='Belum Ada Data'
+          emptyDescription='Data permintaan item akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

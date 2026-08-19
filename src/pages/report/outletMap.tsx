@@ -17,8 +17,7 @@ const LATEST_COLOR = "#ef4444";
 
 const validPoints = (row: OutletMapRow | undefined) =>
   (row?.historys ?? []).filter(
-    (p) =>
-      typeof p.latitude === "number" && typeof p.longitude === "number",
+    (p) => typeof p.latitude === "number" && typeof p.longitude === "number",
   );
 
 // Reusable popup HTML, styled like ShipmentMap.
@@ -290,32 +289,32 @@ export default function OutletMapPage() {
   }, [activeId]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="Outlet Maps"
-        subtitle="Laporan posisi dan jejak outlet berdasarkan history GPS."
+        category='Report'
+        title='Outlet Maps'
+        subtitle='Laporan posisi dan jejak outlet berdasarkan history GPS.'
       />
-      <Page.Body className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
+      <Page.Body className='flex-1 flex flex-col md:flex-row gap-4 min-h-0'>
         {/* Left — outlet list */}
-        <div className="w-full md:w-[380px] shrink-0 flex flex-col bg-white border border-slate-200/60 rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5">
-            <MapPinned className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">Daftar Outlet</h3>
-            <span className="ml-auto text-[11px] font-semibold text-slate-400">
+        <div className='w-full md:w-[380px] shrink-0 flex flex-col bg-white border border-slate-200/60 rounded-2xl overflow-hidden'>
+          <div className='px-5 py-4 border-b border-slate-100 flex items-center gap-2.5'>
+            <MapPinned className='w-4 h-4 text-emerald-600' />
+            <h3 className='text-sm font-bold text-slate-800'>Daftar Outlet</h3>
+            <span className='ml-auto text-[11px] font-semibold text-slate-400'>
               {rows.length} outlet
             </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0">
+          <div className='flex-1 overflow-y-auto min-h-0'>
             {isLoading ? (
-              <div className="flex items-center justify-center py-12 text-slate-400">
-                <Loader2 className="w-5 h-5 animate-spin" />
+              <div className='flex items-center justify-center py-12 text-slate-400'>
+                <Loader2 className='w-5 h-5 animate-spin' />
               </div>
             ) : rows.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-                <MapPin className="w-8 h-8 text-slate-300 mb-2" />
-                <p className="text-sm font-medium">Belum ada data</p>
+              <div className='flex flex-col items-center justify-center py-12 text-slate-400'>
+                <MapPin className='w-8 h-8 text-slate-300 mb-2' />
+                <p className='text-sm font-medium'>Belum ada data</p>
               </div>
             ) : (
               rows.map((row) => {
@@ -332,17 +331,17 @@ export default function OutletMapPage() {
                         : "hover:bg-slate-50",
                     )}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-bold text-slate-800 truncate">
+                    <div className='flex items-center justify-between gap-2'>
+                      <p className='text-sm font-bold text-slate-800 truncate'>
                         {row.outlet_name}
                       </p>
-                      <span className="shrink-0 text-[11px] font-semibold text-slate-400">
+                      <span className='shrink-0 text-[11px] font-semibold text-slate-400'>
                         {count} titik
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">
-                      Total Charges:{" "}
-                      <span className="font-bold text-emerald-600">
+                    <p className='text-xs text-slate-500 font-medium mt-0.5'>
+                      Total Omset:{" "}
+                      <span className='font-bold text-emerald-600'>
                         {currencyFormat(row.total_charges)}
                       </span>
                     </p>
@@ -354,32 +353,32 @@ export default function OutletMapPage() {
         </div>
 
         {/* Right — map */}
-        <div className="flex-1 min-w-0 bg-white border border-slate-200/60 rounded-2xl overflow-hidden flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5">
-            <MapPin className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">
+        <div className='flex-1 min-w-0 bg-white border border-slate-200/60 rounded-2xl overflow-hidden flex flex-col'>
+          <div className='px-5 py-4 border-b border-slate-100 flex items-center gap-2.5'>
+            <MapPin className='w-4 h-4 text-emerald-600' />
+            <h3 className='text-sm font-bold text-slate-800'>
               {selected?.outlet_name ?? "Peta Outlet"}
             </h3>
-            <span className="ml-auto text-[11px] font-semibold text-slate-400">
+            <span className='ml-auto text-[11px] font-semibold text-slate-400'>
               {points.length} history
             </span>
           </div>
 
-          <div className="flex-1 min-h-0 relative">
+          <div className='flex-1 min-h-0 relative'>
             {MAPBOX_TOKEN ? (
               <div
                 ref={mapContainer}
-                className="absolute inset-0 w-full h-full"
+                className='absolute inset-0 w-full h-full'
                 style={{ minHeight: 400 }}
               />
             ) : (
-              <div className="flex-1 flex items-center justify-center bg-slate-50/50 border-2 border-dashed border-slate-200 m-4 rounded-2xl h-[400px]">
-                <div className="text-center">
-                  <MapPin className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-400 font-medium">
+              <div className='flex-1 flex items-center justify-center bg-slate-50/50 border-2 border-dashed border-slate-200 m-4 rounded-2xl h-[400px]'>
+                <div className='text-center'>
+                  <MapPin className='w-8 h-8 text-slate-300 mx-auto mb-3' />
+                  <p className='text-slate-400 font-medium'>
                     Mapbox token belum dikonfigurasi
                   </p>
-                  <code className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                  <code className='text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded'>
                     VITE_MAPBOX_TOKEN
                   </code>
                 </div>

@@ -1,8 +1,21 @@
 import type { ProductionPlanDetail } from "@/services/types/production";
 import { Badge, Dropdown } from "@/components/ui";
-import { Factory, Eye, Trash, MoreVertical, Send, Check, Edit } from "lucide-react";
+import {
+  Factory,
+  Eye,
+  Trash,
+  MoreVertical,
+  Send,
+  Check,
+  Edit,
+} from "lucide-react";
 import config from "@/services/table/const";
-import { getStatusVariant, formatDate, formatDateTime } from "@/utils";
+import {
+  getStatusVariant,
+  formatDate,
+  formatDateTime,
+  getTypeVariant,
+} from "@/utils";
 
 const createTableConfig = ({
   onView,
@@ -48,6 +61,18 @@ const createTableConfig = ({
             </span>
           </div>
         </div>
+      ),
+    },
+    type: {
+      title: "Type",
+      component: (row: ProductionPlanDetail) => (
+        <Badge
+          variant={getTypeVariant(row.type)}
+          size='xs'
+          className='px-2.5 font-semibold text-[10px] tracking-wider'
+        >
+          {row.type?.replace("_", " ")}
+        </Badge>
       ),
     },
     warehouse: {

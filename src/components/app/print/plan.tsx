@@ -66,16 +66,13 @@ const Name = ({ text }: { text: string }) => {
 const Card = ({
   data,
   plan,
-  channel_prices,
 }: {
   data: any;
   plan?: any;
   channel_prices?: any;
 }) => {
   const name = data?.item?.name || data?.name || "";
-  const price = currencyFormat(
-    data?.item?.base_price ?? channel_prices?.price ?? data?.base_price,
-  );
+  const price = currencyFormat(data?.unit_price);
   const batch = plan?.code || "-";
   const prodDate = plan?.production_date || data?.created_at;
   const expDate = prodDate
@@ -105,9 +102,7 @@ const Card = ({
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <Name text={name} />
-          {(data?.item?.base_price ??
-            channel_prices?.price ??
-            data?.base_price) > 0 && (
+          {data?.unit_price > 0 && (
             <div
               style={{
                 textAlign: "left",
@@ -203,7 +198,6 @@ const Card = ({
 const Plan = ({
   data,
   plan,
-  channel_prices,
   repeatCount = 1,
 }: {
   data: any;
@@ -214,12 +208,12 @@ const Plan = ({
   return Array.from({ length: repeatCount }).map((_, idx) => (
     <div
       key={idx}
-      className="sheet"
+      className='sheet'
       style={{
         padding: "10px",
       }}
     >
-      <Card data={data} plan={plan} channel_prices={channel_prices} />
+      <Card data={data} plan={plan} />
     </div>
   ));
 };

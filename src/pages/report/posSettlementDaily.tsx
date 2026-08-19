@@ -14,6 +14,7 @@ export default function SettlementDailyPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const periode = params.get("periode");
+  const outletId = params.get("outlet_id");
 
   useEffect(() => {
     if (!periode) navigate("/report/pos/settlement", { replace: true });
@@ -22,9 +23,9 @@ export default function SettlementDailyPage() {
   const tableConfig = useMemo(() => {
     return createTableConfig({
       lockedFilter: { periode_type: "monthly" },
-      filter: { periode: periode ?? "" },
+      filter: { periode: periode ?? "", outlet_id: outletId ?? "" },
     });
-  }, [periode]);
+  }, [periode, outletId]);
 
   const Table = useTable(
     "pos_settlement_daily",
@@ -94,7 +95,7 @@ export default function SettlementDailyPage() {
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
-        <Table.Tools downloadable>
+        <Table.Tools downloadable hideSearch>
           <TableFilter table={Table} periode={periode ?? ""} />
         </Table.Tools>
 

@@ -4,7 +4,7 @@ import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import createTableConfig from "./table/b2b-settlement.config";
-import TableFilter from "./table/settlement.filter"; // Reuse monthly filter pattern
+import TableFilter from "./table/b2b.settlement.filter"; // Reuse monthly filter pattern
 import { SettlementSummaryCards } from "@/components/app";
 import { useB2BReport } from "@/services/report/hooks";
 import { useNavigate } from "react-router-dom";
@@ -62,8 +62,7 @@ export default function B2BSettlementPage() {
         // Aggregate nominals across all rows
         return keys.map((key: string, i: number) => {
           const total = d.reduce(
-            (sum: number, row: any) =>
-              sum + (row.nominals?.[i] ?? 0),
+            (sum: number, row: any) => sum + (row.nominals?.[i] ?? 0),
             0,
           );
           return { method: key, total };
@@ -99,22 +98,22 @@ export default function B2BSettlementPage() {
   }, [settlementSummaryResult]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="B2B Settlement"
-        subtitle="Laporan penyelesaian pembayaran B2B."
+        category='Report'
+        title='B2B Settlement'
+        subtitle='Laporan penyelesaian pembayaran B2B.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0 ">
+      <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
-        <Table.Tools downloadable>
+        <Table.Tools downloadable hideSearch>
           <TableFilter table={Table} />
         </Table.Tools>
 
         <Table.Render
-          emptyTitle="No B2B Settlement Data"
-          emptyDescription="B2B Settlement data will appear here once available."
+          emptyTitle='No B2B Settlement Data'
+          emptyDescription='B2B Settlement data will appear here once available.'
         />
         <Table.Pagination />
       </Page.Body>

@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { DocumentStatusProductionPlan, DocumentStatusProductionItem } from "./api";
+import type {
+  DocumentStatusProductionPlan,
+  DocumentStatusProductionItem,
+} from "./api";
 
 export interface ProductionPlanMaterial {
   id: string;
@@ -55,6 +58,7 @@ export interface ProductionPlanRequest extends ProductionPlanBase {
 export interface ProductionPlanDetail extends ProductionPlanBase {
   id: string;
   code: string;
+  type: string;
   document_status: DocumentStatusProductionPlan;
   items: ProductionPlanItem[];
   created_by: string;
@@ -92,7 +96,6 @@ export interface DemandItemData {
   diff: number;
   alias_name: string;
 }
-
 
 export interface DemandQueryParams {
   production_date?: string;
