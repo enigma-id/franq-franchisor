@@ -20,15 +20,15 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
       <SummaryCard
-        label="Total Nominal"
+        label='Total Nominal'
         value={currencyFormat(data.total_nominal)}
         icon={Banknote}
         theme={THEMES.green}
       />
       <SummaryCard
-        label="Total Count"
+        label='Total Count'
         value={data.total_count}
         icon={XCircle}
         theme={THEMES.red}
@@ -48,8 +48,9 @@ export default function TopupCancelledPage() {
     return {
       ...(Table.State?.lockedFilter || {}),
       ...(Table.State?.filter || {}),
+      search: Table.State?.textSearch || "",
     };
-  }, [Table.State?.lockedFilter, Table.State?.filter]);
+  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
 
   const currentFilterString = JSON.stringify(currentFilter);
 
@@ -63,21 +64,21 @@ export default function TopupCancelledPage() {
   const summary = summaryResult?.data;
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="Topup Cancel"
-        subtitle="Laporan topup member POS yang dibatalkan."
+        category='Report'
+        title='Topup Cancel'
+        subtitle='Laporan topup member POS yang dibatalkan.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Belum Ada Data"
-          emptyDescription="Data topup yang dibatalkan akan muncul di sini."
+          emptyTitle='Belum Ada Data'
+          emptyDescription='Data topup yang dibatalkan akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

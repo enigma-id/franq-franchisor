@@ -35,9 +35,10 @@ export default function SettlementMonthlyPage() {
 
   const currentFilter = useMemo(() => {
     return {
+      ...(Table.State?.lockedFilter || {}),
       ...(Table.State?.filter || {}),
     };
-  }, [Table.State?.filter]);
+  }, [Table.State?.lockedFilter, Table.State?.filter]);
 
   const currentFilterString = JSON.stringify(currentFilter);
   const [triggerSummary, { data: summaryResponse }] =
@@ -85,13 +86,13 @@ export default function SettlementMonthlyPage() {
   }, [summaryResponse]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="POS Settlement"
-        subtitle="Laporan penyelesaian pembayaran."
+        category='Report'
+        title='POS Settlement'
+        subtitle='Laporan penyelesaian pembayaran.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0 ">
+      <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable hideSearch>
@@ -99,8 +100,8 @@ export default function SettlementMonthlyPage() {
         </Table.Tools>
 
         <Table.Render
-          emptyTitle="No Settlement Data"
-          emptyDescription="Settlement data will appear here once available."
+          emptyTitle='No Settlement Data'
+          emptyDescription='Settlement data will appear here once available.'
         />
         <Table.Pagination />
       </Page.Body>

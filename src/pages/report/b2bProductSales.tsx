@@ -22,21 +22,21 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
       <SummaryCard
-        label="Total Qty"
+        label='Total Qty'
         value={data.total_qty}
         icon={Landmark}
         theme={THEMES.orange}
       />
       <SummaryCard
-        label="Total Discount"
+        label='Total Discount'
         value={currencyFormat(data.total_nett)}
         icon={Banknote}
         theme={THEMES.blue}
       />
       <SummaryCard
-        label="Total Nett"
+        label='Total Nett'
         value={currencyFormat(data.total_discount)}
         icon={ArrowUpCircle}
         theme={THEMES.red}
@@ -56,8 +56,9 @@ export default function B2BProductSalesPage() {
     return {
       ...(Table.State?.lockedFilter || {}),
       ...(Table.State?.filter || {}),
+      search: Table.State?.textSearch || "",
     };
-  }, [Table.State?.lockedFilter, Table.State?.filter]);
+  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
 
   const currentFilterString = JSON.stringify(currentFilter);
 
@@ -71,21 +72,21 @@ export default function B2BProductSalesPage() {
   const summary = summaryResult?.data;
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="B2B Product Sales"
-        subtitle="Laporan penjualan produk B2B."
+        category='Report'
+        title='B2B Product Sales'
+        subtitle='Laporan penjualan produk B2B.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Belum Ada Data"
-          emptyDescription="Data penjualan produk B2B akan muncul di sini."
+          emptyTitle='Belum Ada Data'
+          emptyDescription='Data penjualan produk B2B akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

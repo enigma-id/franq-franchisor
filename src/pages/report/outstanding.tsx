@@ -22,15 +22,15 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
       <SummaryCard
-        label="Total Outstanding"
+        label='Total Outstanding'
         value={data.total_outstanding}
         icon={Banknote}
         theme={THEMES.orange}
       />
       <SummaryCard
-        label="Total Charges"
+        label='Total Charges'
         value={currencyFormat(data.total_charges)}
         icon={ArrowUpCircle}
         theme={THEMES.blue}
@@ -50,8 +50,9 @@ export default function PosOutstandingPage() {
     return {
       ...(Table.State?.lockedFilter || {}),
       ...(Table.State?.filter || {}),
+      search: Table.State?.textSearch || "",
     };
-  }, [Table.State?.lockedFilter, Table.State?.filter]);
+  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
 
   const currentFilterString = JSON.stringify(currentFilter);
 
@@ -67,21 +68,21 @@ export default function PosOutstandingPage() {
   const summary = summaryResult?.data;
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="Outstanding"
-        subtitle="Laporan transaksi outstanding yang belum diselesaikan."
+        category='Report'
+        title='Outstanding'
+        subtitle='Laporan transaksi outstanding yang belum diselesaikan.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Belum Ada Data"
-          emptyDescription="Data outstanding akan muncul di sini."
+          emptyTitle='Belum Ada Data'
+          emptyDescription='Data outstanding akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

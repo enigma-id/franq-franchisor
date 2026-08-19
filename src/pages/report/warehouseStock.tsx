@@ -13,19 +13,19 @@ export default function WarehouseStockPage() {
   );
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="Report Warehouse Stock"
-        subtitle="Laporan stok barang di gudang."
+        category='Report'
+        title='Report Warehouse Stock'
+        subtitle='Laporan stok barang di gudang.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Belum Ada Data"
-          emptyDescription="Data stok gudang akan muncul di sini."
+          emptyTitle='Belum Ada Data'
+          emptyDescription='Data stok gudang akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>

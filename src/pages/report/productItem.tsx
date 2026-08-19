@@ -22,15 +22,15 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
       <SummaryCard
-        label="Total Qty"
+        label='Total Qty'
         value={data.total_qty}
         icon={Landmark}
         theme={THEMES.orange}
       />
       <SummaryCard
-        label="Total Nett"
+        label='Total Nett'
         value={currencyFormat(data.total_nett)}
         icon={Banknote}
         theme={THEMES.blue}
@@ -50,8 +50,9 @@ export default function ProductItemPage() {
     return {
       ...(Table.State?.lockedFilter || {}),
       ...(Table.State?.filter || {}),
+      search: Table.State?.textSearch || "",
     };
-  }, [Table.State?.lockedFilter, Table.State?.filter]);
+  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
 
   const currentFilterString = JSON.stringify(currentFilter);
 
@@ -65,21 +66,21 @@ export default function ProductItemPage() {
   const summary = summaryResult?.data;
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Report"
-        title="POS Menu"
-        subtitle="Laporan penjualan menu POS."
+        category='Report'
+        title='POS Menu'
+        subtitle='Laporan penjualan menu POS.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Belum Ada Data"
-          emptyDescription="Data penjualan menu akan muncul di sini."
+          emptyTitle='Belum Ada Data'
+          emptyDescription='Data penjualan menu akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>
