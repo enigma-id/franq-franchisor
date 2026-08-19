@@ -388,7 +388,7 @@ function NavItem({
     <NavLink
       to={item.path!}
       onClick={() => onNavigate()}
-      className={`flex items-center gap-4 px-4 py-3 rounded-xl text-[14px] mx-3 mb-1 transition-all duration-150 cursor-pointer group relative overflow--hidden ${isActive ? "bg-primary text-primary-content font-bold shadow-sm" : "text-base-content hover:text-primary hover:bg-base-200/60 font-medium"}`}
+      className={`flex items-center gap-4 px-4 py-3 rounded-xl text-[14px] mx-3 mb-1 transition-all duration-150 cursor-pointer group relative overflow--hidden ${isActive ? "bg-primary text-primary-content font-bold shadow-sm" : "text-base-content hover:text-primary hover:bg-base-100/60 font-medium"}`}
     >
       <span
         className={`flex-1shrink-0 transition-colors ${isActive ? "text-primary-content" : "text-base-content/60 group-hover:text-primary"}`}
@@ -544,7 +544,7 @@ export function AuthorizedLayout() {
         aria-label='Main navigation'
         className={`
           fixed lg:static inset-y-0 left-0 z-40
-          w-[270px] bg-[#F7F0ED] flex flex-col border-r border-primary/10
+          w-[270px] bg-[#eff2f6] flex flex-col border-r border-primary/10
           transition-transform duration-300 ease-out
           lg:translate-x-0
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
