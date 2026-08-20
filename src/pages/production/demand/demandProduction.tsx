@@ -20,7 +20,7 @@ export default function DemandProductionPage() {
         subtitle='Daftar permintaan produksi berdasarkan jadwal'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <Table.Tools>
+        <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render

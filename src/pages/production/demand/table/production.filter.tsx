@@ -14,9 +14,9 @@ interface TableFilterProps {
 }
 
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
-  const [date, setDate] = useState<Dayjs | null>(() => {
+  const [date, setDate] = useState<Dayjs | undefined>(() => {
     const f = table.State?.filter?.production_date;
-    return f ? dayjs(f) : null;
+    return f ? dayjs(f) : undefined;
   });
 
   useEffect(() => {
@@ -25,9 +25,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   }, [table.State?.filter?.production_date]);
 
   const handleChange = (d: any) => {
-    const val = d ? (d as Dayjs) : null;
+    const val = d ? (d as Dayjs) : undefined;
     setDate(val);
-    table.filter({ shipping_date: val ? val.format("YYYY-MM-DD") : "" });
+    table.filter({ production_date: val ? val.format("YYYY-MM-DD") : "" });
   };
 
   return (
