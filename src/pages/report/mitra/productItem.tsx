@@ -68,12 +68,16 @@ export default function MitraProductItemPage() {
     );
   }
 
+  return <ProductItemTable outletTypeId={outletType.id} />;
+}
+
+function ProductItemTable({ outletTypeId }: { outletTypeId: string }) {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        filter: { outlet_type_id: outletType?.id },
+        filter: { outlet_type_id: outletTypeId },
       }),
-    [outletType?.id],
+    [outletTypeId],
   );
 
   const Table = useTable(
@@ -104,14 +108,14 @@ export default function MitraProductItemPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='POS Menu'
-        subtitle='Laporan penjualan menu POS.'
+        title='Mitra Menu'
+        subtitle='Laporan penjualan menu Mitra.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
-          <TableFilter table={Table} />
+          <TableFilter table={Table} outletTypeId={outletTypeId} />
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'

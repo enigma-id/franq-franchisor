@@ -8,49 +8,49 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }) => ({
   ...config,
-  url: "/report/product-sales",
+  url: "/report/franchise/product-sales",
   filter,
   columns: {
     date: {
       title: "Date",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">{formatDate(row?.date)}</span>
+        <span className='text-sm'>{formatDate(row?.date)}</span>
       ),
     },
     code: {
       title: "Order Code",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="font-medium text-sm">{row?.code ?? "-"}</span>
+        <span className='font-medium text-sm'>{row?.code ?? "-"}</span>
       ),
     },
     menu: {
       title: "Product Menu",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="font-semibold text-sm">{row?.menu ?? "-"}</span>
+        <span className='font-semibold text-sm'>{row?.menu ?? "-"}</span>
       ),
     },
     outlet: {
       title: "Outlet",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">{row?.outlet ?? "-"}</span>
+        <span className='text-sm'>{row?.outlet ?? "-"}</span>
       ),
     },
     channel: {
       title: "Channel",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">{row?.channel ?? "-"}</span>
+        <span className='text-sm'>{row?.channel ?? "-"}</span>
       ),
     },
     payment: {
       title: "Payment Method",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">{row?.payment ?? "-"}</span>
+        <span className='text-sm'>{row?.payment ?? "-"}</span>
       ),
     },
     quantity: {

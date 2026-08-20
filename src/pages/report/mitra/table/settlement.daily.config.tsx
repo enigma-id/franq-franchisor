@@ -11,7 +11,7 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }): TableConfig<any> => ({
   ...config,
-  url: "/report/pos-settlement",
+  url: "/report/franchise/settlement",
   dataKey: "datas",
   lockedFilter,
   filter,

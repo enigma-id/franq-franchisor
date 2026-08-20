@@ -12,7 +12,7 @@ const createTableConfig = ({
   onRowClick?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
-  url: "/report/pos-settlement",
+  url: "/report/franchise/settlement",
   dataKey: "datas",
   filter,
   lockedFilter: {

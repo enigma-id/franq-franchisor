@@ -9,14 +9,14 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }) => ({
   ...config,
-  url: "/report/product-item",
+  url: "/report/franchise/product-item",
   filter,
   columns: {
     date: {
       title: "Date",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">
+        <span className='text-sm'>
           {row?.date ? dateFormat(row.date, "DD/MM/YYYY") : "-"}
         </span>
       ),
@@ -25,7 +25,7 @@ const createTableConfig = ({
       title: "Menu",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="font-semibold text-sm">{row?.menu ?? "-"}</span>
+        <span className='font-semibold text-sm'>{row?.menu ?? "-"}</span>
       ),
     },
     quantity: {

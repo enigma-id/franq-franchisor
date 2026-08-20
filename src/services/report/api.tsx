@@ -7,14 +7,14 @@ export const reportApi = createApi({
   endpoints: (builder) => ({
     getOutstanding: builder.query({
       query: (params) => ({
-        url: `/report/outstanding`,
+        url: `/report/franchise/outstanding`,
         method: "GET",
         params,
       }),
     }),
     getOutstandingSummary: builder.query({
       query: (params) => ({
-        url: `/report/outstanding/summary`,
+        url: `/report/franchise/outstanding/summary`,
         method: "GET",
         params,
       }),
@@ -22,29 +22,22 @@ export const reportApi = createApi({
 
     getPOSSettlement: builder.query({
       query: (params) => ({
-        url: `/report/pos-settlement`,
+        url: `/report/franchise/settlement`,
         method: "GET",
         params,
       }),
     }),
     getPOSSettlementSummary: builder.query({
       query: (params) => ({
-        url: `/report/pos-settlement/summary`,
+        url: `/report/franchise/settlement/summary`,
         method: "GET",
         params,
       }),
     }),
 
-    getB2BSettlement: builder.query({
+    getOutletMap: builder.query({
       query: (params) => ({
-        url: `/report/b2b/settlement`,
-        method: "GET",
-        params,
-      }),
-    }),
-    getB2BSettlementSummary: builder.query({
-      query: (params) => ({
-        url: `/report/b2b/settlement/summary`,
+        url: `/report/franchise/outlet-maps`,
         method: "GET",
         params,
       }),
@@ -52,14 +45,59 @@ export const reportApi = createApi({
 
     getProductSales: builder.query({
       query: (params) => ({
-        url: `/report/product-sales`,
+        url: `/report/franchise/product-sales`,
         method: "GET",
         params,
       }),
     }),
     getProductSalesSummary: builder.query({
       query: (params) => ({
-        url: `/report/product-sales/summary`,
+        url: `/report/franchise/product-sales/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getCancelledProductSales: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/cancelled-product-sales`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getCancelledProductSalesSummary: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/cancelled-product-sales/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getTopupCancelled: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/topup-cancelled`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getTopupCancelledSummary: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/topup-cancelled/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getProductItem: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/product-item`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getProductItemSummary: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/product-item/summary`,
         method: "GET",
         params,
       }),
@@ -80,66 +118,6 @@ export const reportApi = createApi({
       }),
     }),
 
-    getRawMaterialSales: builder.query({
-      query: (params) => ({
-        url: `/report/sales-order-item`,
-        method: "GET",
-        params,
-      }),
-    }),
-    getRawMaterialSalesSummary: builder.query({
-      query: (params) => ({
-        url: `/report/sales-order-item/summary`,
-        method: "GET",
-        params,
-      }),
-    }),
-
-    getCancelledProductSales: builder.query({
-      query: (params) => ({
-        url: `/report/cancelled-product-sales`,
-        method: "GET",
-        params,
-      }),
-    }),
-    getCancelledProductSalesSummary: builder.query({
-      query: (params) => ({
-        url: `/report/cancelled-product-sales/summary`,
-        method: "GET",
-        params,
-      }),
-    }),
-
-    getTopupCancelled: builder.query({
-      query: (params) => ({
-        url: `/report/topup-cancelled`,
-        method: "GET",
-        params,
-      }),
-    }),
-    getTopupCancelledSummary: builder.query({
-      query: (params) => ({
-        url: `/report/topup-cancelled/summary`,
-        method: "GET",
-        params,
-      }),
-    }),
-
-    getProductItem: builder.query({
-      query: (params) => ({
-        url: `/report/product-item`,
-        method: "GET",
-        params,
-      }),
-    }),
-    getProductItemSummary: builder.query({
-      query: (params) => ({
-        url: `/report/product-item/summary`,
-        method: "GET",
-        params,
-      }),
-    }),
-
     getB2BProductItem: builder.query({
       query: (params) => ({
         url: `/report/b2b/product-item`,
@@ -155,17 +133,39 @@ export const reportApi = createApi({
       }),
     }),
 
-    getWarehouseStock: builder.query({
+    getB2BSettlement: builder.query({
       query: (params) => ({
-        url: `/report/warehouse-stock`,
+        url: `/report/b2b/settlement`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getB2BSettlementSummary: builder.query({
+      query: (params) => ({
+        url: `/report/b2b/settlement/summary`,
         method: "GET",
         params,
       }),
     }),
 
-    getOutletMap: builder.query({
+    getRawMaterialSales: builder.query({
       query: (params) => ({
-        url: `/report/outlet-maps`,
+        url: `/report/sales-order-item`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getRawMaterialSalesSummary: builder.query({
+      query: (params) => ({
+        url: `/report/sales-order-item/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getWarehouseStock: builder.query({
+      query: (params) => ({
+        url: `/report/warehouse-stock`,
         method: "GET",
         params,
       }),
