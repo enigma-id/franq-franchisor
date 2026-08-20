@@ -85,7 +85,7 @@ import MitraOutletSaldoPage from "@/pages/report/mitra/outletSaldo";
 // ==== REPORT FRANCHISOR ====//
 import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
 import WarehouseStockPage from "@/pages/report/franchisor/warehouseStock";
-import OutletMapPage from "@/pages/report/outletMap";
+import OutletMapPage from "@/pages/report/franchisor/outletMap";
 
 import WithdrawalList from "@/pages/withdrawal/WithdrawalList";
 import OutletTopupListPage from "@/pages/outletTopup";
