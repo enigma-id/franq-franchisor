@@ -24,7 +24,7 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
       <SummaryCard
-        label='Total Outlet'
+        label='Total Mitra'
         value={data.total_outlets}
         icon={Landmark}
         theme={THEMES.orange}
@@ -107,8 +107,8 @@ function OutletSaldoTable({ outletTypeId }: { outletTypeId: string }) {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Mitra Outlet Saldo'
-        subtitle='Laporan outlet saldo mitra.'
+        title='Mitra Saldo'
+        subtitle='Laporan mitra saldo mitra.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />
@@ -116,7 +116,7 @@ function OutletSaldoTable({ outletTypeId }: { outletTypeId: string }) {
         <Table.Tools downloadable />
         <Table.Render
           emptyTitle='Belum Ada Data'
-          emptyDescription='Data outlet saldo akan muncul di sini.'
+          emptyDescription='Data mitra saldo akan muncul di sini.'
         />
         <Table.Pagination />
       </Page.Body>
