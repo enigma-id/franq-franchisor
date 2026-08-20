@@ -26,7 +26,6 @@ import {
   Wallet,
   UserCircle,
   Gift,
-  UsersRound,
   UserRound,
 } from "lucide-react";
 

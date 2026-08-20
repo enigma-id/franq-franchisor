@@ -4,7 +4,6 @@ import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import createTableConfig from "./table/item.config";
 import TableFilter from "./table/production.filter";
-import dayjs from "dayjs";
 
 export default function DemandItemPage() {
   const tableConfig = useMemo(() => createTableConfig({}), []);
