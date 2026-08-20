@@ -38,6 +38,7 @@ export const MENU = {
   reportMitraSettlement: "frontend.franchisor.report.mitra.settlement",
   reportMitraProductSales: "frontend.franchisor.report.mitra.product-sales",
   reportMitraProductItem: "frontend.franchisor.report.mitra.product-item",
+  reportMitraOutletSaldo: "frontend.franchisor.report.mitra.outlet-saldo",
 
   // Report B2B
   reportB2BSettlement: "frontend.franchisor.report.b2b.settlement",

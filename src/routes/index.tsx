@@ -75,11 +75,12 @@ import POSProductSalesPage from "@/pages/report/pos/productSales";
 import POSProductItemPage from "@/pages/report/pos/productItem";
 import POSTopupCancelledPage from "@/pages/report/pos/topupCancelled";
 
-// ==== REPORT POS ===== //
+// ==== REPORT MITRA ===== //
 import MitraSettlementPage from "@/pages/report/mitra/settlement";
 import MitraSettlementDailyPage from "@/pages/report/mitra/settlementDaily";
 import MitraProductSalesPage from "@/pages/report/mitra/productSales";
 import MitraProductItemPage from "@/pages/report/mitra/productItem";
+import MitraOutletSaldoPage from "@/pages/report/mitra/outletSaldo";
 
 // ==== REPORT FRANCHISOR ====//
 import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
@@ -547,6 +548,15 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.reportMitraProductSales}>
               <MitraProductSalesPage />
+            </PermissionGuard>
+          }
+        />
+
+        <Route
+          path='/report/mitra/outlet-saldo'
+          element={
+            <PermissionGuard permission={MENU.reportMitraOutletSaldo}>
+              <MitraOutletSaldoPage />
             </PermissionGuard>
           }
         />

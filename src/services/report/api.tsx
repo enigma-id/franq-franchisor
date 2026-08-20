@@ -170,6 +170,14 @@ export const reportApi = createApi({
         params,
       }),
     }),
+
+    getOutletSaldoSummary: builder.query({
+      query: (params) => ({
+        url: `/report/outlet-saldo/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -197,4 +205,5 @@ export const {
   useLazyGetProductItemSummaryQuery,
   useLazyGetB2BProductItemQuery,
   useLazyGetB2BProductItemSummaryQuery,
+  useLazyGetOutletSaldoSummaryQuery,
 } = reportApi;

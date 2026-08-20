@@ -23,6 +23,7 @@ import {
   useLazyGetProductItemSummaryQuery,
   useLazyGetB2BProductItemQuery,
   useLazyGetB2BProductItemSummaryQuery,
+  useLazyGetOutletSaldoSummaryQuery,
 } from "./api";
 
 export const useReport = createCrudHook<any>({
@@ -34,6 +35,7 @@ export const useReport = createCrudHook<any>({
     rawMaterialSummary: useLazyGetRawMaterialSalesSummaryQuery,
     warehouseStock: useLazyGetWarehouseStockQuery,
     outletMap: useLazyGetOutletMapQuery,
+    outletSaldoSummary: useLazyGetOutletSaldoSummaryQuery,
   },
 });
 

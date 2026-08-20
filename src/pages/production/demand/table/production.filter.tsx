@@ -35,7 +35,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       <DatePicker
         label=''
         mode='single'
-        value={date}
+        value={date || undefined}
         onChange={handleChange}
         placeholder='Filter Tanggal'
       />

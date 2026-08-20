@@ -209,6 +209,11 @@ const menuSections: MenuSection[] = [
             path: "/report/mitra/product-item",
             permission: MENU.reportMitraProductItem,
           },
+          {
+            label: "Report Outlet Saldo",
+            path: "/report/mitra/outlet-saldo",
+            permission: MENU.reportMitraOutletSaldo,
+          },
         ],
       },
       {
