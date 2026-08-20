@@ -25,9 +25,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   }, [table.State?.filter?.production_date]);
 
   const handleChange = (d: any) => {
-    const val = d ? (d as Dayjs) : dayjs();
-    setDate(val);
-    table.filter({ production_date: val.format("YYYY-MM-DD") });
+    const val = d ? (d as Dayjs) : undefined;
+    setShippingAt(val);
+    table.filter({ shipping_date: val ? val.format("YYYY-MM-DD") : "" });
   };
 
   return (

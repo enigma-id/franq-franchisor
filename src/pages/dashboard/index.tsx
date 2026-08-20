@@ -58,40 +58,40 @@ const PipelineCard = ({
         : ""
     }`}
   >
-    <div className="flex items-center gap-3 mb-3">
+    <div className='flex items-center gap-3 mb-3'>
       <div
-        className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
+        className='w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg'
         style={{ backgroundColor: theme.iconBg }}
       >
         <Icon className={`w-5 h-5 ${theme.text}`} />
       </div>
-      <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+      <h3 className='text-sm font-bold text-slate-800'>{title}</h3>
     </div>
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-500" />
-          <span className="text-xs font-medium text-slate-500">Pending</span>
+    <div className='space-y-3'>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <Clock className='w-4 h-4 text-amber-500' />
+          <span className='text-xs font-medium text-slate-500'>Pending</span>
         </div>
-        <span className="text-xs font-bold text-slate-800">
+        <span className='text-xs font-bold text-slate-800'>
           {data?.pending || 0}
         </span>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-blue-500" />
-          <span className="text-xs font-medium text-slate-500">Published</span>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <FileText className='w-4 h-4 text-blue-500' />
+          <span className='text-xs font-medium text-slate-500'>Published</span>
         </div>
-        <span className="text-xs font-bold text-slate-800">
+        <span className='text-xs font-bold text-slate-800'>
           {data?.published || 0}
         </span>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          <span className="text-xs font-bold text-slate-700">Completed</span>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <CheckCircle2 className='w-4 h-4 text-emerald-500' />
+          <span className='text-xs font-bold text-slate-700'>Completed</span>
         </div>
-        <span className="text-xs font-bold text-emerald-600">
+        <span className='text-xs font-bold text-emerald-600'>
           {data?.completed || 0}
         </span>
       </div>
@@ -116,17 +116,17 @@ const CompositionCard = ({
           : ""
       }`}
     >
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-lg shadow-indigo-100">
-          <PieChart className="w-5 h-5 text-indigo-500" />
+      <div className='flex items-center gap-3 mb-3'>
+        <div className='w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-lg shadow-indigo-100'>
+          <PieChart className='w-5 h-5 text-indigo-500' />
         </div>
-        <h3 className="text-sm font-bold text-slate-800">
+        <h3 className='text-sm font-bold text-slate-800'>
           Komposisi Pendapatan
         </h3>
       </div>
-      <div className="space-y-3">
+      <div className='space-y-3'>
         {!data?.labels || data.labels.length === 0 ? (
-          <div className="h-40 flex items-center justify-center text-slate-400 text-sm italic">
+          <div className='h-40 flex items-center justify-center text-slate-400 text-sm italic'>
             Data tidak tersedia
           </div>
         ) : (
@@ -134,14 +134,14 @@ const CompositionCard = ({
             const value = data.data?.[i] || 0;
             const pct = total > 0 ? Math.round((value / total) * 100) : 0;
             return (
-              <div key={i} className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold text-slate-600">
+              <div key={i} className='space-y-1.5'>
+                <div className='flex justify-between text-xs font-bold text-slate-600'>
                   <span>{label}</span>
                   <span>{formatCurrency(value)}</span>
                 </div>
-                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className='h-2 w-full bg-slate-100 rounded-full overflow-hidden'>
                   <div
-                    className="h-full bg-indigo-500 rounded-full transition-all duration-1000"
+                    className='h-full bg-indigo-500 rounded-full transition-all duration-1000'
                     style={{ width: `${pct}%` }}
                   />
                 </div>
@@ -177,36 +177,36 @@ const TopListCard = ({
         : ""
     }`}
   >
-    <div className="flex items-center gap-3 mb-3">
+    <div className='flex items-center gap-3 mb-3'>
       <div
-        className="w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg"
+        className='w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg'
         style={{ backgroundColor: theme.iconBg }}
       >
         <Icon className={`w-5 h-5 ${theme.text}`} />
       </div>
-      <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+      <h3 className='text-sm font-bold text-slate-800'>{title}</h3>
     </div>
-    <div className="space-y-3">
+    <div className='space-y-3'>
       {!items || items.length === 0 ? (
-        <div className="h-24 flex items-center justify-center text-slate-400 text-sm italic">
+        <div className='h-24 flex items-center justify-center text-slate-400 text-sm italic'>
           Data tidak tersedia
         </div>
       ) : (
         items.map((item, i) => (
-          <div className="flex items-center justify-between" key={i}>
-            <div className="flex items-center gap-2 min-w-0">
-              <Icon className="w-4 h-4 text-amber-500 shrink-0" />
-              <span className="text-xs font-medium text-slate-500 truncate">
+          <div className='flex items-center justify-between' key={i}>
+            <div className='flex items-center gap-2 min-w-0'>
+              <Icon className='w-4 h-4 text-amber-500 shrink-0' />
+              <span className='text-xs font-medium text-slate-500 truncate'>
                 {item.name}
               </span>
             </div>
-            <div className="flex flex-col items-end leading-tight shrink-0 ml-2">
+            <div className='flex flex-col items-end leading-tight shrink-0 ml-2'>
               {item.qty != null && (
-                <span className="text-[10px] text-slate-500">
+                <span className='text-[10px] text-slate-500'>
                   {item.qty} {valueLabel}
                 </span>
               )}
-              <span className="text-xs font-bold text-slate-800">
+              <span className='text-xs font-bold text-slate-800'>
                 {formatCurrency(item.revenue)}
               </span>
             </div>
@@ -237,18 +237,18 @@ const DashboardPage: React.FC = () => {
   }, [fetchData]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Main Menu"
-        title="Dashboard"
-        subtitle="Ringkasan performa bisnis Anda."
+        category='Main Menu'
+        title='Dashboard'
+        subtitle='Ringkasan performa bisnis Anda.'
         action={<MonthPicker value={periode} onChange={setPeriode} />}
       />
 
-      <Page.Body className="flex flex-col gap-6 pb-10">
+      <Page.Body className='flex flex-col gap-6 pb-10'>
         {isLoading ? (
-          <div className="flex items-center justify-center h-80">
-            <Loading size="lg" variant="spinner" />
+          <div className='flex items-center justify-center h-80'>
+            <Loading size='lg' variant='spinner' />
           </div>
         ) : (
           <>
@@ -257,93 +257,93 @@ const DashboardPage: React.FC = () => {
               <SalesChart
                 data={data?.sales_graph}
                 isLoading={isLoading}
-                title="Performa Penjualan Multi-Saluran"
+                title='Performa Penjualan Multi-Saluran'
               />
             </div>
 
             {/* Omset */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className='grid grid-cols-2 md:grid-cols-5 gap-4'>
               <SummaryCard
-                label="Omset Total"
+                label='Omset Total'
                 value={formatCurrency(data?.omset_total || 0)}
                 icon={TrendingUp}
                 theme={THEMES.indigo}
               />
               <SummaryCard
-                label="Omset POS"
+                label='Omset POS'
                 value={formatCurrency(data?.pos_summary?.omset || 0)}
                 icon={TrendingUp}
                 theme={THEMES.blue}
                 onClick={go(`/report/pos/settlement/daily?periode=${periode}`)}
               />
               <SummaryCard
-                label="Omset Franchise"
+                label='Omset Franchise'
                 value={formatCurrency(data?.omset_franchise || 0)}
                 icon={TrendingUp}
                 theme={THEMES.purple}
-                onClick={go("/report/inventory/product-sales")}
+                onClick={go("/report/inventory/material-sales")}
               />
               <SummaryCard
-                label="Omset B2B"
+                label='Omset B2B'
                 value={formatCurrency(data?.b2b_summary?.omset || 0)}
                 icon={TrendingUp}
                 theme={THEMES.indigo}
                 onClick={go(`/report/b2b/settlement/daily?periode=${periode}`)}
               />
               <SummaryCard
-                label="Omset Bahan Baku"
+                label='Omset Bahan Baku'
                 value={formatCurrency(data?.omset_bahan_baku || 0)}
                 icon={Package}
                 theme={THEMES.orange}
-                onClick={go("/report/inventory/material-sales")}
+                onClick={go("report/inventory/material-sales")}
               />
             </div>
 
             {/* Middle Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
               <SummaryCard
-                label="Outstanding POS"
+                label='Outstanding POS'
                 value={formatCurrency(data?.pos_summary?.outstanding || 0)}
                 icon={Receipt}
                 theme={THEMES.rose}
                 onClick={go("/report/pos/outstanding")}
               />
               <SummaryCard
-                label="Outstanding B2B"
+                label='Outstanding B2B'
                 value={formatCurrency(data?.b2b_summary?.outstanding || 0)}
                 icon={Receipt}
                 theme={THEMES.rose}
                 onClick={go("/b2b/order")}
               />
               <SummaryCard
-                label="Stok Menipis"
+                label='Stok Menipis'
                 value={data?.stock_kritis || 0}
                 icon={Package}
                 theme={THEMES.rose}
                 onClick={go("/report/inventory/warehouse-stock")}
               />
               <SummaryCard
-                label="Withdrawal Pending"
+                label='Withdrawal Pending'
                 value={formatCurrency(data?.withdrawal_pending || 0)}
                 icon={Wallet}
                 theme={THEMES.amber}
                 onClick={go("/withdrawal")}
               />
               <SummaryCard
-                label="Outlet Aktif"
+                label='Outlet Aktif'
                 value={`${data?.outlet_aktif || 0} / ${data?.total_outlet || 0}`}
                 icon={Store}
                 theme={THEMES.teal}
                 onClick={go("/setting/outlet")}
               />
               <SummaryCard
-                label="Total Saldo Membership"
+                label='Total Saldo Membership'
                 value={formatCurrency(data?.total_saldo_membership || 0)}
                 icon={Users}
                 theme={THEMES.purple}
               />
               <SummaryCard
-                label="Rencana Produksi"
+                label='Rencana Produksi'
                 value={`${data?.production_plan_summary?.completed || 0} / ${data?.production_plan_summary?.plan || 0}`}
                 icon={Package}
                 theme={THEMES.indigo}
@@ -352,9 +352,9 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Top Menu / Top Member / Top Outlet / Top Outstanding */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
               <TopListCard
-                title="Top Menu"
+                title='Top Menu'
                 items={data?.top_menu?.map((m: any) => ({
                   name: m.menu_name,
                   qty: m.total_qty,
@@ -362,10 +362,10 @@ const DashboardPage: React.FC = () => {
                 }))}
                 icon={ConciergeBell}
                 theme={THEMES.orange}
-                valueLabel="ORDER"
+                valueLabel='ORDER'
               />
               <TopListCard
-                title="Top Member"
+                title='Top Member'
                 items={data?.top_member?.map((mb: any) => ({
                   name: mb.member_name,
                   revenue: mb.saldo,
@@ -374,7 +374,7 @@ const DashboardPage: React.FC = () => {
                 theme={THEMES.green}
               />
               <TopListCard
-                title="Top Outlet"
+                title='Top Outlet'
                 items={data?.top_outlet?.map((o: any) => ({
                   name: o.outlet_name,
                   qty: o.total_qty,
@@ -382,10 +382,10 @@ const DashboardPage: React.FC = () => {
                 }))}
                 icon={Store}
                 theme={THEMES.teal}
-                valueLabel="ORDER"
+                valueLabel='ORDER'
               />
               <TopListCard
-                title="Top Outstanding Bills"
+                title='Top Outstanding Bills'
                 items={data?.top_outstanding_outlets?.map((o: any) => ({
                   name: o.outlet_name,
                   qty: o.order_count,
@@ -393,21 +393,21 @@ const DashboardPage: React.FC = () => {
                 }))}
                 icon={TriangleAlert}
                 theme={THEMES.rose}
-                valueLabel="ORDER"
+                valueLabel='ORDER'
               />
             </div>
 
             {/* Pipeline & Composition */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <PipelineCard
-                title="Pipeline Sales Order"
+                title='Pipeline Sales Order'
                 data={data?.so_pipeline}
                 icon={TrendingUp}
                 theme={THEMES.indigo}
                 onClick={go("/sales/order")}
               />
               <PipelineCard
-                title="Pipeline Purchase Order"
+                title='Pipeline Purchase Order'
                 data={data?.po_pipeline}
                 icon={CreditCard}
                 theme={THEMES.rose}
@@ -415,7 +415,6 @@ const DashboardPage: React.FC = () => {
               />
               <CompositionCard data={data?.revenue_composition} />
             </div>
-
           </>
         )}
       </Page.Body>
