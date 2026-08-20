@@ -218,12 +218,6 @@ const POSMenuDetailPage: React.FC = () => {
                             key={j}
                             className='flex items-center gap-2 border-t pt-2 border-slate-200'
                           >
-                            {item.addon_menu?.image && (
-                              <img
-                                src={item.addon_menu.image}
-                                className='w-8 h-8 rounded-lg object-cover'
-                              />
-                            )}
                             <div>
                               <p className='text-xs font-medium text-slate-800'>
                                 {item.addon_menu?.name}
