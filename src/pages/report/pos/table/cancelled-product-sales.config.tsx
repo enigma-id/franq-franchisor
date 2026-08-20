@@ -9,14 +9,14 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }) => ({
   ...config,
-  url: "/report/cancelled-product-sales",
+  url: "/report/franchise/cancelled-product-sales",
   filter,
   columns: {
     date: {
       title: "Date",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">
+        <span className='text-sm'>
           {row?.date ? dateFormat(row.date) : "-"}
         </span>
       ),
@@ -25,21 +25,21 @@ const createTableConfig = ({
       title: "Order Code",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="font-medium text-sm">{row?.code ?? "-"}</span>
+        <span className='font-medium text-sm'>{row?.code ?? "-"}</span>
       ),
     },
     menu: {
       title: "Menu",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="font-semibold text-sm">{row?.menu ?? "-"}</span>
+        <span className='font-semibold text-sm'>{row?.menu ?? "-"}</span>
       ),
     },
     outlet: {
       title: "Outlet",
       sortable: true,
       component: (row: ProductSalesRow) => (
-        <span className="text-sm">{row?.outlet ?? "-"}</span>
+        <span className='text-sm'>{row?.outlet ?? "-"}</span>
       ),
     },
     quantity: {
@@ -70,21 +70,21 @@ const createTableConfig = ({
       title: "Cancelled Reason",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm">{row?.cancelled_reason ?? "-"}</span>
+        <span className='text-sm'>{row?.cancelled_reason ?? "-"}</span>
       ),
     },
     cancelled_by: {
       title: "Cancelled By",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm">{row?.cancelled_by ?? "-"}</span>
+        <span className='text-sm'>{row?.cancelled_by ?? "-"}</span>
       ),
     },
     cancelled_at: {
       title: "Cancelled At",
       sortable: true,
       component: (row: any) => (
-        <span className="text-sm">{dateFormat(row?.cancelled_at)}</span>
+        <span className='text-sm'>{dateFormat(row?.cancelled_at)}</span>
       ),
     },
   },

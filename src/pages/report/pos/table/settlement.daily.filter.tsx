@@ -16,21 +16,35 @@ interface TableFilterProps {
       | undefined;
   };
   periode: string;
+  outletTypeId?: string;
 }
 
-const TableFilter: React.FC<TableFilterProps> = ({ table, periode }) => {
+const TableFilter: React.FC<TableFilterProps> = ({
+  table,
+  periode,
+  outletTypeId,
+}) => {
   const current = useMemo(
     () => table.State?.filter ?? {},
     [table.State?.filter],
   );
 
-  const { get: getOutlet, getResult, show: showOutlet, showResult } =
-    useOutlet();
+  const {
+    get: getOutlet,
+    getResult,
+    show: showOutlet,
+    showResult,
+  } = useOutlet();
   const [outlet, setOutlet] = useState<any | null>(null);
 
   useEffect(() => {
-    getOutlet({ page: 1, limit: 20, status: "active" });
-  }, []);
+    getOutlet({
+      page: 1,
+      limit: 20,
+      status: "active",
+      outlet_type_id: outletTypeId,
+    });
+  }, [outletTypeId]);
 
   // Resolve selected outlet from the active-outlet list so the filter displays it.
   // If the outlet isn't in the first page, fetch it directly by id.
@@ -45,10 +59,9 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, periode }) => {
     if (found) {
       setOutlet(found);
     } else {
-      const shown = showResult?.data?.data as any | undefined;
-      if (!shown) showOutlet(current.outlet_id);
+      showOutlet({ id: current.outlet_id });
     }
-  }, [current.outlet_id, getResult?.data?.data, showResult?.data?.data]);
+  }, [current.outlet_id, getResult?.data?.data]);
 
   useEffect(() => {
     const shown = showResult?.data?.data as any | undefined;
@@ -83,15 +96,20 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, periode }) => {
       handleClear={handleClear}
       handleFilter={handleFilter}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
         <RemoteSelect
-          label="Outlet"
-          placeholder="Filter Outlet"
+          label='Outlet'
+          placeholder='Filter Outlet'
           value={outlet}
           onChange={(val) => setOutlet(val)}
           onClear={() => setOutlet(null)}
           fetchData={(page, search) =>
-            getOutlet({ page: page || 1, limit: 20, search })
+            getOutlet({
+              page: page || 1,
+              limit: 20,
+              search,
+              outlet_type_id: outletTypeId,
+            })
           }
           hook={getResult as any}
           getLabel={(item: any) => item?.name ?? ""}

@@ -8,14 +8,14 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }) => ({
   ...config,
-  url: "/report/topup-cancelled",
+  url: "/report/franchise/topup-cancelled",
   filter,
   columns: {
     date: {
       title: "Date",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="text-sm">
+        <span className='text-sm'>
           {row?.date ? dateFormat(row.date) : "-"}
         </span>
       ),
@@ -24,7 +24,7 @@ const createTableConfig = ({
       title: "Reference Code",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="font-medium text-sm">
+        <span className='font-medium text-sm'>
           {row?.reference_code ?? "-"}
         </span>
       ),
@@ -33,14 +33,14 @@ const createTableConfig = ({
       title: "Membership",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="font-semibold text-sm">{row?.membership ?? "-"}</span>
+        <span className='font-semibold text-sm'>{row?.membership ?? "-"}</span>
       ),
     },
     outlet: {
       title: "Outlet",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="text-sm">{row?.outlet ?? "-"}</span>
+        <span className='text-sm'>{row?.outlet ?? "-"}</span>
       ),
     },
     nominal: {
@@ -53,21 +53,21 @@ const createTableConfig = ({
       title: "Cancelled Reason",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="text-sm">{row?.cancelled_reason ?? "-"}</span>
+        <span className='text-sm'>{row?.cancelled_reason ?? "-"}</span>
       ),
     },
     cancelled_by: {
       title: "Cancelled By",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="text-sm">{row?.cancelled_by ?? "-"}</span>
+        <span className='text-sm'>{row?.cancelled_by ?? "-"}</span>
       ),
     },
     cancelled_at: {
       title: "Cancelled At",
       sortable: true,
       component: (row: TopupCancelledRow) => (
-        <span className="text-sm">{dateFormat(row?.cancelled_at)}</span>
+        <span className='text-sm'>{dateFormat(row?.cancelled_at)}</span>
       ),
     },
   },

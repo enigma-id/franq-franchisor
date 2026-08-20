@@ -16,9 +16,10 @@ interface TableFilterProps {
         }
       | undefined;
   };
+  outletTypeId?: string;
 }
 
-const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
+const TableFilter: React.FC<TableFilterProps> = ({ table, outletTypeId }) => {
   const current = useMemo(
     () => table.State?.filter ?? {},
     [table.State?.filter],
@@ -28,8 +29,13 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   const [outlet, setOutlet] = useState<any | null>(null);
 
   useEffect(() => {
-    getOutlet({ page: 1, limit: 20, status: "active" });
-  }, []);
+    getOutlet({
+      page: 1,
+      limit: 20,
+      status: "active",
+      outlet_type_id: outletTypeId,
+    });
+  }, [outletTypeId]);
 
   useEffect(() => {
     if (current.outlet_id && getResult?.data?.data) {
@@ -87,15 +93,20 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       handleClear={handleClear}
       handleFilter={handleFilter}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
         <RemoteSelect
-          label="Outlet"
-          placeholder="Filter Outlet"
+          label='Outlet'
+          placeholder='Filter Outlet'
           value={outlet}
           onChange={(val) => setOutlet(val)}
           onClear={() => setOutlet(null)}
           fetchData={(page, search) =>
-            getOutlet({ page: page || 1, limit: 20, search })
+            getOutlet({
+              page: page || 1,
+              limit: 20,
+              search,
+              outlet_type_id: outletTypeId,
+            })
           }
           hook={getResult as any}
           getLabel={(item: any) => item?.name ?? ""}
@@ -103,12 +114,14 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getValue={(item: any) => item.id}
         />
         <RemoteSelect<SelectOptionValue>
-          label="Periode"
-          placeholder="Filter Periode"
+          label='Periode'
+          placeholder='Filter Periode'
           data={yearOptions}
           value={periode}
           onChange={(opt) => setPeriode(opt)}
-          onClear={() => setPeriode({ label: String(currYear), value: currYear })}
+          onClear={() =>
+            setPeriode({ label: String(currYear), value: currYear })
+          }
           getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />

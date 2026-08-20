@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import createTableConfig from "./table/product-sales.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
@@ -9,6 +9,7 @@ import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { ArrowUpCircle, Banknote, Landmark } from "lucide-react";
 import { currencyFormat } from "@/utils";
+import { useOutletType } from "@/services/outlet/hooks";
 
 const THEMES: Record<string, any> = {
   blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
@@ -46,9 +47,46 @@ const OverviewCards = ({ data }: { data: any | null }) => {
 };
 
 export default function POSProductSalesPage() {
-  const tableConfig = useMemo(() => createTableConfig({}), []);
+  const [outletType, setOutletType] = useState<any>(null);
+
+  const { get: getOutletType, getResult: getOutletTypeResult } =
+    useOutletType();
+
+  useEffect(() => {
+    getOutletType({ search: "POS" });
+  }, []);
+
+  useEffect(() => {
+    if (getOutletTypeResult?.data?.data) {
+      const items = getOutletTypeResult?.data?.data as any[] | undefined;
+      if (items?.length === 1) {
+        const item = items[0];
+        setOutletType(item);
+      }
+    }
+  }, [getOutletTypeResult]);
+
+  if (!outletType) {
+    return (
+      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
+        Loading...
+      </Page>
+    );
+  }
+
+  return <ProductSalesTable outletTypeId={outletType.id} />;
+}
+
+function ProductSalesTable({ outletTypeId }: { outletTypeId: string }) {
+  const tableConfig = useMemo(
+    () =>
+      createTableConfig({
+        filter: { outlet_type_id: outletTypeId },
+      }),
+    [outletTypeId],
+  );
   const Table = useTable(
-    "report_product_sales",
+    "pos_report_product_sales",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -82,7 +120,7 @@ export default function POSProductSalesPage() {
         <OverviewCards data={summary} />
 
         <Table.Tools downloadable>
-          <TableFilter table={Table} />
+          <TableFilter table={Table} outletTypeId={outletTypeId} />
         </Table.Tools>
         <Table.Render
           emptyTitle='Belum Ada Data'

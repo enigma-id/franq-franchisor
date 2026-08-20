@@ -18,9 +18,10 @@ interface TableFilterProps {
         }
       | undefined;
   };
+  outletTypeId?: string;
 }
 
-const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
+const TableFilter: React.FC<TableFilterProps> = ({ table, outletTypeId }) => {
   const current = useMemo(
     () => table.State?.filter ?? {},
     [table.State?.filter],
@@ -30,8 +31,13 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   const [outlet, setOutlet] = useState<any | null>(null);
 
   useEffect(() => {
-    getOutlet({ page: 1, limit: 20, status: "active" });
-  }, []);
+    getOutlet({
+      page: 1,
+      limit: 20,
+      status: "active",
+      outlet_type_id: outletTypeId,
+    });
+  }, [outletTypeId]);
 
   useEffect(() => {
     if (current.outlet_id && getOutletResult?.data?.data) {
@@ -51,7 +57,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     if (start && end) {
       return [dayjs(start), dayjs(end)];
     }
-    return [dayjs().startOf("month"), dayjs().endOf("month")];
+    return undefined;
   });
 
   const buildFilters = () => ({
@@ -69,14 +75,18 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     );
   }, [dateRange, outlet, current]);
 
-  const anyActive = !!(current.start_date || current.end_date || current.outlet_id);
+  const anyActive = !!(
+    current.start_date ||
+    current.end_date ||
+    current.outlet_id
+  );
 
   const handleClear = () => {
     setOutlet(null);
-    setDateRange([dayjs().startOf("month"), dayjs().endOf("month")]);
+    setDateRange(undefined);
     table.filter({
-      start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
-      end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
+      start_date: "",
+      end_date: "",
       outlet_id: "",
     });
   };
@@ -90,15 +100,20 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       handleClear={handleClear}
       handleFilter={handleFilter}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
         <RemoteSelect
-          label="Outlet"
-          placeholder="Filter Outlet"
+          label='Outlet'
+          placeholder='Filter Outlet'
           value={outlet}
           onChange={(val) => setOutlet(val)}
           onClear={() => setOutlet(null)}
           fetchData={(page, search) =>
-            getOutlet({ page: page || 1, limit: 20, search })
+            getOutlet({
+              page: page || 1,
+              limit: 20,
+              search,
+              outlet_type_id: outletTypeId,
+            })
           }
           hook={getOutletResult as any}
           getLabel={(item: any) => item?.name ?? ""}
@@ -106,15 +121,15 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getValue={(item: any) => item.id}
         />
         <DatePicker
-          label="Rentang Tanggal"
-          mode="range"
+          label='Rentang Tanggal'
+          mode='range'
           value={dateRange}
           onChange={(date) => {
             if (Array.isArray(date)) {
               setDateRange(date as [Dayjs | null, Dayjs | null]);
             }
           }}
-          placeholder="Filter Tanggal"
+          placeholder='Filter Tanggal'
         />
       </div>
     </TableFilters>

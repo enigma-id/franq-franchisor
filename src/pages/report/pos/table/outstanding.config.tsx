@@ -11,7 +11,7 @@ const createTableConfig = ({
   filter?: Record<string, unknown>;
 }): TableConfig<any> => ({
   ...config,
-  url: "/report/outstanding",
+  url: "/report/franchise/outstanding",
   filter,
   onRowClick,
   columns: {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
@@ -11,8 +11,40 @@ import TableFilter from "./table/settlement.filter";
 import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
 import { useNavigate } from "react-router-dom";
+import { useOutletType } from "@/services/outlet/hooks";
 
 export default function POSSettlementMonthlyPage() {
+  const [outletType, setOutletType] = useState<any>(null);
+
+  const { get: getOutletType, getResult: getOutletTypeResult } =
+    useOutletType();
+
+  useEffect(() => {
+    getOutletType({ search: "POS" });
+  }, []);
+
+  useEffect(() => {
+    if (getOutletTypeResult?.data?.data) {
+      const items = getOutletTypeResult?.data?.data as any[] | undefined;
+      if (items?.length === 1) {
+        const item = items[0];
+        setOutletType(item);
+      }
+    }
+  }, [getOutletTypeResult]);
+
+  if (!outletType) {
+    return (
+      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
+        Loading...
+      </Page>
+    );
+  }
+
+  return <SettlementMonthlyTable outletTypeId={outletType.id} />;
+}
+
+function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
   const navigate = useNavigate();
 
   const activeOutletId = useSelector(
@@ -21,7 +53,10 @@ export default function POSSettlementMonthlyPage() {
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      filter: { periode: new Date().getFullYear() },
+      filter: {
+        periode: new Date().getFullYear(),
+        outlet_type_id: outletTypeId,
+      },
       onRowClick: (row: any) =>
         navigate(
           `/report/pos/settlement/daily?periode=${row.date}${
@@ -96,7 +131,7 @@ export default function POSSettlementMonthlyPage() {
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable hideSearch>
-          <TableFilter table={Table} />
+          <TableFilter table={Table} outletTypeId={outletTypeId} />
         </Table.Tools>
 
         <Table.Render

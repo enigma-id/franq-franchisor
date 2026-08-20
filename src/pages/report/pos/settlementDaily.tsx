@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
@@ -9,8 +9,40 @@ import TableFilter from "./table/settlement.daily.filter";
 import { useLazyGetPOSSettlementSummaryQuery } from "@/services/report/api";
 import { SettlementSummaryCards } from "@/components/app";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useOutletType } from "@/services/outlet/hooks";
 
 export default function POSSettlementDailyPage() {
+  const [outletType, setOutletType] = useState<any>(null);
+
+  const { get: getOutletType, getResult: getOutletTypeResult } =
+    useOutletType();
+
+  useEffect(() => {
+    getOutletType({ search: "POS" });
+  }, []);
+
+  useEffect(() => {
+    if (getOutletTypeResult?.data?.data) {
+      const items = getOutletTypeResult?.data?.data as any[] | undefined;
+      if (items?.length === 1) {
+        const item = items[0];
+        setOutletType(item);
+      }
+    }
+  }, [getOutletTypeResult]);
+
+  if (!outletType) {
+    return (
+      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
+        Loading...
+      </Page>
+    );
+  }
+
+  return <SettlementDailyTable outletTypeId={outletType.id} />;
+}
+
+function SettlementDailyTable({ outletTypeId }: { outletTypeId: string }) {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const periode = params.get("periode");
@@ -23,7 +55,11 @@ export default function POSSettlementDailyPage() {
   const tableConfig = useMemo(() => {
     return createTableConfig({
       lockedFilter: { periode_type: "monthly" },
-      filter: { periode: periode ?? "", outlet_id: outletId ?? "" },
+      filter: {
+        periode: periode ?? "",
+        outlet_id: outletId ?? "",
+        outlet_type_id: outletTypeId,
+      },
     });
   }, [periode, outletId]);
 
@@ -96,7 +132,11 @@ export default function POSSettlementDailyPage() {
         <SettlementSummaryCards summary={summary} />
 
         <Table.Tools downloadable hideSearch>
-          <TableFilter table={Table} periode={periode ?? ""} />
+          <TableFilter
+            table={Table}
+            periode={periode ?? ""}
+            outletTypeId={outletTypeId}
+          />
         </Table.Tools>
 
         <Table.Render
