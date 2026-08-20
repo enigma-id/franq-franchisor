@@ -35,7 +35,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, outletTypeId }) => {
       status: "active",
       outlet_type_id: outletTypeId,
     });
-  }, []);
+  }, [outletTypeId]);
 
   useEffect(() => {
     if (current.outlet_id && getResult?.data?.data) {

@@ -14,9 +14,9 @@ interface TableFilterProps {
 }
 
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
-  const [date, setDate] = useState<Dayjs>(() => {
+  const [date, setDate] = useState<Dayjs | null>(() => {
     const f = table.State?.filter?.production_date;
-    return f ? dayjs(f) : dayjs();
+    return f ? dayjs(f) : null;
   });
 
   useEffect(() => {

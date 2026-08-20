@@ -7,11 +7,7 @@ import TableFilter from "./table/production.filter";
 import dayjs from "dayjs";
 
 export default function DemandItemPage() {
-  const lockFilter = { production_date: dayjs().format("YYYY-MM-DD") };
-  const tableConfig = useMemo(
-    () => createTableConfig({ filter: lockFilter }),
-    [],
-  );
+  const tableConfig = useMemo(() => createTableConfig({}), []);
   const Table = useTable("demand_item", tableConfig as TableConfig<unknown>);
 
   return (

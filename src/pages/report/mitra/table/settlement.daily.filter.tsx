@@ -44,7 +44,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
       status: "active",
       outlet_type_id: outletTypeId,
     });
-  }, []);
+  }, [outletTypeId]);
 
   // Resolve selected outlet from the active-outlet list so the filter displays it.
   // If the outlet isn't in the first page, fetch it directly by id.

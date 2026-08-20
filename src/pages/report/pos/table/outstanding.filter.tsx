@@ -56,7 +56,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, outletTypeId }) => {
     if (start && end) {
       return [dayjs(start), dayjs(end)];
     }
-    return [dayjs().startOf("month"), dayjs().endOf("month")];
+    return undefined;
   });
 
   const buildFilters = () => ({
@@ -82,10 +82,10 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, outletTypeId }) => {
 
   const handleClear = () => {
     setOutlet(null);
-    setDateRange([dayjs().startOf("month"), dayjs().endOf("month")]);
+    setDateRange(undefined);
     table.filter({
-      start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
-      end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
+      start_date: "",
+      end_date: "",
       outlet_id: "",
     });
   };
