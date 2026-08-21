@@ -37,7 +37,5 @@ export const canDeleteSo = (so: SalesOrderDetail): boolean => {
  * API fields: document_status (not order_status), order_type (not type)
  */
 export const canPaySo = (so: SalesOrderDetail): boolean => {
-  if (so.payment_status !== "unpaid") return false;
-
-  return so.document_status === "published";
+  return so.payment_status === "unpaid";
 };

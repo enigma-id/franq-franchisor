@@ -94,7 +94,7 @@ export function getStatusVariant(
     void: "error",
     cancelled: "error",
     rejected: "error",
-    dipsuted: "error",
+    disputed: "error",
     active: "primary",
     finished: "default",
     awaiting_approval: "warning",
