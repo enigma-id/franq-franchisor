@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
-import { Input, RemoteSelect } from "@/components/ui";
+import { ImageUpload, Input, RemoteSelect } from "@/components/ui";
 import { Plus, Trash2, Info, Ruler, Layers } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 import { Button, useEnigmaUI } from "@/components";
@@ -285,24 +285,24 @@ export function InventoryCatalogForm({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
+    <form id={id} onSubmit={handleSubmit} className='space-y-6'>
       {/* Section: Type Selector Toggle */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+      <div className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-center justify-between'>
+        <div className='flex items-center gap-3'>
+          <div className='p-2 bg-emerald-50 text-emerald-600 rounded-lg'>
             <Layers size={20} />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-800">Tipe Katalog</h4>
-            <p className="text-xs text-slate-400">
+            <h4 className='text-sm font-bold text-slate-800'>Tipe Katalog</h4>
+            <p className='text-xs text-slate-400'>
               Tentukan apakah katalog berisi satu jenis barang atau paket
               bundel.
             </p>
           </div>
         </div>
-        <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+        <div className='flex bg-slate-100 p-1 rounded-lg border border-slate-200'>
           <button
-            type="button"
+            type='button'
             onClick={() => handleTypeChange("singular")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
               type === "singular"
@@ -313,7 +313,7 @@ export function InventoryCatalogForm({
             Singular
           </button>
           <button
-            type="button"
+            type='button'
             onClick={() => handleTypeChange("bundle")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
               type === "bundle"
@@ -326,35 +326,35 @@ export function InventoryCatalogForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+        <div className='lg:col-span-2 space-y-6'>
           {/* Section: Informasi Utama (bundle only) */}
           {type === "bundle" && (
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
-              <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-                <Info size={16} className="text-slate-400" />
-                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10'>
+              <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2'>
+                <Info size={16} className='text-slate-400' />
+                <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
                   Informasi Utama
                 </h2>
               </div>
-              <div className="p-5 space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className='p-5 space-y-5'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <Input
-                    label="Nama Katalog"
+                    label='Nama Katalog'
                     required
                     value={formData.name}
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, name: e.target.value }))
                     }
-                    placeholder="Contoh: Tepung Terigu Segitiga Biru 10kg"
-                    variant="primary"
+                    placeholder='Contoh: Tepung Terigu Segitiga Biru 10kg'
+                    variant='primary'
                     error={FormState?.errors?.name as string}
                   />
 
                   <Input
-                    label="Harga Jual"
+                    label='Harga Jual'
                     required
-                    type="currency"
+                    type='currency'
                     value={formData.unit_price}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -362,16 +362,16 @@ export function InventoryCatalogForm({
                         unit_price: Number(e.target.value),
                       }))
                     }
-                    placeholder="Contoh: 15000"
-                    variant="primary"
+                    placeholder='Contoh: 15000'
+                    variant='primary'
                     min={0}
                     error={FormState?.errors?.unit_price as string}
                   />
 
                   <Input
-                    label="Unit"
+                    label='Unit'
                     required
-                    type="number"
+                    type='number'
                     value={formData.unit}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -379,11 +379,11 @@ export function InventoryCatalogForm({
                         unit: Number(e.target.value),
                       }))
                     }
-                    variant="primary"
+                    variant='primary'
                     error={FormState?.errors?.unit as string}
                   />
                   <Input
-                    label="Satuan"
+                    label='Satuan'
                     required
                     value={formData.measurement}
                     onChange={(e) =>
@@ -392,17 +392,17 @@ export function InventoryCatalogForm({
                         measurement: e.target.value,
                       }))
                     }
-                    placeholder="kg, pcs, box"
-                    variant="primary"
+                    placeholder='kg, pcs, box'
+                    variant='primary'
                     error={FormState?.errors?.measurement as string}
                   />
                 </div>
-                <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
+                <div className='p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3'>
                   <Ruler
-                    className="text-indigo-500 shrink-0 mt-0.5"
+                    className='text-indigo-500 shrink-0 mt-0.5'
                     size={16}
                   />
-                  <p className="text-[11px] text-indigo-700 leading-relaxed">
+                  <p className='text-[11px] text-indigo-700 leading-relaxed'>
                     <strong>Unit & Satuan:</strong> Deskripsikan porsi terkecil
                     katalog ini. Misal: Beras 5kg, Unit = 5, Satuan = kg.
                   </p>
@@ -412,11 +412,11 @@ export function InventoryCatalogForm({
           )}
 
           {/* Section: Items Selection */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-20">
-            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Layers size={16} className="text-slate-400" />
-                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-20'>
+            <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <Layers size={16} className='text-slate-400' />
+                <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
                   {type === "singular"
                     ? "Barang & Satuan"
                     : "Item Paket Bundle"}
@@ -424,24 +424,24 @@ export function InventoryCatalogForm({
               </div>
               {type === "bundle" && (
                 <Button
-                  variant="success"
+                  variant='success'
                   onClick={addBundleRow}
-                  styleType="soft"
-                  size="sm"
-                  type="button"
+                  styleType='soft'
+                  size='sm'
+                  type='button'
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className='w-4 h-4' />
                   Tambah
                 </Button>
               )}
             </div>
 
-            <div className="p-5">
+            <div className='p-5'>
               {type === "singular" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
                   <RemoteSelect
-                    label="Barang"
-                    placeholder="Pilih Barang"
+                    label='Barang'
+                    placeholder='Pilih Barang'
                     value={singularItem}
                     hook={inventoryItemsResult as any}
                     fetchData={(page, search) =>
@@ -462,8 +462,8 @@ export function InventoryCatalogForm({
                     error={FormState?.errors?.item_id as string}
                   />
                   <RemoteSelect
-                    label="Satuan Barang (Fraction)"
-                    placeholder="Pilih Satuan"
+                    label='Satuan Barang (Fraction)'
+                    placeholder='Pilih Satuan'
                     value={singularFraction}
                     hook={itemFractionsResult as any}
                     fetchData={(page, search) => {
@@ -497,9 +497,9 @@ export function InventoryCatalogForm({
                     watchKey={formData.item_id}
                   />
                   <Input
-                    label="Harga Jual"
+                    label='Harga Jual'
                     required
-                    type="currency"
+                    type='currency'
                     value={formData.unit_price}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -507,15 +507,15 @@ export function InventoryCatalogForm({
                         unit_price: Number(e.target.value),
                       }))
                     }
-                    placeholder="Contoh: 15000"
-                    variant="primary"
+                    placeholder='Contoh: 15000'
+                    variant='primary'
                     min={0}
                     error={FormState?.errors?.unit_price as string}
                   />
                   <Input
-                    label="Unit"
+                    label='Unit'
                     required
-                    type="number"
+                    type='number'
                     value={formData.unit}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -523,11 +523,11 @@ export function InventoryCatalogForm({
                         unit: Number(e.target.value),
                       }))
                     }
-                    variant="primary"
+                    variant='primary'
                     error={FormState?.errors?.unit as string}
                   />
                   <Input
-                    label="Satuan"
+                    label='Satuan'
                     required
                     value={formData.measurement}
                     onChange={(e) =>
@@ -536,33 +536,33 @@ export function InventoryCatalogForm({
                         measurement: e.target.value,
                       }))
                     }
-                    placeholder="kg, pcs, box"
-                    variant="primary"
+                    placeholder='kg, pcs, box'
+                    variant='primary'
                     error={FormState?.errors?.measurement as string}
                   />
                 </div>
               ) : (
-                <div className="">
-                  <table className="w-full text-left border-collapse min-w-150">
+                <div className=''>
+                  <table className='w-full text-left border-collapse min-w-150'>
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
-                        <th className="px-3 py-3 w-10 text-center">#</th>
-                        <th className="px-3 py-3 min-w-50">Barang</th>
-                        <th className="px-3 py-3 min-w-37.5">Satuan</th>
-                        <th className="px-3 py-3 w-20 text-center">Qty</th>
-                        <th className="px-3 py-3 w-20 text-center">Margin</th>
-                        <th className="px-3 py-3 w-10"></th>
+                      <tr className='bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider'>
+                        <th className='px-3 py-3 w-10 text-center'>#</th>
+                        <th className='px-3 py-3 min-w-50'>Barang</th>
+                        <th className='px-3 py-3 min-w-37.5'>Satuan</th>
+                        <th className='px-3 py-3 w-20 text-center'>Qty</th>
+                        <th className='px-3 py-3 w-20 text-center'>Margin</th>
+                        <th className='px-3 py-3 w-10'></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className='divide-y divide-slate-100'>
                       {bundleItems.map((item, idx) => (
-                        <tr key={idx} className="group hover:bg-slate-50/50">
-                          <td className="px-3 py-4 text-center text-xs font-semibold text-slate-400">
+                        <tr key={idx} className='group hover:bg-slate-50/50'>
+                          <td className='px-3 py-4 text-center text-xs font-semibold text-slate-400'>
                             {idx + 1}
                           </td>
-                          <td className="px-3 py-4">
+                          <td className='px-3 py-4'>
                             <RemoteSelect
-                              placeholder="Barang..."
+                              placeholder='Barang...'
                               value={item.itemSelected}
                               hook={inventoryItemsResult as any}
                               fetchData={(page, search) =>
@@ -581,9 +581,9 @@ export function InventoryCatalogForm({
                               error={getErrorItem(idx, "item_id")}
                             />
                           </td>
-                          <td className="px-3 py-4">
+                          <td className='px-3 py-4'>
                             <RemoteSelect
-                              placeholder="Satuan..."
+                              placeholder='Satuan...'
                               value={item.fractionSelected}
                               hook={itemFractionsResult as any}
                               fetchData={(page, search) => {
@@ -606,9 +606,9 @@ export function InventoryCatalogForm({
                               watchKey={item.item_id}
                             />
                           </td>
-                          <td className="px-3 py-4">
+                          <td className='px-3 py-4'>
                             <Input
-                              type="number"
+                              type='number'
                               value={item.quantity}
                               onChange={(e) =>
                                 handleBundleQtyChange(
@@ -616,14 +616,14 @@ export function InventoryCatalogForm({
                                   Number(e.target.value),
                                 )
                               }
-                              className="text-center"
+                              className='text-center'
                               min={1}
                               error={getErrorItem(idx, "quantity")}
                             />
                           </td>
-                          <td className="px-3 py-4">
+                          <td className='px-3 py-4'>
                             <Input
-                              type="number"
+                              type='number'
                               value={item.margin}
                               onChange={(e) =>
                                 handleBundleMarginChange(
@@ -631,17 +631,17 @@ export function InventoryCatalogForm({
                                   Number(e.target.value),
                                 )
                               }
-                              className="text-center"
+                              className='text-center'
                               error={getErrorItem(idx, "margin")}
                             />
                           </td>
-                          <td className="px-3 py-4 text-center">
+                          <td className='px-3 py-4 text-center'>
                             <Button
-                              variant="error"
-                              styleType="ghost"
+                              variant='error'
+                              styleType='ghost'
                               onClick={() => removeBundleRow(idx)}
                               disabled={bundleItems.length === 1}
-                              type="button"
+                              type='button'
                             >
                               <Trash2 size={14} />
                             </Button>
@@ -653,6 +653,24 @@ export function InventoryCatalogForm({
                 </div>
               )}
             </div>
+          </div>
+        </div>
+        <div className='space-y-6'>
+          {/* Section: Image */}
+          <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10'>
+            <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2'>
+              <Info size={16} className='text-slate-400' />
+              <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
+                Gambar Katalog
+              </h2>
+            </div>
+
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) =>
+                setFormData((prev) => ({ ...prev, image: url }))
+              }
+            />
           </div>
         </div>
       </div>
