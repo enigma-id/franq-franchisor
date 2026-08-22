@@ -1,7 +1,15 @@
 import { dateFormat, currencyFormat } from "./common";
 
 // Re-export everything from submodules
-export { currencyFormat, dateFormat, postedAgo, updateAt, extractIds, capitalizeFirst, findByKeyValue } from "./common";
+export {
+  currencyFormat,
+  dateFormat,
+  postedAgo,
+  updateAt,
+  extractIds,
+  capitalizeFirst,
+  findByKeyValue,
+} from "./common";
 export { withGuard } from "./guard";
 export * from "./url";
 export * from "./permission";
@@ -12,7 +20,10 @@ export * from "./cn";
 export const formatCurrency = currencyFormat;
 
 // Date helpers used by pages
-export function formatDate(v?: string | Date | null, format = "DD/MM/YYYY"): string {
+export function formatDate(
+  v?: string | Date | null,
+  format = "DD/MM/YYYY",
+): string {
   return dateFormat(v, format, "-");
 }
 
@@ -44,7 +55,7 @@ export function displayPaymentMethod(name: string | null): string {
 
 // Map any system status to a premium Badge variant
 export function getStatusVariant(
-  status?: string | null
+  status?: string | null,
 ):
   | "default"
   | "primary"
@@ -83,6 +94,7 @@ export function getStatusVariant(
     void: "error",
     cancelled: "error",
     rejected: "error",
+    disputed: "error",
     active: "primary",
     finished: "default",
     awaiting_approval: "warning",
@@ -96,6 +108,42 @@ export function getStatusVariant(
     // Delivery statuses
     shipping: "info",
     none: "default",
+  };
+  return variantMap[normalized] || "default";
+}
+
+// Map any system type to a premium Badge variant
+export function getTypeVariant(
+  type?: string | null,
+):
+  | "default"
+  | "primary"
+  | "secondary"
+  | "accent"
+  | "info"
+  | "success"
+  | "warning"
+  | "error" {
+  const normalized = type?.toLowerCase() || "";
+  const variantMap: Record<
+    string,
+    | "default"
+    | "primary"
+    | "secondary"
+    | "accent"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+  > = {
+    // production plan type
+    mitra: "success",
+    b2b: "default",
+    sukabread: "warning",
+
+    // item type
+    raw_material: "default",
+    finished_goods: "warning",
   };
   return variantMap[normalized] || "default";
 }

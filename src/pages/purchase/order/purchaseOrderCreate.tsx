@@ -8,11 +8,14 @@ import { useEnigmaUI } from "@/components";
 
 import { Save } from "lucide-react";
 import { Button, Loading } from "@/components/ui";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const PurchaseOrderCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { create, createResult } = usePurchaseOrder();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.purchaseOrder);
   const { isLoading: isCreating, isSuccess } = createResult;
 
   useEffect(() => {
@@ -34,21 +37,23 @@ const PurchaseOrderCreatePage: React.FC = () => {
         subtitle="Buat pesanan pembelian barang baru."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="purchase-order-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="purchase-order-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

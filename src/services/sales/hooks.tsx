@@ -7,8 +7,6 @@ import {
   usePublishSalesOrderMutation,
   usePaidSalesOrderMutation,
   useCancelSalesOrderMutation,
-  useLazyGetSalesReturnQuery,
-  useApproveSalesReturnMutation,
 } from "./api";
 
 // Sales Order
@@ -22,14 +20,5 @@ export const useSalesOrder = createCrudHook({
     cancel: { hook: useCancelSalesOrderMutation },
     publish: { hook: usePublishSalesOrderMutation },
     paid: { hook: usePaidSalesOrderMutation },
-  },
-});
-
-// Sales Return
-export const useSalesReturn = createCrudHook({
-  entityName: "salesReturn",
-  useLazyShowQuery: useLazyGetSalesReturnQuery,
-  customOperations: {
-    approve: { hook: useApproveSalesReturnMutation },
   },
 });

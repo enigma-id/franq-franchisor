@@ -21,6 +21,8 @@ import {
 import { usePaymentMethod } from "@/services/payment-method/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
 import { getOptionByValue } from "@/utils/helper";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const providerOptions = {
   franchise: [
@@ -54,6 +56,7 @@ const typeOptions = [
 const PaymentMethodListPage: React.FC = () => {
   const FormState = useAppSelector((s) => s.form);
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.paymentMethod);
 
   const {
     create,
@@ -160,8 +163,9 @@ const PaymentMethodListPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: any) => handleToggleActive(row),
+        canManage,
       }),
-    [],
+    [canManage],
   );
 
   const Table = useTable(
@@ -286,14 +290,16 @@ const PaymentMethodListPage: React.FC = () => {
             </p>
           </Modal.Body>
           <Modal.Footer className='flex gap-2'>
-            <Button
-              className='flex-1 rounded-xl'
-              variant='error'
-              onClick={() => handleDelete(row)}
-              isLoading={isDeleting}
-            >
-              Hapus
-            </Button>
+            {canManage && (
+              <Button
+                className='flex-1 rounded-xl'
+                variant='error'
+                onClick={() => handleDelete(row)}
+                isLoading={isDeleting}
+              >
+                Hapus
+              </Button>
+            )}
             <Button
               className='flex-1 rounded-xl'
               styleType='outline'
@@ -334,15 +340,17 @@ const PaymentMethodListPage: React.FC = () => {
         title='Metode Pembayaran'
         subtitle='Kelola metode pembayaran yang tersedia di POS.'
         action={
-          <Button
-            variant='primary'
-            shape='wide'
-            size='md'
-            onClick={() => setModalOpen(true)}
-          >
-            <Plus size={18} />
-            Tambah Metode
-          </Button>
+          canManage && (
+            <Button
+              variant='primary'
+              shape='wide'
+              size='md'
+              onClick={() => setModalOpen(true)}
+            >
+              <Plus size={18} />
+              Tambah Metode
+            </Button>
+          )
         }
       />
 
@@ -444,7 +452,9 @@ const PaymentMethodListPage: React.FC = () => {
                       required
                       value={formData.name}
                       disabled={
-                        provider?.value === "cash" || provider?.value === "qris"
+                        provider?.value === "cash" ||
+                        provider?.value === "qris" ||
+                        provider?.value === "saldo"
                       }
                       onChange={(e) =>
                         setFormData((prev) => ({
@@ -523,20 +533,22 @@ const PaymentMethodListPage: React.FC = () => {
           >
             Batal
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isCreating || isUpdating}
-            variant='success'
-          >
-            {isCreating || isUpdating ? (
-              <Loading size='sm' variant='spinner' />
-            ) : (
-              <>
-                <Plus className='w-4 h-4 mr-2' />
-                {editingItem ? "Simpan Perubahan" : "Simpan Metode"}
-              </>
-            )}
-          </Button>
+          {canManage && (
+            <Button
+              onClick={handleSubmit}
+              disabled={isCreating || isUpdating}
+              variant='success'
+            >
+              {isCreating || isUpdating ? (
+                <Loading size='sm' variant='spinner' />
+              ) : (
+                <>
+                  <Plus className='w-4 h-4 mr-2' />
+                  {editingItem ? "Simpan Perubahan" : "Simpan Metode"}
+                </>
+              )}
+            </Button>
+          )}
         </Modal.Footer>
       </Modal.Wrapper>
     </Page>

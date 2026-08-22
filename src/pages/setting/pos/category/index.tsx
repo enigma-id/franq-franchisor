@@ -11,10 +11,13 @@ import type { TableConfig } from "@/services/table/const";
 import { useAppSelector } from "@/hooks";
 import { Input, Loading, Modal, useEnigmaUI } from "@/components";
 import { usePOSCategory } from "@/services/pos/hooks";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const POSCategoryListPage: React.FC = () => {
   const FormState = useAppSelector((s) => s.form);
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.posCategory);
 
   const {
     create,
@@ -63,8 +66,9 @@ const POSCategoryListPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: any) => handleToggleActive(row),
+        canManage,
       }),
-    [],
+    [canManage],
   );
 
   const Table = useTable(
@@ -180,14 +184,16 @@ const POSCategoryListPage: React.FC = () => {
             </p>
           </Modal.Body>
           <Modal.Footer className='flex gap-2'>
-            <Button
-              className='flex-1 rounded-xl'
-              variant='error'
-              onClick={() => handleDelete(row)}
-              isLoading={isDeleting}
-            >
-              Hapus
-            </Button>
+            {canManage && (
+              <Button
+                className='flex-1 rounded-xl'
+                variant='error'
+                onClick={() => handleDelete(row)}
+                isLoading={isDeleting}
+              >
+                Hapus
+              </Button>
+            )}
             <Button
               className='flex-1 rounded-xl'
               styleType='outline'
@@ -216,15 +222,17 @@ const POSCategoryListPage: React.FC = () => {
         title='Kategori POS'
         subtitle='Kelola kategori menu untuk pengaturan POS.'
         action={
-          <Button
-            variant='primary'
-            shape='wide'
-            size='md'
-            onClick={() => setModalOpen(true)}
-          >
-            <Plus size={18} />
-            Tambah Kategori
-          </Button>
+          canManage && (
+            <Button
+              variant='primary'
+              shape='wide'
+              size='md'
+              onClick={() => setModalOpen(true)}
+            >
+              <Plus size={18} />
+              Tambah Kategori
+            </Button>
+          )
         }
       />
 
@@ -278,20 +286,22 @@ const POSCategoryListPage: React.FC = () => {
           >
             Batal
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isCreating || isUpdating}
-            variant='success'
-          >
-            {isCreating || isUpdating ? (
-              <Loading size='sm' variant='spinner' />
-            ) : (
-              <>
-                <Plus className='w-4 h-4 mr-2' />
-                {editingItem ? "Simpan Perubahan" : "Simpan Kategori"}
-              </>
-            )}
-          </Button>
+          {canManage && (
+            <Button
+              onClick={handleSubmit}
+              disabled={isCreating || isUpdating}
+              variant='success'
+            >
+              {isCreating || isUpdating ? (
+                <Loading size='sm' variant='spinner' />
+              ) : (
+                <>
+                  <Plus className='w-4 h-4 mr-2' />
+                  {editingItem ? "Simpan Perubahan" : "Simpan Kategori"}
+                </>
+              )}
+            </Button>
+          )}
         </Modal.Footer>
       </Modal.Wrapper>
     </Page>

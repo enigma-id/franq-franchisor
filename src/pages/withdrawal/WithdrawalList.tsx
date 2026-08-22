@@ -7,33 +7,34 @@ import type { TableConfig } from "@/services/table/const";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import createTableConfig from "./table/withdrawal.config";
 import type { WithdrawalRequest } from "@/services/types";
-import { useNavigate } from "react-router-dom";
 import { useWithdrawal } from "@/services/withdrawal/hooks";
 import TableFilter from "./table/withdrawal.filter";
 import { useEnigmaUI } from "@/components";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 type ActionType = "approve" | "reject";
 
-export function WithdrawalList() {
+export default function WithdrawalList() {
   useDocumentMeta("Permintaan Penarikan | Sukabread Franchisee", "");
-  const navigate = useNavigate();
+  const canManage = useCan(ACTION.withdrawalRequest);
   const { showToast } = useEnigmaUI();
   const { approve, approveResult, reject, rejectResult } = useWithdrawal();
-  const [selectedRow, setSelectedRow] = useState<WithdrawalRequest | null>(null);
+  const [selectedRow, setSelectedRow] = useState<WithdrawalRequest | null>(
+    null,
+  );
   const [actionType, setActionType] = useState<ActionType | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
-  const handleView = useCallback(
-    (row: WithdrawalRequest) => navigate(`/withdrawal/${row.id}`),
-    [navigate],
+  const openConfirm = useCallback(
+    (row: WithdrawalRequest, type: ActionType) => {
+      setSelectedRow(row);
+      setActionType(type);
+      setRejectReason("");
+    },
+    [],
   );
-
-  const openConfirm = useCallback((row: WithdrawalRequest, type: ActionType) => {
-    setSelectedRow(row);
-    setActionType(type);
-    setRejectReason("");
-  }, []);
 
   const closeConfirm = useCallback(() => {
     setSelectedRow(null);
@@ -57,19 +58,29 @@ export function WithdrawalList() {
 
   const activeResult = useMemo(() => {
     switch (actionType) {
-      case "approve": return approveResult;
-      case "reject": return rejectResult;
-      default: return null;
+      case "approve":
+        return approveResult;
+      case "reject":
+        return rejectResult;
+      default:
+        return null;
     }
   }, [actionType, approveResult, rejectResult]);
 
-  const tableConfig = useMemo(() => createTableConfig({
-    onView: handleView,
-    onApprove: (row) => openConfirm(row, "approve"),
-    onReject: (row) => openConfirm(row, "reject"),
-  }), [handleView, openConfirm]);
+  const tableConfig = useMemo(
+    () =>
+      createTableConfig({
+        onApprove: (row) => openConfirm(row, "approve"),
+        onReject: (row) => openConfirm(row, "reject"),
+        canManage,
+      }),
+    [openConfirm, canManage],
+  );
 
-  const Table = useTable("withdrawal-list", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    "withdrawal-list",
+    tableConfig as TableConfig<unknown>,
+  );
 
   useEffect(() => {
     tableRef.current = Table;
@@ -77,7 +88,11 @@ export function WithdrawalList() {
 
   useEffect(() => {
     if (activeResult?.isSuccess) {
-      showToast({ message: "Berhasil", type: "success", position: "bottom-center" });
+      showToast({
+        message: "Berhasil",
+        type: "success",
+        position: "bottom-center",
+      });
       closeConfirm();
       activeResult.reset?.();
       tableRef.current?.boot();
@@ -87,19 +102,19 @@ export function WithdrawalList() {
   const actionLabel = actionType === "approve" ? "Approve" : "Reject";
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Sales"
-        title="Permintaan Penarikan"
-        subtitle="Kelola permintaan penarikan saldo outlet."
+        category='Sales'
+        title='Permintaan Penarikan'
+        subtitle='Kelola permintaan penarikan saldo outlet.'
       />
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools>
           <TableFilter table={Table} />
         </Table.Tools>
         <Table.Render
-          emptyTitle="Data Tidak Ditemukan"
-          emptyDescription="Belum ada permintaan penarikan."
+          emptyTitle='Data Tidak Ditemukan'
+          emptyDescription='Belum ada permintaan penarikan.'
         />
         <Table.Pagination />
       </Page.Body>
@@ -110,18 +125,19 @@ export function WithdrawalList() {
         closeOnOutsideClick={false}
       >
         <Modal.Header>
-          <div className="font-bold leading-7">Konfirmasi {actionLabel}</div>
+          <div className='font-bold leading-7'>Konfirmasi {actionLabel}</div>
         </Modal.Header>
-        <Modal.Body className="text-sm font-normal leading-5 space-y-4">
+        <Modal.Body className='text-sm font-normal leading-5 space-y-4'>
           <p>
-            Apakah Anda yakin ingin {actionType === "reject" ? "menolak" : "menyetujui"} penarikan{" "}
+            Apakah Anda yakin ingin{" "}
+            {actionType === "reject" ? "menolak" : "menyetujui"} penarikan{" "}
             <strong>{selectedRow?.code}</strong>?
           </p>
           {actionType === "reject" && (
             <Input
-              type="textarea"
-              label="Alasan Ditolak"
-              placeholder="Masukkan alasan penolakan..."
+              type='textarea'
+              label='Alasan Ditolak'
+              placeholder='Masukkan alasan penolakan...'
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
             />
@@ -129,18 +145,22 @@ export function WithdrawalList() {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            className="flex-1 rounded-xl"
+            className='flex-1 rounded-xl'
             variant={actionType === "reject" ? "error" : "primary"}
             onClick={handleConfirm}
             isLoading={activeResult?.isLoading}
             disabled={actionType === "reject" && !rejectReason.trim()}
           >
-            {activeResult?.isLoading ? <Loading size="sm" variant="spinner" /> : "Konfirmasi"}
+            {activeResult?.isLoading ? (
+              <Loading size='sm' variant='spinner' />
+            ) : (
+              "Konfirmasi"
+            )}
           </Button>
           <Button
-            className="flex-1 rounded-xl"
-            styleType="outline"
-            variant="secondary"
+            className='flex-1 rounded-xl'
+            styleType='outline'
+            variant='secondary'
             onClick={closeConfirm}
             disabled={activeResult?.isLoading}
           >

@@ -9,10 +9,13 @@ import type { TableConfig } from "@/services/table/const";
 import { useMemberTopupBonus } from "@/services/member/hooks";
 import { useAppSelector } from "@/hooks";
 import type { TopupBonusDetail } from "@/services/types/pos";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const TopupBonusPage: React.FC = () => {
   const FormState = useAppSelector((s) => s.form);
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.memberTopup);
 
   const {
     create,
@@ -63,8 +66,9 @@ const TopupBonusPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: TopupBonusDetail) => handleToggleActive(row),
+        canManage,
       }),
-    [],
+    [canManage],
   );
 
   const Table = useTable(
@@ -181,14 +185,16 @@ const TopupBonusPage: React.FC = () => {
             </p>
           </Modal.Body>
           <Modal.Footer className='flex gap-2'>
-            <Button
-              className='flex-1 rounded-xl'
-              variant='error'
-              onClick={() => handleDelete(row)}
-              isLoading={isDeleting}
-            >
-              Hapus
-            </Button>
+            {canManage && (
+              <Button
+                className='flex-1 rounded-xl'
+                variant='error'
+                onClick={() => handleDelete(row)}
+                isLoading={isDeleting}
+              >
+                Hapus
+              </Button>
+            )}
             <Button
               className='flex-1 rounded-xl'
               styleType='outline'
@@ -217,15 +223,17 @@ const TopupBonusPage: React.FC = () => {
         title='Schema Bonus Topup'
         subtitle='Kelola schema bonus topup untuk member.'
         action={
-          <Button
-            variant='primary'
-            shape='wide'
-            size='md'
-            onClick={() => setModalOpen(true)}
-          >
-            <Plus size={18} />
-            Tambah Schema
-          </Button>
+          canManage && (
+            <Button
+              variant='primary'
+              shape='wide'
+              size='md'
+              onClick={() => setModalOpen(true)}
+            >
+              <Plus size={18} />
+              Tambah Schema
+            </Button>
+          )
         }
       />
 
@@ -299,20 +307,22 @@ const TopupBonusPage: React.FC = () => {
           >
             Batal
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isCreating || isUpdating}
-            variant='success'
-          >
-            {isCreating || isUpdating ? (
-              <Loading size='sm' variant='spinner' />
-            ) : (
-              <>
-                <Plus className='w-4 h-4 mr-2' />
-                {editingItem ? "Simpan Perubahan" : "Simpan Schema"}
-              </>
-            )}
-          </Button>
+          {canManage && (
+            <Button
+              onClick={handleSubmit}
+              disabled={isCreating || isUpdating}
+              variant='success'
+            >
+              {isCreating || isUpdating ? (
+                <Loading size='sm' variant='spinner' />
+              ) : (
+                <>
+                  <Plus className='w-4 h-4 mr-2' />
+                  {editingItem ? "Simpan Perubahan" : "Simpan Schema"}
+                </>
+              )}
+            </Button>
+          )}
         </Modal.Footer>
       </Modal.Wrapper>
     </Page>

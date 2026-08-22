@@ -6,10 +6,13 @@ import { useProductionPlan } from "@/services/production/hooks";
 import { ProductionPlanForm } from "./components/planForm";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save, RefreshCw } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const ProductionPlanUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.production);
   const { show, showResult, update, updateResult } = useProductionPlan();
   const { isLoading: isSaving, isSuccess } = updateResult;
   const { showToast } = useEnigmaUI();
@@ -43,22 +46,24 @@ const ProductionPlanUpdatePage: React.FC = () => {
         subtitle={"Perbarui data rencana produksi."}
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="production-plan-form"
-            disabled={isSaving || isLoading}
-            variant="success"
-            shape="wide"
-          >
-            {isSaving ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Perubahan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="production-plan-form"
+              disabled={isSaving || isLoading}
+              variant="success"
+              shape="wide"
+            >
+              {isSaving ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Perubahan
+                </>
+              )}
+            </Button>
+          )
         }
       />
 

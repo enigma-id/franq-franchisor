@@ -14,10 +14,13 @@ import TableFilter from "./table/catalog.filter";
 import type { InventoryCatalogDetail } from "@/services/types/inventory";
 import type { TableConfig } from "@/services/table/const";
 import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const InventoryCatalogListPage: React.FC = () => {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.catalog);
   const {
     remove: removeCatalog,
     removeResult: removeCatalogResult,
@@ -100,8 +103,9 @@ const InventoryCatalogListPage: React.FC = () => {
           }
         },
         onToggleActive: (row) => handleToggleActive(row),
+        canManage,
       }),
-    [navigate, activateCatalog, deactivateCatalog],
+    [navigate, activateCatalog, deactivateCatalog, canManage],
   );
 
   const Table = useTable(
@@ -207,18 +211,20 @@ const InventoryCatalogListPage: React.FC = () => {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Inventory & Warehouse"
-        title="Inventory Katalog"
+        title="Master Katalog"
         subtitle="Kelola katalog produk untuk distribusi."
         action={
-          <Button
-            variant="primary"
-            shape="wide"
-            size="md"
-            onClick={() => navigate("/inventory/catalog/create")}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Tambah Katalog
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              shape="wide"
+              size="md"
+              onClick={() => navigate("/inventory/catalog/create")}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Katalog
+            </Button>
+          )
         }
       />
 

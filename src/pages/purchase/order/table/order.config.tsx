@@ -2,7 +2,7 @@ import config from "@/services/table/const";
 import type { PurchaseOrderDetail } from "@/services/types/purchase";
 import { Badge, Dropdown } from "@/components/ui";
 import { Edit, Eye, MoreVertical, ShoppingCart, Trash, Check, CreditCard } from "lucide-react";
-import { formatCurrency, getStatusVariant, formatDate } from "@/utils";
+import { formatCurrency, getStatusVariant, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
   onClick,
@@ -11,6 +11,7 @@ const createTableConfig = ({
   onPublish,
   onPaid,
   filter,
+  canManage,
 }: {
   onClick?: (row: PurchaseOrderDetail) => void;
   onRemove?: (row: PurchaseOrderDetail) => void;
@@ -18,6 +19,7 @@ const createTableConfig = ({
   onPublish?: (row: PurchaseOrderDetail) => void;
   onPaid?: (row: PurchaseOrderDetail) => void;
   filter?: Record<string, unknown>;
+  canManage?: boolean;
 }) => ({
   ...config,
   url: "/purchase/order",
@@ -33,7 +35,7 @@ const createTableConfig = ({
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-slate-700">
-              {formatDate(row.created_at, "DD MMM YYYY")}
+              {formatDateTime(row.created_at)}
             </span>
             <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
               {row.code}
@@ -140,7 +142,7 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          {row?.document_status === "pending" && (
+          {canManage && row?.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onPublish?.(row)}
@@ -191,7 +193,7 @@ const createTableConfig = ({
             </>
           )}
 
-          {row?.payment_status === "unpaid" && row?.document_status !== "pending" && (
+          {canManage && row?.payment_status === "unpaid" && row?.document_status !== "pending" && (
             <Dropdown.Item
               onSelect={() => onPaid?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"

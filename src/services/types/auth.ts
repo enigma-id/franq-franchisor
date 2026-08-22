@@ -9,6 +9,8 @@ export interface User {
   username: string;
   name: string;
   is_active: boolean;
+  /** Permission slugs dari usergroup. Undefined = super admin (akses semua). */
+  permissions?: string[];
   last_activity_at: string | null;
   created_at: string;
   updated_at: string;

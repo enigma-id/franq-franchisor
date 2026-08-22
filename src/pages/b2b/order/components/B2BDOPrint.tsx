@@ -191,9 +191,9 @@ export function B2BDOPrint({ order }: Props) {
             </div>
             <div style={styles.dates}>
               <strong>Tgl Order:</strong>
-              <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
+              <span>{formatDate(order.created_at)}</span>
               <strong>Tgl Kirim:</strong>
-              <span>{formatDate(order.shipping_date, "DD/MM/YYYY")}</span>
+              <span>{formatDate(order.shipping_date)}</span>
             </div>
           </div>
 

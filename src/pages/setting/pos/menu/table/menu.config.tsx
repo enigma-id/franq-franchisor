@@ -18,12 +18,14 @@ const createTableConfig = ({
   onRemove,
   onToggleActive,
   onOutletType,
+  canManage,
 }: {
   onClick?: (row: POSMenuDetail) => void;
   onEdit: (row: POSMenuDetail) => void;
   onRemove: (row: POSMenuDetail) => void;
   onToggleActive: (row: POSMenuDetail) => void;
   onOutletType?: (row: POSMenuDetail, outletType?: any) => void;
+  canManage?: boolean;
 }) => ({
   ...config,
   url: "/pos/menu",
@@ -99,6 +101,7 @@ const createTableConfig = ({
           <Toggle
             checked={!!row?.is_active}
             onChange={() => onToggleActive?.(row)}
+            disabled={!canManage}
             variant="success"
             size="sm"
           />
@@ -138,6 +141,7 @@ const createTableConfig = ({
       title: "",
       headerClass: "text-right",
       class: "text-right",
+      sortable: false,
       component: (row: POSMenuDetail) => (
         <Dropdown
           trigger={
@@ -164,23 +168,25 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => onEdit?.(row)}
-            className="hover:bg-indigo-50 hover:text-indigo-600"
-          >
-            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                <Edit className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">Edit</span>
-                <span className="text-[11px] text-slate-400">
-                  Modify menu info
-                </span>
-              </div>
-            </button>
-          </Dropdown.Item>
-          {!row?.is_additional && (
+          {canManage && (
+            <Dropdown.Item
+              onSelect={() => onEdit?.(row)}
+              className="hover:bg-indigo-50 hover:text-indigo-600"
+            >
+              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                  <Edit className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">Edit</span>
+                  <span className="text-[11px] text-slate-400">
+                    Modify menu info
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          )}
+          {canManage && !row?.is_additional && (
             <Dropdown.Item
               onSelect={() => onOutletType?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"
@@ -198,20 +204,24 @@ const createTableConfig = ({
               </button>
             </Dropdown.Item>
           )}
-          <Dropdown.Item
-            onSelect={() => onRemove?.(row)}
-            className="hover:bg-red-50 hover:text-red-600"
-          >
-            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                <Trash className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">Delete</span>
-                <span className="text-[11px] text-slate-400">Remove menu</span>
-              </div>
-            </button>
-          </Dropdown.Item>
+          {canManage && (
+            <Dropdown.Item
+              onSelect={() => onRemove?.(row)}
+              className="hover:bg-red-50 hover:text-red-600"
+            >
+              <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
+                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                  <Trash className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="font-bold text-[13px]">Delete</span>
+                  <span className="text-[11px] text-slate-400">
+                    Remove menu
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          )}
         </Dropdown>
       ),
     },

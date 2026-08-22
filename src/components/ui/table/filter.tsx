@@ -34,13 +34,19 @@ const TableFilter: React.FC<TableFilterProps> = ({
               : "border-base-300 text-base-content hover:bg-base-200 bg-base-100 shadow-sm font-normal h-9 px-3 gap-2"
           }
         >
-          <SlidersHorizontal className={isActive ? "text-primary w-4 h-4" : "text-base-content/50 w-4 h-4"} />
+          <SlidersHorizontal
+            className={
+              isActive ? "text-primary w-4 h-4" : "text-base-content/50 w-4 h-4"
+            }
+          />
           <span className='text-sm'>Filter Options</span>
-          {isActive && (
-            <div className='ml-1 h-2 w-2 rounded-full bg-primary' />
-          )}
+          {isActive && <div className='ml-1 h-2 w-2 rounded-full bg-primary' />}
           <ChevronDown
-            className={isActive ? "text-primary ml-1 w-4 h-4" : "text-base-content/40 ml-1 w-4 h-4"}
+            className={
+              isActive
+                ? "text-primary ml-1 w-4 h-4"
+                : "text-base-content/40 ml-1 w-4 h-4"
+            }
           />
         </Button>
       }

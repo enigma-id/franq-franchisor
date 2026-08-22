@@ -1,5 +1,5 @@
 import config from "@/services/table/const";
-import { dateFormat, getStatusVariant, formatDateTime } from "@/utils";
+import { formatDate, getStatusVariant, formatDateTime } from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { Edit, Eye, MoreVertical, Trash, Check, CreditCard } from "lucide-react";
@@ -11,6 +11,7 @@ const createTableConfig = ({
   onPublish,
   onPaid,
   filter,
+  canManage,
 }: {
   onClick?: (row: SalesOrderDetail) => void;
   onRemove?: (row: SalesOrderDetail) => void;
@@ -18,6 +19,7 @@ const createTableConfig = ({
   onPublish?: (row: SalesOrderDetail) => void;
   onPaid?: (row: SalesOrderDetail) => void;
   filter?: Record<string, unknown>;
+  canManage?: boolean;
 }) => ({
   ...config,
   url: "/sales/order",
@@ -31,7 +33,7 @@ const createTableConfig = ({
           <div>
             <span className="font-medium block">{row.code}</span>
             <span className="text-xs text-gray-500 block">
-              {formatDateTime(row.created_at)} WIB
+              {formatDateTime(row.created_at)}
             </span>
           </div>
         </div>
@@ -75,7 +77,7 @@ const createTableConfig = ({
       align: "center",
       component: (row: SalesOrderDetail) => (
         <span className="font-medium">
-          {dateFormat(row.shipping_date, "DD/MM/YYYY")}
+          {formatDate(row.shipping_date)}
         </span>
       ),
     },
@@ -152,7 +154,7 @@ const createTableConfig = ({
               </div>
             </button>
           </Dropdown.Item>
-          {row?.document_status === "pending" && (
+          {canManage && row?.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onPublish?.(row)}
@@ -204,7 +206,7 @@ const createTableConfig = ({
           )}
 
 
-          {row?.payment_status === "unpaid" && row?.document_status === "published" && (
+          {canManage && row?.payment_status === "unpaid" && row?.document_status === "published" && (
             <Dropdown.Item
               onSelect={() => onPaid?.(row)}
               className="hover:bg-blue-50 hover:text-blue-600"

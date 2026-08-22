@@ -16,6 +16,7 @@ export interface B2BOrderRequest {
   is_discount_percentage: boolean;
   service_charge: number;
   shipping_date: string;
+  invoice_date: string;
   items: B2BOrderItemRequest[];
 }
 
@@ -56,9 +57,14 @@ export interface B2BOrderDetail {
   service_charge_value: number;
   total_charges: number;
   shipping_date: string;
+  invoice_date: string;
   payment_ref: string;
   paid_at: string;
   received_at: string;
+  /** Diisi saat order dibatalkan (cancel). */
+  cancelled_reason?: string;
+  cancelled_at?: string;
+  cancelled_by?: string;
   is_deleted: boolean;
   created_by: string;
   updated_by: string;

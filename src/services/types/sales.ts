@@ -4,7 +4,7 @@
  */
 
 import type { OutletDetail } from "./outlet";
-import type { DocumentStatusSalesOrder, FulfillmentStatus, PaymentStatus, SalesReturnStatus } from "./api";
+import type { DocumentStatusSalesOrder, FulfillmentStatus, PaymentStatus } from "./api";
 
 export interface SalesOrderItemRequest {
   catalog_id: string;
@@ -90,29 +90,3 @@ export interface SalesOrderDetail extends SalesOrderBase {
   items: SalesOrderItemDetail[];
 }
 
-/**
- * Sales Return Types
- */
-
-export interface SalesReturnItem {
-  sales_order_item_id: string;
-  quantity: number;
-  reason: string;
-}
-
-export interface SalesReturnRequest {
-  sales_order_id: string;
-  date: string;
-  items: SalesReturnItem[];
-}
-
-export interface SalesReturnDetail {
-  id: string;
-  sales_order_id: string;
-  number: string;
-  date: string;
-  status: SalesReturnStatus;
-  items: (SalesReturnItem & { id: string; unit_price: number })[];
-  created_at: string;
-  updated_at: string;
-}

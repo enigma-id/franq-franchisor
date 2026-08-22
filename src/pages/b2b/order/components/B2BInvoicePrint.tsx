@@ -187,8 +187,8 @@ export function B2BInvoicePrint({ order }: Props) {
               </p>
             </div>
             <div style={styles.dates}>
-              <strong>Tanggal:</strong>
-              <span>{formatDate(order.created_at, "DD/MM/YYYY")}</span>
+              <strong>Tanggal Invoice:</strong>
+              <span>{order.invoice_date ? formatDate(order.invoice_date) : "-"}</span>
               <strong>Payment Ref:</strong>
               <span>{order.payment_ref || "-"}</span>
             </div>

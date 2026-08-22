@@ -39,9 +39,10 @@ export const userApi = createApi({
     }),
 
     deleteUser: builder.mutation({
-      query: (id) => ({
+      query: ({ id, ...payload }) => ({
         url: `/user/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 
@@ -60,6 +61,14 @@ export const userApi = createApi({
         body: payload,
       }),
     }),
+
+    updateUserPermissions: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/user/${id}/permissions`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -71,4 +80,5 @@ export const {
   useDeleteUserMutation,
   useActivateUserMutation,
   useDeactivateUserMutation,
+  useUpdateUserPermissionsMutation,
 } = userApi;

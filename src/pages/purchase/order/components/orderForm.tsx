@@ -63,6 +63,30 @@ export function PurchaseOrderForm({
   );
   const [supplierSelected, setSupplierSelected] = useState<any | null>(null);
   const [warehouseSelected, setWarehouseSelected] = useState<any | null>(null);
+
+  // Auto-select warehouse ketika data hanya satu.
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20, is_active: "true" });
+  }, []);
+
+  useEffect(() => {
+    if (initialData) return;
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1 && !warehouseSelected) {
+      const item = items[0];
+      setWarehouseSelected(item);
+      setFormData((prev) => ({
+        ...prev,
+        warehouse_id: item?.id ?? "",
+        recipient_name: item?.name ?? prev.recipient_name,
+        address: item?.address ?? prev.address,
+      }));
+    }
+  }, [warehouseResult?.data?.data, initialData, warehouseSelected]);
+
+  // Disable select warehouse ketika hanya ada satu warehouse.
+  const isSingleWarehouse =
+    (warehouseResult?.data?.data as any[] | undefined)?.length === 1;
   const [etaAt, setEtaAt] = useState<Dayjs | null>(dayjs().add(1, "day"));
   const [formData, setFormData] = useState({
     supplier_id: "",
@@ -363,22 +387,22 @@ export function PurchaseOrderForm({
     <form
       id={id}
       onSubmit={handleSubmit}
-      className="max-w-6xl mx-auto space-y-5"
+      className='max-w-6xl mx-auto space-y-5'
     >
       {/* Section 1: Informasi Utama */}
       <div
-        className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
+        className='card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm'
         style={{ overflow: "visible", zIndex: 30 }}
       >
-        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+        <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+          <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
             Informasi Utama
           </h2>
         </div>
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className='p-5 grid grid-cols-1 md:grid-cols-2 gap-5'>
           <RemoteSelect<SupplierDetail>
-            label="Supplier"
-            placeholder="Pilih Supplier"
+            label='Supplier'
+            placeholder='Pilih Supplier'
             value={supplierSelected}
             hook={suppliersResult as any}
             fetchData={(page, search) =>
@@ -397,8 +421,9 @@ export function PurchaseOrderForm({
           />
 
           <RemoteSelect<WarehouseDetail>
-            label="Warehouse"
-            placeholder="Pilih Warehouse"
+            label='Warehouse'
+            placeholder='Pilih Warehouse'
+            disabled={isSingleWarehouse}
             value={warehouseSelected}
             hook={warehouseResult as any}
             fetchData={(page, search) =>
@@ -433,7 +458,7 @@ export function PurchaseOrderForm({
           />
 
           <DatePicker
-            label="Estimasi Kedatangan (ETA)"
+            label='Estimasi Kedatangan (ETA)'
             value={etaAt as any}
             disablePast
             onChange={(date) => {
@@ -453,9 +478,9 @@ export function PurchaseOrderForm({
           />
 
           <Input
-            label="Kode Referensi Eksternal"
-            variant="primary"
-            placeholder="Contoh: INV/SUP/109283"
+            label='Kode Referensi Eksternal'
+            variant='primary'
+            placeholder='Contoh: INV/SUP/109283'
             value={formData.ref_code}
             onChange={(e) => handleInputChange("ref_code", e.target.value)}
           />
@@ -463,20 +488,20 @@ export function PurchaseOrderForm({
       </div>
       {/* Section 2: Informasi Pengiriman & Penerima */}
       <div
-        className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm"
+        className='card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm'
         style={{ overflow: "visible", zIndex: 20 }}
       >
-        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+        <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+          <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
             Pengiriman & Penerima
           </h2>
         </div>
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className='p-5 grid grid-cols-1 md:grid-cols-2 gap-5'>
           <Input
-            label="Nama Penerima"
-            variant="primary"
+            label='Nama Penerima'
+            variant='primary'
             required
-            placeholder="Nama kontak di gudang..."
+            placeholder='Nama kontak di gudang...'
             value={formData.recipient_name}
             onChange={(e) =>
               handleInputChange("recipient_name", e.target.value)
@@ -488,10 +513,10 @@ export function PurchaseOrderForm({
             }
           />
           <Input
-            label="No. Handphone"
-            variant="primary"
+            label='No. Handphone'
+            variant='primary'
             required
-            placeholder="08123xxxx"
+            placeholder='08123xxxx'
             value={formData.recipient_phone}
             onChange={(e) =>
               handleInputChange("recipient_phone", e.target.value)
@@ -504,11 +529,11 @@ export function PurchaseOrderForm({
           />
 
           <Input
-            label="Alamat Pengiriman Lengkap"
-            variant="primary"
-            type="textarea"
+            label='Alamat Pengiriman Lengkap'
+            variant='primary'
+            type='textarea'
             required
-            placeholder="Masukkan alamat lengkap tujuan pengiriman..."
+            placeholder='Masukkan alamat lengkap tujuan pengiriman...'
             value={formData.address}
             onChange={(e) => handleInputChange("address", e.target.value)}
             error={
@@ -521,40 +546,40 @@ export function PurchaseOrderForm({
       </div>
       {/* Section 3: Dynamic Item Grid */}
       <div
-        className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm"
+        className='card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm'
         style={{ overflow: "visible", zIndex: 10 }}
       >
-        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+        <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl'>
+          <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
             Daftar Bahan Baku (Purchase Items)
           </h2>
         </div>
-        <div className="">
-          <table className="w-full text-left border-collapse min-w-250">
+        <div className=''>
+          <table className='w-full text-left border-collapse min-w-250'>
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
-                <th className="px-4 py-3 w-12 text-center">#</th>
-                <th className="px-4 py-3 min-w-62.5">Bahan Baku</th>
-                <th className="px-4 py-3 w-48">Satuan (Fraction)</th>
-                <th className="px-4 py-3 w-28 text-center">Jumlah</th>
-                <th className="px-4 py-3 w-40 text-right">Harga (Nett)</th>
-                <th className="px-4 py-3 w-44 text-right">Subtotal</th>
-                <th className="px-4 py-3 w-12 text-center"></th>
+              <tr className='bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider'>
+                <th className='px-4 py-3 w-12 text-center'>#</th>
+                <th className='px-4 py-3 min-w-62.5'>Bahan Baku</th>
+                <th className='px-4 py-3 w-48'>Satuan (Fraction)</th>
+                <th className='px-4 py-3 w-28 text-center'>Jumlah</th>
+                <th className='px-4 py-3 w-40 text-right'>Harga (Nett)</th>
+                <th className='px-4 py-3 w-44 text-right'>Subtotal</th>
+                <th className='px-4 py-3 w-12 text-center'></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className='divide-y divide-slate-100'>
               {formData.items.map((item, idx) => (
                 <tr
                   key={idx}
-                  className="hover:bg-slate-50/30 transition-colors"
+                  className='hover:bg-slate-50/30 transition-colors'
                 >
-                  <td className="px-4 py-4 text-center text-xs font-semibold text-slate-400">
+                  <td className='px-4 py-4 text-center text-xs font-semibold text-slate-400'>
                     {idx + 1}
                   </td>
-                  <td className="px-4 py-4">
+                  <td className='px-4 py-4'>
                     <RemoteSelect
                       key={`item-${supplierSelected?.id || "no-supplier"}-${idx}`}
-                      placeholder="Pilih item..."
+                      placeholder='Pilih item...'
                       value={item.itemSelected}
                       hook={itemsResult as any}
                       fetchData={(page, search) =>
@@ -563,23 +588,18 @@ export function PurchaseOrderForm({
                           search,
                           status: "active",
                           type: "raw_material",
-                          supplier_id: supplierSelected?.id || undefined,
                         }) as any
                       }
-                      getLabel={(it: any) =>
-                        it
-                          ? `${it.alias_name || it.name || "-"} [${it.barcode || "-"}]`
-                          : ""
-                      }
+                      getLabel={(it: any) => it.alias_name}
                       getValue={(it: any) => it?.id}
                       onChange={(val) => handleItemChange(idx, val)}
                       onClear={() => handleItemClear(idx)}
                       error={getErrorItem(idx, "item_id")}
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className='px-4 py-4'>
                     <RemoteSelect
-                      placeholder="Pilih satuan..."
+                      placeholder='Pilih satuan...'
                       value={item.fractionSelected}
                       disabled={!item.item_id}
                       data={fractionsCache[idx] || []}
@@ -594,11 +614,11 @@ export function PurchaseOrderForm({
                       error={getErrorItem(idx, "fraction_id")}
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className='px-4 py-4'>
                     <Input
-                      type="number"
-                      variant="primary"
-                      className="text-center"
+                      type='number'
+                      variant='primary'
+                      className='text-center'
                       value={item.quantity_ordered}
                       onChange={(e) =>
                         handleQtyChange(idx, Number(e.target.value))
@@ -607,11 +627,11 @@ export function PurchaseOrderForm({
                       error={getErrorItem(idx, "quantity_ordered")}
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className='px-4 py-4'>
                     <Input
-                      type="currency"
-                      variant="primary"
-                      className="text-right font-medium mono"
+                      type='currency'
+                      variant='primary'
+                      className='text-right font-medium mono'
                       value={item.unit_nett}
                       onChange={(e) =>
                         handlePriceChange(idx, Number(e.target.value))
@@ -620,18 +640,18 @@ export function PurchaseOrderForm({
                       error={getErrorItem(idx, "unit_nett")}
                     />
                   </td>
-                  <td className="px-4 py-4 text-right text-sm font-bold text-slate-800 mono">
+                  <td className='px-4 py-4 text-right text-sm font-bold text-slate-800 mono'>
                     {currencyFormat(item.quantity_ordered * item.unit_nett)}
                   </td>
-                  <td className="px-4 py-4 text-center">
+                  <td className='px-4 py-4 text-center'>
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => removeItemRow(idx)}
-                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      className='p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
                       disabled={formData.items.length === 1}
-                      title="Hapus baris"
+                      title='Hapus baris'
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className='w-4 h-4' />
                     </button>
                   </td>
                 </tr>
@@ -641,25 +661,25 @@ export function PurchaseOrderForm({
         </div>
 
         {/* Table Footer: Add Row */}
-        <div className="px-5 py-4 border-t border-slate-100">
+        <div className='px-5 py-4 border-t border-slate-100'>
           <button
-            type="button"
+            type='button'
             onClick={addItemRow}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+            className='w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer'
           >
-            <Plus className="w-4 h-4" />
-            Tambah Baris
+            <Plus className='w-4 h-4' />
+            Tambah Item
           </button>
         </div>
 
         {/* Table Footer: Billing Summary */}
-        <div className="bg-slate-50 border-t border-slate-200 p-5 rounded-b-xl flex flex-col md:flex-row justify-end">
-          <div className="w-full md:w-100 space-y-3">
-            <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-200">
-              <span className="text-base font-bold text-slate-800">
+        <div className='bg-slate-50 border-t border-slate-200 p-5 rounded-b-xl flex flex-col md:flex-row justify-end'>
+          <div className='w-full md:w-100 space-y-3'>
+            <div className='flex justify-between items-center pt-3 mt-3 border-t border-slate-200'>
+              <span className='text-base font-bold text-slate-800'>
                 Total Tagihan
               </span>
-              <span className="text-xl font-bold text-emerald-600 mono">
+              <span className='text-xl font-bold text-emerald-600 mono'>
                 {currencyFormat(computedTotals.subtotal || 0)}
               </span>
             </div>

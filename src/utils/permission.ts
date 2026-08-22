@@ -91,3 +91,29 @@ export const hasModuleAccess = (
   const readonlyPerm = `svc-warehouse.${module}.readonly`;
   return hasAnyPermission(userPermissions, [managePerm, readonlyPerm]);
 };
+
+import { useAppSelector } from "@/hooks";
+
+/**
+ * Hook: ambil permission slugs dari session user.
+ * @returns undefined = super admin (akses semua); [] = tidak punya permission.
+ */
+export const useUserPermissions = (): string[] | undefined => {
+  return useAppSelector((s) => s.auth.session?.user?.permissions);
+};
+
+/**
+ * Hook: cek user punya satu slug permission.
+ * @param slug - Permission slug (biasanya dari konstanta MENU / ACTION).
+ * @returns boolean (super admin → true).
+ */
+export const useCan = (slug: string): boolean =>
+  hasPermission(useUserPermissions(), slug);
+
+/**
+ * Hook: cek user punya salah satu dari beberapa slug (OR).
+ * @param slugs - Array permission slug.
+ * @returns boolean (super admin → true).
+ */
+export const useCanAny = (slugs: string[]): boolean =>
+  hasAnyPermission(useUserPermissions(), slugs);

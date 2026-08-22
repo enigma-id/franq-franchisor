@@ -52,3 +52,34 @@ export interface ProductSalesRow {
   discount: number
   total_nett: number
 }
+
+// Topup Cancelled
+export interface TopupCancelledRow {
+  date: string
+  reference_code: string
+  membership: string
+  outlet: string
+  nominal: number
+  cancelled_reason: string
+  cancelled_by: string
+  cancelled_at: string
+}
+
+export interface TopupCancelledSummary {
+  total_nominal: number
+  total_count: number
+}
+
+// Outlet Maps
+export interface OutletMapHistory {
+  latitude: number
+  longitude: number
+  created_at: string
+}
+
+export interface OutletMapRow {
+  outlet: string
+  outlet_name: string
+  total_charges: number
+  historys: OutletMapHistory[]
+}

@@ -6,9 +6,12 @@ import { ProductionPlanForm } from "./components/planForm";
 import { useEnigmaUI } from "@/components";
 import { Button, Loading } from "@/components/ui";
 import { Save } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const ProductionPlanCreatePage: React.FC = () => {
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.production);
   const { create, createResult } = useProductionPlan();
   const { isLoading: isCreating, isSuccess } = createResult;
   const { showToast } = useEnigmaUI();
@@ -32,21 +35,23 @@ const ProductionPlanCreatePage: React.FC = () => {
         subtitle="Input data rencana produksi harian untuk outlet."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="production-plan-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="production-plan-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
 

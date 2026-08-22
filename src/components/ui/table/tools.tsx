@@ -46,7 +46,11 @@ const TableTools: React.FC<TableToolsProps> = ({
 
   return (
     <div className="flex flex-col xl:flex-row w-full items-start xl:items-center justify-between gap-4 p-4 bg-white border border-gray-200 rounded-t-xl border-b-0 relative">
-      {!hideSearch && (
+      {hideSearch ? (
+        // Keep the flex spacer so the filter actions stay right-aligned,
+        // preserving the original layout when the search input is hidden.
+        <div className="flex-1" />
+      ) : (
         <div className="flex items-center gap-2 flex-1 w-full">
           <Input
             value={searchTerm}

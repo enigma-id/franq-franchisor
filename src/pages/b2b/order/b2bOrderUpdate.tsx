@@ -7,10 +7,13 @@ import { useB2BOrder } from "@/services/b2b/hooks";
 import { Save } from "lucide-react";
 import { useEnigmaUI } from "@/components";
 import { B2BOrderForm } from "./components/b2bOrderForm";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 export function B2BOrderUpdate() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canManage = useCan(ACTION.b2b);
   const { showToast } = useEnigmaUI();
 
   const { update, updateResult, show, showResult } = useB2BOrder();
@@ -43,21 +46,23 @@ export function B2BOrderUpdate() {
         subtitle="Perbarui pesanan B2B."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="b2b-order-form"
-            disabled={isUpdating || isLoadingData}
-            variant="success"
-          >
-            {isUpdating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Perubahan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="b2b-order-form"
+              disabled={isUpdating || isLoadingData}
+              variant="success"
+            >
+              {isUpdating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Perubahan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 overflow-auto p-4 md:p-6">

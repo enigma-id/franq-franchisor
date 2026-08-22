@@ -1,5 +1,5 @@
 import img from "../../../../public/logo.png";
-import { currencyFormat, formatDate } from "@/utils";
+import { currencyFormat, formatDateTime } from "@/utils";
 
 const Label = ({
   data,
@@ -58,7 +58,7 @@ const Label = ({
               : currencyFormat(data?.base_price)}
           </div>
           <div style={{ fontSize: 14, lineHeight: 1.1, marginTop: 5 }}>
-            Tanggal Produksi: {formatDate(data?.created_at)}
+            Tanggal Produksi: {formatDateTime(data?.created_at)}
           </div>
         </div>
 

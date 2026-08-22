@@ -17,10 +17,13 @@ import type { TableConfig } from "@/services/table/const";
 import { usePurchaseOrder } from "@/services/purchase/hooks";
 import { useEnigmaUI } from "@/components";
 import type { PurchaseOrderDetail } from "@/services/types";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const PurchaseOrderListPage: React.FC = () => {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.purchaseOrder);
   const {
     remove: removeItem,
     removeResult: removeItemResult,
@@ -44,8 +47,9 @@ const PurchaseOrderListPage: React.FC = () => {
         onRemove: (v) => openDelete(v),
         onPublish: (row) => openConfirmModal(row, "publish"),
         onPaid: (row) => openConfirmModal(row, "paid"),
+        canManage,
       }),
-    [navigate],
+    [navigate, canManage],
   );
 
   const Table = useTable("purchase-order", tableConfig as TableConfig<unknown>);
@@ -170,13 +174,15 @@ const PurchaseOrderListPage: React.FC = () => {
         title="Purchase Order"
         subtitle="Kelola pesanan pembelian barang ke supplier."
         action={
-          <Button
-            variant="primary"
-            onClick={() => navigate("/purchase/order/create")}
-          >
-            <Plus size={18} />
-            Tambah PO
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              onClick={() => navigate("/purchase/order/create")}
+            >
+              <Plus size={18} />
+              Tambah PO
+            </Button>
+          )
         }
       />
 

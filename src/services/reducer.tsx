@@ -27,6 +27,7 @@ import { franchisorApi } from "./franchisor/api";
 import { outletTopupApi } from "./outletTopup/api";
 import { userApi } from "./user/api";
 import { userGroupApi } from "./usergroup/api";
+import { permissionApi } from "./permission/api";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -56,6 +57,7 @@ const appReducer = combineReducers({
   [outletTopupApi.reducerPath]: outletTopupApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [userGroupApi.reducerPath]: userGroupApi.reducer,
+  [permissionApi.reducerPath]: permissionApi.reducer,
 });
 
 type AppState = ReturnType<typeof appReducer>;
@@ -84,6 +86,7 @@ export const apiMiddlewares = [
   outletTopupApi.middleware,
   userApi.middleware,
   userGroupApi.middleware,
+  permissionApi.middleware,
 ];
 
 export const rootReducer: Reducer<AppState, UnknownAction> = (

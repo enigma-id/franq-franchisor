@@ -1,7 +1,7 @@
 import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
 import type { B2BOrderDetail } from "@/services/types";
-import { getStatusVariant } from "@/utils";
+import { getStatusVariant, formatDate, formatDateTime } from "@/utils";
 import {
   Eye,
   MoreVertical,
@@ -10,6 +10,7 @@ import {
   FileText,
   Wallet,
   Edit,
+  XCircle,
 } from "lucide-react";
 
 const createTableConfig = ({
@@ -19,6 +20,9 @@ const createTableConfig = ({
   onShip,
   onInvoice,
   onPay,
+  onCancel,
+  canManage,
+  canCancel,
 }: {
   onClick?: (row: B2BOrderDetail) => void;
   onEdit?: (row: B2BOrderDetail) => void;
@@ -26,6 +30,9 @@ const createTableConfig = ({
   onShip?: (row: B2BOrderDetail) => void;
   onInvoice?: (row: B2BOrderDetail) => void;
   onPay?: (row: B2BOrderDetail) => void;
+  onCancel?: (row: B2BOrderDetail) => void;
+  canManage: boolean;
+  canCancel: boolean;
 }) => ({
   ...config,
   url: "/b2b/order",
@@ -38,7 +45,7 @@ const createTableConfig = ({
         <div>
           <span className='font-medium block'>{row.code}</span>
           <span className='text-xs text-gray-500 block'>
-            {new Date(row.created_at).toLocaleDateString("id-ID")}
+            {formatDateTime(row.created_at)}
           </span>
         </div>
       ),
@@ -89,7 +96,15 @@ const createTableConfig = ({
       sortable: true,
       class: "text-sm",
       component: (row: B2BOrderDetail) => (
-        <span>{new Date(row.shipping_date).toLocaleDateString("id-ID")}</span>
+        <span>{formatDate(row.shipping_date)}</span>
+      ),
+    },
+    invoice_date: {
+      title: "Tgl Invoice",
+      sortable: true,
+      class: "text-sm",
+      component: (row: B2BOrderDetail) => (
+        <span>{row.invoice_date ? formatDate(row.invoice_date) : "-"}</span>
       ),
     },
     action: {
@@ -124,7 +139,7 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
-          {row.document_status === "pending" && (
+          {canManage && row.document_status === "pending" && (
             <>
               <Dropdown.Item
                 onSelect={() => onEdit?.(row)}
@@ -177,7 +192,7 @@ const createTableConfig = ({
             </>
           )}
 
-          {row.payment_status === "unpaid" && (
+          {canManage && row.payment_status === "unpaid" && (
             <Dropdown.Item
               onSelect={() => onInvoice?.(row)}
               className='hover:bg-purple-50 hover:text-purple-600'
@@ -196,7 +211,7 @@ const createTableConfig = ({
             </Dropdown.Item>
           )}
 
-          {row.payment_status === "invoiced" && (
+          {canManage && row.payment_status === "invoiced" && (
             <Dropdown.Item
               onSelect={() => onPay?.(row)}
               className='hover:bg-emerald-50 hover:text-emerald-600'
@@ -214,6 +229,27 @@ const createTableConfig = ({
               </button>
             </Dropdown.Item>
           )}
+
+          {canCancel &&
+            (row.document_status !== "pending" ||
+              row.payment_status !== "unpaid") && (
+              <Dropdown.Item
+                onSelect={() => onCancel?.(row)}
+                className='hover:bg-red-50 hover:text-red-600'
+              >
+                <button className='flex items-center gap-3 py-1 rounded-xl text-slate-700'>
+                  <div className='w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600'>
+                    <XCircle className='w-4 h-4' />
+                  </div>
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Cancel</span>
+                    <span className='text-[11px] text-slate-400'>
+                      Cancel order
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+            )}
         </Dropdown>
       ),
     },

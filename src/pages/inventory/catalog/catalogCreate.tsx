@@ -6,11 +6,14 @@ import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { useNavigate } from "react-router-dom";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const InventoryCatalogCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { create, createResult } = useInventoryCatalog();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.catalog);
   const { isLoading: isCreating, isSuccess } = createResult;
 
   useEffect(() => {
@@ -32,21 +35,23 @@ const InventoryCatalogCreatePage: React.FC = () => {
         subtitle="Daftarkan katalog produk baru."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="inventory-catalog-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="inventory-catalog-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

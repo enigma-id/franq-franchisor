@@ -7,6 +7,7 @@ import {
   useDeleteUserMutation,
   useActivateUserMutation,
   useDeactivateUserMutation,
+  useUpdateUserPermissionsMutation,
 } from "./api";
 import type { UserDetail } from "../types";
 
@@ -20,5 +21,9 @@ export const useUser = createCrudHook<UserDetail>({
   customOperations: {
     activate: { hook: useActivateUserMutation },
     deactivate: { hook: useDeactivateUserMutation },
+    updatePermissions: {
+      hook: useUpdateUserPermissionsMutation,
+      errorMessage: "Failed to update user permissions",
+    },
   },
 });

@@ -69,6 +69,14 @@ export const b2bApi = createApi({
         body: payload,
       }),
     }),
+
+    cancelB2BOrder: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/b2b/order/${id}/cancel`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -81,4 +89,5 @@ export const {
   useShipB2BOrderMutation,
   useInvoiceB2BOrderMutation,
   usePayB2BOrderMutation,
+  useCancelB2BOrderMutation,
 } = b2bApi;

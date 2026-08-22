@@ -8,7 +8,7 @@ export const userGroupApi = createApi({
   endpoints: (builder) => ({
     getUserGroups: builder.query({
       query: (params) => ({
-        url: "/user/usergroup",
+        url: "/usergroup",
         method: "GET",
         params,
       }),
@@ -16,7 +16,7 @@ export const userGroupApi = createApi({
 
     getUserGroup: builder.query({
       query: ({ id, ...params }) => ({
-        url: `/user/usergroup/${id}`,
+        url: `/usergroup/${id}`,
         method: "GET",
         params,
       }),
@@ -24,7 +24,7 @@ export const userGroupApi = createApi({
 
     createUserGroup: builder.mutation({
       query: (payload) => ({
-        url: "/user/usergroup",
+        url: "/usergroup",
         method: "POST",
         body: payload,
       }),
@@ -32,16 +32,33 @@ export const userGroupApi = createApi({
 
     updateUserGroup: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/user/usergroup/${id}`,
+        url: `/usergroup/${id}`,
         method: "PUT",
         body: payload,
       }),
     }),
 
     deleteUserGroup: builder.mutation({
-      query: (id) => ({
-        url: `/user/usergroup/${id}`,
+      query: ({ id, payload = {} }) => ({
+        url: `/usergroup/${id}`,
         method: "DELETE",
+        body: payload,
+      }),
+    }),
+
+    activateUserGroup: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/usergroup/${id}/activate`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    deactivateUserGroup: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/usergroup/${id}/deactivate`,
+        method: "PUT",
+        body: payload,
       }),
     }),
   }),
@@ -53,4 +70,6 @@ export const {
   useCreateUserGroupMutation,
   useUpdateUserGroupMutation,
   useDeleteUserGroupMutation,
+  useActivateUserGroupMutation,
+  useDeactivateUserGroupMutation,
 } = userGroupApi;

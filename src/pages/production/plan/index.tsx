@@ -1,8 +1,14 @@
-import React, { useMemo, useEffect, useRef, useCallback, useState } from "react";
+import React, {
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button, Modal, RemoteSelect } from "@/components/ui";
+import { Button, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import useTable from "@/services/table/hooks";
 import { useProductionPlan } from "@/services/production/hooks";
@@ -12,29 +18,52 @@ import TableFilter from "./table/plan.filter";
 import type { ProductionPlanDetail } from "@/services/types/production";
 import type { WarehouseDetail } from "@/services/types/warehouse";
 import type { TableConfig } from "@/services/table/const";
-import { useAppSelector } from "@/hooks";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const ProductionPlanListPage: React.FC = () => {
   const navigate = useNavigate();
-  const FormState = useAppSelector((s) => s.form);
+  const canManage = useCan(ACTION.production);
   const { openModal, closeModal, showToast } = useEnigmaUI();
-  const { remove: removePlan, removeResult, publish: publishItem, publishResult, complete: completeItem, completeResult } = useProductionPlan();
+  const {
+    remove: removePlan,
+    removeResult,
+    publish: publishItem,
+    publishResult,
+    complete: completeItem,
+    completeResult,
+  } = useProductionPlan();
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
-  const [selectedRow, setSelectedRow] = useState<ProductionPlanDetail | null>(null);
-  const [actionType, setActionType] = useState<"publish" | "complete" | null>(null);
+  const [selectedRow, setSelectedRow] = useState<ProductionPlanDetail | null>(
+    null,
+  );
+  const [actionType, setActionType] = useState<"publish" | "complete" | null>(
+    null,
+  );
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+
+  // Auto-select warehouse ketika data hanya satu.
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1 && !warehouse) setWarehouse(items[0]);
+  }, [warehouseResult?.data?.data, warehouse]);
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
         onView: (id) => navigate(`/production/plan/${id}`),
-        // onEdit: (id) => navigate(`/production/plan/update/${id}`),
+        onEdit: (id) => navigate(`/production/plan/update/${id}`),
         onRemove: (v) => openDelete(v),
         onPublish: (row) => openConfirmModal(row, "publish"),
         onComplete: (row) => openConfirmModal(row, "complete"),
+        canManage,
       }),
-    [navigate],
+    [navigate, canManage],
   );
 
   const Table = useTable(
@@ -42,13 +71,18 @@ const ProductionPlanListPage: React.FC = () => {
     tableConfig as TableConfig<unknown>,
   );
 
-  useEffect(() => { tableRef.current = Table; }, [Table]);
+  useEffect(() => {
+    tableRef.current = Table;
+  }, [Table]);
 
-  const openConfirmModal = useCallback((row: ProductionPlanDetail, type: "publish" | "complete") => {
-    setSelectedRow(row);
-    setActionType(type);
-    setWarehouse(null);
-  }, []);
+  const openConfirmModal = useCallback(
+    (row: ProductionPlanDetail, type: "publish" | "complete") => {
+      setSelectedRow(row);
+      setActionType(type);
+      setWarehouse(null);
+    },
+    [],
+  );
 
   const closeConfirmModal = useCallback(() => {
     setSelectedRow(null);
@@ -60,16 +94,23 @@ const ProductionPlanListPage: React.FC = () => {
     if (!selectedRow) return;
     const id = selectedRow.id;
     switch (actionType) {
-      case "publish": await publishItem({ id, ...(warehouse ? { payload: { warehouse_id: warehouse.id } } : {}) }); break;
-      case "complete": await completeItem({ id }); break;
+      case "publish":
+        await publishItem({ id });
+        break;
+      case "complete":
+        await completeItem({ id });
+        break;
     }
   }, [selectedRow, actionType, publishItem, completeItem, warehouse]);
 
   const activeResult = useMemo(() => {
     switch (actionType) {
-      case "publish": return publishResult;
-      case "complete": return completeResult;
-      default: return null;
+      case "publish":
+        return publishResult;
+      case "complete":
+        return completeResult;
+      default:
+        return null;
     }
   }, [actionType, publishResult, completeResult]);
 
@@ -83,27 +124,27 @@ const ProductionPlanListPage: React.FC = () => {
           closeOnOutsideClick={false}
         >
           <Modal.Header>
-            <div className="font-bold! leading-7">Delete Production Plan</div>
+            <div className='font-bold! leading-7'>Delete Production Plan</div>
           </Modal.Header>
-          <Modal.Body className="text-sm font-normal leading-5">
+          <Modal.Body className='text-sm font-normal leading-5'>
             <p>
               Are you sure you want to delete plan <strong>{v.code}</strong>?
             </p>
-            <p className="text-slate-400 mt-1">This action cannot be undone.</p>
+            <p className='text-slate-400 mt-1'>This action cannot be undone.</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              className="flex-1 rounded-xl"
-              variant="error"
+              className='flex-1 rounded-xl'
+              variant='error'
               onClick={() => handleDelete(v)}
               isLoading={removeResult?.isLoading}
             >
               Confirm
             </Button>
             <Button
-              className="flex-1 rounded-xl"
-              styleType="outline"
-              variant="secondary"
+              className='flex-1 rounded-xl'
+              styleType='outline'
+              variant='secondary'
               onClick={() => closeModal("delete-plan")}
               disabled={removeResult?.isLoading}
             >
@@ -136,7 +177,10 @@ const ProductionPlanListPage: React.FC = () => {
   useEffect(() => {
     if (activeResult?.isSuccess) {
       showToast({
-        message: actionType === "publish" ? "Rencana produksi berhasil diterbitkan" : "Rencana produksi berhasil diselesaikan",
+        message:
+          actionType === "publish"
+            ? "Rencana produksi berhasil diterbitkan"
+            : "Rencana produksi berhasil diselesaikan",
         type: "success",
         position: "bottom-center",
       });
@@ -147,32 +191,34 @@ const ProductionPlanListPage: React.FC = () => {
   }, [activeResult?.isSuccess]);
 
   return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+    <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category="Production"
-        title="Daftar Rencana Produksi"
-        subtitle="Kelola dan pantau rencana produksi harian."
+        category='Production'
+        title='Daftar Rencana Produksi'
+        subtitle='Kelola dan pantau rencana produksi harian.'
         action={
-          <Button
-            variant="primary"
-            shape="wide"
-            size="md"
-            onClick={() => navigate("/production/plan/create")}
-          >
-            <Plus size={18} className="mr-2" />
-            Buat Rencana
-          </Button>
+          canManage && (
+            <Button
+              variant='primary'
+              shape='wide'
+              size='md'
+              onClick={() => navigate("/production/plan/create")}
+            >
+              <Plus size={18} className='mr-2' />
+              Buat Rencana Produksi
+            </Button>
+          )
         }
       />
 
-      <Page.Body className="flex-1 flex flex-col min-h-0">
+      <Page.Body className='flex-1 flex flex-col min-h-0'>
         <Table.Tools>
           <TableFilter table={Table} />
         </Table.Tools>
 
         <Table.Render
-          emptyTitle="Belum Ada Rencana"
-          emptyDescription="Daftar rencana produksi akan muncul di sini."
+          emptyTitle='Belum Ada Rencana'
+          emptyDescription='Daftar rencana produksi akan muncul di sini.'
         />
 
         <Table.Pagination />
@@ -184,44 +230,31 @@ const ProductionPlanListPage: React.FC = () => {
         closeOnOutsideClick={false}
       >
         <Modal.Header>
-          <div className="font-bold leading-7">
-            Konfirmasi {actionType === "publish" ? "Penerbitan" : "Penyelesaian"}
+          <div className='font-bold leading-7'>
+            Konfirmasi{" "}
+            {actionType === "publish" ? "Penerbitan" : "Penyelesaian"}
           </div>
         </Modal.Header>
-        <Modal.Body className="text-sm font-normal leading-5">
+        <Modal.Body className='text-sm font-normal leading-5'>
           <p>
-            Apakah Anda yakin ingin {actionType === "publish" ? "menerbitkan" : "menyelesaikan"}{" "}
-            rencana produksi <strong>{selectedRow?.code}</strong>?
+            Apakah Anda yakin ingin{" "}
+            {actionType === "publish" ? "menerbitkan" : "menyelesaikan"} rencana
+            produksi <strong>{selectedRow?.code}</strong>?
           </p>
-          {actionType === "publish" && selectedRow && (!selectedRow.warehouse_id || selectedRow.warehouse_id === "00000000-0000-0000-0000-000000000000") && (
-            <div className="mt-4">
-              <RemoteSelect
-                label="Warehouse"
-                required
-                hook={warehouseResult as any}
-                fetchData={(page?: number, search?: string) => getWarehouse({ page: page ?? 1, search })}
-                getLabel={(item: any) => item?.name}
-                value={warehouse}
-                onChange={(item: WarehouseDetail | null) => setWarehouse(item)}
-                placeholder="Pilih warehouse"
-                error={FormState?.errors?.warehouse_id as string}
-              />
-            </div>
-          )}
         </Modal.Body>
         <Modal.Footer>
           <Button
-            className="flex-1 rounded-xl"
-            variant="primary"
+            className='flex-1 rounded-xl'
+            variant='primary'
             onClick={handleConfirmAction}
             isLoading={activeResult?.isLoading}
           >
             Konfirmasi
           </Button>
           <Button
-            className="flex-1 rounded-xl"
-            styleType="outline"
-            variant="secondary"
+            className='flex-1 rounded-xl'
+            styleType='outline'
+            variant='secondary'
             onClick={closeConfirmModal}
             disabled={activeResult?.isLoading}
           >

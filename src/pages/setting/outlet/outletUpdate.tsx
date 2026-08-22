@@ -8,6 +8,8 @@ import { useOutlet } from "@/services/outlet/hooks";
 import { Save, RefreshCw } from "lucide-react";
 import { Button, Loading } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const OutletUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +17,7 @@ const OutletUpdatePage: React.FC = () => {
   const { show, showResult, update, updateResult } = useOutlet();
   const { showToast } = useEnigmaUI();
   const { isLoading: isUpdating, isSuccess, reset: resetUpdate } = updateResult;
+  const canManage = useCan(ACTION.outlet);
 
   useEffect(() => {
     if (id) {
@@ -45,21 +48,23 @@ const OutletUpdatePage: React.FC = () => {
         }
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="outlet-form"
-            disabled={isUpdating || showResult.isLoading}
-            variant="success"
-          >
-            {isUpdating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan Perubahan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="outlet-form"
+              disabled={isUpdating || showResult.isLoading}
+              variant="success"
+            >
+              {isUpdating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan Perubahan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>
@@ -75,6 +80,7 @@ const OutletUpdatePage: React.FC = () => {
             <OutletForm
               id="outlet-form"
               initialData={showResult.data?.data}
+              hideOwnerSection
               onSubmit={(data) => update({ id: id!, payload: data as any })}
             />
           )}

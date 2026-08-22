@@ -35,7 +35,7 @@ const buildParams = (table: BuildParamsProps) => {
 
   for (const key in allFilters) {
     const value = allFilters[key];
-    if (value !== "" && value !== null) {
+    if (value !== undefined && value !== "" && value !== null) {
       params[key] = Array.isArray(value) ? value.join(".") : String(value);
     }
   }

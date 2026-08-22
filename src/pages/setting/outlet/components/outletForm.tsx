@@ -12,12 +12,15 @@ import { useAppSelector } from "@/hooks";
 interface OutletFormProps {
   id?: string;
   initialData?: any;
+  /** Sembunyikan section Akun Pemilik — dipakai di mode update (user dikelola via drawer User). */
+  hideOwnerSection?: boolean;
   onSubmit: (data: OutletCreateRequest) => void;
 }
 
 export const OutletForm: React.FC<OutletFormProps> = ({
   id = "outlet-form",
   initialData,
+  hideOwnerSection = false,
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
@@ -123,7 +126,13 @@ export const OutletForm: React.FC<OutletFormProps> = ({
       </div>
 
       {/* Section 2: Informasi PIC & Kredensial Owner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        className={
+          hideOwnerSection
+            ? "grid grid-cols-1 gap-6"
+            : "grid grid-cols-1 md:grid-cols-2 gap-6"
+        }
+      >
         <div
           className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
           style={{ overflow: "visible", zIndex: 15 }}
@@ -157,51 +166,53 @@ export const OutletForm: React.FC<OutletFormProps> = ({
           </div>
         </div>
 
-        <div
-          className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
-          style={{ overflow: "visible", zIndex: 15 }}
-        >
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-              Akun Pemilik (Owner Credentials)
-            </h2>
-          </div>
-          <div className="p-5 space-y-4">
-            <Input
-              label="Nama Pemilik"
-              required
-              value={formData.owner_name}
-              onChange={(e) =>
-                setFormData({ ...formData, owner_name: e.target.value })
-              }
-              placeholder="Contoh: Budi Pemilik"
-              error={FormState?.errors?.owner_name as string}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {!hideOwnerSection && (
+          <div
+            className="bg-white border border-slate-200 rounded-xl relative shadow-sm"
+            style={{ overflow: "visible", zIndex: 15 }}
+          >
+            <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
+              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                Akun Pemilik (Owner Credentials)
+              </h2>
+            </div>
+            <div className="p-5 space-y-4">
               <Input
-                label="Username"
+                label="Nama Pemilik"
                 required
-                value={formData.owner_username}
+                value={formData.owner_name}
                 onChange={(e) =>
-                  setFormData({ ...formData, owner_username: e.target.value })
+                  setFormData({ ...formData, owner_name: e.target.value })
                 }
-                placeholder="Contoh: budi_sukabread"
-                error={FormState?.errors?.owner_username as string}
+                placeholder="Contoh: Budi Pemilik"
+                error={FormState?.errors?.owner_name as string}
               />
-              <Input
-                label="Password"
-                type="password"
-                required={!initialData}
-                value={formData.owner_password}
-                onChange={(e) =>
-                  setFormData({ ...formData, owner_password: e.target.value })
-                }
-                placeholder="********"
-                error={FormState?.errors?.owner_password as string}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Username"
+                  required
+                  value={formData.owner_username}
+                  onChange={(e) =>
+                    setFormData({ ...formData, owner_username: e.target.value })
+                  }
+                  placeholder="Contoh: budi_sukabread"
+                  error={FormState?.errors?.owner_username as string}
+                />
+                <Input
+                  label="Password"
+                  type="password"
+                  required={!initialData}
+                  value={formData.owner_password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, owner_password: e.target.value })
+                  }
+                  placeholder="********"
+                  error={FormState?.errors?.owner_password as string}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Section 3: Regional & Alamat */}

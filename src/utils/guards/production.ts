@@ -1,6 +1,13 @@
 import type { ProductionPlanDetail } from "@/services/types";
 
 /**
+ * Validates if a Production Plan can be edited.
+ */
+export const canEditPlan = (plan: ProductionPlanDetail): boolean => {
+  return plan.document_status === "pending";
+};
+
+/**
  * Validates if a Production Plan can be published.
  */
 export const canPublishPlan = (plan: ProductionPlanDetail): boolean => {

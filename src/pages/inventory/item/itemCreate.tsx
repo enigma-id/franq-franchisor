@@ -6,10 +6,13 @@ import { useInventoryItem } from "@/services/inventory/hooks";
 import { useNavigate } from "react-router-dom";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const InventoryItemCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.inventory);
   const { create, createResult } = useInventoryItem();
   const { isLoading: isCreating, isSuccess } = createResult;
 
@@ -32,21 +35,23 @@ const InventoryItemCreatePage: React.FC = () => {
         subtitle="Daftarkan barang inventaris baru."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="inventory-item-form"
-            disabled={isCreating}
-            variant="success"
-          >
-            {isCreating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="inventory-item-form"
+              disabled={isCreating}
+              variant="success"
+            >
+              {isCreating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

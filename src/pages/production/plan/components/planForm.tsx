@@ -10,8 +10,17 @@ import { useWarehouse } from "@/services/warehouse/hooks";
 import type { ProductionPlanDetail, WarehouseDetail } from "@/services/types";
 import { useAppSelector } from "@/hooks";
 import { dateFormat } from "@/utils";
+import type { SelectOptionValue } from "@/services/types/table";
+import { getOptionByValue } from "@/utils/helper";
+
+const TYPES = [
+  { value: "mitra", label: "Mitra" },
+  { value: "b2b", label: "B2B" },
+  { value: "sukabread", label: "Sukabread" },
+];
 
 type ProductionPlanFormItem = {
+  id?: string;
   item_id: string;
   itemSelected: unknown | null;
   quantity: number;
@@ -19,6 +28,7 @@ type ProductionPlanFormItem = {
 
 type ProductionPlanFormRequest = {
   warehouse_id: string;
+  type: string;
   production_date: string;
   note?: string;
   items: Array<{
@@ -47,11 +57,15 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
 
   const [formData, setFormData] = useState<{
     warehouse_id: string;
+    type: string;
     production_date: string;
+    note?: string;
     items: ProductionPlanFormItem[];
   }>({
     warehouse_id: "",
+    type: "mitra",
     production_date: new Date().toISOString(),
+    note: "",
     items: [
       {
         item_id: "",
@@ -63,11 +77,46 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
 
   const [production_date, setProductionDate] = useState<Dayjs | null>(dayjs());
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+  const [typeSelected, setTypeSelected] = useState<SelectOptionValue | null>({
+    value: "mitra",
+    label: "Mitra",
+  });
+
+  // Auto-select warehouse ketika data hanya satu.
+  useEffect(() => {
+    getWarehouse({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    if (initialData) return;
+    const items = warehouseResult?.data?.data as any[] | undefined;
+    if (items?.length === 1) {
+      const item = items[0];
+      setWarehouse(item);
+      setFormData((prev) => ({ ...prev, warehouse_id: item?.id || "" }));
+    }
+  }, [warehouseResult?.data?.data, initialData]);
+
+  useEffect(() => {
+    if (typeSelected?.value === "mitra") {
+      const items = warehouseResult?.data?.data as any[] | undefined;
+      if (items?.length === 1) {
+        const item = items[0];
+        setWarehouse(item);
+        setFormData((prev) => ({ ...prev, warehouse_id: item?.id || "" }));
+      }
+    }
+  }, [typeSelected]);
+
+  // Disable select warehouse ketika hanya ada satu warehouse.
+  const isSingleWarehouse =
+    (warehouseResult?.data?.data as any[] | undefined)?.length === 1;
 
   useEffect(() => {
     if (initialData) {
       const newItems = (initialData.items || []).map((data: any) => {
         return {
+          id: data?.id,
           itemSelected: data?.item,
           item_id: data?.item_id,
           quantity: data?.quantity_planned,
@@ -79,11 +128,14 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
           initialData?.warehouse_id !== "00000000-0000-0000-0000-000000000000"
             ? initialData?.warehouse_id
             : "",
+        type: initialData.type,
         production_date: initialData.production_date,
+        note: initialData?.note || "",
         items: newItems,
       });
 
       setProductionDate(dayjs(initialData.production_date));
+      setTypeSelected(getOptionByValue(TYPES, initialData.type));
 
       setWarehouse({
         id:
@@ -102,6 +154,17 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
       });
     }
   }, [initialData]);
+
+  const onChangeType = (val: any) => {
+    setTypeSelected(val);
+    setWarehouse(null);
+
+    setFormData((prev) => ({
+      ...prev,
+      type: val?.value as any,
+      warehouse_id: "",
+    }));
+  };
 
   const addItem = () => {
     setFormData((prev) => ({
@@ -130,9 +193,11 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
       ...formData,
       production_date: dateFormat(formData.production_date, "YYYY-MM-DD"),
       items: formData?.items.map((data) => ({
+        id: data?.id,
         item_id: data?.item_id,
         quantity: data?.quantity,
       })),
+      note: formData.note || "",
     };
     onSubmit(payload);
   };
@@ -146,31 +211,51 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative z-10">
-        <div className="space-y-2">
-          <RemoteSelect
-            label="Pilih Warehouse"
-            placeholder="Cari warehouse..."
-            hook={warehouseResult as any}
-            fetchData={(page, search) => getWarehouse({ page, search })}
-            getLabel={(item: any) => item?.name}
-            value={warehouse}
-            onChange={(item: any) => {
-              setWarehouse(item);
-              setFormData((prev) => ({
-                ...prev,
-                warehouse_id: item?.id || "",
-              }));
-            }}
+    <form id={id} onSubmit={handleSubmit} className='space-y-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative z-10'>
+        <div className='space-y-2'>
+          <RemoteSelect<SelectOptionValue>
+            label='Tipe'
+            placeholder='Pilih Tipe...'
             required
-            error={FormState?.errors?.warehouse_id as string}
+            data={TYPES}
+            value={typeSelected}
+            getLabel={(item: any) => item?.label || ""}
+            getValue={(item: any) => item?.value}
+            onChange={(val) => {
+              onChangeType(val);
+            }}
+            onClear={() => {
+              onChangeType(null);
+            }}
+            error={FormState?.errors?.type as string}
           />
+
+          {typeSelected?.value === "mitra" && (
+            <RemoteSelect
+              label='Pilih Warehouse'
+              placeholder='Cari warehouse...'
+              disabled={isSingleWarehouse}
+              hook={warehouseResult as any}
+              fetchData={(page, search) => getWarehouse({ page, search })}
+              getLabel={(item: any) => item?.name}
+              value={warehouse}
+              onChange={(item: any) => {
+                setWarehouse(item);
+                setFormData((prev) => ({
+                  ...prev,
+                  warehouse_id: item?.id || "",
+                }));
+              }}
+              required
+              error={FormState?.errors?.warehouse_id as string}
+            />
+          )}
         </div>
 
-        <div className="space-y-2">
+        <div className='space-y-2'>
           <DatePicker
-            label="Tanggal Produksi"
+            label='Tanggal Produksi'
             value={production_date || undefined}
             onChange={(date: any) => {
               setProductionDate(date as Dayjs);
@@ -183,33 +268,45 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             error={FormState?.errors?.eta_date as string}
           />
         </div>
+
+        <div className='md:col-span-2 space-y-2'>
+          <Input
+            type='textarea'
+            label='Catatan'
+            placeholder='Tambahkan catatan rencana produksi...'
+            value={formData.note || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, note: e.target.value }))
+            }
+          />
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-visible relative">
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-          <h3 className="font-bold text-slate-700">Daftar Item Produksi</h3>
+      <div className='bg-white rounded-xl border border-slate-200 shadow-sm overflow-visible relative'>
+        <div className='px-6 py-4 border-b border-slate-100 bg-slate-50/50'>
+          <h3 className='font-bold text-slate-700'>Daftar Item Produksi</h3>
         </div>
-        <table className="w-full text-left border-collapse min-w-150">
+        <table className='w-full text-left border-collapse min-w-150'>
           <thead>
-            <tr className="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
-              <th className="px-6 py-3 w-10 text-center">#</th>
-              <th className="px-6 py-3">Produk Catalog</th>
-              <th className="px-6 py-3 w-32">Quantity</th>
-              <th className="px-6 py-3 w-16 text-center"></th>
+            <tr className='bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200'>
+              <th className='px-6 py-3 w-10 text-center'>#</th>
+              <th className='px-6 py-3'>Produk Catalog</th>
+              <th className='px-6 py-3 w-32'>Quantity</th>
+              <th className='px-6 py-3 w-16 text-center'></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className='divide-y divide-slate-100'>
             {formData.items.map((item, index) => (
               <tr
                 key={index}
-                className="hover:bg-slate-50/50 transition-colors"
+                className='hover:bg-slate-50/50 transition-colors'
               >
-                <td className="px-6 py-4 text-center text-xs font-semibold text-slate-400">
+                <td className='px-6 py-4 text-center text-xs font-semibold text-slate-400'>
                   {index + 1}
                 </td>
-                <td className="px-6 py-4">
+                <td className='px-6 py-4'>
                   <RemoteSelect
-                    placeholder="Pilih Produk Catalog..."
+                    placeholder='Pilih Produk Catalog...'
                     value={item.itemSelected}
                     hook={catalogsResult as any}
                     fetchData={(page, search) =>
@@ -242,9 +339,9 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                     error={getErrorItem(index, "item_id")}
                   />
                 </td>
-                <td className="px-6 py-4">
+                <td className='px-6 py-4'>
                   <Input
-                    type="number"
+                    type='number'
                     min={1}
                     value={item.quantity}
                     onChange={(e) =>
@@ -257,10 +354,10 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
                     error={getErrorItem(index, "quantity")}
                   />
                 </td>
-                <td className="px-6 py-4 text-center">
+                <td className='px-6 py-4 text-center'>
                   <Button
-                    variant="error"
-                    styleType="ghost"
+                    variant='error'
+                    styleType='ghost'
                     onClick={() => removeItem(index)}
                   >
                     <Trash2 size={18} />
@@ -270,16 +367,15 @@ export const ProductionPlanForm: React.FC<ProductionPlanFormProps> = ({
             ))}
           </tbody>
         </table>
-        <div className="px-6 py-4 border-t border-slate-100">
-          <Button
-            variant="success"
+        <div className='px-6 py-4 border-t border-slate-100'>
+          <button
+            type='button'
             onClick={addItem}
-            size="sm"
-            styleType="soft"
+            className='w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 border-dashed rounded-lg transition-colors cursor-pointer'
           >
             <Plus size={14} />
-            Tambah Baris
-          </Button>
+            Tambah Item
+          </button>
         </div>
       </div>
     </form>

@@ -4,7 +4,6 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { DatePicker, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
-import { documentStatusOptions, paymentStatusOptions } from "@/utils/options";
 import TableFilters from "@/components/ui/table/filter";
 import { useOutlet } from "@/services/outlet/hooks";
 import { useWarehouse } from "@/services/warehouse/hooks";
@@ -19,6 +18,24 @@ interface TableFilterProps {
   };
 }
 
+const documentStatusOptions: SelectOptionValue[] = [
+  { label: "Pending", value: "pending" },
+  { label: "Published", value: "published" },
+  { label: "Cancelled", value: "cancelled" },
+  { label: "Completed", value: "completed" },
+];
+
+const fulfillmentStatusOptions: SelectOptionValue[] = [
+  { label: "New", value: "new" },
+  { label: "Completed", value: "completed" },
+  { label: "Disputed", value: "disputed" },
+];
+
+const paymentStatusOptions: SelectOptionValue[] = [
+  { label: "Unpaid", value: "unpaid" },
+  { label: "Paid", value: "paid" },
+];
+
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   const current = useMemo(
     () => table.State?.filter ?? {},
@@ -31,6 +48,15 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       const value = current.document_status;
       return value
         ? (documentStatusOptions.find((opt) => opt.value === value) ?? null)
+        : null;
+    });
+
+  // ── Fulfillment Status ──
+  const [fulfillmentStatus, setFulfillmentStatus] =
+    useState<SelectOptionValue | null>(() => {
+      const value = current.fulfillment_status;
+      return value
+        ? (fulfillmentStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
     });
 
@@ -95,6 +121,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   // ── Build filter payload ──
   const buildFilters = () => ({
     document_status: documentStatus?.value ?? "",
+    fulfillment_status: fulfillmentStatus?.value ?? "",
     payment_status: paymentStatus?.value ?? "",
     outlet_id: outlet?.id ?? "",
     warehouse_id: warehouse?.id ?? "",
@@ -107,16 +134,26 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     const fresh = buildFilters();
     return (
       (fresh.document_status || "") !== (current.document_status || "") ||
+      (fresh.fulfillment_status || "") !== (current.fulfillment_status || "") ||
       (fresh.payment_status || "") !== (current.payment_status || "") ||
       (fresh.outlet_id || "") !== (current.outlet_id || "") ||
       (fresh.warehouse_id || "") !== (current.warehouse_id || "") ||
       (fresh.start_date || "") !== (current.start_date || "") ||
       (fresh.end_date || "") !== (current.end_date || "")
     );
-  }, [documentStatus, paymentStatus, outlet, warehouse, dateRange, current]);
+  }, [
+    documentStatus,
+    fulfillmentStatus,
+    paymentStatus,
+    outlet,
+    warehouse,
+    dateRange,
+    current,
+  ]);
 
   const anyActive = !!(
     current.document_status ||
+    current.fulfillment_status ||
     current.payment_status ||
     current.outlet_id ||
     current.warehouse_id ||
@@ -127,12 +164,14 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   // ── Handlers ──
   const handleClear = () => {
     setDocumentStatus(null);
+    setFulfillmentStatus(null);
     setPaymentStatus(null);
     setOutlet(null);
     setWarehouse(null);
     setDateRange(undefined);
     table.filter({
       document_status: "",
+      fulfillment_status: "",
       payment_status: "",
       outlet_id: "",
       warehouse_id: "",
@@ -165,8 +204,19 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
         />
 
         <RemoteSelect<SelectOptionValue>
-          label="Status Pembayaran"
-          placeholder="Filter Pembayaran"
+          label="Fulfillment Status"
+          placeholder="Filter Fulfillment"
+          data={fulfillmentStatusOptions}
+          value={fulfillmentStatus}
+          onChange={(opt) => setFulfillmentStatus(opt)}
+          onClear={() => setFulfillmentStatus(null)}
+          getLabel={(item) => item?.label ?? ""}
+          renderItem={(item) => item?.label}
+        />
+
+        <RemoteSelect<SelectOptionValue>
+          label="Payment Status"
+          placeholder="Filter Payment"
           data={paymentStatusOptions}
           value={paymentStatus}
           onChange={(opt) => setPaymentStatus(opt)}
@@ -191,8 +241,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
         />
 
         <RemoteSelect
-          label="Gudang"
-          placeholder="Filter Gudang"
+          label="Warehouse"
+          placeholder="Filter Warehouse"
           value={warehouse}
           onChange={(val) => setWarehouse(val)}
           onClear={() => setWarehouse(null)}
@@ -206,7 +256,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
         />
 
         <DatePicker
-          label="Rentang Tanggal"
+          label="Tanggal Dibuat"
           mode="range"
           value={dateRange}
           onChange={(date) => {

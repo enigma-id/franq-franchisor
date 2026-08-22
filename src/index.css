@@ -1,16 +1,33 @@
 @import "tailwindcss";
 
-/* Subtle attribution for dashboard outlet map */
-.outlet-map .leaflet-control-attribution {
-  font-size: 9px;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(4px);
-  padding: 1px 4px;
-  border-radius: 6px;
+/* Single-card popup for outlet map (mapbox) — kills the doubled card look. */
+.outlet-mapbox-popup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
 }
-.outlet-map .leaflet-control-attribution a {
+.outlet-mapbox-popup .mapboxgl-popup-tip {
+  box-shadow: none;
+}
+/* Close button — keep it inside, rounded, not hugging the corner. */
+.outlet-mapbox-popup .mapboxgl-popup-close-button {
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   color: #64748b;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  line-height: 1;
+}
+.outlet-mapbox-popup .mapboxgl-popup-close-button:hover {
+  color: #111827;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 @plugin "daisyui/index.js" {
@@ -18,28 +35,28 @@
   exclude: input, modal, drawer, table;
 }
 
-@import './components/ui/drawer/drawer.css';
-@import './components/ui/file/file.css';
-@import './components/ui/input/input.css';
-@import './components/ui/modal/modal.css';
-@import './components/ui/select/select.css';
-@import './components/ui/table/table.css';
-@import './components/ui/card/card.css';
-@import './components/app/app.css';
+@import "./components/ui/drawer/drawer.css";
+@import "./components/ui/file/file.css";
+@import "./components/ui/input/input.css";
+@import "./components/ui/modal/modal.css";
+@import "./components/ui/select/select.css";
+@import "./components/ui/table/table.css";
+@import "./components/ui/card/card.css";
+@import "./components/app/app.css";
 
 @plugin "daisyui/theme" {
-  name: 'sukabread';
+  name: "sukabread";
   default: true;
   prefersdark: false;
-  color-scheme: 'light';
+  color-scheme: "light";
 
   --color-base-100: oklch(1 0 0);
   --color-base-200: oklch(0.978 0.003 264.91);
-  --color-base-300: oklch(0.940 0.007 264.91);
+  --color-base-300: oklch(0.941 0.007 264.91);
   --color-base-content: oklch(0.35 0.01 264.91);
   --color-base-content-shadow: oklch(0.35 0.01 264.91/0.12);
-  --color-primary: oklch(0.701 0.233 49.71);
-  --color-primary-shadow: oklch(0.701 0.233 49.71/0.12);
+  --color-primary: oklch(39.7% 0.044 249);
+  --color-primary-shadow: oklch(39.7% 0.044 249 / 0.2);
   --color-primary-content: oklch(100% 0 0);
   --color-secondary: oklch(0.92 0.01 264.91);
   --color-secondary-shadow: oklch(0.92 0.01 264.91/0.12);
@@ -63,7 +80,7 @@
   --color-error-shadow: oklch(0.627 0.224 27.08/0.12);
   --color-error-content: oklch(100% 0 0);
 
-  --radius-selector: 1rem;
+  --radius-selector: 0.375rem;
   --radius-field: 0.75rem;
   --radius-box: 0.75rem;
 

@@ -179,7 +179,6 @@ export function InventoryItemForm({
   };
 
   const removeBoms = (index: number) => {
-    if (index === 0) return;
     setBoms((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -211,24 +210,24 @@ export function InventoryItemForm({
     <form
       id={id}
       onSubmit={handleSubmit}
-      className="max-w-6xl mx-auto space-y-6"
+      className='max-w-6xl mx-auto space-y-6'
     >
       {/* Grid: Basic Info + Pricing */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {/* Informasi Umum Item Card */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-20">
-          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-orange-50 text-orange-600 rounded-lg">
+        <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-20'>
+          <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <div className='p-1.5 bg-orange-50 text-orange-600 rounded-lg'>
                 <Package size={18} />
               </div>
-              <h2 className="font-bold text-slate-700">Informasi Umum Item</h2>
+              <h2 className='font-bold text-slate-700'>Informasi Umum Item</h2>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 p-5'>
             <RemoteSelect<SelectOptionValue>
-              label="Tipe"
-              placeholder="Pilih Tipe..."
+              label='Tipe'
+              placeholder='Pilih Tipe...'
               required
               data={TYPES}
               value={typeSelected}
@@ -250,8 +249,8 @@ export function InventoryItemForm({
             />
 
             <RemoteSelect<SupplierDetail>
-              label="Supplier"
-              placeholder="Pilih Supplier..."
+              label='Supplier'
+              placeholder='Pilih Supplier...'
               hook={supplierResult as any}
               fetchData={(page, search) => getSupplier({ page, search })}
               getLabel={(item: any) => item?.name}
@@ -261,12 +260,12 @@ export function InventoryItemForm({
             />
 
             <Input
-              label="Nama Item"
+              label='Nama Item'
               required
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              placeholder="Masukkan nama item"
-              variant="primary"
+              placeholder='Masukkan nama item'
+              variant='primary'
               error={
                 typeof FormState?.errors?.name === "string"
                   ? FormState.errors.name
@@ -274,12 +273,12 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Kategori"
+              label='Kategori'
               required
               value={formData.category}
               onChange={(e) => handleInputChange("category", e.target.value)}
-              placeholder="Masukkan kategori"
-              variant="primary"
+              placeholder='Masukkan kategori'
+              variant='primary'
               error={
                 typeof FormState?.errors?.category === "string"
                   ? FormState.errors.category
@@ -287,11 +286,11 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Barcode"
+              label='Barcode'
               value={formData.barcode}
               onChange={(e) => handleInputChange("barcode", e.target.value)}
-              placeholder="Masukkan barcode"
-              variant="primary"
+              placeholder='Masukkan barcode'
+              variant='primary'
               error={
                 typeof FormState?.errors?.barcode === "string"
                   ? FormState.errors.barcode
@@ -299,11 +298,11 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Variant"
+              label='Variant'
               value={formData.variant}
               onChange={(e) => handleInputChange("variant", e.target.value)}
-              placeholder="Masukkan variant"
-              variant="primary"
+              placeholder='Masukkan variant'
+              variant='primary'
               error={
                 typeof FormState?.errors?.variant === "string"
                   ? FormState.errors.variant
@@ -311,11 +310,11 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Packaging"
+              label='Packaging'
               value={formData.packaging}
               onChange={(e) => handleInputChange("packaging", e.target.value)}
-              placeholder="Masukkan packaging"
-              variant="primary"
+              placeholder='Masukkan packaging'
+              variant='primary'
               error={
                 typeof FormState?.errors?.packaging === "string"
                   ? FormState.errors.packaging
@@ -323,11 +322,11 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Size"
+              label='Size'
               value={formData.size}
               onChange={(e) => handleInputChange("size", e.target.value)}
-              placeholder="Masukkan size"
-              variant="primary"
+              placeholder='Masukkan size'
+              variant='primary'
               error={
                 typeof FormState?.errors?.size === "string"
                   ? FormState.errors.size
@@ -335,17 +334,17 @@ export function InventoryItemForm({
               }
             />
             <Checkbox
-              label="Batch Tracking"
+              label='Batch Tracking'
               checked={formData.is_batch_tracking}
               onChange={(e) =>
                 handleCheckboxChange("is_batch_tracking", e.target.checked)
               }
-              variant="primary"
+              variant='primary'
             />
             {formData.is_batch_tracking && (
               <RemoteSelect<SelectOptionValue>
-                label="Picking Strategy"
-                placeholder="Pilih..."
+                label='Picking Strategy'
+                placeholder='Pilih...'
                 data={STRATEGY}
                 value={strategySelected}
                 getLabel={(item: any) => item?.label || ""}
@@ -369,28 +368,28 @@ export function InventoryItemForm({
         </div>
 
         {/* Harga, Berat & Pajak Card */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
-          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-violet-50 text-violet-600 rounded-lg">
+        <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10'>
+          <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <div className='p-1.5 bg-violet-50 text-violet-600 rounded-lg'>
                 <Package size={18} />
               </div>
-              <h2 className="font-bold text-slate-700">Harga, Berat & Pajak</h2>
+              <h2 className='font-bold text-slate-700'>Harga, Berat & Pajak</h2>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 p-5'>
             <Input
-              label="Base Price"
-              type="currency"
+              label='Base Price'
+              type='currency'
               value={formData.base_price}
               onChange={(e) =>
                 handleInputChange("base_price", Number(e.target.value))
               }
-              placeholder="0"
+              placeholder='0'
               prefix={
-                <span className="text-sm font-medium text-slate-500">Rp</span>
+                <span className='text-sm font-medium text-slate-500'>Rp</span>
               }
-              variant="primary"
+              variant='primary'
               error={
                 typeof FormState?.errors?.base_price === "string"
                   ? FormState.errors.base_price
@@ -399,16 +398,16 @@ export function InventoryItemForm({
             />
 
             <Input
-              label="Berat"
+              label='Berat'
               required
-              type="number"
+              type='number'
               value={formData.weight}
               onChange={(e) =>
                 handleInputChange("weight", Number(e.target.value))
               }
-              placeholder="0"
-              suffix={<span className="text-sm text-slate-400">gram</span>}
-              variant="primary"
+              placeholder='0'
+              suffix={<span className='text-sm text-slate-400'>gram</span>}
+              variant='primary'
               error={
                 typeof FormState?.errors?.weight === "string"
                   ? FormState.errors.weight
@@ -416,16 +415,16 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Volume"
-              type="number"
+              label='Volume'
+              type='number'
               value={formData.volume}
               onChange={(e) =>
                 handleInputChange("volume", Number(e.target.value))
               }
-              placeholder="0"
-              suffix={<span className="text-sm text-slate-400">cm³</span>}
-              hint="Rumus dalam cm (PxLxT)/4, hasil menjadi satuan gram"
-              variant="primary"
+              placeholder='0'
+              suffix={<span className='text-sm text-slate-400'>cm³</span>}
+              hint='Rumus dalam cm (PxLxT)/4, hasil menjadi satuan gram'
+              variant='primary'
               error={
                 typeof FormState?.errors?.volume === "string"
                   ? FormState.errors.volume
@@ -433,14 +432,14 @@ export function InventoryItemForm({
               }
             />
             <Input
-              label="Safety Stock"
-              type="number"
+              label='Safety Stock'
+              type='number'
               value={formData.safety_stock}
               onChange={(e) =>
                 handleInputChange("safety_stock", Number(e.target.value))
               }
-              placeholder="0"
-              variant="primary"
+              placeholder='0'
+              variant='primary'
               error={
                 typeof FormState?.errors?.safety_stock === "string"
                   ? FormState.errors.safety_stock
@@ -449,37 +448,37 @@ export function InventoryItemForm({
             />
 
             <Checkbox
-              label="Vatable (PPN)"
+              label='Vatable (PPN)'
               checked={formData.is_vatable}
               onChange={(e) =>
                 handleCheckboxChange("is_vatable", e.target.checked)
               }
-              variant="primary"
+              variant='primary'
             />
           </div>
         </div>
       </div>
 
       {/* Fractions Card */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10">
-        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-orange-50 text-orange-600 rounded-lg">
+      <div className='bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible relative z-10'>
+        <div className='px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <div className='p-1.5 bg-orange-50 text-orange-600 rounded-lg'>
               <Package size={16} />
             </div>
-            <h2 className="font-bold text-slate-700">Satuan (Fractions)</h2>
+            <h2 className='font-bold text-slate-700'>Satuan (Fractions)</h2>
           </div>
           <button
-            type="button"
+            type='button'
             onClick={addFraction}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
+            className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer'
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className='w-3.5 h-3.5' />
             Tambah
           </button>
         </div>
-        <div className="p-4">
-          <div className="space-y-3">
+        <div className='p-4'>
+          <div className='space-y-3'>
             {fractions.map((fraction, index) => (
               <div
                 key={index}
@@ -490,17 +489,17 @@ export function InventoryItemForm({
                     : "bg-white border-slate-200 hover:border-violet-300",
                 )}
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                <div className='flex-1'>
+                  <div className='flex items-center gap-2 mb-1'>
                     <Input
-                      label="Nama Satuan"
+                      label='Nama Satuan'
                       value={fraction.name}
                       onChange={(e) =>
                         updateFraction(index, "name", e.target.value)
                       }
-                      placeholder="Contoh: PCS, Box, Lusin"
+                      placeholder='Contoh: PCS, Box, Lusin'
                       required
-                      variant="primary"
+                      variant='primary'
                       error={
                         (typeof FormState?.errors?.[
                           `fractions.${index}.name`
@@ -511,16 +510,16 @@ export function InventoryItemForm({
                     />
                   </div>
                 </div>
-                <div className="w-28">
+                <div className='w-28'>
                   <Input
-                    label="Qty"
-                    type="number"
+                    label='Qty'
+                    type='number'
                     value={fraction.quantity}
                     disabled={index === 0}
                     onChange={(e) =>
                       updateFraction(index, "quantity", Number(e.target.value))
                     }
-                    variant="primary"
+                    variant='primary'
                     error={
                       (typeof FormState?.errors?.[
                         `fractions.[${index}].quantity`
@@ -531,17 +530,17 @@ export function InventoryItemForm({
                   />
                 </div>
                 {index === 0 && (
-                  <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium mt-6">
+                  <span className='text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium mt-6'>
                     Satuan terkecil
                   </span>
                 )}
                 {index > 0 && (
                   <button
-                    type="button"
+                    type='button'
                     onClick={() => removeFraction(index)}
-                    className="mt-7 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                    className='mt-7 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer'
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className='w-4 h-4' />
                   </button>
                 )}
               </div>
@@ -552,27 +551,27 @@ export function InventoryItemForm({
 
       {/* BOMS Card */}
       {typeSelected?.value === "finished_goods" && (
-        <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! relative z-20">
-          <div className="table-header px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="table-header-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg">
+        <div className='card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! relative z-20'>
+          <div className='table-header px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <div className='table-header-icon p-1.5 bg-violet-50 text-violet-600 rounded-lg'>
                 <Package size={16} />
               </div>
-              <h2 className="table-header-title font-bold text-slate-700">
+              <h2 className='table-header-title font-bold text-slate-700'>
                 Bill of Materials
               </h2>
             </div>
             <button
-              type="button"
+              type='button'
               onClick={addBoms}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
+              className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer'
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className='w-3.5 h-3.5' />
               Tambah
             </button>
           </div>
-          <div className="p-4">
-            <div className="space-y-3">
+          <div className='p-4'>
+            <div className='space-y-3'>
               {boms.map((bom, index) => (
                 <div
                   key={index}
@@ -583,11 +582,11 @@ export function InventoryItemForm({
                       : "border-slate-200",
                   )}
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className='flex-1'>
+                    <div className='flex items-center gap-2 mb-1'>
                       <RemoteSelect<InventoryItemDetail>
-                        label="Item"
-                        placeholder="Pilih item..."
+                        label='Item'
+                        placeholder='Pilih item...'
                         required
                         hook={itemsResult as any}
                         fetchData={(page, search) =>
@@ -601,42 +600,42 @@ export function InventoryItemForm({
                         }}
                         error={
                           (typeof FormState?.errors?.[
-                            `boms.[${index}].material_id`
+                            `boms.${index}.material_id`
                           ] === "string"
-                            ? FormState.errors?.[`boms.[${index}].material_id`]
+                            ? FormState.errors?.[`boms.${index}.material_id`]
                             : undefined) as any
                         }
                       />
                     </div>
                   </div>
-                  <div className="w-28">
+                  <div className='w-28'>
                     <Input
-                      label="Qty"
-                      type="number"
+                      label='Qty'
+                      type='number'
                       value={bom.quantity}
                       onChange={(e) =>
                         updateBoms(index, "quantity", Number(e.target.value))
                       }
-                      variant="primary"
+                      variant='primary'
                       error={
                         (typeof FormState?.errors?.[
-                          `boms.[${index}].quantity`
+                          `boms.${index}.quantity`
                         ] === "string"
-                          ? FormState.errors?.[`boms.[${index}].quantity`]
+                          ? FormState.errors?.[`boms.${index}.quantity`]
                           : undefined) as any
                       }
                     />
                   </div>
-                  <div className="w-48">
+                  <div className='w-48'>
                     <Input
-                      label="Nama Satuan"
+                      label='Nama Satuan'
                       value={bom.measurement}
                       onChange={(e) =>
                         updateBoms(index, "measurement", e.target.value)
                       }
-                      placeholder="Contoh: ml, gram, pcs"
+                      placeholder='Contoh: ml, gram, pcs'
                       required
-                      variant="primary"
+                      variant='primary'
                       error={
                         (typeof FormState?.errors?.[
                           `boms.${index}.measurement`
@@ -647,20 +646,18 @@ export function InventoryItemForm({
                     />
                   </div>
 
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => removeBoms(index)}
-                      className="mt-7 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+                  <button
+                    type='button'
+                    onClick={() => removeBoms(index)}
+                    className='mt-7 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer'
+                  >
+                    <Trash2 className='w-4 h-4' />
+                  </button>
                 </div>
               ))}
 
               {FormState.errors?.boms ? (
-                <div className="text-error text-xs font-medium leading-[1.66] pt-1">
+                <div className='text-error text-xs font-medium leading-[1.66] pt-1'>
                   {FormState.errors?.boms as string}
                 </div>
               ) : null}

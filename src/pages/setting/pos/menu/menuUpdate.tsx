@@ -7,6 +7,8 @@ import { usePOSMenu } from "@/services/pos/hooks";
 import { Loading } from "@/components/ui";
 import { Button, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const POSMenuUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +16,7 @@ const POSMenuUpdatePage: React.FC = () => {
   const { showToast } = useEnigmaUI();
   const { show, showResult, update, updateResult } = usePOSMenu();
   const { isLoading: isUpdating, isSuccess } = updateResult;
+  const canManage = useCan(ACTION.posMenu);
 
   useEffect(() => {
     if (id) {
@@ -40,21 +43,23 @@ const POSMenuUpdatePage: React.FC = () => {
         subtitle="Perbarui informasi menu makanan atau minuman."
         backTo={() => navigate(-1)}
         action={
-          <Button
-            type="submit"
-            form="pos-catalog-form"
-            disabled={isUpdating}
-            variant="success"
-          >
-            {isUpdating ? (
-              <Loading size="sm" variant="spinner" />
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Simpan
-              </>
-            )}
-          </Button>
+          canManage && (
+            <Button
+              type="submit"
+              form="pos-catalog-form"
+              disabled={isUpdating}
+              variant="success"
+            >
+              {isUpdating ? (
+                <Loading size="sm" variant="spinner" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          )
         }
       />
       <Page.Body>

@@ -83,8 +83,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect
-          label="User Group"
-          placeholder="Filter Group"
+          label="Usergroup"
+          placeholder="Filter Usergroup"
           value={usergroup}
           onChange={(val) => setUsergroup(val)}
           onClear={() => setUsergroup(null)}

@@ -25,11 +25,16 @@ export interface UserDetail extends UserBase {
   last_activity_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Relasi usergroup (dari API list user). */
+  usergroup?: UserGroupDetail | null;
+  /** Permission id yang dipilih user (untuk drawer privileges). */
+  permissions?: string[];
 }
 
 export interface UserGroupBase {
   name: string;
-  permissions: Record<string, unknown>;
+  /** Array id permission (dari GET /permission) yang dipilih untuk grup. */
+  permissions: string[];
 }
 
 export type UserGroupCreateRequest = UserGroupBase;

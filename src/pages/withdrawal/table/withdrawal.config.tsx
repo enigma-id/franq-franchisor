@@ -1,17 +1,17 @@
 import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
-import { Eye, MoreVertical, CheckCircle2, XCircle } from "lucide-react";
+import { MoreVertical, CheckCircle2, XCircle } from "lucide-react";
 import type { WithdrawalRequest } from "@/services/types";
-import { currencyFormat, getStatusVariant } from "@/utils";
+import { currencyFormat, getStatusVariant, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
-  onView,
   onApprove,
   onReject,
+  canManage,
 }: {
-  onView?: (row: WithdrawalRequest) => void;
   onApprove?: (row: WithdrawalRequest) => void;
   onReject?: (row: WithdrawalRequest) => void;
+  canManage: boolean;
 }) => ({
   ...config,
   url: "/withdrawal-request",
@@ -42,6 +42,37 @@ const createTableConfig = ({
         <span className="font-semibold">{currencyFormat(row.amount)}</span>
       ),
     },
+    balance_at_request: {
+      title: "Saldo",
+      sortable: true,
+      class: "font-mono text-right",
+      headerClass: "text-right",
+      component: (row: WithdrawalRequest) => (
+        <span>{currencyFormat(row.balance_at_request || 0)}</span>
+      ),
+    },
+    bank_name: {
+      title: "Bank",
+      sortable: true,
+      component: (row: WithdrawalRequest) => (
+        <span>{row.bank_name || "-"}</span>
+      ),
+    },
+    bank_account_number: {
+      title: "No. Rekening",
+      sortable: true,
+      class: "font-mono",
+      component: (row: WithdrawalRequest) => (
+        <span>{row.bank_account_number || "-"}</span>
+      ),
+    },
+    bank_account_name: {
+      title: "Atas Nama",
+      sortable: true,
+      component: (row: WithdrawalRequest) => (
+        <span>{row.bank_account_name || "-"}</span>
+      ),
+    },
     document_status: {
       title: "Status",
       sortable: true,
@@ -51,19 +82,27 @@ const createTableConfig = ({
         <Badge variant={getStatusVariant(row.document_status)}>{row.document_status}</Badge>
       ),
     },
+    rejected_reason: {
+      title: "Alasan Ditolak",
+      sortable: false,
+      component: (row: WithdrawalRequest) => (
+        <span className="text-sm text-red-600">{row.rejected_reason || "-"}</span>
+      ),
+    },
     created_at: {
       title: "Tanggal",
       sortable: true,
       class: "text-sm",
       component: (row: WithdrawalRequest) => (
-        <span>{new Date(row.created_at).toLocaleDateString("id-ID")}</span>
+        <span>{formatDateTime(row.created_at)}</span>
       ),
     },
     action: {
       title: "",
       class: "text-right",
       sortable: false,
-      component: (row: WithdrawalRequest) => (
+      component: (row: WithdrawalRequest) =>
+        canManage && row.document_status === "pending" ? (
         <Dropdown
           trigger={
             <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
@@ -74,54 +113,35 @@ const createTableConfig = ({
           contentClassName="dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2"
         >
           <Dropdown.Item
-            onSelect={() => onView?.(row)}
-            className="hover:bg-green-50 hover:text-green-600"
+            onSelect={() => onApprove?.(row)}
+            className="hover:bg-emerald-50 hover:text-emerald-600"
           >
             <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-success">
-                <Eye className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <CheckCircle2 className="w-4 h-4" />
               </div>
               <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">See Detail</span>
-                <span className="text-[11px] text-slate-400">View withdrawal info</span>
+                <span className="font-bold text-[13px]">Approve</span>
+                <span className="text-[11px] text-slate-400">Approve withdrawal</span>
               </div>
             </button>
           </Dropdown.Item>
-
-          {row.document_status === "pending" && (
-            <>
-              <Dropdown.Item
-                onSelect={() => onApprove?.(row)}
-                className="hover:bg-emerald-50 hover:text-emerald-600"
-              >
-                <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Approve</span>
-                    <span className="text-[11px] text-slate-400">Approve withdrawal</span>
-                  </div>
-                </button>
-              </Dropdown.Item>
-              <Dropdown.Item
-                onSelect={() => onReject?.(row)}
-                className="hover:bg-red-50 hover:text-red-600"
-              >
-                <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
-                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                    <XCircle className="w-4 h-4" />
-                  </div>
-                  <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Reject</span>
-                    <span className="text-[11px] text-slate-400">Reject withdrawal</span>
-                  </div>
-                </button>
-              </Dropdown.Item>
-            </>
-          )}
+          <Dropdown.Item
+            onSelect={() => onReject?.(row)}
+            className="hover:bg-red-50 hover:text-red-600"
+          >
+            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
+              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                <XCircle className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="font-bold text-[13px]">Reject</span>
+                <span className="text-[11px] text-slate-400">Reject withdrawal</span>
+              </div>
+            </button>
+          </Dropdown.Item>
         </Dropdown>
-      ),
+        ) : null,
     },
   },
 });

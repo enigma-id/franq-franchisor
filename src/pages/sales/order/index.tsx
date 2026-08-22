@@ -10,10 +10,13 @@ import TableFilter from "./table/order.filter";
 import type { SalesOrderDetail } from "@/services/types";
 import { useEnigmaUI } from "@/components";
 import { useSalesOrder } from "@/services/sales/hooks";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 export default function SalesOrder() {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.salesOrder);
   const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, paid: paidItem, paidResult } =
     useSalesOrder();
   const [selectedRow, setSelectedRow] = useState<SalesOrderDetail | null>(null);
@@ -27,8 +30,9 @@ export default function SalesOrder() {
       onEdit: (row) => navigate(`/sales/order/update/${row.id}`),
       onPublish: (row) => openConfirmModal(row, "publish"),
       onPaid: (row) => openConfirmModal(row, "paid"),
+      canManage,
     });
-  }, [navigate]);
+  }, [navigate, canManage]);
 
   const Table = useTable("sales_order", tableConfig as TableConfig<unknown>);
 
@@ -130,15 +134,17 @@ export default function SalesOrder() {
         title="Sales Order"
         subtitle="Kelola transaksi penjualan ke seluruh outlet."
         action={
-          <Button
-            variant="primary"
-            shape="wide"
-            size="md"
-            onClick={() => navigate("/sales/order/create")}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Tambah Order
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              shape="wide"
+              size="md"
+              onClick={() => navigate("/sales/order/create")}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Order
+            </Button>
+          )
         }
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">

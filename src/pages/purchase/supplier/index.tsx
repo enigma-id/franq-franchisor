@@ -11,10 +11,13 @@ import type { SupplierDetail } from "@/services/types/supplier";
 import TableFilter from "./table/supplier.filter";
 import { Modal, useEnigmaUI } from "@/components";
 import { useSupplier } from "@/services/supplier/hooks";
+import { useCan } from "@/utils/permission";
+import { ACTION } from "@/utils/permissions";
 
 const SupplierListPage: React.FC = () => {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
+  const canManage = useCan(ACTION.supplier);
 
   const {
     remove,
@@ -45,8 +48,9 @@ const SupplierListPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: any) => handleToggleActive(row),
+        canManage,
       }),
-    [navigate],
+    [navigate, canManage],
   );
 
   const Table = useTable<SupplierDetail>("supplier-list", tableConfig as any);
@@ -148,13 +152,15 @@ const SupplierListPage: React.FC = () => {
         title="Supplier"
         subtitle="Kelola data supplier untuk pembelian stok."
         action={
-          <Button
-            variant="primary"
-            onClick={() => navigate("/purchase/supplier/create")}
-          >
-            <Plus size={18} />
-            Tambah Supplier
-          </Button>
+          canManage && (
+            <Button
+              variant="primary"
+              onClick={() => navigate("/purchase/supplier/create")}
+            >
+              <Plus size={18} />
+              Tambah Supplier
+            </Button>
+          )
         }
       />
 

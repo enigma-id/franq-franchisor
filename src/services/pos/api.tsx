@@ -41,9 +41,10 @@ export const posApi = createApi({
     }),
 
     deleteMenu: builder.mutation({
-      query: (id) => ({
+      query: ({ id, ...payload }) => ({
         url: `/pos/menu/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 
@@ -107,9 +108,10 @@ export const posApi = createApi({
     }),
 
     deleteCategory: builder.mutation({
-      query: (id) => ({
+      query: ({ id, ...payload }) => ({
         url: `/pos/category/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 
@@ -156,9 +158,10 @@ export const posApi = createApi({
     }),
 
     deleteChannel: builder.mutation({
-      query: (id) => ({
+      query: ({ id, ...payload }) => ({
         url: `/pos/channel/${id}`,
         method: "DELETE",
+        body: payload,
       }),
     }),
 
