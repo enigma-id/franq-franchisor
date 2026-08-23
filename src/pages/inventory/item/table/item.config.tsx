@@ -1,6 +1,6 @@
 import { Dropdown } from "@/components";
 import config from "@/services/table/const";
-import { Edit, MoreVertical, Trash, Eye } from "lucide-react";
+import { Edit, MoreVertical, Trash, Eye, Package } from "lucide-react";
 import { Toggle, Badge } from "@/components/ui";
 import type { InventoryItemDetail } from "@/services/types/inventory";
 import { formatCurrency, getTypeVariant } from "@/utils";
@@ -35,10 +35,14 @@ const createTableConfig = ({
       sortable: true,
       component: (row: InventoryItemDetail) => (
         <div className='flex items-start justify-between gap-2'>
-          <div className='min-w-0'>
-            <div className='text-sm font-semibold uppercase truncate'>
-              {row?.alias_name ?? "-"}
-            </div>
+          <div className='w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100/50'>
+            <Package className='w-4.5 h-4.5' />
+          </div>
+
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-[13px] font-semibold text-gray-900'>
+              {row?.alias_name || "-"}
+            </span>
             {row?.code && (
               <div className='text-xs text-gray-400'>{row.code}</div>
             )}
