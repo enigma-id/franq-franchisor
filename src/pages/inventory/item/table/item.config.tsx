@@ -35,18 +35,21 @@ const createTableConfig = ({
       sortable: true,
       component: (row: InventoryItemDetail) => (
         <div className='flex items-start justify-between gap-2'>
-          <div className='w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100/50'>
-            <Package className='w-4.5 h-4.5' />
+          <div className='flex gap-2'>
+            <div className='w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100/50'>
+              <Package className='w-4.5 h-4.5' />
+            </div>
+
+            <div className='flex flex-col min-w-0'>
+              <span className='text-[13px] font-semibold text-gray-900'>
+                {row?.alias_name || "-"}
+              </span>
+              {row?.code && (
+                <div className='text-xs text-gray-400'>{row.code}</div>
+              )}
+            </div>
           </div>
 
-          <div className='flex flex-col gap-0.5'>
-            <span className='text-[13px] font-semibold text-gray-900'>
-              {row?.alias_name || "-"}
-            </span>
-            {row?.code && (
-              <div className='text-xs text-gray-400'>{row.code}</div>
-            )}
-          </div>
           {row?.category && (
             <span className='text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded shrink-0 mt-0.5'>
               {row.category}
