@@ -330,7 +330,7 @@ const DashboardPage: React.FC = () => {
                 onClick={go("/setting/outlet")}
               />
               <SummaryCard
-                label='Total Saldo Membership'
+                label='Saldo Membership All Periode'
                 value={formatCurrency(data?.total_saldo_membership || 0)}
                 icon={Users}
                 theme={THEMES.purple}
