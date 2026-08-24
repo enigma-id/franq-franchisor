@@ -316,13 +316,6 @@ const DashboardPage: React.FC = () => {
                 onClick={go("/b2b/order")}
               />
               <SummaryCard
-                label='Stok Menipis'
-                value={data?.stock_kritis || 0}
-                icon={Package}
-                theme={THEMES.rose}
-                onClick={go("/report/inventory/warehouse-stock")}
-              />
-              <SummaryCard
                 label='Withdrawal Pending'
                 value={formatCurrency(data?.withdrawal_pending || 0)}
                 icon={Wallet}
@@ -368,7 +361,7 @@ const DashboardPage: React.FC = () => {
                 title='Top Member'
                 items={data?.top_member?.map((mb: any) => ({
                   name: mb.member_name,
-                  revenue: mb.saldo,
+                  revenue: mb.nominal,
                 }))}
                 icon={Medal}
                 theme={THEMES.green}
