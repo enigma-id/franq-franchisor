@@ -72,10 +72,17 @@ export function usePrintWindow({
           page-break-after: always;
           background: #fff;
           box-shadow: 0 0.5mm 2mm rgba(0, 0, 0, 0.3);
-          margin: 5mm auto;
+          margin: 3mm auto;
           padding: 0;
           width: 80mm;
           min-height: fit-content;
+        }
+        .sheet.plan-sheet {
+          width: 33mm !important;
+          height: 15mm !important;
+          min-height: 0 !important;
+          padding: 0 0 0 0 !important;
+          overflow: hidden;
         }
         .sheet.A4 {
           width: 210mm;
@@ -83,6 +90,11 @@ export function usePrintWindow({
           padding: 10mm 15mm;
           display: flex;
           flex-direction: column;
+          overflow: hidden;
+        }
+        .plan-label {
+          width: 100%;
+          height: 15mm;
           overflow: hidden;
         }
         @media print {
@@ -98,6 +110,15 @@ export function usePrintWindow({
             width: 210mm;
             height: 297mm;
             padding: 10mm 15mm;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
+          .sheet.plan-sheet {
+            width: 33mm !important;
+            height: 15mm !important;
+            min-height: 0 !important;
+            padding: 0 0 0 0 !important;
             display: flex;
             flex-direction: column;
             overflow: hidden;
