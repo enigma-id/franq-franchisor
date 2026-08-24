@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 const useAutoFontSize = (
   text: string,
   maxSize: number,
-  minSize = 8,
+  minSize = 3,
 ): [number, (el: HTMLDivElement | null) => void] => {
   const ref = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(maxSize);
@@ -41,12 +41,13 @@ const useAutoFontSize = (
 // ponytail: freshness hardcoded to 6 days to match label; make per-item config when variable
 const FRESHNESS_DAYS = 6;
 
+// ponytail: sized for 33x15mm label (~125x57px @96dpi); fonts are ~4pt, retune sizes if paper changes
 const Divider = () => (
-  <div style={{ height: 1, backgroundColor: "#000", margin: "8px 0" }} />
+  <div style={{ height: 1, backgroundColor: "#000", margin: "1px 0" }} />
 );
 
 const Name = ({ text }: { text: string }) => {
-  const [size, bind] = useAutoFontSize(text, 20);
+  const [size, bind] = useAutoFontSize(text, 6);
   if (!text) return null;
   return (
     <div
@@ -88,8 +89,8 @@ const Card = ({
         borderWidth: 1,
         borderColor: "#000",
         borderStyle: "solid",
-        borderRadius: 5,
-        padding: 10,
+        borderRadius: 2,
+        padding: 2,
       }}
     >
       <div
@@ -97,7 +98,7 @@ const Card = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 5,
+          gap: 2,
         }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -107,15 +108,15 @@ const Card = ({
               style={{
                 textAlign: "left",
                 fontWeight: "bold",
-                fontSize: 14,
-                lineHeight: 1.6,
+                fontSize: 5,
+                lineHeight: 1.2,
               }}
             >
               {price}
             </div>
           )}
         </div>
-        <img src={img} style={{ height: 40, width: "auto" }} />
+        <img src={img} style={{ height: 12, width: "auto" }} />
       </div>
 
       <Divider />
@@ -125,20 +126,20 @@ const Card = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          fontSize: 11,
+          fontSize: 5,
           fontWeight: "bold",
         }}
       >
-        <div style={{ gap: 10, display: "flex", flexDirection: "column" }}>
+        <div style={{ gap: 2, display: "flex", flexDirection: "column" }}>
           <div>
-            <div style={{ fontWeight: "bold", fontSize: 10 }}>BATCH NO.</div>
-            <div style={{ fontWeight: "bold", fontSize: 14, marginTop: 2 }}>
+            <div style={{ fontWeight: "bold", fontSize: 3 }}>BATCH NO.</div>
+            <div style={{ fontWeight: "bold", fontSize: 5, marginTop: 1 }}>
               {batch}
             </div>
           </div>
           <div>
-            <div style={{ fontWeight: "bold", fontSize: 10 }}>EXP DATE</div>
-            <div style={{ fontWeight: "bold", fontSize: 14, marginTop: 2 }}>
+            <div style={{ fontWeight: "bold", fontSize: 3 }}>EXP DATE</div>
+            <div style={{ fontWeight: "bold", fontSize: 5, marginTop: 1 }}>
               {expDate}
             </div>
           </div>
@@ -146,19 +147,19 @@ const Card = ({
         <div
           style={{
             backgroundColor: "#F3F3F3",
-            padding: 8,
+            padding: 2,
           }}
         >
-          <span style={{ fontWeight: "bold", fontSize: 10 }}>
+          <span style={{ fontWeight: "bold", fontSize: 3 }}>
             FRESHNESS ({FRESHNESS_DAYS} DAYS)
           </span>
           <div
             style={{
-              marginTop: 5,
+              marginTop: 1,
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
-              fontSize: 11,
-              gap: 5,
+              fontSize: 3,
+              gap: 1,
             }}
           >
             {/* <div style={{ fontSize: 11, textAlign: "center", lineHeight: 1.4 }}> */}
@@ -167,7 +168,7 @@ const Card = ({
                 key={i}
                 style={{
                   textAlign: "center",
-                  padding: "2px 0px",
+                  padding: "1px 0px",
                   border: "1px solid #000",
                 }}
               >
@@ -184,8 +185,8 @@ const Card = ({
         style={{
           textAlign: "center",
           fontWeight: "bold",
-          fontSize: 10,
-          lineHeight: 1.4,
+          fontSize: 5,
+          lineHeight: 1,
         }}
       >
         <div>WAJIB DISIMPAN DI SUHU DINGIN</div>
@@ -206,14 +207,10 @@ const Plan = ({
   repeatCount?: number;
 }) => {
   return Array.from({ length: repeatCount }).map((_, idx) => (
-    <div
-      key={idx}
-      className='sheet'
-      style={{
-        padding: "10px",
-      }}
-    >
-      <Card data={data} plan={plan} />
+    <div key={idx} className="sheet plan-sheet">
+      <div className="plan-label">
+        <Card data={data} plan={plan} />
+      </div>
     </div>
   ));
 };
