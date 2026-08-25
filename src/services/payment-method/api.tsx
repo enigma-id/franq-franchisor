@@ -61,6 +61,14 @@ export const paymentMethodApi = createApi({
         body: payload,
       }),
     }),
+
+    updatePaymentMethodOutletType: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/payment/method/${id}/outlet-type`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -72,4 +80,5 @@ export const {
   useDeletePaymentMethodMutation,
   useActivatePaymentMethodMutation,
   useDeactivatePaymentMethodMutation,
+  useUpdatePaymentMethodOutletTypeMutation,
 } = paymentMethodApi;

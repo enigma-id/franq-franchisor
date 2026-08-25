@@ -19,6 +19,7 @@ import {
   useEnigmaUI,
 } from "@/components";
 import { usePaymentMethod } from "@/services/payment-method/hooks";
+import { UpdateOutletTypeModal } from "./components/UpdateOutletTypeModal";
 import type { SelectOptionValue } from "@/services/types/table";
 import { getOptionByValue } from "@/utils/helper";
 import { useCan } from "@/utils/permission";
@@ -163,6 +164,7 @@ const PaymentMethodListPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: any) => handleToggleActive(row),
+        onOutletType: (row: any) => openOutletType(row),
         canManage,
       }),
     [canManage],
@@ -319,6 +321,22 @@ const PaymentMethodListPage: React.FC = () => {
     if (row?.id) {
       remove({ id: row.id });
     }
+  };
+
+  const openOutletType = (row: any) => {
+    openModal({
+      id: "update-outlet-type",
+      content: (
+        <UpdateOutletTypeModal
+          paymentMethod={row}
+          onClose={() => closeModal("update-outlet-type")}
+          onSuccess={() => {
+            closeModal("update-outlet-type");
+            Table.boot();
+          }}
+        />
+      ),
+    });
   };
 
   const onChangeType = (t: any) => {

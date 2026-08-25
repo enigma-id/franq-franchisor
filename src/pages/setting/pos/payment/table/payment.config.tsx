@@ -1,7 +1,17 @@
 import config from "@/services/table/const";
 import type { PaymentMethodDetail } from "@/services/types/pos";
 import { Dropdown, Toggle } from "@/components/ui";
-import { Edit, CreditCard, MoreVertical, Trash } from "lucide-react";
+import { Edit, CreditCard, MoreVertical, Trash, Store } from "lucide-react";
+
+interface PaymentMethodOutletTypeRelation {
+  id?: string;
+  outlet_type_id?: string;
+  outlet_type?: { id?: string; name?: string } | null;
+}
+
+type PaymentMethodRow = PaymentMethodDetail & {
+  outlet_types?: PaymentMethodOutletTypeRelation[];
+};
 
 const createTableConfig = ({
   onRowClick,
@@ -10,6 +20,7 @@ const createTableConfig = ({
   onClick,
   onRemove,
   onToggleActive,
+  onOutletType,
   canManage,
 }: {
   onRowClick?: (row: PaymentMethodDetail) => void;
@@ -18,6 +29,7 @@ const createTableConfig = ({
   onClick?: (row: PaymentMethodDetail) => void;
   onRemove?: (row: PaymentMethodDetail) => void;
   onToggleActive?: (row: PaymentMethodDetail) => void;
+  onOutletType?: (row: PaymentMethodDetail) => void;
   canManage?: boolean;
 }) => ({
   ...config,
@@ -53,6 +65,35 @@ const createTableConfig = ({
           {row.type}
         </span>
       ),
+    },
+    outlet_types: {
+      title: "Outlet Type",
+      sortable: false,
+      component: (row: PaymentMethodRow) => {
+        const types = row?.outlet_types ?? [];
+        return types.length > 0 ? (
+          <div className='group relative inline-block'>
+            <span className='text-sm cursor-pointer hover:text-indigo-600 transition-colors'>
+              {types.length === 1
+                ? types[0]?.outlet_type?.name || "-"
+                : `${types.length} Type`}
+            </span>
+            <div className='absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col gap-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 min-w-44 z-50 pointer-events-none'>
+              {types.map((ot: PaymentMethodOutletTypeRelation) => (
+                <span
+                  key={ot.id || ot.outlet_type?.id || ot.outlet_type_id}
+                  className='text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg whitespace-nowrap'
+                >
+                  {ot.outlet_type?.name || "-"}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <span className='text-[11px] text-slate-300 italic'>None</span>
+        );
+      },
+      align: "center",
     },
     is_active: {
       title: "Status",
@@ -97,6 +138,24 @@ const createTableConfig = ({
                   <span className='font-bold text-[13px]'>Edit</span>
                   <span className='text-[11px] text-slate-400'>
                     Modify payment info
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          )}
+          {canManage && (
+            <Dropdown.Item
+              onSelect={() => onOutletType?.(row)}
+              className='hover:bg-blue-50 hover:text-blue-600'
+            >
+              <button className='flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left'>
+                <div className='w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600'>
+                  <Store className='w-4 h-4' />
+                </div>
+                <div className='flex flex-col items-start leading-tight'>
+                  <span className='font-bold text-[13px]'>Outlet Type</span>
+                  <span className='text-[11px] text-slate-400'>
+                    Manage availability
                   </span>
                 </div>
               </button>

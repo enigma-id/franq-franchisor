@@ -7,6 +7,7 @@ import {
   useActivatePaymentMethodMutation,
   useDeactivatePaymentMethodMutation,
   useLazyGetPaymentMethodQuery,
+  useUpdatePaymentMethodOutletTypeMutation,
 } from "./api";
 import type { PaymentMethodDetail } from "../types/pos";
 
@@ -20,5 +21,6 @@ export const usePaymentMethod = createCrudHook<PaymentMethodDetail>({
   customOperations: {
     activate: { hook: useActivatePaymentMethodMutation },
     deactivate: { hook: useDeactivatePaymentMethodMutation },
+    updateOutletType: { hook: useUpdatePaymentMethodOutletTypeMutation },
   },
 });
