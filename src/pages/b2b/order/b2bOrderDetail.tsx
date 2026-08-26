@@ -214,7 +214,7 @@ const B2BOrderDetailPage: React.FC = () => {
     ship: isPending,
     invoice: isUnpaid,
     pay: isInvoiced,
-    delete: isPending,
+    delete: isPending && isUnpaid,
     cancel: !isPending || !isUnpaid,
   };
 
@@ -245,34 +245,36 @@ const B2BOrderDetailPage: React.FC = () => {
             </Button>
             {canManage && (
               <>
+                {order.document_status !== "cancelled" && (
+                  <Button
+                    variant='primary'
+                    onClick={() => navigate(`/b2b/order/update/${order.id}`)}
+                    title='Edit'
+                  >
+                    <Edit className='w-4 h-4' />
+                  </Button>
+                )}
                 {isPending && (
-                  <>
-                    <Button
-                      variant='primary'
-                      onClick={() => navigate(`/b2b/order/update/${order.id}`)}
-                      title='Edit'
-                    >
-                      <Edit className='w-4 h-4' />
-                    </Button>
-                    <Button
-                      variant='primary'
-                      onClick={() => openConfirm("ship")}
-                      isLoading={shipResult.isLoading}
-                      disabled={!canTransition.ship}
-                      title='Ship'
-                    >
-                      <Send className='w-4 h-4' />
-                    </Button>
-                    <Button
-                      variant='error'
-                      onClick={() => openConfirm("delete")}
-                      isLoading={removeResult.isLoading}
-                      disabled={!canTransition.delete}
-                      title='Hapus'
-                    >
-                      <Trash2 className='w-4 h-4' />
-                    </Button>
-                  </>
+                  <Button
+                    variant='primary'
+                    onClick={() => openConfirm("ship")}
+                    isLoading={shipResult.isLoading}
+                    disabled={!canTransition.ship}
+                    title='Ship'
+                  >
+                    <Send className='w-4 h-4' />
+                  </Button>
+                )}
+                {isPending && isUnpaid && (
+                  <Button
+                    variant='error'
+                    onClick={() => openConfirm("delete")}
+                    isLoading={removeResult.isLoading}
+                    disabled={!canTransition.delete}
+                    title='Hapus'
+                  >
+                    <Trash2 className='w-4 h-4' />
+                  </Button>
                 )}
                 {isUnpaid && (
                   <Button

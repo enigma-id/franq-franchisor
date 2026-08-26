@@ -71,7 +71,7 @@ export type DocumentStatusSalesOrder =
   | "cancelled"
   | "completed";
 export type DocumentStatusPurchaseOrder = "pending" | "published";
-export type DocumentStatusB2B = "pending" | "shipped";
+export type DocumentStatusB2B = "pending" | "shipped" | "cancelled";
 export type DocumentStatusProductionPlan =
   | "pending"
   | "published"

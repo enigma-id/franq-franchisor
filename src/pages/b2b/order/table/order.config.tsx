@@ -139,24 +139,27 @@ const createTableConfig = ({
             </button>
           </Dropdown.Item>
 
+          {canManage && row.document_status !== "cancelled" && (
+            <Dropdown.Item
+              onSelect={() => onEdit?.(row)}
+              className='hover:bg-indigo-50 hover:text-indigo-600'
+            >
+              <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+                <div className='w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600'>
+                  <Edit className='w-4 h-4' />
+                </div>
+                <div className='flex flex-col items-start leading-tight'>
+                  <span className='font-bold text-[13px]'>Edit</span>
+                  <span className='text-[11px] text-slate-400'>
+                    Modify order
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          )}
+
           {canManage && row.document_status === "pending" && (
             <>
-              <Dropdown.Item
-                onSelect={() => onEdit?.(row)}
-                className='hover:bg-indigo-50 hover:text-indigo-600'
-              >
-                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
-                  <div className='w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600'>
-                    <Edit className='w-4 h-4' />
-                  </div>
-                  <div className='flex flex-col items-start leading-tight'>
-                    <span className='font-bold text-[13px]'>Edit</span>
-                    <span className='text-[11px] text-slate-400'>
-                      Modify order
-                    </span>
-                  </div>
-                </button>
-              </Dropdown.Item>
               <Dropdown.Item
                 onSelect={() => onShip?.(row)}
                 className='hover:bg-amber-50 hover:text-amber-600'
@@ -173,6 +176,12 @@ const createTableConfig = ({
                   </div>
                 </button>
               </Dropdown.Item>
+            </>
+          )}
+
+          {canManage &&
+            row.document_status === "pending" &&
+            row.payment_status === "unpaid" && (
               <Dropdown.Item
                 onSelect={() => onRemove?.(row)}
                 className='hover:bg-red-50 hover:text-red-600'
@@ -189,8 +198,7 @@ const createTableConfig = ({
                   </div>
                 </button>
               </Dropdown.Item>
-            </>
-          )}
+            )}
 
           {canManage && row.payment_status === "unpaid" && (
             <Dropdown.Item
