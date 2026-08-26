@@ -200,7 +200,9 @@ const createTableConfig = ({
               </Dropdown.Item>
             )}
 
-          {canManage && row.payment_status === "unpaid" && (
+          {canManage &&
+            row.document_status !== "cancelled" &&
+            row.payment_status === "unpaid" && (
             <Dropdown.Item
               onSelect={() => onInvoice?.(row)}
               className='hover:bg-purple-50 hover:text-purple-600'
@@ -239,6 +241,7 @@ const createTableConfig = ({
           )}
 
           {canCancel &&
+            row.document_status !== "cancelled" &&
             (row.document_status !== "pending" ||
               row.payment_status !== "unpaid") && (
               <Dropdown.Item

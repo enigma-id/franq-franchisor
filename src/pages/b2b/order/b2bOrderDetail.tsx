@@ -276,7 +276,7 @@ const B2BOrderDetailPage: React.FC = () => {
                     <Trash2 className='w-4 h-4' />
                   </Button>
                 )}
-                {isUnpaid && (
+                {isUnpaid && order.document_status !== "cancelled" && (
                   <Button
                     variant='success'
                     onClick={() => openConfirm("invoice")}
@@ -300,7 +300,9 @@ const B2BOrderDetailPage: React.FC = () => {
                 )}
               </>
             )}
-            {canCancel && (!isPending || !isUnpaid) && (
+            {canCancel &&
+            order.document_status !== "cancelled" &&
+            (!isPending || !isUnpaid) && (
               <Button
                 variant='error'
                 onClick={() => openConfirm("cancel")}

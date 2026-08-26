@@ -19,6 +19,7 @@ interface TableFilterProps {
 const documentStatusOptions: SelectOptionValue[] = [
   { label: "Pending", value: "pending" },
   { label: "Shipped", value: "shipped" },
+  { label: "Cancelled", value: "cancelled" },
 ];
 
 const paymentStatusOptions: SelectOptionValue[] = [
