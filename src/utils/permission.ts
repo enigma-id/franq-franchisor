@@ -117,3 +117,56 @@ export const useCan = (slug: string): boolean =>
  */
 export const useCanAny = (slugs: string[]): boolean =>
   hasAnyPermission(useUserPermissions(), slugs);
+
+import { MENU, type MenuSlug } from "./permissions";
+import type { User } from "@/services/types/auth";
+
+/**
+ * Urutan prioritas halaman default (pertama yang diizinkan user dipakai).
+ * Sesuai urutan menu sidebar — dashboard di depan kalau diizinkan.
+ */
+export const ROUTE_BY_PERMISSION: Array<{ slug: MenuSlug; path: string }> = [
+  { slug: MENU.dashboard, path: "/dashboard" },
+  { slug: MENU.b2bOrder, path: "/b2b/order" },
+  { slug: MENU.salesOrder, path: "/sales/order" },
+  { slug: MENU.withdrawal, path: "/withdrawal" },
+  { slug: MENU.outletTopup, path: "/outlet-topup" },
+  { slug: MENU.inventoryItem, path: "/inventory/item" },
+  { slug: MENU.inventoryCatalog, path: "/inventory/catalog" },
+  { slug: MENU.demand, path: "/production/demand/production" },
+  { slug: MENU.productionPlan, path: "/production/plan" },
+  { slug: MENU.supplier, path: "/purchase/supplier" },
+  { slug: MENU.purchaseOrder, path: "/purchase/order" },
+  { slug: MENU.reportPosOutstanding, path: "/report/pos/outstanding" },
+  { slug: MENU.reportMitraSettlement, path: "/report/mitra/settlement" },
+  { slug: MENU.reportB2BSettlement, path: "/report/b2b/settlement" },
+  { slug: MENU.reportInventoryMaterialSales, path: "/report/inventory/material-sales" },
+  { slug: MENU.reportWarehouseStock, path: "/report/inventory/warehouse-stock" },
+  { slug: MENU.reportOutletMap, path: "/report/outlet-maps" },
+  { slug: MENU.outlet, path: "/setting/outlet" },
+  { slug: MENU.outletType, path: "/setting/type/outlet" },
+  { slug: MENU.posChannel, path: "/setting/pos/channel" },
+  { slug: MENU.posCategory, path: "/setting/pos/category" },
+  { slug: MENU.posMenu, path: "/setting/pos/menu" },
+  { slug: MENU.posPayment, path: "/setting/pos/payment" },
+  { slug: MENU.topupBonus, path: "/setting/member/topup-bonus" },
+  { slug: MENU.user, path: "/user" },
+  { slug: MENU.usergroup, path: "/usergroup" },
+];
+
+/**
+ * Route default user: pertama yang diizinkan permission-nya.
+ * Super admin (tanpa permission list) → dashboard.
+ * User tanpa slug dashboard tetap dapat redirect valid (bukan loop ke dashboard).
+ */
+export function resolveDefaultRoute(
+  user: Pick<User, "permissions"> | null | undefined,
+): string {
+  const perms = user?.permissions;
+  if (perms === undefined || perms === null) {
+    return "/dashboard"; // super admin
+  }
+  return (
+    ROUTE_BY_PERMISSION.find((r) => perms.includes(r.slug))?.path ?? "/dashboard"
+  );
+}

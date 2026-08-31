@@ -7,6 +7,7 @@ import { PermissionGuard } from "@/components/app";
 import { MENU } from "@/utils/permissions";
 import { useAppSelector, useAppMetadata } from "@/hooks";
 import { useAuth } from "@/services/auth/hooks";
+import { resolveDefaultRoute } from "@/utils/permission";
 
 import SignInPage from "@/pages/signin";
 import SignUpPage from "@/pages/signup";
@@ -100,6 +101,16 @@ import UserGroupListPage from "@/pages/usergroup";
 import FranchisorProfilePage from "@/pages/franchisor";
 import TopupBonusPage from "@/pages/setting/member/topupBonus";
 
+/**
+ * Redirect "/" → route pertama yang diizinkan permission user.
+ * Super admin (user tanpa permission list) → dashboard.
+ * Resolver: resolveDefaultRoute() di src/utils/permission.
+ */
+function FirstAllowedRedirect() {
+  const user = useAppSelector((s) => s.auth.session?.user);
+  return <Navigate to={resolveDefaultRoute(user)} replace />;
+}
+
 export function AppRoutes() {
   useAppMetadata();
   const { loadProfile } = useAuth();
@@ -139,6 +150,12 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        {/* Root "/" → redirect ke route pertama yang diizinkan (bukan selalu /dashboard). */}
+        <Route
+          path='/'
+          element={<FirstAllowedRedirect />}
+        />
+
         {/* Dashboard */}
         <Route
           path='/dashboard'
@@ -705,8 +722,8 @@ export function AppRoutes() {
           }
         />
 
-        {/* Fallback */}
-        <Route path='*' element={<Navigate to='/dashboard' replace />} />
+        {/* Fallback: redirect ke halaman pertama yang diizinkan (bukan asumsi /dashboard) */}
+        <Route path='*' element={<FirstAllowedRedirect />} />
       </Route>
     </Routes>
   );

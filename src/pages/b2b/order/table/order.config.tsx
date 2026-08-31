@@ -50,6 +50,21 @@ const createTableConfig = ({
         </div>
       ),
     },
+    customer_name: {
+      title: "Customer",
+      sortable: true,
+      class: "font-medium",
+      component: (row: B2BOrderDetail) => (
+        <div>
+          <span className='font-medium block'>
+            {row.customer_name?.toUpperCase() ?? "-"}
+          </span>
+          <span className='text-xs text-gray-500 block'>
+            {row.customer_phone ?? ""}
+          </span>
+        </div>
+      ),
+    },
     document_status: {
       title: "Status",
       sortable: true,
@@ -203,23 +218,23 @@ const createTableConfig = ({
           {canManage &&
             row.document_status !== "cancelled" &&
             row.payment_status === "unpaid" && (
-            <Dropdown.Item
-              onSelect={() => onInvoice?.(row)}
-              className='hover:bg-purple-50 hover:text-purple-600'
-            >
-              <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
-                <div className='w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600'>
-                  <FileText className='w-4 h-4' />
-                </div>
-                <div className='flex flex-col items-start leading-tight'>
-                  <span className='font-bold text-[13px]'>Invoice</span>
-                  <span className='text-[11px] text-slate-400'>
-                    Send invoice
-                  </span>
-                </div>
-              </button>
-            </Dropdown.Item>
-          )}
+              <Dropdown.Item
+                onSelect={() => onInvoice?.(row)}
+                className='hover:bg-purple-50 hover:text-purple-600'
+              >
+                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+                  <div className='w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600'>
+                    <FileText className='w-4 h-4' />
+                  </div>
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Invoice</span>
+                    <span className='text-[11px] text-slate-400'>
+                      Send invoice
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+            )}
 
           {canManage && row.payment_status === "invoiced" && (
             <Dropdown.Item
