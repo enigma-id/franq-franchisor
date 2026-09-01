@@ -73,21 +73,6 @@ export const reportApi = createApi({
       }),
     }),
 
-    getTopupCancelled: builder.query({
-      query: (params) => ({
-        url: `/report/franchise/topup-cancelled`,
-        method: "GET",
-        params,
-      }),
-    }),
-    getTopupCancelledSummary: builder.query({
-      query: (params) => ({
-        url: `/report/franchise/topup-cancelled/summary`,
-        method: "GET",
-        params,
-      }),
-    }),
-
     getProductItem: builder.query({
       query: (params) => ({
         url: `/report/franchise/product-item`,
@@ -178,6 +163,36 @@ export const reportApi = createApi({
         params,
       }),
     }),
+
+    getMembership: builder.query({
+      query: (params) => ({
+        url: `/report/membership`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getMembershipSummary: builder.query({
+      query: (params) => ({
+        url: `/report/membership/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getSaldoLog: builder.query({
+      query: (params) => ({
+        url: `/report/saldo/log`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getSaldoLogSummary: builder.query({
+      query: (params) => ({
+        url: `/report/saldo/log/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -199,11 +214,13 @@ export const {
   useLazyGetOutletMapQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
-  useLazyGetTopupCancelledQuery,
-  useLazyGetTopupCancelledSummaryQuery,
   useLazyGetProductItemQuery,
   useLazyGetProductItemSummaryQuery,
   useLazyGetB2BProductItemQuery,
   useLazyGetB2BProductItemSummaryQuery,
   useLazyGetOutletSaldoSummaryQuery,
+  useLazyGetMembershipQuery,
+  useLazyGetMembershipSummaryQuery,
+  useLazyGetSaldoLogQuery,
+  useLazyGetSaldoLogSummaryQuery,
 } = reportApi;

@@ -17,13 +17,15 @@ import {
   useLazyGetOutletMapQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
-  useLazyGetTopupCancelledQuery,
-  useLazyGetTopupCancelledSummaryQuery,
   useLazyGetProductItemQuery,
   useLazyGetProductItemSummaryQuery,
   useLazyGetB2BProductItemQuery,
   useLazyGetB2BProductItemSummaryQuery,
   useLazyGetOutletSaldoSummaryQuery,
+  useLazyGetMembershipQuery,
+  useLazyGetMembershipSummaryQuery,
+  useLazyGetSaldoLogQuery,
+  useLazyGetSaldoLogSummaryQuery,
 } from "./api";
 
 export const useReport = createCrudHook<any>({
@@ -48,8 +50,6 @@ export const usePOSReport = createCrudHook<any>({
     settlementSummary: useLazyGetPOSSettlementSummaryQuery,
     cancelledProductSales: useLazyGetCancelledProductSalesQuery,
     cancelledProductSalesSummary: useLazyGetCancelledProductSalesSummaryQuery,
-    topupCancelled: useLazyGetTopupCancelledQuery,
-    topupCancelledSummary: useLazyGetTopupCancelledSummaryQuery,
     productItem: useLazyGetProductItemQuery,
     productItemSummary: useLazyGetProductItemSummaryQuery,
   },
@@ -64,5 +64,15 @@ export const useB2BReport = createCrudHook<any>({
     productSalesSummary: useLazyGetB2BProductSalesSummaryQuery,
     productItem: useLazyGetB2BProductItemQuery,
     productItemSummary: useLazyGetB2BProductItemSummaryQuery,
+  },
+});
+
+export const useMembershipReport = createCrudHook<any>({
+  entityName: "membership-report",
+  additionalQueries: {
+    membership: useLazyGetMembershipQuery,
+    membershipSummary: useLazyGetMembershipSummaryQuery,
+    saldoLog: useLazyGetSaldoLogQuery,
+    saldoLogSummary: useLazyGetSaldoLogSummaryQuery,
   },
 });

@@ -74,7 +74,6 @@ import POSSettlementDailyPage from "@/pages/report/pos/settlementDaily";
 import POSCancelledProductSalesPage from "@/pages/report/pos/cancelledProductSales";
 import POSProductSalesPage from "@/pages/report/pos/productSales";
 import POSProductItemPage from "@/pages/report/pos/productItem";
-import POSTopupCancelledPage from "@/pages/report/pos/topupCancelled";
 
 // ==== REPORT MITRA ===== //
 import MitraSettlementPage from "@/pages/report/mitra/settlement";
@@ -87,6 +86,10 @@ import MitraOutletSaldoPage from "@/pages/report/mitra/outletSaldo";
 import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
 import WarehouseStockPage from "@/pages/report/franchisor/warehouseStock";
 import OutletMapPage from "@/pages/report/franchisor/outletMap";
+
+// ==== REPORT MEMBERSHIP ==== //
+import MembershipReportPage from "@/pages/report/membership/membership";
+import SaldoLogReportPage from "@/pages/report/membership/saldoLog";
 
 import WithdrawalList from "@/pages/withdrawal/WithdrawalList";
 import OutletTopupListPage from "@/pages/outletTopup";
@@ -511,14 +514,6 @@ export function AppRoutes() {
           }
         />
         <Route
-          path='/report/pos/topup-cancelled'
-          element={
-            <PermissionGuard permission={MENU.reportPosTopupCancelled}>
-              <POSTopupCancelledPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
           path='/report/pos/product-item'
           element={
             <PermissionGuard permission={MENU.reportPosProductItem}>
@@ -634,6 +629,29 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.reportOutletMap}>
               <OutletMapPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Report Membership */}
+        <Route
+          path='/report/membership'
+          element={
+            <PermissionGuard permission={MENU.reportMembership}>
+              <MembershipReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/saldo-log'
+          element={
+            <PermissionGuard
+              permission={[
+                MENU.reportMembershipSaldoLog,
+                MENU.reportMembership,
+              ]}
+            >
+              <SaldoLogReportPage />
             </PermissionGuard>
           }
         />

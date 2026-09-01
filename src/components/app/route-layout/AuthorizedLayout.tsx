@@ -27,6 +27,7 @@ import {
   UserCircle,
   Gift,
   UserRound,
+  IdCard,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -182,11 +183,6 @@ const menuSections: MenuSection[] = [
             path: "/report/pos/cancelled-product-sales",
             permission: MENU.reportPosTransactionCancelled,
           },
-          {
-            label: "Report Topup Cancel",
-            path: "/report/pos/topup-cancelled",
-            permission: MENU.reportPosTopupCancelled,
-          },
         ],
       },
       {
@@ -233,6 +229,22 @@ const menuSections: MenuSection[] = [
             label: "Report Menu",
             path: "/report/b2b/product-item",
             permission: MENU.reportB2BProductItem,
+          },
+        ],
+      },
+      {
+        label: "Member Report",
+        icon: <IdCard size={18} />,
+        children: [
+          {
+            label: "Report Membership",
+            path: "/report/membership",
+            permission: MENU.reportMembership,
+          },
+          {
+            label: "Report Saldo Membership",
+            path: "/report/membership/saldo-log",
+            permission: MENU.reportMembershipSaldoLog,
           },
         ],
       },
@@ -389,6 +401,28 @@ function isPathActive(currentPath: string, itemPath?: string): boolean {
   return currentPath.startsWith(itemPath + "/");
 }
 
+/**
+ * Path sibling paling spesifik (terpanjang) yang match dengan currentPath.
+ * Dipakai agar item prefix (mis. /report/membership) tidak ikut aktif saat
+ * child yang lebih dalam (/report/membership/saldo-log) sedang aktif.
+ */
+function deepestActivePath(
+  currentPath: string,
+  paths: Array<string | undefined>,
+): string | null {
+  let best: string | null = null;
+  for (const path of paths) {
+    if (
+      path &&
+      isPathActive(currentPath, path) &&
+      (best === null || path.length > best.length)
+    ) {
+      best = path;
+    }
+  }
+  return best;
+}
+
 // Active pill — right side indicator
 function ActivePill({ active }: { active: boolean }) {
   if (!active) return null;
@@ -458,6 +492,12 @@ function ParentItem({
   const isChildActive =
     visibleChildren?.some((c) => isPathActive(location.pathname, c.path)) ??
     false;
+  // Hanya child paling spesifik (mis. /report/membership/saldo-log, bukan prefix
+  // parent-nya /report/membership) yang dianggap aktif.
+  const activeChildPath = deepestActivePath(
+    location.pathname,
+    visibleChildren?.map((c) => c.path) ?? [],
+  );
 
   return (
     <div className='mb-1'>
@@ -499,7 +539,7 @@ function ParentItem({
       >
         <div className='ml-9 pl-5 border-l border-base-300 space-y-1 py-1 mr-4'>
           {(visibleChildren ?? []).map((child) => {
-            const isActive = isPathActive(location.pathname, child.path);
+            const isActive = activeChildPath === child.path;
             return (
               <NavLink
                 key={child.path}
