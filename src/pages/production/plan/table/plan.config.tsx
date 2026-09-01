@@ -48,7 +48,7 @@ const createTableConfig = ({
       ),
     },
     date: {
-      title: "Tanggal Rencana",
+      title: "Tanggal Produksi",
       sortable: true,
       component: (row: ProductionPlanDetail) => (
         <div className='flex items-center gap-3'>
