@@ -53,23 +53,6 @@ export interface ProductSalesRow {
   total_nett: number
 }
 
-// Topup Cancelled
-export interface TopupCancelledRow {
-  date: string
-  reference_code: string
-  membership: string
-  outlet: string
-  nominal: number
-  cancelled_reason: string
-  cancelled_by: string
-  cancelled_at: string
-}
-
-export interface TopupCancelledSummary {
-  total_nominal: number
-  total_count: number
-}
-
 // Outlet Maps
 export interface OutletMapHistory {
   latitude: number
@@ -82,4 +65,42 @@ export interface OutletMapRow {
   outlet_name: string
   total_charges: number
   historys: OutletMapHistory[]
+}
+
+// Membership Report
+export interface MembershipReportRow {
+  membership_id: string
+  date: string
+  card_id: string
+  name: string
+  reff_code: string
+  saldo: number
+  /** Kosong jika member belum pernah bertransaksi. */
+  last_transaction: string
+}
+
+export interface MembershipReportSummary {
+  total_member: number
+  total_saldo: number
+}
+
+// Saldo Log Report
+export interface SaldoLogReportRow {
+  date: string
+  reference_type: string
+  reference_code: string
+  payment_type: string
+  nominal: number
+  status: string
+  membership: string
+  card_id: string
+  outlet: string
+  cancelled_reason: string
+  cancelled_by: string
+  cancelled_at: string
+}
+
+export interface SaldoLogReportSummary {
+  total_nominal: number
+  total_count: number
 }

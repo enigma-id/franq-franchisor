@@ -20,7 +20,7 @@ export default function POSSettlementMonthlyPage() {
     useOutletType();
 
   useEffect(() => {
-    getOutletType({ search: "POS" });
+    getOutletType({ search: "Outlet" });
   }, []);
 
   useEffect(() => {

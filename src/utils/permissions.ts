@@ -32,7 +32,6 @@ export const MENU = {
   reportPosProductItem: "frontend.franchisor.report.pos.product-item",
   reportPosTransactionCancelled:
     "frontend.franchisor.report.pos.transaction-cancelled",
-  reportPosTopupCancelled: "frontend.franchisor.report.pos.topup-cancelled",
 
   // Report Mitra
   reportMitraSettlement: "frontend.franchisor.report.mitra.settlement",
@@ -48,6 +47,8 @@ export const MENU = {
   reportInventoryMaterialSales: "frontend.franchisor.report.material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
   reportOutletMap: "frontend.franchisor.report.outlet-maps",
+  reportMembership: "frontend.franchisor.report.membership",
+  reportMembershipSaldoLog: "frontend.franchisor.report.membership-saldo-log",
   // Setting
   outlet: "frontend.franchisor.setting.outlet",
   outletType: "frontend.franchisor.setting.outlet-type",

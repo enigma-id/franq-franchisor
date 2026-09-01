@@ -7,6 +7,7 @@ import { PermissionGuard } from "@/components/app";
 import { MENU } from "@/utils/permissions";
 import { useAppSelector, useAppMetadata } from "@/hooks";
 import { useAuth } from "@/services/auth/hooks";
+import { resolveDefaultRoute } from "@/utils/permission";
 
 import SignInPage from "@/pages/signin";
 import SignUpPage from "@/pages/signup";
@@ -73,7 +74,6 @@ import POSSettlementDailyPage from "@/pages/report/pos/settlementDaily";
 import POSCancelledProductSalesPage from "@/pages/report/pos/cancelledProductSales";
 import POSProductSalesPage from "@/pages/report/pos/productSales";
 import POSProductItemPage from "@/pages/report/pos/productItem";
-import POSTopupCancelledPage from "@/pages/report/pos/topupCancelled";
 
 // ==== REPORT MITRA ===== //
 import MitraSettlementPage from "@/pages/report/mitra/settlement";
@@ -87,6 +87,10 @@ import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
 import WarehouseStockPage from "@/pages/report/franchisor/warehouseStock";
 import OutletMapPage from "@/pages/report/franchisor/outletMap";
 
+// ==== REPORT MEMBERSHIP ==== //
+import MembershipReportPage from "@/pages/report/membership/membership";
+import SaldoLogReportPage from "@/pages/report/membership/saldoLog";
+
 import WithdrawalList from "@/pages/withdrawal/WithdrawalList";
 import OutletTopupListPage from "@/pages/outletTopup";
 
@@ -99,6 +103,16 @@ import UserListPage from "@/pages/user";
 import UserGroupListPage from "@/pages/usergroup";
 import FranchisorProfilePage from "@/pages/franchisor";
 import TopupBonusPage from "@/pages/setting/member/topupBonus";
+
+/**
+ * Redirect "/" → route pertama yang diizinkan permission user.
+ * Super admin (user tanpa permission list) → dashboard.
+ * Resolver: resolveDefaultRoute() di src/utils/permission.
+ */
+function FirstAllowedRedirect() {
+  const user = useAppSelector((s) => s.auth.session?.user);
+  return <Navigate to={resolveDefaultRoute(user)} replace />;
+}
 
 export function AppRoutes() {
   useAppMetadata();
@@ -139,6 +153,12 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        {/* Root "/" → redirect ke route pertama yang diizinkan (bukan selalu /dashboard). */}
+        <Route
+          path='/'
+          element={<FirstAllowedRedirect />}
+        />
+
         {/* Dashboard */}
         <Route
           path='/dashboard'
@@ -494,14 +514,6 @@ export function AppRoutes() {
           }
         />
         <Route
-          path='/report/pos/topup-cancelled'
-          element={
-            <PermissionGuard permission={MENU.reportPosTopupCancelled}>
-              <POSTopupCancelledPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
           path='/report/pos/product-item'
           element={
             <PermissionGuard permission={MENU.reportPosProductItem}>
@@ -621,6 +633,29 @@ export function AppRoutes() {
           }
         />
 
+        {/* Report Membership */}
+        <Route
+          path='/report/membership'
+          element={
+            <PermissionGuard permission={MENU.reportMembership}>
+              <MembershipReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/saldo-log'
+          element={
+            <PermissionGuard
+              permission={[
+                MENU.reportMembershipSaldoLog,
+                MENU.reportMembership,
+              ]}
+            >
+              <SaldoLogReportPage />
+            </PermissionGuard>
+          }
+        />
+
         <Route
           path='/withdrawal'
           element={
@@ -705,8 +740,8 @@ export function AppRoutes() {
           }
         />
 
-        {/* Fallback */}
-        <Route path='*' element={<Navigate to='/dashboard' replace />} />
+        {/* Fallback: redirect ke halaman pertama yang diizinkan (bukan asumsi /dashboard) */}
+        <Route path='*' element={<FirstAllowedRedirect />} />
       </Route>
     </Routes>
   );

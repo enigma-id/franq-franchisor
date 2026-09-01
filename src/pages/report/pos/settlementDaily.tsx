@@ -18,7 +18,7 @@ export default function POSSettlementDailyPage() {
     useOutletType();
 
   useEffect(() => {
-    getOutletType({ search: "POS" });
+    getOutletType({ search: "Outlet" });
   }, []);
 
   useEffect(() => {

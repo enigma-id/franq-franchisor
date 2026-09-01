@@ -334,6 +334,7 @@ const DashboardPage: React.FC = () => {
                 value={formatCurrency(data?.total_saldo_membership || 0)}
                 icon={Users}
                 theme={THEMES.purple}
+                onClick={go("/report/membership/saldo-log")}
               />
               <SummaryCard
                 label='Rencana Produksi'

@@ -31,6 +31,7 @@ import { usePrintWindow } from "@/utils/usePrintWindow";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import Plan from "@/components/app/print/plan";
+import ProductionPlanThermalPrint from "@/components/app/print/production-plan";
 
 const ProductionPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -211,6 +212,10 @@ const ProductionPlanDetailPage: React.FC = () => {
     openPrint(<Plan data={item} plan={plan} repeatCount={repeatCount} />);
   };
 
+  const handleOpenPrintPlan = () => {
+    openPrint(<ProductionPlanThermalPrint data={plan} />);
+  };
+
   const handleOpenEditPlanned = (item: ProductionPlanItem) => {
     setEditingPlanned({ item, quantity: item.quantity_planned });
   };
@@ -276,19 +281,23 @@ const ProductionPlanDetailPage: React.FC = () => {
         subtitle={plan?.code}
         backTo={() => navigate(-1)}
         action={
-          canManage && (
-            <div className='flex gap-2'>
-              {guards.canEdit && (
-                <Button
-                  variant='info'
-                  onClick={() =>
-                    navigate(`/production/plan/update/${plan?.id}`)
-                  }
-                  title='Edit'
-                >
-                  <Pencil className='w-4 h-4' />
-                </Button>
-              )}
+          <div className='flex gap-2'>
+            <Button onClick={handleOpenPrintPlan} title='Print Plan'>
+              <Printer className='w-4 h-4' />
+            </Button>
+            {canManage && (
+              <>
+                  {guards.canEdit && (
+                  <Button
+                    variant='info'
+                    onClick={() =>
+                      navigate(`/production/plan/update/${plan?.id}`)
+                    }
+                    title='Edit'
+                  >
+                    <Pencil className='w-4 h-4' />
+                  </Button>
+                )}
               {guards.canPublish && (
                 <Button
                   variant='primary'
@@ -319,8 +328,9 @@ const ProductionPlanDetailPage: React.FC = () => {
                   <Trash2 className='w-4 h-4' />
                 </Button>
               )}
-            </div>
-          )
+              </>
+            )}
+          </div>
         }
       />
 
