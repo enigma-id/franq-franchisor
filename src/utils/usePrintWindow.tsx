@@ -78,8 +78,8 @@ export function usePrintWindow({
           min-height: fit-content;
         }
         .sheet.plan-sheet {
-          width: 33mm !important;
-          height: 15mm !important;
+          width: 80mm !important;
+          height: 50mm !important;
           min-height: 0 !important;
           padding: 0 0 0 0 !important;
           overflow: hidden;
@@ -94,7 +94,7 @@ export function usePrintWindow({
         }
         .plan-label {
           width: 100%;
-          height: 15mm;
+          height: 50mm; /* Changed from 15mm */
           overflow: hidden;
         }
         @media print {
