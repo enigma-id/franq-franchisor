@@ -47,7 +47,7 @@ export default function POSProductItemPage() {
     useOutletType();
 
   useEffect(() => {
-    getOutletType({ search: "POS" });
+    getOutletType({ search: "Outlet" });
   }, []);
 
   useEffect(() => {
