@@ -328,74 +328,105 @@ const B2BOrderDetailPage: React.FC = () => {
               </div>
               <h2 className='card-section-title'>Informasi Pesanan</h2>
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              {/* Left: Customer Info */}
-              <dl className='space-y-1'>
-                <div className='info-row'>
-                  <dt className='info-label'>Nama</dt>
-                  <dd className='info-value'>{order.customer_name}</dd>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+              {/* Kolom 1: Pelanggan */}
+              <div>
+                <div className='text-xs font-bold text-slate-500 uppercase tracking-wider mb-2'>
+                  Pelanggan
                 </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Telepon</dt>
-                  <dd className='info-value'>{order.customer_phone || "-"}</dd>
-                </div>
-                <div className='info-row flex-col items-start gap-1'>
-                  <dt className='info-label'>Alamat</dt>
-                  <dd className='info-value text-left w-full wrap-break-words mt-0.5'>
-                    {order.customer_address || "-"}
-                  </dd>
-                </div>
-              </dl>
+                <dl className='space-y-1'>
+                  <div className='info-row'>
+                    <dt className='info-label'>Nama</dt>
+                    <dd className='info-value'>{order.customer_name}</dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Telepon</dt>
+                    <dd className='info-value'>{order.customer_phone || "-"}</dd>
+                  </div>
+                  <div className='info-row flex-col items-start gap-1'>
+                    <dt className='info-label'>Alamat</dt>
+                    <dd className='info-value text-left w-full wrap-break-words mt-0.5'>
+                      {order.customer_address || "-"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
 
-              {/* Right: Order Info */}
-              <dl className='space-y-1'>
-                <div className='info-row'>
-                  <dt className='info-label'>Kode</dt>
-                  <dd className='info-value'>{order.code}</dd>
+              {/* Kolom 2: Pesanan */}
+              <div>
+                <div className='text-xs font-bold text-slate-500 uppercase tracking-wider mb-2'>
+                  Pesanan
                 </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Tanggal Order</dt>
-                  <dd className='info-value'>
-                    {formatDateTime(order.created_at)}
-                  </dd>
+                <dl className='space-y-1'>
+                  <div className='info-row'>
+                    <dt className='info-label'>Kode</dt>
+                    <dd className='info-value'>{order.code}</dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Tanggal Order</dt>
+                    <dd className='info-value'>
+                      {formatDateTime(order.created_at)}
+                    </dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Tanggal Kirim</dt>
+                    <dd className='info-value'>
+                      {formatDate(order.shipping_date)}
+                    </dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Document Status</dt>
+                    <dd className='info-value'>
+                      <Badge
+                        variant={getStatusVariant(order.document_status)}
+                        size='xs'
+                        className='px-2.5 font-semibold text-[10px] tracking-wider'
+                      >
+                        {order.document_status?.toLowerCase()}
+                      </Badge>
+                    </dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Payment Status</dt>
+                    <dd className='info-value'>
+                      <Badge
+                        variant={getStatusVariant(order.payment_status)}
+                        size='xs'
+                        className='px-2.5 font-semibold text-[10px] tracking-wider'
+                      >
+                        {order.payment_status?.toLowerCase()}
+                      </Badge>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              {/* Kolom 3: Invoice & Pengiriman */}
+              <div>
+                <div className='text-xs font-bold text-slate-500 uppercase tracking-wider mb-2'>
+                  Invoice & Pengiriman
                 </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Tanggal Kirim</dt>
-                  <dd className='info-value'>
-                    {formatDate(order.shipping_date)}
-                  </dd>
-                </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Tanggal Invoice</dt>
-                  <dd className='info-value'>
-                    {order.invoice_date ? formatDate(order.invoice_date) : "-"}
-                  </dd>
-                </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Document Status</dt>
-                  <dd className='info-value'>
-                    <Badge
-                      variant={getStatusVariant(order.document_status)}
-                      size='xs'
-                      className='px-2.5 font-semibold text-[10px] tracking-wider'
-                    >
-                      {order.document_status?.toLowerCase()}
-                    </Badge>
-                  </dd>
-                </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Payment Status</dt>
-                  <dd className='info-value'>
-                    <Badge
-                      variant={getStatusVariant(order.payment_status)}
-                      size='xs'
-                      className='px-2.5 font-semibold text-[10px] tracking-wider'
-                    >
-                      {order.payment_status?.toLowerCase()}
-                    </Badge>
-                  </dd>
-                </div>
-              </dl>
+                <dl className='space-y-1'>
+                  <div className='info-row'>
+                    <dt className='info-label'>Tanggal Invoice</dt>
+                    <dd className='info-value'>
+                      {order.invoice_date ? formatDate(order.invoice_date) : "-"}
+                    </dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Tanggal Dibayar</dt>
+                    <dd className='info-value'>
+                      {order.paid_at ? formatDateTime(order.paid_at) : "-"}
+                    </dd>
+                  </div>
+                  <div className='info-row'>
+                    <dt className='info-label'>Tanggal Dikirim</dt>
+                    <dd className='info-value'>
+                      {order.shipped_at ? formatDateTime(order.shipped_at) : "-"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
             </div>
           </div>
 

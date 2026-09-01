@@ -138,7 +138,6 @@ function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
           emptyTitle='No Settlement Data'
           emptyDescription='Settlement data will appear here once available.'
         />
-        <Table.Pagination />
       </Page.Body>
     </Page>
   );

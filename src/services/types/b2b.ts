@@ -60,6 +60,8 @@ export interface B2BOrderDetail {
   invoice_date: string;
   payment_ref: string;
   paid_at: string;
+  /** Diisi saat order di-ship (Ship API). */
+  shipped_at: string;
   received_at: string;
   /** Diisi saat order dibatalkan (cancel). */
   cancelled_reason?: string;
