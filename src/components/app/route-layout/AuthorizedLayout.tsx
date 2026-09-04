@@ -14,7 +14,6 @@ import {
   ChevronDown,
   Receipt,
   Users,
-  Store,
   Grid,
   Building,
   Factory,
@@ -28,6 +27,7 @@ import {
   Gift,
   UserRound,
   IdCard,
+  Building2,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -82,6 +82,12 @@ const menuSections: MenuSection[] = [
         path: "/sales/order",
         icon: <ShoppingCart size={18} />,
         permission: MENU.salesOrder,
+      },
+      {
+        label: "Purchase Request",
+        path: "/sales/purchase-request",
+        icon: <Receipt size={18} />,
+        permission: MENU.purchaseRequest,
       },
       {
         label: "Withdrawal",
@@ -300,30 +306,15 @@ const menuSections: MenuSection[] = [
         ],
       },
       {
-        label: "Outlet",
-        icon: <Store size={18} />,
-        children: [
-          {
-            label: "Outlet List",
-            path: "/setting/outlet",
-            permission: MENU.outlet,
-          },
-          {
-            label: "Tipe Outlet",
-            path: "/setting/type/outlet",
-            permission: MENU.outletType,
-          },
-        ],
+        label: "Franchise",
+        path: "/franchise",
+        icon: <Building2 size={18} />,
+        permission: MENU.franchise,
       },
       {
         label: "POS",
         icon: <Monitor size={18} />,
         children: [
-          {
-            label: "Channel",
-            path: "/setting/pos/channel",
-            permission: MENU.posChannel,
-          },
           {
             label: "Category",
             path: "/setting/pos/category",

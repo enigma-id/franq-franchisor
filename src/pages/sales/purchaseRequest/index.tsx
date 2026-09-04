@@ -5,43 +5,41 @@ import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import { Button, Modal } from "@/components/ui";
 import { Plus } from "lucide-react";
-import createTableConfig from "./table/order.config";
-import TableFilter from "./table/order.filter";
+import createTableConfig from "./table/purchaseRequest.config";
+import TableFilter from "../order/table/order.filter";
 import type { SalesOrderDetail } from "@/services/types";
 import { useEnigmaUI } from "@/components";
 import { useSalesOrder } from "@/services/sales/hooks";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
-export default function SalesOrder() {
+export default function PurchaseRequestList() {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
-  const canManage = useCan(ACTION.salesOrder);
-  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, paid: paidItem, paidResult } =
+  const canManage = useCan(ACTION.purchaseRequest);
+  const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult } =
     useSalesOrder();
   const [selectedRow, setSelectedRow] = useState<SalesOrderDetail | null>(null);
-  const [actionType, setActionType] = useState<"publish" | "paid" | null>(null);
+  const [actionType, setActionType] = useState<"publish" | null>(null);
   const tableRef = useRef<ReturnType<typeof useTable> | null>(null);
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
-      onClick: (row) => navigate(`/sales/order/${row.id}`),
+      onClick: (row) => navigate(`/sales/purchase-request/${row.id}`),
       onRemove: (v) => openDelete(v),
-      onEdit: (row) => navigate(`/sales/order/update/${row.id}`),
-      onPublish: (row) => openConfirmModal(row, "publish"),
-      onPaid: (row) => openConfirmModal(row, "paid"),
-      lockedFilter: { exclude_order_type: "request" },
+      onEdit: (row) => navigate(`/sales/purchase-request/update/${row.id}`),
+      onPublish: (row) => openConfirmModal(row),
       canManage,
     });
   }, [navigate, canManage]);
 
-  const Table = useTable("sales_order", tableConfig as TableConfig<unknown>);
+  const Table = useTable("purchase_request", tableConfig as TableConfig<unknown>);
 
   useEffect(() => { tableRef.current = Table; }, [Table]);
 
-  const openConfirmModal = useCallback((row: SalesOrderDetail, type: "publish" | "paid") => {
+  const openConfirmModal = useCallback((row: SalesOrderDetail) => {
     setSelectedRow(row);
-    setActionType(type);
+    setActionType("publish");
   }, []);
 
   const closeConfirmModal = useCallback(() => {
@@ -51,53 +49,41 @@ export default function SalesOrder() {
 
   const handleConfirmAction = useCallback(async () => {
     if (!selectedRow) return;
-    const id = selectedRow.id;
-    switch (actionType) {
-      case "publish": await publishItem({ id }); break;
-      case "paid": await paidItem({ id }); break;
-    }
-  }, [selectedRow, actionType, publishItem, paidItem]);
-
-  const activeResult = useMemo(() => {
-    switch (actionType) {
-      case "publish": return publishResult;
-      case "paid": return paidResult;
-      default: return null;
-    }
-  }, [actionType, publishResult, paidResult]);
+    await publishItem({ id: selectedRow.id });
+  }, [selectedRow, publishItem]);
 
   const openDelete = (v: SalesOrderDetail) => {
     openModal({
-      id: "delete-item",
+      id: "delete-purchase-request",
       content: (
         <Modal.Wrapper
           open
-          onClose={() => closeModal("delete-item")}
+          onClose={() => closeModal("delete-purchase-request")}
           closeOnOutsideClick={false}
         >
           <Modal.Header>
-            <div className="font-bold! leading-7">Delete Item</div>
+            <div className="font-bold! leading-7">Hapus Purchase Request</div>
           </Modal.Header>
           <Modal.Body className="text-sm font-normal leading-5">
-            <p>Are you sure?</p>
+            <p>Apakah Anda yakin ingin menghapus purchase request ini?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
               className="flex-1 rounded-xl"
               variant="error"
-              onClick={() => handleDelete(v)}
+              onClick={() => { if (v) removeItem({ id: v.id }); }}
               isLoading={removeItemResult?.isLoading}
             >
-              Confirm
+              Hapus
             </Button>
             <Button
               className="flex-1 rounded-xl"
               styleType="outline"
               variant="secondary"
-              onClick={() => closeModal("delete-item")}
+              onClick={() => closeModal("delete-purchase-request")}
               disabled={removeItemResult?.isLoading}
             >
-              Cancel
+              Batal
             </Button>
           </Modal.Footer>
         </Modal.Wrapper>
@@ -105,45 +91,39 @@ export default function SalesOrder() {
     });
   };
 
-  const handleDelete = (v: SalesOrderDetail) => {
-    if (v) {
-      removeItem({ id: v?.id });
-    }
-  };
-
   useEffect(() => {
     if (removeItemResult?.isSuccess) {
-      closeModal("delete-item");
-      showToast({ message: "Sales order berhasil dihapus", type: "success", position: "bottom-center" });
+      closeModal("delete-purchase-request");
+      showToast({ message: "Purchase request berhasil dihapus", type: "success", position: "bottom-center" });
       Table.boot();
     }
-  }, [removeItemResult]);
+  }, [removeItemResult?.isSuccess]);
 
   useEffect(() => {
-    if (activeResult?.isSuccess) {
-      showToast({ message: "Berhasil", type: "success", position: "bottom-center" });
+    if (publishResult?.isSuccess) {
+      showToast({ message: "Purchase request berhasil diapprove", type: "success", position: "bottom-center" });
       closeConfirmModal();
-      activeResult.reset?.();
+      publishResult.reset?.();
       tableRef.current?.boot();
     }
-  }, [activeResult?.isSuccess]);
+  }, [publishResult?.isSuccess]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Sales"
-        title="Sales Order"
-        subtitle="Kelola transaksi penjualan ke seluruh outlet."
+        title="Purchase Request"
+        subtitle="Kelola permintaan pembelian dari outlet."
         action={
           canManage && (
             <Button
               variant="primary"
               shape="wide"
               size="md"
-              onClick={() => navigate("/sales/order/create")}
+              onClick={() => navigate("/sales/purchase-request/create")}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Tambah Order
+              Tambah Request
             </Button>
           )
         }
@@ -152,10 +132,9 @@ export default function SalesOrder() {
         <Table.Tools downloadable>
           <TableFilter table={Table} />
         </Table.Tools>
-
         <Table.Render
-          emptyTitle="Belum Ada Data Sales Order"
-          emptyDescription="Data sales order akan muncul di sini setelah tersedia."
+          emptyTitle="Belum Ada Purchase Request"
+          emptyDescription="Purchase request akan muncul di sini setelah tersedia."
         />
         <Table.Pagination />
       </Page.Body>
@@ -166,14 +145,12 @@ export default function SalesOrder() {
         closeOnOutsideClick={false}
       >
         <Modal.Header>
-          <div className="font-bold leading-7">
-            Konfirmasi {actionType === "publish" ? "Publish" : "Pembayaran"}
-          </div>
+          <div className="font-bold leading-7">Konfirmasi Approve</div>
         </Modal.Header>
         <Modal.Body className="text-sm font-normal leading-5 space-y-4">
           <p>
-            Apakah Anda yakin ingin {actionType === "publish" ? "menerbitkan" : "membayar"}{" "}
-            sales order <strong>{selectedRow?.code}</strong>?
+            Apakah Anda yakin ingin menyetujui purchase request{" "}
+            <strong>{selectedRow?.code}</strong>?
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -181,16 +158,16 @@ export default function SalesOrder() {
             className="flex-1 rounded-xl"
             variant="primary"
             onClick={handleConfirmAction}
-            isLoading={activeResult?.isLoading}
+            isLoading={publishResult?.isLoading}
           >
-            Konfirmasi
+            Approve
           </Button>
           <Button
             className="flex-1 rounded-xl"
             styleType="outline"
             variant="secondary"
             onClick={closeConfirmModal}
-            disabled={activeResult?.isLoading}
+            disabled={publishResult?.isLoading}
           >
             Batal
           </Button>

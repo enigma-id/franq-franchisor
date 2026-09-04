@@ -1,30 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { Page } from "@/components/app/layout";
-import { OutletForm } from "./components/outletForm";
-import { useOutlet } from "@/services/outlet/hooks";
+import { FranchiseForm } from "./components/franchiseForm";
+import { useFranchise } from "@/services/franchise/hooks";
 import { useNavigate } from "react-router-dom";
 import { useEnigmaUI } from "@/components";
-
 import { Save } from "lucide-react";
 import { Button, Loading } from "@/components/ui";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
-const OutletCreatePage: React.FC = () => {
+const FranchiseCreatePage: React.FC = () => {
   const navigate = useNavigate();
-  const { create, createResult } = useOutlet();
+  const { create, createResult } = useFranchise();
   const { showToast } = useEnigmaUI();
   const { isLoading: isCreating, isSuccess, reset: resetCreate } = createResult;
-  const canManage = useCan(ACTION.outlet);
+  const canManage = useCan(ACTION.franchise);
 
   useEffect(() => {
     if (isSuccess) {
-      showToast({
-        message: "Outlet berhasil dibuat",
-        type: "success",
-      });
-      navigate("/setting/outlet");
+      showToast({ message: "Franchise berhasil dibuat", type: "success" });
+      navigate("/franchise");
       resetCreate();
     }
   }, [isSuccess, showToast]);
@@ -33,17 +29,12 @@ const OutletCreatePage: React.FC = () => {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Settings"
-        title="Tambah Outlet Baru"
-        subtitle="Daftarkan outlet baru ke dalam sistem Franchisor."
+        title="Tambah Franchise Baru"
+        subtitle="Daftarkan franchise baru ke dalam sistem."
         backTo={() => navigate(-1)}
         action={
           canManage && (
-            <Button
-              type="submit"
-              form="outlet-form"
-              disabled={isCreating}
-              variant="success"
-            >
+            <Button type="submit" form="franchise-form" disabled={isCreating} variant="success">
               {isCreating ? (
                 <Loading size="sm" variant="spinner" />
               ) : (
@@ -58,14 +49,11 @@ const OutletCreatePage: React.FC = () => {
       />
       <Page.Body>
         <div className="mx-auto py-6">
-          <OutletForm
-            id="outlet-form"
-            onSubmit={(data) => create(data as any)}
-          />
+          <FranchiseForm id="franchise-form" onSubmit={(data) => create(data as any)} />
         </div>
       </Page.Body>
     </Page>
   );
 };
 
-export default OutletCreatePage;
+export default FranchiseCreatePage;

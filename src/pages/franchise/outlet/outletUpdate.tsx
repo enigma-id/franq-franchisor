@@ -12,7 +12,10 @@ import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
 const OutletUpdatePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { franchiseId, outletId } = useParams<{
+    franchiseId: string;
+    outletId: string;
+  }>();
   const navigate = useNavigate();
   const { show, showResult, update, updateResult } = useOutlet();
   const { showToast } = useEnigmaUI();
@@ -20,10 +23,10 @@ const OutletUpdatePage: React.FC = () => {
   const canManage = useCan(ACTION.outlet);
 
   useEffect(() => {
-    if (id) {
-      show({ id });
+    if (outletId) {
+      show({ id: outletId });
     }
-  }, [id, show]);
+  }, [outletId, show]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -31,22 +34,22 @@ const OutletUpdatePage: React.FC = () => {
         message: "Outlet berhasil diperbarui",
         type: "success",
       });
-      navigate("/setting/outlet");
+      navigate(franchiseId ? `/franchise/${franchiseId}` : "/franchise");
       resetUpdate();
     }
-  }, [isSuccess, navigate, resetUpdate, showToast]);
+  }, [isSuccess, navigate, franchiseId, resetUpdate, showToast]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Settings"
+        category="Franchise"
         title="Update Outlet"
         subtitle={
           showResult.data?.data
             ? `Perbarui outlet: ${showResult.data.data.name}`
             : "Perbarui informasi outlet yang sudah terdaftar."
         }
-        backTo={() => navigate(-1)}
+        backTo={() => navigate(franchiseId ? `/franchise/${franchiseId}` : "/franchise")}
         action={
           canManage && (
             <Button
@@ -81,7 +84,10 @@ const OutletUpdatePage: React.FC = () => {
               id="outlet-form"
               initialData={showResult.data?.data}
               hideOwnerSection
-              onSubmit={(data) => update({ id: id!, payload: data as any })}
+              onSubmit={(data) => {
+                const { outlet_type_id: _outletTypeId, ...rest } = data as any;
+                update({ id: outletId!, payload: rest as any });
+              }}
             />
           )}
         </div>

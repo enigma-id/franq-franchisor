@@ -24,6 +24,7 @@ import { uploadApi } from "./upload/api";
 import { withdrawalApi } from "./withdrawal/api";
 import { b2bApi } from "./b2b/api";
 import { franchisorApi } from "./franchisor/api";
+import { franchiseApi } from "./franchise/api";
 import { outletTopupApi } from "./outletTopup/api";
 import { userApi } from "./user/api";
 import { userGroupApi } from "./usergroup/api";
@@ -54,6 +55,7 @@ const appReducer = combineReducers({
   [withdrawalApi.reducerPath]: withdrawalApi.reducer,
   [b2bApi.reducerPath]: b2bApi.reducer,
   [franchisorApi.reducerPath]: franchisorApi.reducer,
+  [franchiseApi.reducerPath]: franchiseApi.reducer,
   [outletTopupApi.reducerPath]: outletTopupApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [userGroupApi.reducerPath]: userGroupApi.reducer,
@@ -83,6 +85,7 @@ export const apiMiddlewares = [
   withdrawalApi.middleware,
   b2bApi.middleware,
   franchisorApi.middleware,
+  franchiseApi.middleware,
   outletTopupApi.middleware,
   userApi.middleware,
   userGroupApi.middleware,

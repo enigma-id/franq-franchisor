@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import { useOutletType } from "@/services/outlet/hooks";
@@ -9,10 +8,7 @@ import TableFilters from "@/components/ui/table/filter";
 interface TableFilterProps {
   table: {
     filter: (params: any) => void;
-    State: {
-      loading: boolean;
-      filter: any;
-    };
+    State: { loading: boolean; filter: any };
   };
 }
 
@@ -22,10 +18,7 @@ const isActiveOptions: SelectOptionValue[] = [
 ];
 
 const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
-  const current = useMemo(
-    () => table.State?.filter ?? {},
-    [table.State?.filter],
-  );
+  const current = useMemo(() => table.State?.filter ?? {}, [table.State?.filter]);
 
   const { get: getOutletType, getResult: getOutletTypeResult } = useOutletType();
   const [outletType, setOutletType] = useState<any | null>(null);
@@ -45,10 +38,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   }, [current.outlet_type_id, getOutletTypeResult?.data?.data]);
 
   const [isActive, setIsActive] = useState<SelectOptionValue | null>(() => {
-    const value = current.is_active;
-    return value
-      ? (isActiveOptions.find((opt) => opt.value === value) ?? null)
-      : null;
+    const v = current.is_active;
+    return v ? (isActiveOptions.find((o) => o.value === v) ?? null) : null;
   });
 
   const buildFilters = () => ({
@@ -72,18 +63,16 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     table.filter({ outlet_type_id: "", is_active: "" });
   };
 
-  const handleFilter = () => table.filter(buildFilters());
-
   return (
     <TableFilters
       isActive={anyActive}
       isDirty={isDirty}
       handleClear={handleClear}
-      handleFilter={handleFilter}
+      handleFilter={() => table.filter(buildFilters())}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <RemoteSelect
-          label="Tipe Outlet"
+          label="Tipe"
           placeholder="Filter Tipe"
           value={outletType}
           onChange={(val) => setOutletType(val)}

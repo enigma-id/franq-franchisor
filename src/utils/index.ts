@@ -141,6 +141,9 @@ export function getTypeVariant(
     b2b: "default",
     sukabread: "warning",
 
+    // franchise type
+    outlet: "info",
+
     // item type
     raw_material: "default",
     finished_goods: "warning",

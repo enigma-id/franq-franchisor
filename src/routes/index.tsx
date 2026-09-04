@@ -13,9 +13,8 @@ import SignInPage from "@/pages/signin";
 import SignUpPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
 
-import OutletListPage from "@/pages/setting/outlet";
-import OutletCreatePage from "@/pages/setting/outlet/outletCreate";
-import OutletUpdatePage from "@/pages/setting/outlet/outletUpdate";
+import OutletCreatePage from "@/pages/franchise/outlet/outletCreate";
+import OutletUpdatePage from "@/pages/franchise/outlet/outletUpdate";
 
 import OutletTypePage from "@/pages/setting/type";
 import POSChannelListPage from "@/pages/setting/pos/channel";
@@ -52,6 +51,11 @@ import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
 import SalesOrderUpdatePage from "@/pages/sales/order/salesOrderUpdate";
 import SalesOrderListPage from "@/pages/sales/order";
 import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
+
+import PurchaseRequestListPage from "@/pages/sales/purchaseRequest";
+import PurchaseRequestCreatePage from "@/pages/sales/purchaseRequest/purchaseRequestCreate";
+import PurchaseRequestUpdatePage from "@/pages/sales/purchaseRequest/purchaseRequestUpdate";
+import PurchaseRequestDetailPage from "@/pages/sales/purchaseRequest/purchaseRequestDetail";
 
 import ProductionPlanListPage from "@/pages/production/plan";
 import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
@@ -103,6 +107,11 @@ import UserListPage from "@/pages/user";
 import UserGroupListPage from "@/pages/usergroup";
 import FranchisorProfilePage from "@/pages/franchisor";
 import TopupBonusPage from "@/pages/setting/member/topupBonus";
+
+import FranchiseListPage from "@/pages/franchise";
+import FranchiseCreatePage from "@/pages/franchise/franchiseCreate";
+import FranchiseUpdatePage from "@/pages/franchise/franchiseUpdate";
+import FranchiseDetailPage from "@/pages/franchise/franchiseDetail";
 
 /**
  * Redirect "/" → route pertama yang diizinkan permission user.
@@ -169,31 +178,7 @@ export function AppRoutes() {
           }
         />
 
-        {/* Setting - Outlet */}
-        <Route
-          path='/setting/outlet'
-          element={
-            <PermissionGuard permission={MENU.outlet}>
-              <OutletListPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/setting/outlet/create'
-          element={
-            <PermissionGuard permission={MENU.outlet}>
-              <OutletCreatePage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/setting/outlet/update/:id'
-          element={
-            <PermissionGuard permission={MENU.outlet}>
-              <OutletUpdatePage />
-            </PermissionGuard>
-          }
-        />
+        {/* Setting - Outlet Type */}
         <Route
           path='/setting/type/outlet'
           element={
@@ -480,6 +465,40 @@ export function AppRoutes() {
           }
         />
 
+        {/* Sales - Purchase Request */}
+        <Route
+          path='/sales/purchase-request'
+          element={
+            <PermissionGuard permission={MENU.purchaseRequest}>
+              <PurchaseRequestListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/sales/purchase-request/create'
+          element={
+            <PermissionGuard permission={MENU.purchaseRequest}>
+              <PurchaseRequestCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/sales/purchase-request/update/:id'
+          element={
+            <PermissionGuard permission={MENU.purchaseRequest}>
+              <PurchaseRequestUpdatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/sales/purchase-request/:id'
+          element={
+            <PermissionGuard permission={MENU.purchaseRequest}>
+              <PurchaseRequestDetailPage />
+            </PermissionGuard>
+          }
+        />
+
         {/* Report POS */}
         <Route
           path='/report/pos/outstanding'
@@ -723,6 +742,56 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.usergroup}>
               <UserGroupListPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Franchise */}
+        <Route
+          path='/franchise'
+          element={
+            <PermissionGuard permission={MENU.franchise}>
+              <FranchiseListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/franchise/create'
+          element={
+            <PermissionGuard permission={MENU.franchise}>
+              <FranchiseCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/franchise/update/:id'
+          element={
+            <PermissionGuard permission={MENU.franchise}>
+              <FranchiseUpdatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/franchise/:franchiseId/outlet/create'
+          element={
+            <PermissionGuard permission={MENU.outlet}>
+              <OutletCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/franchise/:franchiseId/outlet/update/:outletId'
+          element={
+            <PermissionGuard permission={MENU.outlet}>
+              <OutletUpdatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/franchise/:id'
+          element={
+            <PermissionGuard permission={MENU.franchise}>
+              <FranchiseDetailPage />
             </PermissionGuard>
           }
         />

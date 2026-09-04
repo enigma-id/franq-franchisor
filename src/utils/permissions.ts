@@ -14,6 +14,7 @@ export const MENU = {
   // Sales
   b2bOrder: "frontend.franchisor.sales.b2b-order",
   salesOrder: "frontend.franchisor.sales.sales-order",
+  purchaseRequest: "frontend.franchisor.sales.purchase-request",
   withdrawal: "frontend.franchisor.sales.withdrawal",
   outletTopup: "frontend.franchisor.sales.outlet-topup",
   // Purchase
@@ -50,6 +51,7 @@ export const MENU = {
   reportMembership: "frontend.franchisor.report.membership",
   reportMembershipSaldoLog: "frontend.franchisor.report.membership-saldo-log",
   // Setting
+  franchise: "frontend.franchisor.setting.franchise",
   outlet: "frontend.franchisor.setting.outlet",
   outletType: "frontend.franchisor.setting.outlet-type",
   posChannel: "frontend.franchisor.setting.pos-channel",
@@ -65,6 +67,7 @@ export type MenuSlug = (typeof MENU)[keyof typeof MENU];
 
 // ─── Button action slugs (application 'svc-franchisor', action 'manage') ─────
 export const ACTION = {
+  franchise: "svc-franchisor.franchise.manage",
   user: "svc-franchisor.user.manage",
   usergroup: "svc-franchisor.usergroup.manage",
   outlet: "svc-franchisor.outlet.manage",
@@ -79,6 +82,7 @@ export const ACTION = {
   memberTopup: "svc-franchisor.member-topup.manage",
   purchaseOrder: "svc-franchisor.purchase-order.manage",
   salesOrder: "svc-franchisor.sales-order.manage",
+  purchaseRequest: "svc-franchisor.purchase-request.manage",
   production: "svc-franchisor.production.manage",
   b2b: "svc-franchisor.b2b.manage",
   b2bCancel: "svc-franchisor.b2b.cancel",

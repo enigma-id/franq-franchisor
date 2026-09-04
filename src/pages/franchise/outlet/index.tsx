@@ -11,27 +11,42 @@ import { Modal, useEnigmaUI } from "@/components";
 import TableFilter from "./table/outlet.filter";
 import { useOutlet } from "@/services/outlet/hooks";
 import type { TableConfig } from "@/services/table/const";
-import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal.tsx";
+import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal";
 import { OutletUserForm } from "./components/OutletUserForm";
-import type { OutletDetail } from "@/services/types/outlet.ts";
+import type { OutletDetail } from "@/services/types/outlet";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import { useUser } from "@/services/user/hooks";
 import { UserRound, Save } from "lucide-react";
 
-const OutletListPage: React.FC = () => {
+interface OutletListProps {
+  /** Filter outlet milik franchise ini. */
+  franchiseId?: string;
+  /** Saat true, tampilkan sebagai halaman penuh dgn header (default false = embedded). */
+  fullPage?: boolean;
+  /** Base path untuk aksi edit/create. Default /franchise/:franchiseId/outlet. */
+  basePath?: string;
+}
+
+const OutletList: React.FC<OutletListProps> = ({
+  franchiseId,
+  fullPage = false,
+  basePath,
+}) => {
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const navigate = useNavigate();
   const canManage = useCan(ACTION.outlet);
   const canManageUser = useCan(ACTION.user);
 
+  const outletBasePath = basePath ?? "/franchise";
+
   const {
     remove: removeOutlet,
     removeResult: removeOutletResult,
     activate,
-    activateResult: activateResult,
+    activateResult,
     deactivate,
-    deactivateResult: deactivateResult,
+    deactivateResult,
   } = useOutlet();
 
   const {
@@ -78,20 +93,30 @@ const OutletListPage: React.FC = () => {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onClick: (row: any) => navigate(`/setting/outlet/update/${row.id}`),
+        onClick: (row: any) =>
+          navigate(
+            franchiseId
+              ? `${outletBasePath}/${franchiseId}/outlet/update/${row.id}`
+              : `${outletBasePath}/update/${row.id}`,
+          ),
         onRemove: (row: any) => {
           openDelete(row);
         },
         onChangeChannel: (row) => openOutletType(row),
         onToggleActive: (row: any) => handleToggleActive(row),
         onManageUser: (row: any) => handleManageUser(row),
+        lockedFilter: franchiseId ? { franchise_id: franchiseId } : undefined,
         canManage,
         canManageUser,
       }),
-    [canManage, canManageUser, handleManageUser],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [franchiseId, outletBasePath, canManage, canManageUser],
   );
 
-  const Table = useTable("outlet-list", tableConfig as TableConfig<unknown>);
+  const tableName = franchiseId
+    ? `outlet-list-franchise-${franchiseId}`
+    : "outlet-list";
+  const Table = useTable(tableName, tableConfig as TableConfig<unknown>);
 
   const openOutletType = (row: OutletDetail) => {
     openModal({
@@ -122,7 +147,7 @@ const OutletListPage: React.FC = () => {
       removeOutletResult.reset?.();
       Table.boot();
     }
-  }, [isDeleteSuccess, Table, removeOutletResult]);
+  }, [isDeleteSuccess, Table, removeOutletResult, closeModal, showToast]);
 
   useEffect(() => {
     if (isActivateSuccess) {
@@ -135,7 +160,7 @@ const OutletListPage: React.FC = () => {
       Table.boot();
       activateResult.reset?.();
     }
-  }, [isActivateSuccess, Table, activateResult]);
+  }, [isActivateSuccess, Table, activateResult, showToast]);
 
   useEffect(() => {
     if (isDeactivateSuccess) {
@@ -149,7 +174,7 @@ const OutletListPage: React.FC = () => {
       Table.boot();
       deactivateResult.reset?.();
     }
-  }, [isDeactivateSuccess, Table, deactivateResult]);
+  }, [isDeactivateSuccess, Table, deactivateResult, closeModal, showToast]);
 
   // Update user outlet success → toast + close drawer
   useEffect(() => {
@@ -219,28 +244,23 @@ const OutletListPage: React.FC = () => {
     }
   };
 
-  return (
-    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
-      <Page.Header
-        category="Settings"
-        title="Daftar Outlet"
-        subtitle="Kelola semua outlet yang terdaftar di sistem."
-        action={
-          canManage && (
-            <Button
-              variant="primary"
-              onClick={() => navigate("/setting/outlet/create")}
-            >
-              <Plus size={18} />
-              Tambah Outlet
-            </Button>
-          )
-        }
-      />
-
-      <Page.Body className="flex-1 flex flex-col min-h-0 bg-white border-t border-slate-200">
+  const body = (
+    <>
+      <div className="flex flex-col min-h-0">
         <Table.Tools>
           <TableFilter table={Table} />
+          {canManage && franchiseId && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() =>
+                navigate(`${outletBasePath}/${franchiseId}/outlet/create`)
+              }
+            >
+              <Plus size={16} />
+              Tambah Outlet
+            </Button>
+          )}
         </Table.Tools>
 
         <Table.Render
@@ -249,7 +269,7 @@ const OutletListPage: React.FC = () => {
         />
 
         <Table.Pagination />
-      </Page.Body>
+      </div>
 
       {/* Drawer: update user outlet */}
       <Drawer
@@ -318,8 +338,26 @@ const OutletListPage: React.FC = () => {
           </div>
         </div>
       </Drawer>
+    </>
+  );
+
+  if (!fullPage) {
+    return body;
+  }
+
+  return (
+    <Page className="h-full flex flex-col min-h-0 bg-slate-50">
+      <Page.Header
+        category="Settings"
+        title="Daftar Outlet"
+        subtitle="Kelola semua outlet yang terdaftar di sistem."
+        backTo={() => navigate(-1)}
+      />
+      <Page.Body className="flex-1 flex flex-col min-h-0 bg-white border-t border-slate-200">
+        {body}
+      </Page.Body>
     </Page>
   );
 };
 
-export default OutletListPage;
+export default OutletList;

@@ -13,6 +13,7 @@ export interface OutletBase {
   owner_name: string;
   owner_username: string;
   owner_password: string;
+  franchise_id?: string;
 }
 
 export interface OutletCreateRequest extends OutletBase {

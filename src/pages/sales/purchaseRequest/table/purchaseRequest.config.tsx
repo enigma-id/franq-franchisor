@@ -2,31 +2,27 @@ import config from "@/services/table/const";
 import { formatDate, getStatusVariant, formatDateTime } from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
-import { Edit, Eye, MoreVertical, Trash, Check, CreditCard } from "lucide-react";
+import { Edit, Eye, MoreVertical, Trash, Check } from "lucide-react";
 
 const createTableConfig = ({
   onClick,
   onRemove,
   onEdit,
   onPublish,
-  onPaid,
   filter,
-  lockedFilter,
   canManage,
 }: {
   onClick?: (row: SalesOrderDetail) => void;
   onRemove?: (row: SalesOrderDetail) => void;
   onEdit?: (row: SalesOrderDetail) => void;
   onPublish?: (row: SalesOrderDetail) => void;
-  onPaid?: (row: SalesOrderDetail) => void;
   filter?: Record<string, unknown>;
-  lockedFilter?: Record<string, unknown>;
   canManage?: boolean;
 }) => ({
   ...config,
   url: "/sales/order",
+  lockedFilter: { order_type: "request" },
   filter,
-  lockedFilter,
   columns: {
     code: {
       title: "Code",
@@ -74,18 +70,16 @@ const createTableConfig = ({
       width: 200,
     },
     shipping_date: {
-      title: "Shipment Date",
+      title: "Tanggal Request",
       sortable: true,
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
-        <span className="font-medium">
-          {formatDate(row.shipping_date)}
-        </span>
+        <span className="font-medium">{formatDate(row.shipping_date)}</span>
       ),
     },
     document_status: {
-      title: "Document Status",
+      title: "Status",
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
@@ -95,34 +89,6 @@ const createTableConfig = ({
           className="px-2.5 font-semibold text-[10px] tracking-wider"
         >
           {row.document_status?.toLowerCase()}
-        </Badge>
-      ),
-    },
-    fulfillment_status: {
-      title: "Fulfillment Status",
-      class: "text-center",
-      align: "center",
-      component: (row: SalesOrderDetail) => (
-        <Badge
-          variant={getStatusVariant(row.fulfillment_status)}
-          size="xs"
-          className="px-2.5 font-semibold text-[10px] tracking-wider"
-        >
-          {row.fulfillment_status?.toLowerCase()}
-        </Badge>
-      ),
-    },
-    payment_status: {
-      title: "Payment",
-      class: "text-center",
-      align: "center",
-      component: (row: SalesOrderDetail) => (
-        <Badge
-          variant={getStatusVariant(row.payment_status)}
-          size="xs"
-          className="px-2.5 font-semibold text-[10px] tracking-wider"
-        >
-          {row.payment_status?.toLowerCase()}
         </Badge>
       ),
     },
@@ -150,10 +116,8 @@ const createTableConfig = ({
                 <Eye className="w-4 h-4" />
               </div>
               <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">See Detail</span>
-                <span className="text-[11px] text-slate-400">
-                  See sales order info
-                </span>
+                <span className="font-bold text-[13px]">Lihat Detail</span>
+                <span className="text-[11px] text-slate-400">Detail purchase request</span>
               </div>
             </button>
           </Dropdown.Item>
@@ -168,8 +132,8 @@ const createTableConfig = ({
                     <Check className="w-4 h-4" />
                   </div>
                   <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Publish</span>
-                    <span className="text-[11px] text-slate-400">Approve sales order</span>
+                    <span className="font-bold text-[13px]">Approve</span>
+                    <span className="text-[11px] text-slate-400">Setujui purchase request</span>
                   </div>
                 </button>
               </Dropdown.Item>
@@ -183,9 +147,7 @@ const createTableConfig = ({
                   </div>
                   <div className="flex flex-col items-start leading-tight">
                     <span className="font-bold text-[13px]">Edit</span>
-                    <span className="text-[11px] text-slate-400">
-                      Modify sales order info
-                    </span>
+                    <span className="text-[11px] text-slate-400">Ubah purchase request</span>
                   </div>
                 </button>
               </Dropdown.Item>
@@ -199,31 +161,11 @@ const createTableConfig = ({
                   </div>
                   <div className="flex flex-col items-start leading-tight">
                     <span className="font-bold text-[13px]">Delete</span>
-                    <span className="text-[11px] text-slate-400">
-                      Remove sales order
-                    </span>
+                    <span className="text-[11px] text-slate-400">Hapus purchase request</span>
                   </div>
                 </button>
               </Dropdown.Item>
             </>
-          )}
-
-
-          {canManage && row?.payment_status === "unpaid" && row?.document_status === "published" && (
-            <Dropdown.Item
-              onSelect={() => onPaid?.(row)}
-              className="hover:bg-blue-50 hover:text-blue-600"
-            >
-              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Paid</span>
-                  <span className="text-[11px] text-slate-400">Mark as paid</span>
-                </div>
-              </button>
-            </Dropdown.Item>
           )}
         </Dropdown>
       ),

@@ -115,15 +115,27 @@ const META_MAP: Record<string, RouteMeta> = {
     title: "Ubah Master Item - Franchisor Portal",
     description: "Perbarui master item.",
   },
-  "/setting/outlet": {
-    title: "Outlet - Franchisor Portal",
-    description: "Manajemen outlet franchise.",
+  "/franchise": {
+    title: "Franchise - Franchisor Portal",
+    description: "Manajemen franchise.",
   },
-  "/setting/outlet/create": {
+  "/franchise/create": {
+    title: "Tambah Franchise - Franchisor Portal",
+    description: "Tambah franchise baru.",
+  },
+  "/franchise/update/:id": {
+    title: "Ubah Franchise - Franchisor Portal",
+    description: "Perbarui franchise.",
+  },
+  "/franchise/:id": {
+    title: "Detail Franchise - Franchisor Portal",
+    description: "Detail franchise & outlet.",
+  },
+  "/franchise/:franchiseId/outlet/create": {
     title: "Tambah Outlet - Franchisor Portal",
     description: "Tambah outlet franchise baru.",
   },
-  "/setting/outlet/update/:id": {
+  "/franchise/:franchiseId/outlet/update/:outletId": {
     title: "Ubah Outlet - Franchisor Portal",
     description: "Perbarui data outlet franchise.",
   },

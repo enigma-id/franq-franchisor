@@ -7,7 +7,7 @@ import { currencyFormat, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
   onRowClick,
-  lockFilter,
+  lockedFilter,
   filter,
   onClick,
   onRemove,
@@ -18,7 +18,7 @@ const createTableConfig = ({
   canManageUser,
 }: {
   onRowClick?: (row: any) => void;
-  lockFilter?: Record<string, unknown>;
+  lockedFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
   onRemove?: (row: any) => void;
@@ -30,7 +30,7 @@ const createTableConfig = ({
 }) => ({
   ...config,
   url: "/outlet",
-  lockFilter,
+  lockedFilter,
   filter,
   onRowClick,
   columns: {
@@ -45,17 +45,6 @@ const createTableConfig = ({
           <span className='font-bold text-slate-700'>{row.name}</span>
         </div>
       ),
-    },
-    type: {
-      title: "Type",
-      sortable: true,
-      alias: "outlet_type:name",
-      component: (row: OutletDetail) => (
-        <span className='text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-medium'>
-          {row?.outlet_type?.name ?? "-"}
-        </span>
-      ),
-      align: "center",
     },
     recipient_name: {
       title: "Penerima",

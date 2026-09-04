@@ -327,7 +327,7 @@ const DashboardPage: React.FC = () => {
                 value={`${data?.outlet_aktif || 0} / ${data?.total_outlet || 0}`}
                 icon={Store}
                 theme={THEMES.teal}
-                onClick={go("/setting/outlet")}
+                onClick={go("/franchise")}
               />
               <SummaryCard
                 label='Saldo Membership All Periode'
