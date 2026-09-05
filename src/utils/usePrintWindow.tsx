@@ -84,6 +84,10 @@ export function usePrintWindow({
           padding: 0 0 0 0 !important;
           overflow: hidden;
         }
+        .sheet.plan-sheet.plan-sheet-batch {
+          width: 33mm !important;
+          height: 15mm !important;
+        }
         .sheet.A4 {
           width: 210mm;
           height: 297mm;
@@ -96,6 +100,10 @@ export function usePrintWindow({
           width: 100%;
           height: 50mm; /* Changed from 15mm */
           overflow: hidden;
+        }
+        .plan-label.plan-label-batch {
+          width: 33mm;
+          height: 15mm;
         }
         @media print {
           body {
@@ -115,13 +123,17 @@ export function usePrintWindow({
             overflow: hidden;
           }
           .sheet.plan-sheet {
-            width: 33mm !important;
-            height: 15mm !important;
+            width: 80mm !important;
+            height: 50mm !important;
             min-height: 0 !important;
             padding: 0 0 0 0 !important;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+          }
+          .sheet.plan-sheet.plan-sheet-batch {
+            width: 33mm !important;
+            height: 15mm !important;
           }
           .page-break {
             page-break-after: always;

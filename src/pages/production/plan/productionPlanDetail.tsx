@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Badge, Button, Modal } from "@/components/ui";
+import { Badge, Button, Dropdown, Modal } from "@/components/ui";
 import { Input, useEnigmaUI } from "@/components";
 import { useProductionPlan } from "@/services/production/hooks";
 import {
@@ -14,6 +14,8 @@ import {
   Printer,
   CheckCircle,
   Pencil,
+  MoreVertical,
+  Wheat,
 } from "lucide-react";
 import { formatDate, getTypeVariant } from "@/utils";
 import type {
@@ -30,7 +32,7 @@ import { getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
-import Plan from "@/components/app/print/plan";
+import Plan from "@/components/app/print/production-label";
 import ProductionPlanThermalPrint from "@/components/app/print/production-plan";
 
 const ProductionPlanDetailPage: React.FC = () => {
@@ -204,12 +206,14 @@ const ProductionPlanDetailPage: React.FC = () => {
     });
   };
 
-  const handleOpenPrint = (item: any) => {
+  const handleOpenPrint = (item: any, label: "roti" | "batch") => {
     const repeatCount =
       item.quantity_produced > 0
         ? item.quantity_produced
         : item.quantity_planned;
-    openPrint(<Plan data={item} plan={plan} repeatCount={repeatCount} />);
+    openPrint(
+      <Plan data={item} plan={plan} label={label} repeatCount={repeatCount} />,
+    );
   };
 
   const handleOpenPrintPlan = () => {
@@ -522,12 +526,52 @@ const ProductionPlanDetailPage: React.FC = () => {
                                 <CheckCircle size={15} />
                               </Button>
                             )}
-                          <Button
-                            styleType='ghost'
-                            onClick={() => handleOpenPrint(item)}
+                          <Dropdown
+                            trigger={
+                              <button className='p-2 rounded-lg hover:bg-slate-100 transition-colors'>
+                                <MoreVertical className='w-5 h-5 text-slate-600' />
+                              </button>
+                            }
+                            position='end'
+                            contentClassName='dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2 text-left'
                           >
-                            <Printer size={16} />
-                          </Button>
+                            <Dropdown.Item
+                              onSelect={() => handleOpenPrint(item, "roti")}
+                              className='hover:bg-amber-50 hover:text-amber-600'
+                            >
+                              <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left'>
+                                <div className='w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600'>
+                                  <Wheat className='w-4 h-4' />
+                                </div>
+                                <div className='flex flex-col items-start leading-tight'>
+                                  <span className='font-bold text-[13px]'>
+                                    Label Roti
+                                  </span>
+                                  <span className='text-[11px] text-slate-400'>
+                                    80x50mm
+                                  </span>
+                                </div>
+                              </button>
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onSelect={() => handleOpenPrint(item, "batch")}
+                              className='hover:bg-indigo-50 hover:text-indigo-600'
+                            >
+                              <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left'>
+                                <div className='w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600'>
+                                  <Printer className='w-4 h-4' />
+                                </div>
+                                <div className='flex flex-col items-start leading-tight'>
+                                  <span className='font-bold text-[13px]'>
+                                    Label Batch
+                                  </span>
+                                  <span className='text-[11px] text-slate-400'>
+                                    33x15mm
+                                  </span>
+                                </div>
+                              </button>
+                            </Dropdown.Item>
+                          </Dropdown>
                         </div>
                       </td>
                     </tr>
