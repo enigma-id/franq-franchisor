@@ -1,4 +1,5 @@
 import type { DocumentStatusB2B, PaymentStatus, ApprovalStatus } from "./api";
+import type { CustomerDetail } from "./customer";
 
 export interface B2BOrderItemRequest {
   menu_id: string;
@@ -7,6 +8,8 @@ export interface B2BOrderItemRequest {
 }
 
 export interface B2BOrderRequest {
+  /** FK ke master customer (diisi saat create; backend snapshot name/phone/address dari master). */
+  customer_id?: string;
   customer_name: string;
   customer_phone: string;
   customer_address: string;
@@ -38,6 +41,9 @@ export interface B2BOrderDetail {
   id: string;
   franchisor_id: string;
   code: string;
+  customer_id?: string;
+  /** Relasi master customer (bila order ter-link). */
+  customer?: CustomerDetail;
   customer_name: string;
   customer_phone: string;
   customer_address: string;

@@ -5,6 +5,7 @@ import { Input, Checkbox, RemoteSelect } from "@/components/ui";
 import { Plus, Trash2, Package } from "lucide-react";
 import clsx from "clsx";
 import { useAppSelector } from "@/hooks";
+import { useIsSuperuser } from "@/utils/permission";
 import { getOptionByValue } from "@/utils/helper";
 import type {
   InventoryBOM,
@@ -17,6 +18,7 @@ import type {
 import type { SelectOptionValue } from "@/services/types/table";
 import { useSupplier } from "@/services/supplier/hooks";
 import { useInventoryItem } from "@/services/inventory/hooks";
+import { useFranchisorList } from "@/services/franchisor/hooks";
 
 const TYPES = [
   { value: "raw_material", label: "Raw Material" },
@@ -51,8 +53,15 @@ export function InventoryItemForm({
   onSubmit,
 }: InventoryItemFormProps) {
   const FormState = useAppSelector((s) => s.form);
+  const isSuperuser = useIsSuperuser();
+  const isCreateMode = !id;
   const { get: getSupplier, getResult: supplierResult } = useSupplier();
   const { get: getItems, getResult: itemsResult } = useInventoryItem();
+  const {
+    get: getFranchisors,
+    getResult: franchisorsResult,
+  } = useFranchisorList();
+  const [franchise, setFranchise] = useState<any | null>(null);
 
   const [formData, setFormData] = useState<InventoryItemCreateRequest>({
     type: initialData?.type || "raw_material",
@@ -187,6 +196,7 @@ export function InventoryItemForm({
 
     const payload: InventoryItemCreateRequest = {
       ...formData,
+      franchisor_id: franchise?.id || undefined,
       supplier_id: supplier?.id,
       picking_strategy: strategySelected?.value as InventoryItemPickingStrategy,
       fractions: fractions.map((f) => ({
@@ -224,6 +234,30 @@ export function InventoryItemForm({
               <h2 className='font-bold text-slate-700'>Informasi Umum Item</h2>
             </div>
           </div>
+          {isSuperuser && isCreateMode && (
+            <div className='px-5 pt-5'>
+              <RemoteSelect
+                label='Franchise'
+                placeholder='Pilih Franchise...'
+                required
+                value={franchise}
+                hook={franchisorsResult as any}
+                fetchData={(page, search) =>
+                  getFranchisors({ page, search })
+                }
+                getLabel={(item: any) => item?.name || ""}
+                renderItem={(item: any) =>
+                  item
+                    ? `${item.name} (${item.type === "mitra" ? "Mitra" : "Outlet"})`
+                    : ""
+                }
+                getValue={(item: any) => item?.id}
+                onChange={(item: any) => setFranchise(item)}
+                onClear={() => setFranchise(null)}
+                error={FormState?.errors?.franchisor_id as string}
+              />
+            </div>
+          )}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4 p-5'>
             <RemoteSelect<SelectOptionValue>
               label='Tipe'

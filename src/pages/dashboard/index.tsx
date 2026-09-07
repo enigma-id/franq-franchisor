@@ -337,11 +337,11 @@ const DashboardPage: React.FC = () => {
                 onClick={go("/report/membership/saldo-log")}
               />
               <SummaryCard
-                label='Rencana Produksi'
-                value={`${data?.production_plan_summary?.completed || 0} / ${data?.production_plan_summary?.plan || 0}`}
+                label='Sales Order Pipeline'
+                value={`${data?.so_pipeline?.published || 0} / ${data?.so_pipeline?.pending || 0}`}
                 icon={Package}
                 theme={THEMES.indigo}
-                onClick={go("/production/plan")}
+                onClick={go("/sales/order")}
               />
             </div>
 

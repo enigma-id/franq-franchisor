@@ -15,7 +15,7 @@ import { ACTION } from "@/utils/permissions";
 type ActionType = "approve" | "reject";
 
 const OutletTopupListPage: React.FC = () => {
-  useDocumentMeta("Topup Outlet | Sukabread Franchisee", "");
+  useDocumentMeta("Topup | Sukabread Franchisee", "");
   const canManage = useCan(ACTION.outletTopupRequest);
   const { showToast } = useEnigmaUI();
   const { approve, approveResult, reject, rejectResult } = useOutletTopup();
@@ -81,8 +81,8 @@ const OutletTopupListPage: React.FC = () => {
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
-        category="Sales"
-        title="Topup Outlet"
+        category="Finance"
+        title="Topup"
         subtitle="Kelola permintaan topup saldo outlet."
       />
       <Page.Body className="flex-1 flex flex-col min-h-0">

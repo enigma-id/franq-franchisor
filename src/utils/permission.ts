@@ -103,6 +103,34 @@ export const useUserPermissions = (): string[] | undefined => {
 };
 
 /**
+ * Hook: cek apakah user adalah superuser (flag is_superuser dari /profile/me).
+ * Superuser bisa mengelola semua brand & mengakses halaman khusus superuser.
+ */
+export const useIsSuperuser = (): boolean => {
+  return useAppSelector((s) => s.auth.session?.user?.is_superuser ?? false);
+};
+
+/**
+ * Hook: tipe franchisor dari session user (relasi yang di-embed backend).
+ * @returns "outlet" | "mitra" | undefined
+ */
+export const useFranchisorType = (): "outlet" | "mitra" | undefined => {
+  return useAppSelector((s) => s.auth.session?.user?.franchisor?.type);
+};
+
+/**
+ * Hook: akses halaman khusus Mitra (Withdrawal/Topup).
+ * Tampil utk superuser ATAU user dgn franchisor.type === "mitra".
+ */
+export const useIsMitraAccess = (): boolean => {
+  return useAppSelector((s) => {
+    const user = s.auth.session?.user;
+    if (user?.is_superuser) return true;
+    return user?.franchisor?.type === "mitra";
+  });
+};
+
+/**
  * Hook: cek user punya satu slug permission.
  * @param slug - Permission slug (biasanya dari konstanta MENU / ACTION).
  * @returns boolean (super admin → true).
@@ -133,8 +161,6 @@ export const ROUTE_BY_PERMISSION: Array<{ slug: MenuSlug; path: string }> = [
   { slug: MENU.outletTopup, path: "/outlet-topup" },
   { slug: MENU.inventoryItem, path: "/inventory/item" },
   { slug: MENU.inventoryCatalog, path: "/inventory/catalog" },
-  { slug: MENU.demand, path: "/production/demand/production" },
-  { slug: MENU.productionPlan, path: "/production/plan" },
   { slug: MENU.supplier, path: "/purchase/supplier" },
   { slug: MENU.purchaseOrder, path: "/purchase/order" },
   { slug: MENU.reportPosOutstanding, path: "/report/pos/outstanding" },
@@ -146,8 +172,6 @@ export const ROUTE_BY_PERMISSION: Array<{ slug: MenuSlug; path: string }> = [
   { slug: MENU.reportMembership, path: "/report/membership" },
   { slug: MENU.reportMembershipSaldoLog, path: "/report/membership/saldo-log" },
   { slug: MENU.outlet, path: "/setting/outlet" },
-  { slug: MENU.outletType, path: "/setting/type/outlet" },
-  { slug: MENU.posChannel, path: "/setting/pos/channel" },
   { slug: MENU.posCategory, path: "/setting/pos/category" },
   { slug: MENU.posMenu, path: "/setting/pos/menu" },
   { slug: MENU.posPayment, path: "/setting/pos/payment" },

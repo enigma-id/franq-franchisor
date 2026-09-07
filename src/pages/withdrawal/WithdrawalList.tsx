@@ -104,7 +104,7 @@ export default function WithdrawalList() {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Sales'
+        category='Finance'
         title='Permintaan Penarikan'
         subtitle='Kelola permintaan penarikan saldo outlet.'
       />

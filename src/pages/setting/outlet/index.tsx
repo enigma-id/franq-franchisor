@@ -1,31 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { Button, Drawer } from "@/components/ui";
+import { Button, Drawer, Loading } from "@/components/ui";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/outlet.config";
 import { Modal, useEnigmaUI } from "@/components";
 import TableFilter from "./table/outlet.filter";
 import { useOutlet } from "@/services/outlet/hooks";
 import type { TableConfig } from "@/services/table/const";
-import { AssignPOSChannelModal } from "./components/AssignPOSChannelModal.tsx";
 import { OutletUserForm } from "./components/OutletUserForm";
-import type { OutletDetail } from "@/services/types/outlet.ts";
+import { OutletForm } from "./components/outletForm";
+import type { OutletCreateRequest, OutletDetail } from "@/services/types/outlet.ts";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import { useUser } from "@/services/user/hooks";
-import { UserRound, Save } from "lucide-react";
+import { UserRound, Save, Store, Plus } from "lucide-react";
 
 const OutletListPage: React.FC = () => {
   const { openModal, closeModal, showToast } = useEnigmaUI();
-  const navigate = useNavigate();
   const canManage = useCan(ACTION.outlet);
   const canManageUser = useCan(ACTION.user);
 
   const {
+    create,
+    createResult,
+    update,
+    updateResult,
+    show: showOutlet,
     remove: removeOutlet,
     removeResult: removeOutletResult,
     activate,
@@ -44,6 +46,49 @@ const OutletListPage: React.FC = () => {
   const [userEditData, setUserEditData] = useState<any | null>(null);
   const [userLoading, setUserLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Drawer create/edit outlet (pola Franchise)
+  const [outletDrawerOpen, setOutletDrawerOpen] = useState(false);
+  const [editingOutlet, setEditingOutlet] = useState<OutletDetail | null>(null);
+  const [outletEditData, setOutletEditData] = useState<OutletDetail | null>(null);
+  const [outletLoading, setOutletLoading] = useState(false);
+
+  const openCreateOutlet = () => {
+    setEditingOutlet(null);
+    setOutletEditData(null);
+    setOutletDrawerOpen(true);
+  };
+
+  const openEditOutlet = async (row: OutletDetail) => {
+    setEditingOutlet(row);
+    setOutletEditData(null);
+    setOutletDrawerOpen(true);
+    setOutletLoading(true);
+    try {
+      const res = await showOutlet({ id: row.id });
+      setOutletEditData((res as any)?.data ?? row);
+    } catch {
+      setOutletEditData(row);
+    } finally {
+      setOutletLoading(false);
+    }
+  };
+
+  const closeOutletDrawer = () => {
+    setOutletDrawerOpen(false);
+    setEditingOutlet(null);
+    setOutletEditData(null);
+    createResult?.reset?.();
+    updateResult?.reset?.();
+  };
+
+  const handleOutletSubmit = (data: OutletCreateRequest) => {
+    if (editingOutlet) {
+      update({ id: editingOutlet.id, payload: data as any });
+    } else {
+      create(data as any);
+    }
+  };
 
   const { isLoading: isDeleting, isSuccess: isDeleteSuccess } =
     removeOutletResult;
@@ -78,36 +123,19 @@ const OutletListPage: React.FC = () => {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onClick: (row: any) => navigate(`/setting/outlet/update/${row.id}`),
+        onClick: (row: any) => openEditOutlet(row),
         onRemove: (row: any) => {
           openDelete(row);
         },
-        onChangeChannel: (row) => openOutletType(row),
         onToggleActive: (row: any) => handleToggleActive(row),
         onManageUser: (row: any) => handleManageUser(row),
         canManage,
         canManageUser,
       }),
-    [canManage, canManageUser, handleManageUser],
+    [canManage, canManageUser, handleManageUser, openEditOutlet],
   );
 
   const Table = useTable("outlet-list", tableConfig as TableConfig<unknown>);
-
-  const openOutletType = (row: OutletDetail) => {
-    openModal({
-      id: "assign-pos-channel",
-      content: (
-        <AssignPOSChannelModal
-          data={row}
-          onClose={() => closeModal("assign-pos-channel")}
-          onSuccess={() => {
-            closeModal("assign-pos-channel");
-            Table.boot();
-          }}
-        />
-      ),
-    });
-  };
 
   // Handle Delete Success
   useEffect(() => {
@@ -166,6 +194,36 @@ const OutletListPage: React.FC = () => {
       updateUserResult.reset?.();
     }
   }, [updateUserResult, showToast]);
+
+  // Create outlet success → toast + close drawer + refresh
+  useEffect(() => {
+    if (createResult?.isSuccess) {
+      showToast({
+        message: "Outlet berhasil dibuat",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      closeOutletDrawer();
+      createResult.reset?.();
+      Table.boot();
+    }
+  }, [createResult?.isSuccess]);
+
+  // Update outlet success → toast + close drawer + refresh
+  useEffect(() => {
+    if (updateResult?.isSuccess) {
+      showToast({
+        message: "Outlet berhasil diperbarui",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      closeOutletDrawer();
+      updateResult.reset?.();
+      Table.boot();
+    }
+  }, [updateResult?.isSuccess]);
 
   const openDelete = (row: any) => {
     openModal({
@@ -227,10 +285,7 @@ const OutletListPage: React.FC = () => {
         subtitle="Kelola semua outlet yang terdaftar di sistem."
         action={
           canManage && (
-            <Button
-              variant="primary"
-              onClick={() => navigate("/setting/outlet/create")}
-            >
+            <Button variant="primary" onClick={openCreateOutlet}>
               <Plus size={18} />
               Tambah Outlet
             </Button>
@@ -314,6 +369,60 @@ const OutletListPage: React.FC = () => {
             >
               <Save className="w-4 h-4 mr-2" />
               Simpan Perubahan
+            </Button>
+          </div>
+        </div>
+      </Drawer>
+
+      {/* Drawer: tambah / edit outlet (pola Franchise) */}
+      <Drawer
+        open={outletDrawerOpen}
+        onClose={closeOutletDrawer}
+        position='right'
+        className='!w-[30rem]'
+      >
+        <div className='flex flex-col h-full'>
+          <div className='p-5 border-b border-slate-100'>
+            <h3 className='text-lg font-bold text-slate-900 flex items-center gap-2'>
+              <Store size={18} className='text-primary' />
+              {editingOutlet ? "Edit Outlet" : "Tambah Outlet"}
+            </h3>
+            <p className='text-xs text-slate-500 mt-1'>
+              {editingOutlet
+                ? "Perbarui data outlet."
+                : "Daftarkan outlet baru."}
+            </p>
+          </div>
+          <div className='flex-1 overflow-y-auto p-5'>
+            {outletLoading && editingOutlet ? (
+              <div className='flex justify-center py-20'>
+                <Loading size='lg' variant='spinner' />
+              </div>
+            ) : (
+              <OutletForm
+                id='outlet-form'
+                initialData={editingOutlet ? (outletEditData ?? editingOutlet) : null}
+                hideOwnerSection={!!editingOutlet}
+                onSubmit={handleOutletSubmit}
+              />
+            )}
+          </div>
+          <div className='p-5 border-t border-slate-100 flex justify-end gap-2'>
+            <Button variant='secondary' onClick={closeOutletDrawer}>
+              Batal
+            </Button>
+            <Button
+              type='submit'
+              form='outlet-form'
+              variant='success'
+              isLoading={
+                editingOutlet
+                  ? updateResult?.isLoading
+                  : createResult?.isLoading
+              }
+            >
+              <Save className='w-4 h-4 mr-2' />
+              Simpan
             </Button>
           </div>
         </div>

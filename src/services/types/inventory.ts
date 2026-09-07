@@ -24,6 +24,8 @@ export interface InventoryItemBase {
   type: InventoryItemType;
   supplier?: SupplierDetail;
   supplier_id?: string;
+  /** Diisi superuser saat create (backend menerima franchisor_id di POST). */
+  franchisor_id?: string;
   barcode: string;
   name: string;
   variant: string;
@@ -78,6 +80,8 @@ export interface InventoryCatalogBase {
   name?: string;
   is_bundle: boolean;
   unit_price: number;
+  /** Harga jual produksi (backend catalog.production_price). */
+  production_price: number;
   measurement: string;
   unit: number;
   image?: string;
@@ -115,6 +119,8 @@ export interface InventoryCatalogRequest extends InventoryCatalogBase {
   items?: InventoryCatalogItem[];
   image?: string;
   weight?: number; // Added based on table
+  /** Diisi superuser saat create (backend menerima franchisor_id di POST). */
+  franchisor_id?: string;
 }
 
 export interface InventoryCatalogDetailBase extends InventoryCatalogBase {

@@ -203,6 +203,12 @@ const InventoryCatalogDetailPage: React.FC = () => {
                   </dd>
                 </div>
                 <div className="info-row">
+                  <dt className="info-label">Production Price</dt>
+                  <dd className="info-value">
+                    {formatCurrency(catalog.production_price)}
+                  </dd>
+                </div>
+                <div className="info-row">
                   <dt className="info-label">Margin</dt>
                   <dd className="info-value">
                     {formatCurrency(catalog.unit_price - catalog.base_price)}
@@ -234,6 +240,12 @@ const InventoryCatalogDetailPage: React.FC = () => {
                   <dt className="info-label">Unit Price</dt>
                   <dd className="info-value">
                     {formatCurrency(catalog.unit_price)}
+                  </dd>
+                </div>
+                <div className="info-row">
+                  <dt className="info-label">Production Price</dt>
+                  <dd className="info-value">
+                    {formatCurrency(catalog.production_price)}
                   </dd>
                 </div>
                 <div className="info-row">

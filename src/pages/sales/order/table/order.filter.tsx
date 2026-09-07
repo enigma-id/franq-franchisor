@@ -97,14 +97,16 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   }, []);
 
   useEffect(() => {
-    if (current.warehouse_id && getWarehouseResult?.data?.data) {
+    if (current.source_warehouse_id && getWarehouseResult?.data?.data) {
       const warehouses = getWarehouseResult.data.data as any[];
-      const found = warehouses.find((c: any) => c.id === current.warehouse_id);
+      const found = warehouses.find(
+        (c: any) => c.id === current.source_warehouse_id,
+      );
       if (found) setWarehouse(found);
-    } else if (!current.warehouse_id) {
+    } else if (!current.source_warehouse_id) {
       setWarehouse(null);
     }
-  }, [current.warehouse_id, getWarehouseResult?.data?.data]);
+  }, [current.source_warehouse_id, getWarehouseResult?.data?.data]);
 
   // ── Date Range ──
   const [dateRange, setDateRange] = useState<
@@ -124,7 +126,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     fulfillment_status: fulfillmentStatus?.value ?? "",
     payment_status: paymentStatus?.value ?? "",
     outlet_id: outlet?.id ?? "",
-    warehouse_id: warehouse?.id ?? "",
+    source_warehouse_id: warehouse?.id ?? "",
     start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
     end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
   });
@@ -137,7 +139,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       (fresh.fulfillment_status || "") !== (current.fulfillment_status || "") ||
       (fresh.payment_status || "") !== (current.payment_status || "") ||
       (fresh.outlet_id || "") !== (current.outlet_id || "") ||
-      (fresh.warehouse_id || "") !== (current.warehouse_id || "") ||
+      (fresh.source_warehouse_id || "") !==
+        (current.source_warehouse_id || "") ||
       (fresh.start_date || "") !== (current.start_date || "") ||
       (fresh.end_date || "") !== (current.end_date || "")
     );
@@ -156,7 +159,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     current.fulfillment_status ||
     current.payment_status ||
     current.outlet_id ||
-    current.warehouse_id ||
+    current.source_warehouse_id ||
     current.start_date ||
     current.end_date
   );
@@ -174,7 +177,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       fulfillment_status: "",
       payment_status: "",
       outlet_id: "",
-      warehouse_id: "",
+      source_warehouse_id: "",
       start_date: "",
       end_date: "",
     });

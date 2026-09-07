@@ -17,6 +17,8 @@ export interface OutletBase {
 
 export interface OutletCreateRequest extends OutletBase {
   channels: string[];
+  /** FK ke franchisor/brand — diisi superuser saat create dari detail franchise. */
+  franchisor_id?: string;
 }
 
 export type OutletUpdateRequest = Partial<OutletCreateRequest>;

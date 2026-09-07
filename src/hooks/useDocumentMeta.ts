@@ -27,6 +27,10 @@ const META_MAP: Record<string, RouteMeta> = {
     title: "Tambah Sales Order - Franchisor Portal",
     description: "Buat pesanan penjualan baru.",
   },
+  "/sales/order/update/:id": {
+    title: "Ubah Sales Order - Franchisor Portal",
+    description: "Perbarui pesanan penjualan.",
+  },
   "/sales/order/:id": {
     title: "Sales Order Detail - Franchisor Portal",
     description: "Detail informasi pesanan penjualan.",
@@ -118,30 +122,6 @@ const META_MAP: Record<string, RouteMeta> = {
   "/setting/outlet": {
     title: "Outlet - Franchisor Portal",
     description: "Manajemen outlet franchise.",
-  },
-  "/setting/outlet/create": {
-    title: "Tambah Outlet - Franchisor Portal",
-    description: "Tambah outlet franchise baru.",
-  },
-  "/setting/outlet/update/:id": {
-    title: "Ubah Outlet - Franchisor Portal",
-    description: "Perbarui data outlet franchise.",
-  },
-  "/setting/type/outlet": {
-    title: "Tipe Outlet - Franchisor Portal",
-    description: "Manajemen tipe outlet franchise.",
-  },
-  "/setting/type/outlet/create": {
-    title: "Tambah Tipe Outlet - Franchisor Portal",
-    description: "Tambah tipe outlet franchise baru.",
-  },
-  "/setting/type/outlet/update/:id": {
-    title: "Ubah Tipe Outlet - Franchisor Portal",
-    description: "Perbarui tipe outlet franchise.",
-  },
-  "/setting/pos/channel": {
-    title: "POS Channel - Franchisor Portal",
-    description: "Manajemen POS channel.",
   },
   "/setting/pos/category": {
     title: "POS Category - Franchisor Portal",

@@ -1,14 +1,16 @@
-import type { ProductionPlanDetail } from "@/services/types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { formatDate } from "@/utils";
 
 interface ProductionPlanThermalPrintProps {
-  data: ProductionPlanDetail | null;
+  // Dipakai utk data production plan ATAU data order (dipetakan oleh pemanggil).
+  data: any;
 }
 
 const ProductionPlanThermalPrint = ({
   data,
 }: ProductionPlanThermalPrintProps) => {
   if (!data) return null;
+  const items: any[] = data.items || [];
 
   return (
     <div className='sheet page-break' style={{ padding: "15px" }}>
@@ -46,13 +48,13 @@ const ProductionPlanThermalPrint = ({
             <td style={{ verticalAlign: "top" }}>:</td>
             <td>{formatDate(data.production_date)}</td>
           </tr>
-          {data.warehouse_name && (
+          {data.warehouse_name || data.source_warehouse_name ? (
             <tr>
               <td style={{ verticalAlign: "top" }}>Warehouse</td>
               <td style={{ verticalAlign: "top" }}>:</td>
-              <td>{data.warehouse_name}</td>
+              <td>{data.warehouse_name || data.source_warehouse_name}</td>
             </tr>
-          )}
+          ) : null}
         </tbody>
       </table>
 
@@ -82,7 +84,7 @@ const ProductionPlanThermalPrint = ({
         >
           Items:
         </div>
-        {data.items && data.items.length > 0 ? (
+        {items.length > 0 ? (
           <table
             style={{
               width: "100%",
@@ -97,7 +99,7 @@ const ProductionPlanThermalPrint = ({
               </tr>
             </thead>
             <tbody>
-              {data.items.map((item, index) => (
+              {items.map((item, index) => (
                 <tr
                   key={item.id || index}
                   style={{ borderBottom: "1px dashed #eee" }}
@@ -118,7 +120,7 @@ const ProductionPlanThermalPrint = ({
                     )}
                     {item.materials && item.materials.length > 0 && (
                       <div style={{ marginTop: "3px" }}>
-                        {item.materials.map((mat, mIdx) => (
+                        {item.materials.map((mat: any, mIdx: number) => (
                           <div
                             key={mat.id || mIdx}
                             style={{ fontSize: "8px", color: "#444" }}

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { ImageUpload, Input, RemoteSelect } from "@/components/ui";
 import { Plus, Trash2, Info, Ruler, Layers } from "lucide-react";
 import { useAppSelector } from "@/hooks";
+import { useIsSuperuser } from "@/utils/permission";
+import { useFranchisorList } from "@/services/franchisor/hooks";
 import { Button, useEnigmaUI } from "@/components";
 import { useInventoryItem, useItemFractions } from "@/services/inventory/hooks";
 import type {
@@ -33,11 +35,21 @@ export function InventoryCatalogForm({
 }: InventoryCatalogFormProps) {
   const FormState = useAppSelector((s) => s.form);
   const { showToast } = useEnigmaUI();
+  const isSuperuser = useIsSuperuser();
 
   const { get: getInventoryItems, getResult: inventoryItemsResult } =
     useInventoryItem();
   const { show: getItemFractions, showResult: itemFractionsResult } =
     useItemFractions();
+  const {
+    get: getFranchisors,
+    getResult: franchisorsResult,
+  } = useFranchisorList();
+
+  // Mode create = belum ada initialData (update tidak bisa ganti franchisor).
+  const isCreateMode = !initialData;
+
+  const [franchise, setFranchise] = useState<any | null>(null);
 
   const [type, setType] = useState<"singular" | "bundle">("singular");
 
@@ -54,6 +66,7 @@ export function InventoryCatalogForm({
     name: "",
     is_bundle: false,
     unit_price: 0,
+    production_price: 0,
     measurement: "",
     unit: 1,
     image: "",
@@ -74,6 +87,7 @@ export function InventoryCatalogForm({
       item_id: "",
       fraction_id: "",
       unit_price: 0,
+      production_price: 0,
       name: "",
     }));
     setBundleItems(
@@ -102,6 +116,7 @@ export function InventoryCatalogForm({
         name: initialData.name ?? "",
         is_bundle: initialData.is_bundle,
         unit_price: initialData.unit_price ?? 0,
+        production_price: initialData.production_price ?? 0,
         measurement: initialData.measurement ?? "",
         unit: initialData.unit ?? 1,
         image: initialData.image ?? "",
@@ -263,6 +278,7 @@ export function InventoryCatalogForm({
 
     const payload: InventoryCatalogRequest = {
       ...formData,
+      franchisor_id: franchise?.id || undefined,
       items:
         type === "bundle"
           ? bundleItems.map((bundle) => ({
@@ -326,6 +342,34 @@ export function InventoryCatalogForm({
         </div>
       </div>
 
+      {/* Select Franchise — khusus superuser saat create */}
+      {isSuperuser && isCreateMode && (
+        <div className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <RemoteSelect
+              label='Franchise'
+              placeholder='Pilih Franchise...'
+              value={franchise}
+              hook={franchisorsResult as any}
+              fetchData={(page, search) =>
+                getFranchisors({ page, search })
+              }
+              getLabel={(item: any) => item?.name || ""}
+              renderItem={(item: any) =>
+                item
+                  ? `${item.name} (${item.type === "mitra" ? "Mitra" : "Outlet"})`
+                  : ""
+              }
+              getValue={(item: any) => item?.id}
+              onChange={(item: any) => setFranchise(item)}
+              onClear={() => setFranchise(null)}
+              required
+              error={FormState?.errors?.franchisor_id as string}
+            />
+          </div>
+        </div>
+      )}
+
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         <div className='lg:col-span-2 space-y-6'>
           {/* Section: Informasi Utama (bundle only) */}
@@ -366,6 +410,22 @@ export function InventoryCatalogForm({
                     variant='primary'
                     min={0}
                     error={FormState?.errors?.unit_price as string}
+                  />
+
+                  <Input
+                    label='Harga Produksi'
+                    type='currency'
+                    value={formData.production_price}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        production_price: Number(e.target.value),
+                      }))
+                    }
+                    placeholder='Contoh: 12000'
+                    variant='primary'
+                    min={0}
+                    error={FormState?.errors?.production_price as string}
                   />
 
                   <Input
@@ -511,6 +571,21 @@ export function InventoryCatalogForm({
                     variant='primary'
                     min={0}
                     error={FormState?.errors?.unit_price as string}
+                  />
+                  <Input
+                    label='Harga Produksi'
+                    type='currency'
+                    value={formData.production_price}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        production_price: Number(e.target.value),
+                      }))
+                    }
+                    placeholder='Contoh: 12000'
+                    variant='primary'
+                    min={0}
+                    error={FormState?.errors?.production_price as string}
                   />
                   <Input
                     label='Unit'

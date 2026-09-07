@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Trash2, Plus, ShoppingBag, Percent } from "lucide-react";
 import { Input, RemoteSelect, DatePicker, Button, Checkbox } from "@/components/ui";
 import { usePOSMenu, usePOSChannel } from "@/services/pos/hooks";
+import { useCustomer } from "@/services/customer/hooks";
 import { useAppSelector } from "@/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { currencyFormat } from "@/utils";
@@ -18,6 +19,7 @@ type B2BOrderItemForm = {
 };
 
 type B2BOrderFormData = {
+  customer_id: string;
   customer_name: string;
   customer_phone: string;
   customer_address: string;
@@ -52,8 +54,12 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
   const FormState = useAppSelector((s) => s.form);
   const { get: getMenus, getResult: menusResult, getPrices, getPricesResult } = usePOSMenu();
   const { get: getChannels, getResult: channelsResult } = usePOSChannel();
+  const { get: getCustomers, getResult: customersResult } = useCustomer();
+
+  const [customerSelected, setCustomerSelected] = useState<RemoteOption | null>(null);
 
   const [formData, setFormData] = useState<B2BOrderFormData>({
+    customer_id: "",
     customer_name: "",
     customer_phone: "",
     customer_address: "",
@@ -111,7 +117,17 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         unit_price: item?.unit_nett ?? item?.unit_base ?? 0,
       }));
 
+      const initialCustomer =
+        (initialData as any)?.customer ||
+        ((initialData as any)?.customer_id
+          ? { id: (initialData as any).customer_id, name: initialData.customer_name }
+          : null);
+      if (initialCustomer) {
+        setCustomerSelected(initialCustomer);
+      }
+
       setFormData({
+        customer_id: (initialData as any)?.customer_id ?? "",
         customer_name: initialData?.customer_name || "",
         customer_phone: initialData?.customer_phone || "",
         customer_address: initialData?.customer_address || "",
@@ -261,6 +277,38 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
     });
   };
 
+  // Pilih customer dari master → isi snapshot (nama/telepon/alamat) & customer_id.
+  // Saat create, backend menimpa snapshot dari master bila customer_id dikirim,
+  // jadi setelah pilih, field snapshot dibuat read-only.
+  const handleCustomerChange = (val: RemoteOption | null) => {
+    setCustomerSelected(val);
+    setFormData((prev) => ({
+      ...prev,
+      customer_id:
+        typeof val?.id === "string"
+          ? val.id
+          : typeof val?.id === "number"
+            ? String(val.id)
+            : "",
+      customer_name: typeof val?.name === "string" ? val.name : prev.customer_name,
+      customer_phone:
+        typeof val?.phone === "string" ? val.phone : prev.customer_phone,
+      customer_address:
+        typeof val?.address === "string" ? val.address : prev.customer_address,
+    }));
+  };
+
+  const handleCustomerClear = () => {
+    setCustomerSelected(null);
+    setFormData((prev) => ({
+      ...prev,
+      customer_id: "",
+      customer_name: "",
+      customer_phone: "",
+      customer_address: "",
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -275,6 +323,11 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
       ...formData,
       items,
     };
+
+    // Backend update B2B tidak menerima customer_id → hanya kirim saat create.
+    if (initialData) {
+      delete payload.customer_id;
+    }
 
     if (formData.is_discount_percentage) {
       payload = {
@@ -304,11 +357,33 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left: Customer info */}
           <div className="space-y-4">
+            <RemoteSelect
+              label="Customer"
+              placeholder="Cari & pilih customer..."
+              value={customerSelected}
+              hook={customersResult as any}
+              fetchData={(page, search) =>
+                getCustomers({ page, search, is_active: "true" })
+              }
+              getLabel={(item: any) => item?.name ?? ""}
+              renderItem={(item: any) =>
+                item ? `${item.name}${item.phone ? ` — ${item.phone}` : ""}` : ""
+              }
+              getValue={(item: any) => item?.id}
+              onChange={(item: any) => handleCustomerChange(item)}
+              onClear={handleCustomerClear}
+              error={
+                typeof FormState?.errors?.customer_id === "string"
+                  ? FormState.errors.customer_id
+                  : undefined
+              }
+            />
             <Input
               label="Nama Pelanggan"
               required
               placeholder="Contoh: Budi Santoso"
               value={formData.customer_name}
+              disabled={!!customerSelected}
               onChange={(e) =>
                 setFormData({ ...formData, customer_name: e.target.value })
               }
@@ -319,6 +394,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               required
               placeholder="Contoh: 081234567890"
               value={formData.customer_phone}
+              disabled={!!customerSelected}
               onChange={(e) =>
                 setFormData({ ...formData, customer_phone: e.target.value })
               }
@@ -329,6 +405,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               label="Alamat Lengkap"
               placeholder="Contoh: Jl. Diponegoro No. 22, Jakarta Pusat"
               value={formData.customer_address}
+              disabled={!!customerSelected}
               onChange={(e) =>
                 setFormData({ ...formData, customer_address: e.target.value })
               }

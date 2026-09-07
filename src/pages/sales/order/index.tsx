@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { Page } from "@/components/app/layout";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,13 +11,14 @@ import TableFilter from "./table/order.filter";
 import type { SalesOrderDetail } from "@/services/types";
 import { useEnigmaUI } from "@/components";
 import { useSalesOrder } from "@/services/sales/hooks";
-import { useCan } from "@/utils/permission";
+import { useCan, useIsSuperuser } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
 export default function SalesOrder() {
   const navigate = useNavigate();
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.salesOrder);
+  const isSuperuser = useIsSuperuser();
   const { remove: removeItem, removeResult: removeItemResult, publish: publishItem, publishResult, paid: paidItem, paidResult } =
     useSalesOrder();
   const [selectedRow, setSelectedRow] = useState<SalesOrderDetail | null>(null);
@@ -27,12 +29,14 @@ export default function SalesOrder() {
     return createTableConfig({
       onClick: (row) => navigate(`/sales/order/${row.id}`),
       onRemove: (v) => openDelete(v),
-      onEdit: (row) => navigate(`/sales/order/update/${row.id}`),
+      onEdit: isSuperuser
+        ? (row) => navigate(`/sales/order/update/${row.id}`)
+        : undefined,
       onPublish: (row) => openConfirmModal(row, "publish"),
       onPaid: (row) => openConfirmModal(row, "paid"),
       canManage,
     });
-  }, [navigate, canManage]);
+  }, [navigate, canManage, isSuperuser]);
 
   const Table = useTable("sales_order", tableConfig as TableConfig<unknown>);
 
@@ -134,7 +138,8 @@ export default function SalesOrder() {
         title="Sales Order"
         subtitle="Kelola transaksi penjualan ke seluruh outlet."
         action={
-          canManage && (
+          canManage &&
+          isSuperuser && (
             <Button
               variant="primary"
               shape="wide"

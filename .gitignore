@@ -30,3 +30,5 @@ dev-dist
 
 # Local environment — never commit secrets
 .env
+
+.commandcode/

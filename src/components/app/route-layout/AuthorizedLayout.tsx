@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { signout } from "@/services/auth/slice";
 import { MENU, type MenuSlug } from "@/utils/permissions";
-import { useUserPermissions, hasPermission } from "@/utils/permission";
+import { useUserPermissions, hasPermission, useIsMitraAccess } from "@/utils/permission";
 import {
   LayoutDashboard,
   Package,
@@ -17,14 +17,14 @@ import {
   Store,
   Grid,
   Building,
-  Factory,
+  Building2,
   Monitor,
   BarChart3,
   MapPinned,
   ArrowDownLeft,
   ShoppingBag,
+  Contact,
   Wallet,
-  UserCircle,
   Gift,
   UserRound,
   IdCard,
@@ -37,6 +37,10 @@ interface MenuChild {
   icon?: React.ReactNode;
   /** Slug permission (MENU.*) — child disembunyikan jika user tak punya. */
   permission?: MenuSlug;
+  /** Hanya tampil utk superuser (flag is_superuser). */
+  superAdminOnly?: boolean;
+  /** Sembunyikan utk superuser (mis. menu yg hanya utk non-superuser). */
+  superuserHidden?: boolean;
 }
 
 interface MenuItem {
@@ -47,6 +51,10 @@ interface MenuItem {
   permission?: MenuSlug;
   /** Hanya tampil utk super admin (user tanpa usergroup). */
   superAdminOnly?: boolean;
+  /** Sembunyikan utk superuser (mis. menu yg hanya utk non-superuser). */
+  superuserHidden?: boolean;
+  /** Hanya tampil utk user mitra / superuser (franchisor.type = mitra). */
+  mitraOnly?: boolean;
   children?: MenuChild[];
 }
 
@@ -72,28 +80,46 @@ const menuSections: MenuSection[] = [
     label: "Sales",
     items: [
       {
-        label: "B2B Order",
-        path: "/b2b/order",
-        icon: <ShoppingBag size={18} />,
-        permission: MENU.b2bOrder,
-      },
-      {
         label: "Sales Order",
         path: "/sales/order",
         icon: <ShoppingCart size={18} />,
         permission: MENU.salesOrder,
       },
+    ],
+  },
+  {
+    label: "B2B",
+    items: [
+      {
+        label: "Customer",
+        path: "/customer",
+        icon: <Contact size={18} />,
+        permission: MENU.b2bOrder,
+      },
+      {
+        label: "B2B Order",
+        path: "/b2b/order",
+        icon: <ShoppingBag size={18} />,
+        permission: MENU.b2bOrder,
+      },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
       {
         label: "Withdrawal",
         path: "/withdrawal",
         icon: <ArrowDownLeft size={18} />,
         permission: MENU.withdrawal,
+        mitraOnly: true,
       },
       {
-        label: "Outlet Topup",
+        label: "Topup",
         path: "/outlet-topup",
         icon: <Wallet size={18} />,
         permission: MENU.outletTopup,
+        mitraOnly: true,
       },
     ],
   },
@@ -111,26 +137,6 @@ const menuSections: MenuSection[] = [
         path: "/inventory/catalog",
         icon: <Grid size={18} />,
         permission: MENU.inventoryCatalog,
-      },
-    ],
-  },
-  {
-    label: "Production",
-    items: [
-      {
-        label: "Demand",
-        icon: <Factory size={18} />,
-        permission: MENU.demand,
-        children: [
-          { label: "Demand Production", path: "/production/demand/production" },
-          { label: "Demand Item", path: "/production/demand/item" },
-        ],
-      },
-      {
-        label: "Production Plan",
-        path: "/production/plan",
-        icon: <Factory size={18} />,
-        permission: MENU.productionPlan,
       },
     ],
   },
@@ -276,9 +282,9 @@ const menuSections: MenuSection[] = [
     label: "Settings",
     items: [
       {
-        label: "Profil Franchisor",
-        path: "/franchisor",
-        icon: <UserCircle size={18} />,
+        label: "Franchise",
+        path: "/franchise",
+        icon: <Building2 size={18} />,
         superAdminOnly: true,
       },
       {
@@ -286,6 +292,7 @@ const menuSections: MenuSection[] = [
         path: "/setting/member/topup-bonus",
         icon: <Gift size={18} />,
         permission: MENU.topupBonus,
+        superAdminOnly: true,
       },
       {
         label: "User Management",
@@ -300,30 +307,16 @@ const menuSections: MenuSection[] = [
         ],
       },
       {
-        label: "Outlet",
+        label: "Outlet List",
+        path: "/setting/outlet",
         icon: <Store size={18} />,
-        children: [
-          {
-            label: "Outlet List",
-            path: "/setting/outlet",
-            permission: MENU.outlet,
-          },
-          {
-            label: "Tipe Outlet",
-            path: "/setting/type/outlet",
-            permission: MENU.outletType,
-          },
-        ],
+        permission: MENU.outlet,
+        superuserHidden: true,
       },
       {
         label: "POS",
         icon: <Monitor size={18} />,
         children: [
-          {
-            label: "Channel",
-            path: "/setting/pos/channel",
-            permission: MENU.posChannel,
-          },
           {
             label: "Category",
             path: "/setting/pos/category",
@@ -338,6 +331,7 @@ const menuSections: MenuSection[] = [
             label: "Payment",
             path: "/setting/pos/payment",
             permission: MENU.posPayment,
+            superAdminOnly: true,
           },
         ],
       },
@@ -368,11 +362,19 @@ function SidebarSection({
 /** Item diizinkan jika tanpa permission (selalu tampil) atau user punya slug. */
 function isItemAllowed(
   userPermissions: string[] | undefined,
-  item: Pick<MenuItem, "permission" | "superAdminOnly">,
+  item: Pick<
+    MenuItem,
+    "permission" | "superAdminOnly" | "superuserHidden" | "mitraOnly"
+  >,
   isSuperAdmin: boolean,
+  isMitraAccess: boolean,
 ) {
-  // Item khusus super admin (mis. Profil Franchisor) hanya utk user tanpa usergroup
+  // Item khusus super admin hanya utk superuser.
   if (item.superAdminOnly) return isSuperAdmin;
+  // Item yang disembunyikan utk superuser (mis. kelola outlet global).
+  if (item.superuserHidden && isSuperAdmin) return false;
+  // Item khusus mitra hanya utk user mitra / superuser.
+  if (item.mitraOnly) return isMitraAccess;
   return (
     item.permission === undefined ||
     hasPermission(userPermissions, item.permission)
@@ -384,14 +386,15 @@ function isParentAllowed(
   userPermissions: string[] | undefined,
   item: MenuItem,
   isSuperAdmin: boolean,
+  isMitraAccess: boolean,
 ) {
   return item.children!.some(
     (c) =>
       // Child punya permission sendiri → gate sendiri.
       // Child tanpa permission → mewarisi permission parent (mis. Demand).
-      isItemAllowed(userPermissions, c, isSuperAdmin) &&
+      isItemAllowed(userPermissions, c, isSuperAdmin, isMitraAccess) &&
       (c.permission !== undefined ||
-        isItemAllowed(userPermissions, item, isSuperAdmin)),
+        isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess)),
   );
 }
 
@@ -475,19 +478,21 @@ function ParentItem({
   onNavigate,
   userPermissions,
   isSuperAdmin,
+  isMitraAccess,
 }: {
   item: MenuItem;
   onNavigate: () => void;
   userPermissions: string[] | undefined;
   isSuperAdmin: boolean;
+  isMitraAccess: boolean;
 }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const visibleChildren = item.children?.filter(
     (c) =>
-      isItemAllowed(userPermissions, c, isSuperAdmin) &&
+      isItemAllowed(userPermissions, c, isSuperAdmin, isMitraAccess) &&
       (c.permission !== undefined ||
-        isItemAllowed(userPermissions, item, isSuperAdmin)),
+        isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess)),
   );
   const isChildActive =
     visibleChildren?.some((c) => isPathActive(location.pathname, c.path)) ??
@@ -578,8 +583,10 @@ export function AuthorizedLayout() {
     navigate("/signin");
   };
 
-  // Super admin = user tanpa usergroup
-  const isSuperAdmin = !user?.user?.usergroup_id;
+  // Super admin/superuser = tanpa usergroup ATAU flag is_superuser.
+  const isSuperAdmin = !user?.user?.usergroup_id || !!user?.user?.is_superuser;
+  // Akses mitra = superuser ATAU franchisor.type === 'mitra'.
+  const isMitraAccess = useIsMitraAccess();
 
   // Filter menu berdasarkan permission — super admin (tanpa permission) lihat semua.
   const visibleSections = useMemo(() => {
@@ -587,13 +594,13 @@ export function AuthorizedLayout() {
       .map((section) => {
         const items = section.items.filter((item) =>
           item.children
-            ? isParentAllowed(userPermissions, item, isSuperAdmin)
-            : isItemAllowed(userPermissions, item, isSuperAdmin),
+            ? isParentAllowed(userPermissions, item, isSuperAdmin, isMitraAccess)
+            : isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess),
         );
         return items.length > 0 ? { ...section, items } : null;
       })
       .filter((s): s is MenuSection => s !== null);
-  }, [userPermissions, isSuperAdmin]);
+  }, [userPermissions, isSuperAdmin, isMitraAccess]);
 
   return (
     <div className='flex h-screen overflow-hidden bg-base-200'>
@@ -667,6 +674,7 @@ export function AuthorizedLayout() {
                       onNavigate={() => setSidebarOpen(false)}
                       userPermissions={userPermissions}
                       isSuperAdmin={isSuperAdmin}
+                      isMitraAccess={isMitraAccess}
                     />
                   ) : (
                     <NavItem

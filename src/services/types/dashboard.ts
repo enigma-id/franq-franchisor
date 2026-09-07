@@ -29,11 +29,6 @@ export interface B2BSummary {
   outstanding: number;
 }
 
-export interface ProductionPlanSummary {
-  plan: number;
-  completed: number;
-}
-
 export interface TopMenuItem {
   menu_name: string;
   total_qty: number;
@@ -85,5 +80,4 @@ export interface DashboardData {
   revenue_composition: RevenueComposition;
   top_outstanding_outlets?: TopOutstandingOutlet[];
   outlet_map: OutletMapItem[];
-  production_plan_summary: ProductionPlanSummary;
 }

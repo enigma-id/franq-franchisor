@@ -1,14 +1,24 @@
 import { createCrudHook } from "../hooks/createCrudHook";
 import {
-  useLazyGetFranchisorQuery,
-  useUpdateFranchisorMutation,
+  useLazyListFranchisorsQuery,
+  useLazyGetFranchisorByIdQuery,
+  useCreateFranchisorMutation,
+  useUpdateFranchisorByIdMutation,
+  useDeleteFranchisorByIdMutation,
+  useActivateFranchisorMutation,
+  useDeactivateFranchisorMutation,
 } from "./api";
-import type { FranchisorDetail } from "../types";
 
-export const useFranchisor = createCrudHook<FranchisorDetail>({
-  entityName: "franchisor",
-  useLazyShowQuery: useLazyGetFranchisorQuery,
+// CRUD baris brand/franchisor (GET/POST /franchisor, dst) — khusus superuser
+export const useFranchisorList = createCrudHook({
+  entityName: "franchisorList",
+  useLazyGetQuery: useLazyListFranchisorsQuery,
+  useLazyShowQuery: useLazyGetFranchisorByIdQuery,
+  useCreateMutation: useCreateFranchisorMutation,
+  useUpdateMutation: useUpdateFranchisorByIdMutation,
+  useRemoveMutation: useDeleteFranchisorByIdMutation,
   customOperations: {
-    update: { hook: useUpdateFranchisorMutation },
+    activate: { hook: useActivateFranchisorMutation },
+    deactivate: { hook: useDeactivateFranchisorMutation },
   },
 });

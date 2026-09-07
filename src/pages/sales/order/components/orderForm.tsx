@@ -10,6 +10,7 @@ import {
 } from "@/components/ui";
 import { useOutlet } from "@/services/outlet/hooks";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
+import { useFranchisorList } from "@/services/franchisor/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import { useAppSelector } from "@/hooks";
@@ -18,6 +19,7 @@ import type {
   OutletDetail,
   SalesOrderDetail,
   WarehouseDetail,
+  FranchisorRow,
 } from "@/services/types";
 
 type SalesOrderItemForm = {
@@ -27,8 +29,9 @@ type SalesOrderItemForm = {
 };
 
 type SalesOrderFormData = {
-  warehouse_id: string;
+  source_warehouse_id: string;
   ref_code: string;
+  franchisor_id: string;
   outlet_id: string;
   recipient_name: string;
   recipient_phone: string;
@@ -62,11 +65,14 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   const { get: getOutlets, getResult: outletsResult } = useOutlet();
   const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
 
   // Keep runtime shape as-is; fix TS to match the existing formData fields
   const [formData, setFormData] = useState<SalesOrderFormData>({
-    warehouse_id: "",
+    source_warehouse_id: "",
     ref_code: "",
+    franchisor_id: "",
     outlet_id: "",
     recipient_name: "",
     recipient_phone: "",
@@ -86,6 +92,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
   const [shipping_date, setShippingDate] = useState<Dayjs | null>(dayjs());
   const [outlet, setOutlet] = useState<OutletDetail | null>(null);
   const [warehouse, setWarehouse] = useState<WarehouseDetail | null>(null);
+  const [franchise, setFranchise] = useState<FranchisorRow | null>(null);
 
   // Auto-select warehouse ketika data hanya satu.
   useEffect(() => {
@@ -98,7 +105,7 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
     if (items?.length === 1 && !warehouse) {
       const item = items[0];
       setWarehouse(item);
-      setFormData((prev) => ({ ...prev, warehouse_id: item?.id ?? "" }));
+      setFormData((prev) => ({ ...prev, source_warehouse_id: item?.id ?? "" }));
     }
   }, [warehouseResult?.data?.data, initialData, warehouse]);
 
@@ -117,8 +124,10 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
       });
 
       setFormData({
-        warehouse_id: initialData?.warehouse_id,
+        source_warehouse_id: initialData?.source_warehouse_id,
         ref_code: initialData?.ref_code,
+        franchisor_id:
+          (initialData as any)?.franchisor_id ?? (initialData as any)?.franchisor?.id ?? "",
         outlet_id: initialData?.outlet_id,
         recipient_name: initialData?.recipient_name,
         recipient_phone: initialData?.recipient_phone,
@@ -130,11 +139,15 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
       });
       setShippingDate(dayjs(initialData?.shipping_date));
 
+      if ((initialData as any)?.franchisor) {
+        setFranchise((initialData as any)?.franchisor);
+      }
+
       setWarehouse({
-        id: initialData?.warehouse_id,
+        id: initialData?.source_warehouse_id,
         brand_id: "",
         type: "",
-        name: initialData?.warehouse_name,
+        name: initialData?.source_warehouse_name,
         address: "",
         is_default: false,
         is_active: false,
@@ -215,6 +228,20 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
     });
   };
 
+  // Pilih franchise → set franchisor_id, reset outlet & prefill penerima.
+  const handleFranchiseChange = (item: FranchisorRow | null) => {
+    setFranchise(item);
+    setOutlet(null);
+    setFormData((prev) => ({
+      ...prev,
+      franchisor_id: item?.id ?? "",
+      outlet_id: "",
+      recipient_name: "",
+      recipient_phone: "",
+      recipient_address: "",
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -246,29 +273,33 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
           Informasi Penjualan
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RemoteSelect<WarehouseDetail>
-            label="Warehouse"
+          <RemoteSelect<FranchisorRow>
+            label="Franchise"
             required
-            disabled={isSingleWarehouse}
-            hook={warehouseResult as any}
-            fetchData={(page, search) => getWarehouse({ page, search })}
+            hook={franchisorsResult as any}
+            fetchData={(page, search) => getFranchisors({ page, search })}
             getLabel={(item: any) => item?.name}
-            value={warehouse}
-            onChange={(item: WarehouseDetail) => {
-              setFormData({
-                ...formData,
-                warehouse_id: item.id,
-              });
-              setWarehouse(item);
-            }}
-            placeholder="Pilih warehouse"
-            error={FormState?.errors?.warehouse_id as string}
+            value={franchise}
+            onChange={(item: FranchisorRow | null) =>
+              handleFranchiseChange(item)
+            }
+            onClear={() => handleFranchiseChange(null)}
+            placeholder="Pilih franchise"
+            error={FormState?.errors?.franchisor_id as string}
           />
           <RemoteSelect<OutletDetail>
             label="Outlet"
             required
             hook={outletsResult as any}
-            fetchData={(page, search) => getOutlets({ page, search })}
+            fetchData={(page, search) =>
+              getOutlets({
+                page,
+                search,
+                ...(formData.franchisor_id
+                  ? { franchisor_id: formData.franchisor_id }
+                  : {}),
+              })
+            }
             getLabel={(item: any) => item?.name}
             value={outlet}
             onChange={(item: OutletDetail) => {
@@ -282,7 +313,27 @@ export const SalesOrderForm: React.FC<SalesOrderFormProps> = ({
               });
             }}
             placeholder="Pilih outlet"
+            disabled={!formData.franchisor_id}
+            watchKey={formData.franchisor_id}
             error={FormState?.errors?.outlet_id as string}
+          />
+          <RemoteSelect<WarehouseDetail>
+            label="Warehouse"
+            required
+            disabled={isSingleWarehouse}
+            hook={warehouseResult as any}
+            fetchData={(page, search) => getWarehouse({ page, search })}
+            getLabel={(item: any) => item?.name}
+            value={warehouse}
+            onChange={(item: WarehouseDetail) => {
+              setFormData({
+                ...formData,
+                source_warehouse_id: item.id,
+              });
+              setWarehouse(item);
+            }}
+            placeholder="Pilih warehouse"
+            error={FormState?.errors?.source_warehouse_id as string}
           />
           <DatePicker
             label="Tanggal Transaksi"
