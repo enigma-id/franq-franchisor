@@ -3,6 +3,8 @@ export type FranchisorType = "outlet" | "mitra";
 /** Detail brand/franchisor (hasil GET /franchisor). */
 export interface FranchisorDetail {
   id: string;
+  /** FK user owner brand (dipakai utk fetch detail user). */
+  user_id?: string;
   name: string;
   address: string;
   phone: string;

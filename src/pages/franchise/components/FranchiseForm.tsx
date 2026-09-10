@@ -18,7 +18,9 @@ const TYPES: SelectOptionValue[] = [
 interface FranchiseFormProps {
   id?: string;
   initialData?: FranchisorRow | null;
-  onSubmit: (data: FranchisorCreateRequest | FranchisorRowUpdateRequest) => void;
+  onSubmit: (
+    data: FranchisorCreateRequest | FranchisorRowUpdateRequest,
+  ) => void;
 }
 
 export function FranchiseForm({
@@ -61,9 +63,7 @@ export function FranchiseForm({
         password: "",
         confirm_password: "",
       });
-      setTypeSelected(
-        TYPES.find((t) => t.value === initialData.type) ?? null,
-      );
+      setTypeSelected(TYPES.find((t) => t.value === initialData.type) ?? null);
     }
   }, [initialData]);
 
@@ -125,7 +125,6 @@ export function FranchiseForm({
       />
       <Input
         label='Email'
-        required
         type='email'
         value={formData.email}
         onChange={(e) => handleInput("email", e.target.value)}
@@ -143,12 +142,12 @@ export function FranchiseForm({
         error={err("phone")}
       />
       <Input
-        label='Alamat'
+        type='textarea'
+        label='Alamat Lengkap'
         value={formData.address}
         onChange={(e) => handleInput("address", e.target.value)}
-        placeholder='Alamat lengkap'
-        variant='primary'
-        error={err("address")}
+        placeholder='Contoh: Jl. Diponegoro No. 22'
+        error={err["address"]}
       />
 
       {!isEdit && (
@@ -159,15 +158,6 @@ export function FranchiseForm({
             </p>
             <div className='space-y-4'>
               <Input
-                label='Username Owner'
-                required
-                value={formData.username}
-                onChange={(e) => handleInput("username", e.target.value)}
-                placeholder='username unik'
-                variant='primary'
-                error={err("username")}
-              />
-              <Input
                 label='Nama Owner'
                 required
                 value={formData.name_user}
@@ -175,6 +165,15 @@ export function FranchiseForm({
                 placeholder='Nama lengkap owner'
                 variant='primary'
                 error={err("name_user")}
+              />
+              <Input
+                label='Username Owner'
+                required
+                value={formData.username}
+                onChange={(e) => handleInput("username", e.target.value)}
+                placeholder='username unik'
+                variant='primary'
+                error={err("username")}
               />
               <Input
                 label='Password'

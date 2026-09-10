@@ -8,9 +8,11 @@ import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import createTableConfig from "./table/franchise.config";
 import { useFranchisorList } from "@/services/franchisor/hooks";
+import { useUser } from "@/services/user/hooks";
 import { useEnigmaUI } from "@/components";
 import { FranchiseForm } from "./components/FranchiseForm";
-import { Building2, Save, UserPlus } from "lucide-react";
+import { FranchiseOwnerForm } from "./components/FranchiseOwnerForm";
+import { Building2, Save, UserPlus, UserRound } from "lucide-react";
 import { useIsSuperuser, useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import type {
@@ -25,6 +27,7 @@ const FranchiseListPage: React.FC = () => {
   const navigate = useNavigate();
   const isSuperuser = useIsSuperuser();
   const canManage = useCan(ACTION.user);
+  const canManageUser = useCan(ACTION.user);
   const { showToast } = useEnigmaUI();
   const {
     create,
@@ -39,12 +42,24 @@ const FranchiseListPage: React.FC = () => {
     remove,
     removeResult,
   } = useFranchisorList();
+  const {
+    get: getUsers,
+    show: showUser,
+    update: updateUser,
+    updateResult: updateUserResult,
+  } = useUser();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>("create");
   const [editRow, setEditRow] = useState<FranchisorRow | null>(null);
   const [editData, setEditData] = useState<any | null>(null);
   const [deleteRow, setDeleteRow] = useState<FranchisorRow | null>(null);
+
+  // Drawer: update user owner brand (pola "Update User Outlet")
+  const [userDrawerOpen, setUserDrawerOpen] = useState(false);
+  const [userEditData, setUserEditData] = useState<any | null>(null);
+  const [userLoading, setUserLoading] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Bukan superuser → redirect (guard tambahan di halaman).
   useEffect(() => {
@@ -94,6 +109,37 @@ const FranchiseListPage: React.FC = () => {
     [activate, deactivate],
   );
 
+  const handleManageUser = useCallback(
+    async (row: FranchisorRow) => {
+      setUserLoading(true);
+      setUserDrawerOpen(true);
+      try {
+        let user: any = null;
+        let userId: string | null = null;
+        if (row.user_id) {
+          // Backend sekarang meng-embed user_id → fetch detail user langsung.
+          const res = await showUser({ id: row.user_id });
+          user = (res as any)?.data ?? null;
+          userId = user?.id ?? row.user_id;
+        } else {
+          // Fallback data lama: cari user owner via list user per brand.
+          const res = await getUsers({ franchisor_id: row.id });
+          const users = (res as any)?.data ?? [];
+          user = users.find((u: any) => !u.outlet_id) ?? users[0] ?? null;
+          userId = user?.id ?? null;
+        }
+        setUserEditData(user);
+        setCurrentUserId(userId);
+      } catch {
+        setUserEditData(null);
+        setCurrentUserId(null);
+      } finally {
+        setUserLoading(false);
+      }
+    },
+    [showUser, getUsers],
+  );
+
   const tableConfig = useMemo(
     () =>
       createTableConfig({
@@ -101,9 +147,11 @@ const FranchiseListPage: React.FC = () => {
         onEdit: openEdit,
         onRemove: (row) => setDeleteRow(row),
         onToggleActive: handleToggleActive,
+        onManageUser: handleManageUser,
         canManage,
+        canManageUser,
       }),
-    [navigate, openEdit, handleToggleActive, canManage],
+    [navigate, openEdit, handleToggleActive, handleManageUser, canManage, canManageUser],
   );
   const Table = useTable("franchise-list", tableConfig as TableConfig<unknown>);
 
@@ -154,6 +202,22 @@ const FranchiseListPage: React.FC = () => {
       updateResult.reset?.();
     }
   }, [updateResult, showToast, closeDrawer, Table]);
+
+  // Update user owner success → toast + close drawer
+  useEffect(() => {
+    if (updateUserResult?.isSuccess) {
+      showToast({
+        message: "User brand berhasil diperbarui",
+        type: "success",
+        position: "bottom-center",
+        duration: 4000,
+      });
+      setUserDrawerOpen(false);
+      setUserEditData(null);
+      setCurrentUserId(null);
+      updateUserResult.reset?.();
+    }
+  }, [updateUserResult, showToast]);
 
   useEffect(() => {
     if (removeResult?.isSuccess) {
@@ -220,15 +284,81 @@ const FranchiseListPage: React.FC = () => {
         }
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <Table.Tools hideSearch>
-          <div />
-        </Table.Tools>
+        <Table.Tools />
         <Table.Render
           emptyTitle='Data Tidak Ditemukan'
           emptyDescription='Belum ada brand/franchise.'
         />
         <Table.Pagination />
       </Page.Body>
+
+      {/* Drawer: update user owner brand (pola "Update User Outlet") */}
+      <Drawer
+        open={userDrawerOpen}
+        onClose={() => {
+          setUserDrawerOpen(false);
+          setUserEditData(null);
+          setCurrentUserId(null);
+        }}
+        position='right'
+        className='!w-[28rem]'
+      >
+        <div className='flex flex-col h-full'>
+          <div className='p-5 border-b border-slate-100'>
+            <h3 className='text-lg font-bold text-slate-900 flex items-center gap-2'>
+              <UserRound size={18} className='text-emerald-600' />
+              Update User Owner
+            </h3>
+            <p className='text-xs text-slate-500 mt-1'>
+              Perbarui nama & password user pemilik brand.
+            </p>
+          </div>
+          <div className='flex-1 overflow-y-auto p-5'>
+            {userLoading ? (
+              <div className='flex flex-col items-center justify-center h-64 space-y-4'>
+                <div className='w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin' />
+                <p className='text-sm font-medium text-slate-500 animate-pulse'>
+                  Memuat data user owner...
+                </p>
+              </div>
+            ) : (
+              <FranchiseOwnerForm
+                id='franchise-owner-form'
+                initialData={userEditData}
+                onSubmit={(data) => {
+                  if (!currentUserId) return;
+                  updateUser({
+                    id: currentUserId,
+                    payload: data as any,
+                  });
+                }}
+              />
+            )}
+          </div>
+          <div className='p-5 border-t border-slate-100 flex justify-end gap-2'>
+            <Button
+              variant='secondary'
+              onClick={() => {
+                setUserDrawerOpen(false);
+                setUserEditData(null);
+                setCurrentUserId(null);
+              }}
+            >
+              Batal
+            </Button>
+            <Button
+              type='submit'
+              form='franchise-owner-form'
+              variant='success'
+              disabled={userLoading || !currentUserId}
+              isLoading={updateUserResult?.isLoading}
+            >
+              <Save className='w-4 h-4 mr-2' />
+              Simpan Perubahan
+            </Button>
+          </div>
+        </div>
+      </Drawer>
 
       {/* Drawer: tambah / edit franchise */}
       <Drawer
@@ -251,7 +381,11 @@ const FranchiseListPage: React.FC = () => {
           </div>
           <div className='flex-1 overflow-y-auto p-5'>
             <FranchiseForm
-              id={drawerMode === "create" ? "franchise-create-form" : "franchise-edit-form"}
+              id={
+                drawerMode === "create"
+                  ? "franchise-create-form"
+                  : "franchise-edit-form"
+              }
               initialData={drawerMode === "edit" ? (editData ?? editRow) : null}
               onSubmit={drawerMode === "create" ? handleCreate : handleUpdate}
             />

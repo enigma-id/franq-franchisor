@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
@@ -16,8 +17,15 @@ import { ACTION } from "@/utils/permissions";
 
 const POSCategoryListPage: React.FC = () => {
   const FormState = useAppSelector((s) => s.form);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.posCategory);
+
+  // Mode scoped per brand: dipanggil dari tab Franchise (?franchisor_id=&back=).
+  // Tanpa param → perilaku lama (scope session user).
+  const franchisorId = searchParams.get("franchisor_id") ?? undefined;
+  const back = searchParams.get("back") ?? "/setting/pos/category";
 
   const {
     create,
@@ -66,9 +74,10 @@ const POSCategoryListPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: any) => handleToggleActive(row),
+        filter: franchisorId ? { franchisor_id: franchisorId } : undefined,
         canManage,
       }),
-    [canManage],
+    [canManage, franchisorId],
   );
 
   const Table = useTable(
@@ -154,6 +163,7 @@ const POSCategoryListPage: React.FC = () => {
     e.preventDefault();
     const payload = {
       name: formData.name,
+      ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
 
     if (editingItem) {
@@ -220,7 +230,12 @@ const POSCategoryListPage: React.FC = () => {
       <Page.Header
         category="Settings"
         title='Kategori POS'
-        subtitle='Kelola kategori menu untuk pengaturan POS.'
+        subtitle={
+          franchisorId
+            ? "Kelola kategori menu POS untuk brand ini."
+            : "Kelola kategori menu untuk pengaturan POS."
+        }
+        backTo={franchisorId ? () => navigate(back) : undefined}
         action={
           canManage && (
             <Button

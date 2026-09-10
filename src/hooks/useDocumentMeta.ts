@@ -19,21 +19,21 @@ const META_MAP: Record<string, RouteMeta> = {
     title: "Dashboard - Franchisor Portal",
     description: "Ringkasan performa bisnis Anda hari ini.",
   },
-  "/sales/order": {
-    title: "Sales Order - Franchisor Portal",
-    description: "Daftar pesanan penjualan franchise.",
+  "/central-kitchen": {
+    title: "Central Kitchen - Franchisor Portal",
+    description: "Daftar order pengadaan dari central kitchen.",
   },
-  "/sales/order/create": {
-    title: "Tambah Sales Order - Franchisor Portal",
-    description: "Buat pesanan penjualan baru.",
+  "/central-kitchen/create": {
+    title: "Tambah Order - Franchisor Portal",
+    description: "Buat order pengadaan baru.",
   },
-  "/sales/order/update/:id": {
-    title: "Ubah Sales Order - Franchisor Portal",
-    description: "Perbarui pesanan penjualan.",
+  "/central-kitchen/update/:id": {
+    title: "Ubah Order - Franchisor Portal",
+    description: "Perbarui order pengadaan.",
   },
-  "/sales/order/:id": {
-    title: "Sales Order Detail - Franchisor Portal",
-    description: "Detail informasi pesanan penjualan.",
+  "/central-kitchen/:id": {
+    title: "Detail Order - Franchisor Portal",
+    description: "Detail informasi order pengadaan.",
   },
   "/purchase/supplier": {
     title: "Supplier - Franchisor Portal",

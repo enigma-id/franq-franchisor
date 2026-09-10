@@ -11,6 +11,7 @@ export function useSalesOrderGuards(so?: SalesOrderDetail) {
         canDelete: false,
         canPay: false,
         canCancel: false,
+        canComplete: false,
       };
     }
     return {
@@ -19,6 +20,7 @@ export function useSalesOrderGuards(so?: SalesOrderDetail) {
       canDelete: soGuards.canDeleteSo(so),
       canPay: soGuards.canPaySo(so),
       canCancel: soGuards.canCancelSo(so),
+      canComplete: soGuards.canCompleteSo(so),
     };
   }, [so]);
 }

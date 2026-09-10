@@ -114,6 +114,8 @@ export interface POSMenuCreateRequest extends POSMenuBase {
   channel_prices: POSChannelPriceRequest[];
   ingredients: POSIngredientRequest[];
   addon_groups?: POSAddonGroupRequest[];
+  /** Diisi superuser saat create utk brand tertentu (backend menerima franchisor_id di POST). */
+  franchisor_id?: string;
 }
 
 export interface POSMenuUpdateRequest extends Partial<POSMenuCreateRequest> {
@@ -171,7 +173,10 @@ export interface POSCategoryBase {
   image?: string;
 }
 
-export type POSCategoryCreateRequest = POSCategoryBase;
+export type POSCategoryCreateRequest = POSCategoryBase & {
+  /** Diisi superuser saat create utk brand tertentu (backend menerima franchisor_id di POST). */
+  franchisor_id?: string;
+};
 
 export type POSCategoryUpdateRequest = Partial<POSCategoryBase>;
 

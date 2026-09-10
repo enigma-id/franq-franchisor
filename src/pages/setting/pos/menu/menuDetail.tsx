@@ -1,20 +1,17 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Edit, Loader2, Package, Store } from "lucide-react";
+import { Loader2, Package, Store } from "lucide-react";
 import { Page } from "@/components/app/layout";
 import { usePOSMenu } from "@/services/pos/hooks";
 import { Button, Badge } from "@/components/ui";
 import { formatCurrency, formatDateTime } from "@/utils";
 import type { POSMenuDetail } from "@/services/types";
-import { useEnigmaUI } from "@/components";
-import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
 const POSMenuDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
   const canManage = useCan(ACTION.posMenu);
   const { show, showResult } = usePOSMenu();
   const { data, isLoading } = showResult;
@@ -26,22 +23,6 @@ const POSMenuDetailPage: React.FC = () => {
       show({ id });
     }
   }, [id, show]);
-
-  const openOutletType = (row: POSMenuDetail) => {
-    openModal({
-      id: "assign-outlet-catalog",
-      content: (
-        <AssignOutletTypeModal
-          catalog={row}
-          onClose={() => closeModal("assign-outlet-menu")}
-          onSuccess={() => {
-            closeModal("assign-outlet-menu");
-            show({ id });
-          }}
-        />
-      ),
-    });
-  };
 
   if (isLoading) {
     return (
@@ -265,58 +246,6 @@ const POSMenuDetailPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Outlet Types */}
-            {!menu?.is_additional && (
-              <div className='card-info p-6'>
-                <div className='card-section-header mb-0! justify-between'>
-                  <div className='flex items-center gap-4'>
-                    <div className='card-section-icon'>
-                      <Store size={16} />
-                    </div>
-                    <h2 className='card-section-title'>Outlet Types</h2>
-                  </div>
-                  {canManage && (
-                    <Button
-                      variant='primary'
-                      styleType='ghost'
-                      onClick={() => openOutletType(menu)}
-                      size='sm'
-                    >
-                      <Edit size={14} />
-                    </Button>
-                  )}
-                </div>
-
-                <div className='flex-1 overflow-auto'>
-                  <table
-                    className='table-hover table-vcenter datatable table'
-                    width='100%'
-                  >
-                    <thead>
-                      <tr>
-                        <th className='px-4 py-4 text-left uppercase text-[#8B95A5] text-[11px] font-bold'>
-                          Outlet Type
-                        </th>
-                        <th className='px-4 py-4 text-left uppercase text-[#8B95A5] text-[11px] font-bold'>
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {menu.outlet_types?.map((ot: any) => (
-                        <tr key={ot.id} className='border-b'>
-                          <td className='px-4 py-3'>{ot.outlet_type?.name}</td>
-                          <td className='px-4 py-3'>
-                            <Badge variant='success'>Active</Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </Page.Body>

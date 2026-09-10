@@ -1,101 +1,51 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
-import { Button, Drawer, Modal, Badge } from "@/components/ui";
-import useTable from "@/services/table/hooks";
-import createOutletTableConfig from "@/pages/setting/outlet/table/outlet.config";
+import { Badge, Button, Drawer, Loading, Modal } from "@/components/ui";
 import { useFranchisorList } from "@/services/franchisor/hooks";
-import { useOutlet } from "@/services/outlet/hooks";
-import { useUser } from "@/services/user/hooks";
-import { useEnigmaUI } from "@/components";
-import { OutletUserForm } from "@/pages/setting/outlet/components/OutletUserForm";
-import { OutletForm } from "@/pages/setting/outlet/components/outletForm";
-import { useIsSuperuser, useCan } from "@/utils/permission";
-import { ACTION } from "@/utils/permissions";
+import { useIsSuperuser } from "@/utils/permission";
 import { getTypeVariant } from "@/utils";
-import { UserRound, Save, Plus, Store } from "lucide-react";
-import type { OutletCreateRequest, OutletDetail } from "@/services/types/outlet.ts";
-import type { FranchisorRow } from "@/services/types/franchisor";
-import { Loading } from "@/components/ui";
+import { Building2, Edit, Save, Store, Trash2 } from "lucide-react";
+import type {
+  FranchisorRow,
+  FranchisorRowUpdateRequest,
+} from "@/services/types/franchisor";
+import { useEnigmaUI } from "@/components";
+import FranchiseOutletTab from "@/pages/franchise/components/FranchiseOutletTab";
+import { FranchiseMenuTab } from "@/pages/franchise/components/FranchiseMenuTab";
+import { FranchiseCategoryTab } from "@/pages/franchise/components/FranchiseCategoryTab";
+import { FranchiseForm } from "@/pages/franchise/components/FranchiseForm";
+
+const FRANCHISE_TABS = [
+  { key: "outlet", label: "Outlet" },
+  { key: "menu", label: "Menu" },
+  { key: "category", label: "Kategori POS" },
+] as const;
+
+type FranchiseTabKey = (typeof FRANCHISE_TABS)[number]["key"];
 
 const FranchiseDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isSuperuser = useIsSuperuser();
-  const canManage = useCan(ACTION.outlet);
-  const canManageUser = useCan(ACTION.user);
-  const { openModal, closeModal, showToast } = useEnigmaUI();
-  const { show: showFranchise, showResult: franchiseResult } = useFranchisorList();
-
+  const { showToast } = useEnigmaUI();
   const {
-    create: createOutlet,
-    createResult: createOutletResult,
-    update: updateOutlet,
-    updateResult: updateOutletResult,
-    show: showOutlet,
-    remove: removeOutlet,
-    removeResult: removeOutletResult,
-    activate,
-    activateResult,
-    deactivate,
-    deactivateResult,
-  } = useOutlet();
-  const { get: getUsers, update: updateUser, updateResult: updateUserResult } =
-    useUser();
+    show: showFranchise,
+    showResult: franchiseResult,
+    update,
+    updateResult,
+    remove,
+    removeResult,
+  } = useFranchisorList();
 
-  const [userDrawerOpen, setUserDrawerOpen] = useState(false);
-  const [userEditData, setUserEditData] = useState<any | null>(null);
-  const [userLoading, setUserLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<FranchiseTabKey>("outlet");
+  const franchisorId = id ?? "";
 
-  // Drawer tambah/edit outlet (pola Franchise)
-  const [outletDrawerOpen, setOutletDrawerOpen] = useState(false);
-  const [editingOutlet, setEditingOutlet] = useState<OutletDetail | null>(null);
-  const [outletEditData, setOutletEditData] = useState<OutletDetail | null>(null);
-  const [outletLoading, setOutletLoading] = useState(false);
-
-  const openCreateOutlet = () => {
-    setEditingOutlet(null);
-    setOutletEditData(null);
-    setOutletDrawerOpen(true);
-  };
-
-  const openEditOutlet = async (row: OutletDetail) => {
-    setEditingOutlet(row);
-    setOutletEditData(null);
-    setOutletDrawerOpen(true);
-    setOutletLoading(true);
-    try {
-      const res = await showOutlet({ id: row.id });
-      setOutletEditData((res as any)?.data ?? row);
-    } catch {
-      setOutletEditData(row);
-    } finally {
-      setOutletLoading(false);
-    }
-  };
-
-  const closeOutletDrawer = () => {
-    setOutletDrawerOpen(false);
-    setEditingOutlet(null);
-    setOutletEditData(null);
-    createOutletResult?.reset?.();
-    updateOutletResult?.reset?.();
-  };
-
-  const handleOutletSubmit = (data: OutletCreateRequest) => {
-    const payload = {
-      ...data,
-      franchisor_id: id,
-    };
-    if (editingOutlet) {
-      updateOutlet({ id: editingOutlet.id, payload: payload as any });
-    } else {
-      createOutlet(payload as any);
-    }
-  };
+  // Edit / hapus data franchise (brand) itu sendiri.
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (!isSuperuser) {
@@ -109,187 +59,42 @@ const FranchiseDetailPage: React.FC = () => {
   const franchise = franchiseResult?.data?.data as FranchisorRow | undefined;
   const isLoading = franchiseResult?.isLoading || franchiseResult?.isFetching;
 
-  const { isLoading: isDeleting, isSuccess: isDeleteSuccess } =
-    removeOutletResult;
-  const { isSuccess: isActivateSuccess } = activateResult;
-  const { isSuccess: isDeactivateSuccess } = deactivateResult;
-
-  const handleToggleActive = (v: OutletDetail) => {
-    if (v.is_active) {
-      deactivate({ id: v.id });
-    } else {
-      activate({ id: v.id });
-    }
+  const closeEditDrawer = () => {
+    setEditDrawerOpen(false);
+    updateResult?.reset?.();
   };
 
-  const handleManageUser = async (row: OutletDetail) => {
-    setUserLoading(true);
-    setUserDrawerOpen(true);
-    try {
-      const res = await getUsers({ outlet_id: row.id });
-      const users = (res as any)?.data ?? [];
-      const user = users[0] ?? null;
-      setUserEditData(user);
-      setCurrentUserId(user?.id ?? null);
-    } catch {
-      setUserEditData(null);
-      setCurrentUserId(null);
-    } finally {
-      setUserLoading(false);
-    }
-  };
-
-  const tableConfig = useMemo(() => {
-    if (!id) return null;
-    return createOutletTableConfig({
-      onClick: (row: any) => openEditOutlet(row),
-      onRemove: (row: OutletDetail) => openDelete(row),
-      onToggleActive: (row: any) => handleToggleActive(row),
-      onManageUser: (row: any) => handleManageUser(row),
-      canManage,
-      canManageUser,
-      // Scope ke brand ini.
-      filter: { franchisor_id: id },
-    });
-  }, [id, canManage, canManageUser, handleToggleActive, openEditOutlet]);
-
-  const Table = useTable(
-    "franchise-outlet-list",
-    (tableConfig as any) ?? { url: "/outlet", columns: {} },
-  );
-
-  const bootTable = () => Table.boot();
-
-  const openDelete = (row: OutletDetail) => {
-    openModal({
-      id: "delete-outlet-detail",
-      content: (
-        <Modal.Wrapper
-          open
-          onClose={() => closeModal("delete-outlet-detail")}
-          closeOnOutsideClick={false}
-        >
-          <Modal.Header>
-            <div className="font-bold text-lg text-slate-900 leading-7">
-              Hapus Outlet
-            </div>
-          </Modal.Header>
-          <Modal.Body className="text-sm font-normal text-slate-600 leading-5">
-            <p>
-              Apakah Anda yakin ingin menghapus outlet{" "}
-              <strong>{row?.name}</strong>?
-            </p>
-          </Modal.Body>
-          <Modal.Footer className="flex gap-2">
-            {canManage && (
-              <Button
-                className="flex-1 rounded-xl"
-                variant="error"
-                onClick={() => {
-                  if (row?.id) removeOutlet({ id: row.id });
-                }}
-                isLoading={isDeleting}
-              >
-                Hapus
-              </Button>
-            )}
-            <Button
-              className="flex-1 rounded-xl"
-              styleType="outline"
-              variant="secondary"
-              onClick={() => closeModal("delete-outlet-detail")}
-              disabled={isDeleting}
-            >
-              Batal
-            </Button>
-          </Modal.Footer>
-        </Modal.Wrapper>
-      ),
-    });
+  const handleUpdateFranchise = (data: FranchisorRowUpdateRequest) => {
+    if (!id) return;
+    update({ id, payload: data as any });
   };
 
   useEffect(() => {
-    if (isDeleteSuccess) {
-      closeModal("delete-outlet-detail");
+    if (updateResult?.isSuccess) {
       showToast({
-        message: "Outlet berhasil dihapus",
+        message: "Franchise berhasil diperbarui",
         type: "success",
         position: "bottom-center",
         duration: 4000,
       });
-      removeOutletResult.reset?.();
-      bootTable();
+      closeEditDrawer();
+      updateResult.reset?.();
+      if (id) showFranchise({ id });
     }
-  }, [isDeleteSuccess, removeOutletResult]);
+  }, [updateResult?.isSuccess]);
 
   useEffect(() => {
-    if (createOutletResult?.isSuccess) {
+    if (removeResult?.isSuccess) {
       showToast({
-        message: "Outlet berhasil dibuat",
+        message: "Franchise berhasil dihapus",
         type: "success",
         position: "bottom-center",
         duration: 4000,
       });
-      closeOutletDrawer();
-      createOutletResult.reset?.();
-      bootTable();
+      removeResult.reset?.();
+      navigate("/franchise", { replace: true });
     }
-  }, [createOutletResult?.isSuccess]);
-
-  useEffect(() => {
-    if (updateOutletResult?.isSuccess) {
-      showToast({
-        message: "Outlet berhasil diperbarui",
-        type: "success",
-        position: "bottom-center",
-        duration: 4000,
-      });
-      closeOutletDrawer();
-      updateOutletResult.reset?.();
-      bootTable();
-    }
-  }, [updateOutletResult?.isSuccess]);
-
-  useEffect(() => {
-    if (isActivateSuccess) {
-      showToast({
-        message: "Outlet berhasil diaktifkan",
-        type: "success",
-        position: "bottom-center",
-        duration: 4000,
-      });
-      activateResult.reset?.();
-      bootTable();
-    }
-  }, [isActivateSuccess, activateResult]);
-
-  useEffect(() => {
-    if (isDeactivateSuccess) {
-      showToast({
-        message: "Outlet berhasil dinonaktifkan",
-        type: "success",
-        position: "bottom-center",
-        duration: 4000,
-      });
-      deactivateResult.reset?.();
-      bootTable();
-    }
-  }, [isDeactivateSuccess, deactivateResult]);
-
-  useEffect(() => {
-    if (updateUserResult?.isSuccess) {
-      showToast({
-        message: "User outlet berhasil diperbarui",
-        type: "success",
-        position: "bottom-center",
-        duration: 4000,
-      });
-      setUserDrawerOpen(false);
-      setUserEditData(null);
-      setCurrentUserId(null);
-      updateUserResult.reset?.();
-    }
-  }, [updateUserResult, showToast]);
+  }, [removeResult?.isSuccess]);
 
   if (!isSuperuser) {
     return (
@@ -305,14 +110,32 @@ const FranchiseDetailPage: React.FC = () => {
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
       <Page.Header
         category="Settings"
-        title={franchise?.name ? `Detail Franchise — ${franchise.name}` : "Detail Franchise"}
-        subtitle="Informasi brand & daftar outlet yang terdaftar."
+        title={
+          franchise?.name
+            ? `Detail Franchise — ${franchise.name}`
+            : "Detail Franchise"
+        }
+        subtitle="Informasi brand beserta outlet, menu, dan kategori POS."
         backTo={() => navigate("/franchise")}
         action={
-          <Button variant="primary" onClick={openCreateOutlet}>
-            <Plus className="w-4 h-4 mr-2" />
-            Tambah Outlet
-          </Button>
+          <div className='flex gap-2'>
+            <Button
+              variant='info'
+              onClick={() => setEditDrawerOpen(true)}
+              disabled={!franchise}
+              title='Edit'
+            >
+              <Edit className='w-4 h-4' />
+            </Button>
+            <Button
+              variant='error'
+              onClick={() => setDeleteOpen(true)}
+              disabled={!franchise}
+              title='Hapus'
+            >
+              <Trash2 className='w-4 h-4' />
+            </Button>
+          </div>
         }
       />
       <Page.Body className="flex-1 overflow-auto p-6 space-y-6">
@@ -329,7 +152,9 @@ const FranchiseDetailPage: React.FC = () => {
                   <Store size={20} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">{franchise.name}</h2>
+                  <h2 className="text-lg font-bold text-slate-900">
+                    {franchise.name}
+                  </h2>
                   <div className="flex items-center gap-2 mt-0.5">
                     <Badge
                       variant={getTypeVariant(franchise.type)}
@@ -364,146 +189,78 @@ const FranchiseDetailPage: React.FC = () => {
               </dl>
             </div>
 
-            {/* Daftar Outlet brand ini */}
-            <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm">
-              <div className="table-header p-5! border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Store size={16} className="text-slate-400" />
-                  <h2 className="table-header-title font-bold text-slate-700">
-                    Daftar Outlet ({franchise.name})
-                  </h2>
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col min-h-0">
-                <Table.Tools hideSearch>
-                  <div />
-                </Table.Tools>
-                <Table.Render
-                  emptyTitle="Belum Ada Outlet"
-                  emptyDescription={`Belum ada outlet untuk brand ${franchise.name}.`}
-                />
-                <Table.Pagination />
-              </div>
+            {/* Tab navigasi: Outlet | Menu | Kategori POS */}
+            <div className='flex items-center gap-1 border-b border-slate-200'>
+              {FRANCHISE_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-4 py-2.5 text-sm font-bold rounded-t-lg transition-colors cursor-pointer ${
+                    activeTab === tab.key
+                      ? "bg-white text-primary border border-b-0 border-slate-200 -mb-px"
+                      : "text-slate-400 hover:text-slate-600"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
+
+            {activeTab === "outlet" && (
+              <FranchiseOutletTab
+                franchisorId={franchisorId}
+                franchiseName={franchise.name}
+              />
+            )}
+            {activeTab === "menu" && (
+              <FranchiseMenuTab
+                franchisorId={franchisorId}
+                franchiseName={franchise.name}
+              />
+            )}
+            {activeTab === "category" && (
+              <FranchiseCategoryTab
+                franchisorId={franchisorId}
+                franchiseName={franchise.name}
+              />
+            )}
           </>
         )}
       </Page.Body>
 
-      {/* Drawer: update user outlet */}
+      {/* Drawer: edit data franchise (brand) */}
       <Drawer
-        open={userDrawerOpen}
-        onClose={() => {
-          setUserDrawerOpen(false);
-          setUserEditData(null);
-          setCurrentUserId(null);
-        }}
-        position="right"
-        className="!w-[28rem]"
-      >
-        <div className="flex flex-col h-full">
-          <div className="p-5 border-b border-slate-100">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <UserRound size={18} className="text-emerald-600" />
-              Update User Outlet
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              Perbarui nama & password user pemilik outlet.
-            </p>
-          </div>
-          <div className="flex-1 overflow-y-auto p-5">
-            {userLoading ? (
-              <div className="flex flex-col items-center justify-center h-64 space-y-4">
-                <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
-                <p className="text-sm font-medium text-slate-500 animate-pulse">
-                  Memuat data user outlet...
-                </p>
-              </div>
-            ) : (
-              <OutletUserForm
-                id="outlet-user-form"
-                initialData={userEditData}
-                onSubmit={(data) => {
-                  if (!currentUserId) return;
-                  updateUser({
-                    id: currentUserId,
-                    payload: data as any,
-                  });
-                }}
-              />
-            )}
-          </div>
-          <div className="p-5 border-t border-slate-100 flex justify-end gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setUserDrawerOpen(false);
-                setUserEditData(null);
-                setCurrentUserId(null);
-              }}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              form="outlet-user-form"
-              variant="success"
-              disabled={userLoading || !currentUserId}
-              isLoading={updateUserResult?.isLoading}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Simpan Perubahan
-            </Button>
-          </div>
-        </div>
-      </Drawer>
-
-      {/* Drawer: tambah/edit outlet brand ini (pola Franchise) */}
-      <Drawer
-        open={outletDrawerOpen}
-        onClose={closeOutletDrawer}
+        open={editDrawerOpen}
+        onClose={closeEditDrawer}
         position='right'
         className='!w-[30rem]'
       >
         <div className='flex flex-col h-full'>
           <div className='p-5 border-b border-slate-100'>
             <h3 className='text-lg font-bold text-slate-900 flex items-center gap-2'>
-              <Store size={18} className='text-primary' />
-              {editingOutlet ? "Edit Outlet" : `Tambah Outlet — ${franchise?.name ?? ""}`}
+              <Building2 size={18} className='text-primary' />
+              Edit Franchise
             </h3>
             <p className='text-xs text-slate-500 mt-1'>
-              {editingOutlet
-                ? "Perbarui data outlet brand ini."
-                : "Daftarkan outlet baru untuk brand ini."}
+              Perbarui data brand / franchisor.
             </p>
           </div>
           <div className='flex-1 overflow-y-auto p-5'>
-            {outletLoading && editingOutlet ? (
-              <div className='flex justify-center py-20'>
-                <Loading size='lg' variant='spinner' />
-              </div>
-            ) : (
-              <OutletForm
-                id='outlet-form'
-                initialData={editingOutlet ? (outletEditData ?? editingOutlet) : null}
-                hideOwnerSection={!!editingOutlet}
-                defaultFranchisorId={id}
-                onSubmit={handleOutletSubmit}
-              />
-            )}
+            <FranchiseForm
+              id='franchise-edit-form'
+              initialData={franchise ?? null}
+              onSubmit={handleUpdateFranchise}
+            />
           </div>
           <div className='p-5 border-t border-slate-100 flex justify-end gap-2'>
-            <Button variant='secondary' onClick={closeOutletDrawer}>
+            <Button variant='secondary' onClick={closeEditDrawer}>
               Batal
             </Button>
             <Button
               type='submit'
-              form='outlet-form'
+              form='franchise-edit-form'
               variant='success'
-              isLoading={
-                editingOutlet
-                  ? updateOutletResult?.isLoading
-                  : createOutletResult?.isLoading
-              }
+              isLoading={updateResult?.isLoading}
             >
               <Save className='w-4 h-4 mr-2' />
               Simpan
@@ -511,6 +268,36 @@ const FranchiseDetailPage: React.FC = () => {
           </div>
         </div>
       </Drawer>
+
+      {/* Modal konfirmasi hapus franchise */}
+      <Modal.Wrapper
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        closeOnOutsideClick={false}
+      >
+        <Modal.Header>Hapus Franchise</Modal.Header>
+        <Modal.Body>
+          <p className='text-sm text-slate-600'>
+            Apakah Anda yakin ingin menghapus franchise{" "}
+            <strong>{franchise?.name}</strong>? Tindakan ini tidak dapat
+            dibatalkan.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setDeleteOpen(false)}>
+            Batal
+          </Button>
+          <Button
+            variant='error'
+            onClick={() => {
+              if (id) remove({ id });
+            }}
+            isLoading={removeResult?.isLoading}
+          >
+            Hapus
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
     </Page>
   );
 };

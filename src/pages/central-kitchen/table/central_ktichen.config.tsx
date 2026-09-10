@@ -2,35 +2,29 @@ import config from "@/services/table/const";
 import { formatDate, getStatusVariant, formatDateTime } from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
-import {
-  Eye,
-  MoreVertical,
-  Trash,
-  Check,
-  CreditCard,
-  Edit,
-} from "lucide-react";
+import { Eye, MoreVertical, Check, Edit, Trash } from "lucide-react";
 
 const createTableConfig = ({
   onClick,
   onRemove,
   onEdit,
   onPublish,
-  onPaid,
   filter,
+  lockedFilter,
   canManage,
 }: {
   onClick?: (row: SalesOrderDetail) => void;
   onRemove?: (row: SalesOrderDetail) => void;
   onEdit?: (row: SalesOrderDetail) => void;
   onPublish?: (row: SalesOrderDetail) => void;
-  onPaid?: (row: SalesOrderDetail) => void;
   filter?: Record<string, unknown>;
+  lockedFilter?: Record<string, unknown>;
   canManage?: boolean;
 }) => ({
   ...config,
   url: "/sales/order",
   filter,
+  lockedFilter,
   columns: {
     code: {
       title: "Code",
@@ -53,7 +47,7 @@ const createTableConfig = ({
       component: (row: SalesOrderDetail) => (
         <div>
           <span className='font-medium block'>
-            {`${row?.franchisor.name} - ${row.outlet?.name}`}
+            {`${row?.franchisor?.name ? row.franchisor.name + " - " : ""}${row.outlet?.name ?? ""}`}
           </span>
           <span className='text-xs text-gray-500 block'>
             {row.outlet?.phone ?? ""}
@@ -61,24 +55,8 @@ const createTableConfig = ({
         </div>
       ),
     },
-    source_warehouse_name: {
-      title: "Warehouse",
-      component: (row: SalesOrderDetail) => (
-        <span className='text-slate-600 font-medium'>
-          {row.source_warehouse_name || "-"}
-        </span>
-      ),
-    },
-    total_charges: {
-      title: "Total (Rp)",
-      headerClass: "text-end!",
-      class: "text-end!",
-      sortable: true,
-      format_number: true,
-      width: 200,
-    },
     shipping_date: {
-      title: "Shipment Date",
+      title: "Produksi Date",
       sortable: true,
       class: "text-center",
       align: "center",
@@ -101,7 +79,7 @@ const createTableConfig = ({
       ),
     },
     fulfillment_status: {
-      title: "Fulfillment Status",
+      title: "Produksi Status",
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
@@ -114,20 +92,16 @@ const createTableConfig = ({
         </Badge>
       ),
     },
-    payment_status: {
-      title: "Payment",
+    created_by: {
+      title: "Dibuat Oleh",
+      sortable: true,
       class: "text-center",
       align: "center",
       component: (row: SalesOrderDetail) => (
-        <Badge
-          variant={getStatusVariant(row.payment_status)}
-          size='xs'
-          className='px-2.5 font-semibold text-[10px] tracking-wider'
-        >
-          {row.payment_status?.toLowerCase()}
-        </Badge>
+        <span className='font-medium'>{row?.created_by}</span>
       ),
     },
+
     action: {
       title: "",
       class: "text-right",
@@ -154,7 +128,7 @@ const createTableConfig = ({
               <div className='flex flex-col items-start leading-tight'>
                 <span className='font-bold text-[13px]'>See Detail</span>
                 <span className='text-[11px] text-slate-400'>
-                  See sales order info
+                  See order info
                 </span>
               </div>
             </button>
@@ -172,7 +146,7 @@ const createTableConfig = ({
                   <div className='flex flex-col items-start leading-tight'>
                     <span className='font-bold text-[13px]'>Publish</span>
                     <span className='text-[11px] text-slate-400'>
-                      Approve sales order
+                      Approve order
                     </span>
                   </div>
                 </button>
@@ -188,7 +162,7 @@ const createTableConfig = ({
                   <div className='flex flex-col items-start leading-tight'>
                     <span className='font-bold text-[13px]'>Edit</span>
                     <span className='text-[11px] text-slate-400'>
-                      Modify sales order info
+                      Modify order info
                     </span>
                   </div>
                 </button>
@@ -204,34 +178,13 @@ const createTableConfig = ({
                   <div className='flex flex-col items-start leading-tight'>
                     <span className='font-bold text-[13px]'>Delete</span>
                     <span className='text-[11px] text-slate-400'>
-                      Remove sales order
+                      Remove order
                     </span>
                   </div>
                 </button>
               </Dropdown.Item>
             </>
           )}
-
-          {canManage &&
-            row?.payment_status === "unpaid" &&
-            row?.document_status === "published" && (
-              <Dropdown.Item
-                onSelect={() => onPaid?.(row)}
-                className='hover:bg-blue-50 hover:text-blue-600'
-              >
-                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
-                  <div className='w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600'>
-                    <CreditCard className='w-4 h-4' />
-                  </div>
-                  <div className='flex flex-col items-start leading-tight'>
-                    <span className='font-bold text-[13px]'>Paid</span>
-                    <span className='text-[11px] text-slate-400'>
-                      Mark as paid
-                    </span>
-                  </div>
-                </button>
-              </Dropdown.Item>
-            )}
         </Dropdown>
       ),
     },

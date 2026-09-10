@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Page } from "@/components/app/layout";
 import { formatCurrency } from "@/utils";
+import { useIsSuperuser } from "@/utils/permission";
 import { SummaryCard } from "@/components/app";
 import { useDashboard } from "@/services/dashboard/hooks";
 import SalesChart from "./components/SalesChart";
@@ -221,6 +222,7 @@ const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [periode, setPeriode] = React.useState(dayjs().format("YYYY-MM"));
   const { get, getResult } = useDashboard();
+  const isSuperuser = useIsSuperuser();
   const { data: response, isLoading } = getResult;
 
   // The API returns the dashboard data directly at the root
@@ -336,13 +338,15 @@ const DashboardPage: React.FC = () => {
                 theme={THEMES.purple}
                 onClick={go("/report/membership/saldo-log")}
               />
-              <SummaryCard
-                label='Sales Order Pipeline'
-                value={`${data?.so_pipeline?.published || 0} / ${data?.so_pipeline?.pending || 0}`}
-                icon={Package}
-                theme={THEMES.indigo}
-                onClick={go("/sales/order")}
-              />
+              {isSuperuser && (
+                <SummaryCard
+                  label='Sales Order Pipeline'
+                  value={`${data?.so_pipeline?.published || 0} / ${data?.so_pipeline?.pending || 0}`}
+                  icon={Package}
+                  theme={THEMES.indigo}
+                  onClick={go("/central-kitchen")}
+                />
+              )}
             </div>
 
             {/* Top Menu / Top Member / Top Outlet / Top Outstanding */}
@@ -393,13 +397,15 @@ const DashboardPage: React.FC = () => {
 
             {/* Pipeline & Composition */}
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              <PipelineCard
-                title='Pipeline Sales Order'
-                data={data?.so_pipeline}
-                icon={TrendingUp}
-                theme={THEMES.indigo}
-                onClick={go("/sales/order")}
-              />
+              {isSuperuser && (
+                <PipelineCard
+                  title='Pipeline Sales Order'
+                  data={data?.so_pipeline}
+                  icon={TrendingUp}
+                  theme={THEMES.indigo}
+                  onClick={go("/central-kitchen")}
+                />
+              )}
               <PipelineCard
                 title='Pipeline Purchase Order'
                 data={data?.po_pipeline}

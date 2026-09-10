@@ -4,7 +4,6 @@
  */
 
 export interface OutletBase {
-  outlet_type_id: string;
   name: string;
   recipient_name: string;
   phone: string;
@@ -29,6 +28,8 @@ export interface OutletChannelsUpdateRequest {
 
 export interface OutletDetail extends OutletBase {
   id: string;
+  /** FK user owner outlet (diisi backend; dipakai utk fetch detail user). */
+  user_id?: string;
   franchisor_id?: string;
   pos_channels: {
     id: string;

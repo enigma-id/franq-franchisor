@@ -1,6 +1,13 @@
 import config from "@/services/table/const";
 import { Dropdown, Toggle, Badge } from "@/components/ui";
-import { Pencil, MoreVertical, Trash, Building2, Store } from "lucide-react";
+import {
+  Pencil,
+  MoreVertical,
+  Trash,
+  Building2,
+  Store,
+  UserRound,
+} from "lucide-react";
 import { formatDateTime, getTypeVariant } from "@/utils";
 import type { FranchisorRow } from "@/services/types/franchisor";
 
@@ -9,13 +16,17 @@ const createTableConfig = ({
   onEdit,
   onRemove,
   onToggleActive,
+  onManageUser,
   canManage,
+  canManageUser,
 }: {
   onView?: (row: FranchisorRow) => void;
   onEdit?: (row: FranchisorRow) => void;
   onRemove?: (row: FranchisorRow) => void;
   onToggleActive?: (row: FranchisorRow) => void;
+  onManageUser?: (row: FranchisorRow) => void;
   canManage?: boolean;
+  canManageUser?: boolean;
 }) => ({
   ...config,
   url: "/franchisor",
@@ -63,12 +74,12 @@ const createTableConfig = ({
         <span className='text-sm text-gray-600'>{row.phone || "-"}</span>
       ),
     },
-    updated_at: {
-      title: "Diperbarui",
+    created_at: {
+      title: "Dibuat",
       sortable: true,
       component: (row: FranchisorRow) => (
         <span className='text-sm text-gray-500'>
-          {row.updated_at ? formatDateTime(row.updated_at) : "-"}
+          {row.created_at ? formatDateTime(row.created_at) : "-"}
         </span>
       ),
     },
@@ -114,9 +125,11 @@ const createTableConfig = ({
                     <Store className='w-4 h-4' />
                   </div>
                   <div className='flex flex-col items-start leading-tight'>
-                    <span className='font-bold text-[13px]'>Kelola Outlet</span>
+                    <span className='font-bold text-[13px]'>
+                      Kelola Franchise
+                    </span>
                     <span className='text-[11px] text-slate-400'>
-                      Lihat outlet brand ini
+                      Lihat Franchise brand ini
                     </span>
                   </div>
                 </button>
@@ -137,6 +150,24 @@ const createTableConfig = ({
                   </div>
                 </button>
               </Dropdown.Item>
+              {canManageUser && (
+                <Dropdown.Item
+                  onSelect={() => onManageUser?.(row)}
+                  className='hover:bg-emerald-50 hover:text-emerald-600'
+                >
+                  <button className='flex items-center gap-3 py-1 rounded-xl text-slate-700 w-full text-left'>
+                    <div className='w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600'>
+                      <UserRound className='w-4 h-4' />
+                    </div>
+                    <div className='flex flex-col items-start leading-tight'>
+                      <span className='font-bold text-[13px]'>User</span>
+                      <span className='text-[11px] text-slate-400'>
+                        Update user owner
+                      </span>
+                    </div>
+                  </button>
+                </Dropdown.Item>
+              )}
               <div className='my-1 border-t border-slate-50'></div>
               <Dropdown.Item
                 onSelect={() => onRemove?.(row)}

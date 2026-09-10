@@ -8,17 +8,18 @@ import { useAppSelector } from "@/hooks";
 import { useIsSuperuser } from "@/utils/permission";
 import { getOptionByValue } from "@/utils/helper";
 import type {
+  FranchisorRow,
   InventoryBOM,
   InventoryFraction,
   InventoryItemCreateRequest,
   InventoryItemDetail,
   InventoryItemPickingStrategy,
-  SupplierDetail,
+  POSCategoryDetail,
 } from "@/services/types";
 import type { SelectOptionValue } from "@/services/types/table";
-import { useSupplier } from "@/services/supplier/hooks";
 import { useInventoryItem } from "@/services/inventory/hooks";
 import { useFranchisorList } from "@/services/franchisor/hooks";
+import { usePOSCategory } from "@/services/pos/hooks";
 
 const TYPES = [
   { value: "raw_material", label: "Raw Material" },
@@ -54,18 +55,15 @@ export function InventoryItemForm({
 }: InventoryItemFormProps) {
   const FormState = useAppSelector((s) => s.form);
   const isSuperuser = useIsSuperuser();
-  const isCreateMode = !id;
-  const { get: getSupplier, getResult: supplierResult } = useSupplier();
+  const isCreateMode = !initialData;
+  const { get: getCategories, getResult: categoriesResult } = usePOSCategory();
   const { get: getItems, getResult: itemsResult } = useInventoryItem();
-  const {
-    get: getFranchisors,
-    getResult: franchisorsResult,
-  } = useFranchisorList();
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
   const [franchise, setFranchise] = useState<any | null>(null);
 
   const [formData, setFormData] = useState<InventoryItemCreateRequest>({
     type: initialData?.type || "raw_material",
-    supplier_id: initialData?.supplier?.id || "",
     barcode: initialData?.barcode || "",
     name: initialData?.name || "",
     variant: initialData?.variant || "",
@@ -90,7 +88,6 @@ export function InventoryItemForm({
   const [boms, setBoms] = useState<InventoryBOMField[]>(
     initialData?.boms || initialBoms,
   );
-  const [supplier, setSupplier] = useState<SupplierDetail | null>(null);
 
   const [typeSelected, setTypeSelected] = useState<SelectOptionValue | null>({
     value: "raw_material",
@@ -103,12 +100,13 @@ export function InventoryItemForm({
       label: "First-In, First-Out",
     });
 
+  const [category, setCategory] = useState<POSCategoryDetail | null>(null);
+
   useEffect(() => {
     if (initialData) {
       const itemType = initialData.type || "raw_material";
       setFormData({
         type: itemType,
-        supplier_id: initialData?.supplier?.id || "",
         barcode: initialData?.barcode || "",
         name: initialData?.name || "",
         variant: initialData?.variant || "",
@@ -123,7 +121,7 @@ export function InventoryItemForm({
         safety_stock: initialData?.safety_stock || 0,
         is_vatable: initialData?.is_vatable || false,
         fractions: initialData?.fractions || initialFractions,
-        boms: initialData?.materials || [],
+        boms: initialData?.materials,
       });
       setTypeSelected(getOptionByValue(TYPES, itemType));
       setStrategySelected(
@@ -131,8 +129,9 @@ export function InventoryItemForm({
       );
 
       setFractions(initialData.fractions ?? initialFractions);
-      setSupplier(initialData.supplier ?? null);
       setBoms(initialData.materials ?? initialBoms);
+      setCategory({ id: "", name: initialData?.category });
+      setFranchise({ id: initialData?.franchisor_id });
     }
   }, [initialData]);
 
@@ -145,6 +144,11 @@ export function InventoryItemForm({
     checked: boolean,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: checked }));
+  };
+
+  const handleFranchiseChange = (item: FranchisorRow | null) => {
+    setFranchise(item);
+    setCategory(null);
   };
 
   const addFraction = () => {
@@ -197,7 +201,6 @@ export function InventoryItemForm({
     const payload: InventoryItemCreateRequest = {
       ...formData,
       franchisor_id: franchise?.id || undefined,
-      supplier_id: supplier?.id,
       picking_strategy: strategySelected?.value as InventoryItemPickingStrategy,
       fractions: fractions.map((f) => ({
         name: f.name,
@@ -215,6 +218,9 @@ export function InventoryItemForm({
 
     onSubmit(payload);
   };
+
+  console.log("===isSuperuser===", isSuperuser);
+  console.log("===isCreateMode===", isCreateMode);
 
   return (
     <form
@@ -242,9 +248,7 @@ export function InventoryItemForm({
                 required
                 value={franchise}
                 hook={franchisorsResult as any}
-                fetchData={(page, search) =>
-                  getFranchisors({ page, search })
-                }
+                fetchData={(page, search) => getFranchisors({ page, search })}
                 getLabel={(item: any) => item?.name || ""}
                 renderItem={(item: any) =>
                   item
@@ -252,8 +256,8 @@ export function InventoryItemForm({
                     : ""
                 }
                 getValue={(item: any) => item?.id}
-                onChange={(item: any) => setFranchise(item)}
-                onClear={() => setFranchise(null)}
+                onChange={(item: any) => handleFranchiseChange(item)}
+                onClear={() => handleFranchiseChange(null)}
                 error={FormState?.errors?.franchisor_id as string}
               />
             </div>
@@ -282,17 +286,6 @@ export function InventoryItemForm({
               error={FormState?.errors?.type as string}
             />
 
-            <RemoteSelect<SupplierDetail>
-              label='Supplier'
-              placeholder='Pilih Supplier...'
-              hook={supplierResult as any}
-              fetchData={(page, search) => getSupplier({ page, search })}
-              getLabel={(item: any) => item?.name}
-              onChange={(item: any) => setSupplier(item)}
-              value={supplier}
-              onClear={() => setSupplier(null)}
-            />
-
             <Input
               label='Nama Item'
               required
@@ -306,19 +299,35 @@ export function InventoryItemForm({
                   : undefined
               }
             />
-            <Input
+            <RemoteSelect<POSCategoryDetail>
               label='Kategori'
               required
-              value={formData.category}
-              onChange={(e) => handleInputChange("category", e.target.value)}
-              placeholder='Masukkan kategori'
-              variant='primary'
-              error={
-                typeof FormState?.errors?.category === "string"
-                  ? FormState.errors.category
-                  : undefined
+              hook={categoriesResult as any}
+              fetchData={(page, search) =>
+                franchise
+                  ? getCategories({
+                      page,
+                      search,
+                      franchisor_id: franchise?.id,
+                    })
+                  : getCategories({ page, search })
               }
+              getLabel={(item: any) => item?.name}
+              renderItem={(item: any) => item?.name}
+              value={category}
+              onChange={(item: any) => {
+                setCategory(item);
+                handleInputChange("category", item?.name);
+              }}
+              onClear={() => {
+                setCategory(null);
+                handleInputChange("category", "");
+              }}
+              placeholder='Pilih kategori'
+              error={FormState?.errors?.category_id as string}
+              watchKey={franchise?.id}
             />
+
             <Input
               label='Barcode'
               value={formData.barcode}

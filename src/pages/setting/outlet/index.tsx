@@ -38,6 +38,7 @@ const OutletListPage: React.FC = () => {
 
   const {
     get: getUsers,
+    show: showUser,
     update: updateUser,
     updateResult: updateUserResult,
   } = useUser();
@@ -107,11 +108,22 @@ const OutletListPage: React.FC = () => {
     setUserLoading(true);
     setUserDrawerOpen(true);
     try {
-      const res = await getUsers({ outlet_id: row.id });
-      const users = (res as any)?.data ?? [];
-      const user = users[0] ?? null;
+      let user: any = null;
+      let userId: string | null = null;
+      if (row?.user_id) {
+        // Backend sekarang meng-embed user_id → fetch detail user langsung.
+        const res = await showUser({ id: row.user_id });
+        user = (res as any)?.data ?? null;
+        userId = user?.id ?? row.user_id;
+      } else {
+        // Fallback data lama: cari lewat list user per outlet.
+        const res = await getUsers({ outlet_id: row.id });
+        const users = (res as any)?.data ?? [];
+        user = users[0] ?? null;
+        userId = user?.id ?? null;
+      }
       setUserEditData(user);
-      setCurrentUserId(user?.id ?? null);
+      setCurrentUserId(userId);
     } catch {
       setUserEditData(null);
       setCurrentUserId(null);

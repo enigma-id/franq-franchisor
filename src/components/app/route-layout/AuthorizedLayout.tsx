@@ -3,7 +3,11 @@ import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { signout } from "@/services/auth/slice";
 import { MENU, type MenuSlug } from "@/utils/permissions";
-import { useUserPermissions, hasPermission, useIsMitraAccess } from "@/utils/permission";
+import {
+  useUserPermissions,
+  hasPermission,
+  useIsMitraAccess,
+} from "@/utils/permission";
 import {
   LayoutDashboard,
   Package,
@@ -28,6 +32,7 @@ import {
   Gift,
   UserRound,
   IdCard,
+  CreditCard,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -77,13 +82,14 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    label: "Sales",
+    label: "Produksi",
     items: [
       {
-        label: "Sales Order",
-        path: "/sales/order",
+        label: "Central Kitchen",
+        path: "/central-kitchen",
         icon: <ShoppingCart size={18} />,
         permission: MENU.salesOrder,
+        superAdminOnly: true,
       },
     ],
   },
@@ -148,12 +154,14 @@ const menuSections: MenuSection[] = [
         path: "/purchase/supplier",
         icon: <Users size={18} />,
         permission: MENU.supplier,
+        superAdminOnly: true,
       },
       {
         label: "Purchase Order",
         path: "/purchase/order",
         icon: <Receipt size={18} />,
         permission: MENU.purchaseOrder,
+        superAdminOnly: true,
       },
     ],
   },
@@ -296,15 +304,9 @@ const menuSections: MenuSection[] = [
       },
       {
         label: "User Management",
+        path: "/user",
         icon: <Users size={18} />,
-        children: [
-          { label: "User", path: "/user", permission: MENU.user },
-          {
-            label: "Usergroup",
-            path: "/usergroup",
-            permission: MENU.usergroup,
-          },
-        ],
+        permission: MENU.user,
       },
       {
         label: "Outlet List",
@@ -321,19 +323,22 @@ const menuSections: MenuSection[] = [
             label: "Category",
             path: "/setting/pos/category",
             permission: MENU.posCategory,
+            superuserHidden: true,
           },
           {
             label: "Menu",
             path: "/setting/pos/menu",
             permission: MENU.posMenu,
-          },
-          {
-            label: "Payment",
-            path: "/setting/pos/payment",
-            permission: MENU.posPayment,
-            superAdminOnly: true,
+            superuserHidden: true,
           },
         ],
+      },
+      {
+        label: "Metode Pembayaran",
+        path: "/setting/pos/payment",
+        icon: <CreditCard size={18} />,
+        permission: MENU.posPayment,
+        superAdminOnly: true,
       },
     ],
   },
@@ -594,7 +599,12 @@ export function AuthorizedLayout() {
       .map((section) => {
         const items = section.items.filter((item) =>
           item.children
-            ? isParentAllowed(userPermissions, item, isSuperAdmin, isMitraAccess)
+            ? isParentAllowed(
+                userPermissions,
+                item,
+                isSuperAdmin,
+                isMitraAccess,
+              )
             : isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess),
         );
         return items.length > 0 ? { ...section, items } : null;

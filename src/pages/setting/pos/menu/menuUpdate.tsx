@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { POSMenuForm } from "./components/menuForm";
 import { usePOSMenu } from "@/services/pos/hooks";
@@ -13,10 +13,15 @@ import { ACTION } from "@/utils/permissions";
 const POSMenuUpdatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { showToast } = useEnigmaUI();
   const { show, showResult, update, updateResult } = usePOSMenu();
   const { isLoading: isUpdating, isSuccess } = updateResult;
   const canManage = useCan(ACTION.posMenu);
+
+  // Scope brand saat diedit dari tab Franchise detail.
+  const franchisorId = searchParams.get("franchisor_id") ?? undefined;
+  const back = searchParams.get("back") ?? "/setting/pos/menu";
 
   useEffect(() => {
     if (id) {
@@ -30,10 +35,10 @@ const POSMenuUpdatePage: React.FC = () => {
         message: "Menu berhasil diperbarui",
         type: "success",
       });
-      navigate("/setting/pos/menu");
+      navigate(back);
       updateResult.reset?.();
     }
-  }, [navigate, updateResult, showToast]);
+  }, [navigate, back, updateResult, showToast]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -70,6 +75,7 @@ const POSMenuUpdatePage: React.FC = () => {
         ) : (
           <POSMenuForm
             id="pos-catalog-form"
+            franchisorId={franchisorId}
             initialData={showResult.data?.data}
             onSubmit={(data) => update({ id: id!, payload: data as any })}
           />

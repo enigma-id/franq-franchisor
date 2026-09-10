@@ -4,6 +4,7 @@
  * Synchronized with Postman Collection
  */
 
+import type { FranchisorDetail } from "./franchisor";
 import type { SupplierDetail } from "./supplier";
 
 export type InventoryItemType = "raw_material" | "finished_goods";
@@ -74,6 +75,7 @@ export interface InventoryItemDetail extends InventoryItemBase {
   alias_name: string;
   default_fraction: string;
   fractions: InventoryFractionDetail[];
+  franchisor?: FranchisorDetail;
 }
 
 export interface InventoryCatalogBase {
@@ -181,6 +183,7 @@ export interface InventoryCatalogStandard extends InventoryCatalogDetailBase {
 
   item: InventoryItemDetail;
   item_fraction: InventoryFractionDetail;
+  franchisor?: FranchisorDetail;
 }
 
 export interface InventoryCatalogBundle extends InventoryCatalogDetailBase {

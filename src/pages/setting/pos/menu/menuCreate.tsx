@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Page } from "@/components/app/layout";
 import { POSMenuForm } from "./components/menuForm";
 import { usePOSMenu } from "@/services/pos/hooks";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
 import { useCan } from "@/utils/permission";
@@ -11,10 +11,15 @@ import { ACTION } from "@/utils/permissions";
 
 const POSMenuCreatePage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { create, createResult } = usePOSMenu();
   const { isLoading: isCreating, isSuccess } = createResult;
   const { showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.posMenu);
+
+  // Scope brand: diisi saat create dari tab Franchise detail.
+  const franchisorId = searchParams.get("franchisor_id") ?? undefined;
+  const back = searchParams.get("back") ?? "/setting/pos/menu";
 
   useEffect(() => {
     if (isSuccess) {
@@ -22,10 +27,10 @@ const POSMenuCreatePage: React.FC = () => {
         message: "Menu berhasil dibuat",
         type: "success",
       });
-      navigate("/setting/pos/menu");
+      navigate(back);
       createResult.reset?.();
     }
-  }, [isSuccess, navigate, createResult, showToast]);
+  }, [isSuccess, navigate, back, createResult, showToast]);
 
   return (
     <Page className="h-full flex flex-col min-h-0 bg-slate-50">
@@ -57,6 +62,7 @@ const POSMenuCreatePage: React.FC = () => {
       <Page.Body>
         <POSMenuForm
           id="pos-catalog-form"
+          franchisorId={franchisorId}
           onSubmit={(data) => create(data as any)}
         />
       </Page.Body>

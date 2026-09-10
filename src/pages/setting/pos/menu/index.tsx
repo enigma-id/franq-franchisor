@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useOutlet } from "@/services/outlet/hooks";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/menu.config";
@@ -10,12 +9,12 @@ import { usePOSMenu } from "@/services/pos/hooks";
 import type { POSMenuDetail } from "@/services/types";
 import { Button, Modal, useEnigmaUI } from "@/components";
 import { Plus } from "lucide-react";
-import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
 const POSMenuListPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.posMenu);
   const {
@@ -29,96 +28,29 @@ const POSMenuListPage: React.FC = () => {
   const { isSuccess: isActivateSuccess } = activateResult;
   const { isSuccess: isDeactivateSuccess } = deactivateResult;
 
+  // Mode scoped per brand: dipanggil dari tab Franchise (?franchisor_id=&back=).
+  // Tanpa param → perilaku lama (scope session user, kembali ke halaman ini).
+  const franchisorId = searchParams.get("franchisor_id") ?? undefined;
+  const back = searchParams.get("back") ?? "/setting/pos/menu";
+  const ctxQuery = franchisorId
+    ? `?franchisor_id=${encodeURIComponent(franchisorId)}&back=${encodeURIComponent(back)}`
+    : "";
+
   const tableConfig = useMemo(
     () =>
       createTableConfig({
         onClick: (row) => navigate(`/setting/pos/menu/${row.id}`),
-        onEdit: (row) => navigate(`/setting/pos/menu/update/${row.id}`),
+        onEdit: (row) =>
+          navigate(`/setting/pos/menu/update/${row.id}${ctxQuery}`),
         onRemove: (v) => {
           openDelete(v);
         },
-        onOutletType: (row, ot) => {
-          if (ot) {
-            openOutletNames(row, ot);
-          } else {
-            openOutletType(row);
-          }
-        },
         onToggleActive: (row) => handleToggleActive(row),
+        filter: franchisorId ? { franchisor_id: franchisorId } : undefined,
         canManage,
       }),
-    [navigate, activate, deactivate, canManage],
+    [navigate, activate, deactivate, canManage, franchisorId, ctxQuery],
   );
-
-  const { get: getOutlets } = useOutlet();
-
-  const openOutletNames = async (_row: any, outletType: any) => {
-    const typeId = outletType.outlet_type?.id || outletType.outlet_type_id;
-    if (!typeId) return;
-
-    const res = await getOutlets({ outlet_type_id: typeId, limit: 100 });
-    const outlets = (res as any)?.data ?? [];
-
-    openModal({
-      id: "outlet-names",
-      content: (
-        <Modal.Wrapper open onClose={() => closeModal("outlet-names")}>
-          <Modal.Header>
-            <div className="font-bold leading-7">
-              {outletType.outlet_type?.name || "Outlet"}
-            </div>
-            <div className="text-xs text-slate-500 font-normal mt-1">
-              Outlet dengan tipe ini
-            </div>
-          </Modal.Header>
-          <Modal.Body className="max-h-[60vh] overflow-y-auto p-5">
-            {outlets.length === 0 ? (
-              <div className="text-center py-10 text-sm text-slate-400">
-                Tidak ada outlet
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {outlets.map((o: any) => (
-                  <div
-                    key={o.id}
-                    className="p-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700"
-                  >
-                    {o.name}
-                  </div>
-                ))}
-              </div>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              className="flex-1 rounded-xl"
-              styleType="outline"
-              variant="secondary"
-              onClick={() => closeModal("outlet-names")}
-            >
-              Tutup
-            </Button>
-          </Modal.Footer>
-        </Modal.Wrapper>
-      ),
-    });
-  };
-
-  const openOutletType = (row: POSMenuDetail) => {
-    openModal({
-      id: "assign-outlet-menu",
-      content: (
-        <AssignOutletTypeModal
-          catalog={row}
-          onClose={() => closeModal("assign-outlet-menu")}
-          onSuccess={() => {
-            closeModal("assign-outlet-menu");
-            Table.boot();
-          }}
-        />
-      ),
-    });
-  };
 
   const handleToggleActive = (v: any) => {
     if (v.is_active) {
@@ -220,7 +152,7 @@ const POSMenuListPage: React.FC = () => {
           canManage && (
             <Button
               variant="primary"
-              onClick={() => navigate("/setting/pos/menu/create")}
+              onClick={() => navigate(`/setting/pos/menu/create${ctxQuery}`)}
             >
               <Plus size={18} />
               Tambah Menu

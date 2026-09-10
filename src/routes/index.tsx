@@ -3,7 +3,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UnauthorizedLayout } from "@/components/app/route-layout/UnauthorizedLayout";
 import { AuthorizedLayout } from "@/components/app/route-layout/AuthorizedLayout";
-import { PermissionGuard, SuperuserGuard, MitraAccessGuard, NonSuperuserGuard } from "@/components/app";
+import {
+  PermissionGuard,
+  SuperuserGuard,
+  MitraAccessGuard,
+  NonSuperuserGuard,
+} from "@/components/app";
 import { MENU } from "@/utils/permissions";
 import { useAppSelector, useAppMetadata } from "@/hooks";
 import { useAuth } from "@/services/auth/hooks";
@@ -43,10 +48,10 @@ import PurchaseOrderCreatePage from "@/pages/purchase/order/purchaseOrderCreate"
 import PurchaseOrderUpdatePage from "@/pages/purchase/order/purchaseOrderUpdate";
 import PurchaseOrderDetailPage from "@/pages/purchase/order/purchaseOrderDetail";
 
-import SalesOrderListPage from "@/pages/sales/order";
-import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
-import SalesOrderUpdatePage from "@/pages/sales/order/salesOrderUpdate";
-import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
+import SalesOrderListPage from "@/pages/central-kitchen";
+import SalesOrderCreatePage from "@/pages/central-kitchen/create";
+import SalesOrderUpdatePage from "@/pages/central-kitchen/update";
+import SalesOrderDetailPage from "@/pages/central-kitchen/detail";
 
 // ==== REPORT B2B ===== //
 import B2BProductItemPage from "@/pages/report/b2b/productItem";
@@ -144,10 +149,7 @@ export function AppRoutes() {
         }
       >
         {/* Root "/" → redirect ke route pertama yang diizinkan (bukan selalu /dashboard). */}
-        <Route
-          path='/'
-          element={<FirstAllowedRedirect />}
-        />
+        <Route path='/' element={<FirstAllowedRedirect />} />
 
         {/* Dashboard */}
         <Route
@@ -294,12 +296,14 @@ export function AppRoutes() {
           }
         />
 
-        {/* Purchase - Supplier */}
+        {/* Purchase - Supplier (khusus superuser) */}
         <Route
           path='/purchase/supplier'
           element={
             <PermissionGuard permission={MENU.supplier}>
-              <SupplierListPage />
+              <SuperuserGuard>
+                <SupplierListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -307,7 +311,9 @@ export function AppRoutes() {
           path='/purchase/supplier/create'
           element={
             <PermissionGuard permission={MENU.supplier}>
-              <SupplierCreatePage />
+              <SuperuserGuard>
+                <SupplierCreatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -315,17 +321,21 @@ export function AppRoutes() {
           path='/purchase/supplier/update/:id'
           element={
             <PermissionGuard permission={MENU.supplier}>
-              <SupplierUpdatePage />
+              <SuperuserGuard>
+                <SupplierUpdatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
 
-        {/* Purchase - Order */}
+        {/* Purchase - Order (khusus superuser) */}
         <Route
           path='/purchase/order'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderListPage />
+              <SuperuserGuard>
+                <PurchaseOrderListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -333,7 +343,9 @@ export function AppRoutes() {
           path='/purchase/order/create'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderCreatePage />
+              <SuperuserGuard>
+                <PurchaseOrderCreatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -341,7 +353,9 @@ export function AppRoutes() {
           path='/purchase/order/:id'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderDetailPage />
+              <SuperuserGuard>
+                <PurchaseOrderDetailPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -349,22 +363,26 @@ export function AppRoutes() {
           path='/purchase/order/update/:id'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderUpdatePage />
+              <SuperuserGuard>
+                <PurchaseOrderUpdatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
 
-        {/* Sales - Order */}
+        {/* Central Kitchen (Sales Order) — khusus superuser */}
         <Route
-          path='/sales/order'
+          path='/central-kitchen'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
-              <SalesOrderListPage />
+              <SuperuserGuard>
+                <SalesOrderListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
         <Route
-          path='/sales/order/create'
+          path='/central-kitchen/create'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
               <SuperuserGuard>
@@ -374,7 +392,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path='/sales/order/update/:id'
+          path='/central-kitchen/update/:id'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
               <SuperuserGuard>
@@ -384,10 +402,12 @@ export function AppRoutes() {
           }
         />
         <Route
-          path='/sales/order/:id'
+          path='/central-kitchen/:id'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
-              <SalesOrderDetailPage />
+              <SuperuserGuard>
+                <SalesOrderDetailPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />

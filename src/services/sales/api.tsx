@@ -69,7 +69,26 @@ export const salesApi = createApi({
       }),
     }),
 
+    /** PUT /sales/order/item/:id - Fulfill sales order item */
+    fulfillSalesOrderItem: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/order/item/${id}`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    /** PUT /sales/order/:id/complete - Complete sales order */
+    completeSalesOrder: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/sales/order/${id}/complete`,
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
   }),
+
 });
 
 export const {
@@ -80,4 +99,6 @@ export const {
   usePublishSalesOrderMutation,
   usePaidSalesOrderMutation,
   useCancelSalesOrderMutation,
+  useFulfillSalesOrderItemMutation,
+  useCompleteSalesOrderMutation,
 } = salesApi;

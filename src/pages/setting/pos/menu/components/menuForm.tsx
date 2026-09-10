@@ -37,6 +37,8 @@ const addonTypeOptions: SelectOptionValue[] = [
 interface POSMenuFormProps {
   id?: string;
   initialData?: Partial<POSMenuDetail>;
+  /** Scope brand (dari ?franchisor_id). Mengisi payload saat create & mem-filter pilihan. */
+  franchisorId?: string;
   onSubmit: (data: POSMenuCreateRequest) => void;
 }
 
@@ -68,6 +70,7 @@ interface POSAddonGroupForm {
 export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   id = "pos-catalog-form",
   initialData,
+  franchisorId,
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
@@ -195,9 +198,14 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               })),
             }))
         : [],
-    };
+    } as POSMenuCreateRequest;
 
-    onSubmit(payload as unknown as POSMenuCreateRequest);
+    // Create utk brand tertentu (superuser dari halaman Franchise).
+    if (franchisorId && !initialData) {
+      payload.franchisor_id = franchisorId;
+    }
+
+    onSubmit(payload);
   };
 
   const handleChannelActiveToggle = (index: number, active: boolean) => {
@@ -424,7 +432,11 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                   label="Kategori"
                   required
                   hook={categoriesResult as any}
-                  fetchData={(page, search) => getCategories({ page, search })}
+                  fetchData={(page, search) =>
+                    franchisorId
+                      ? getCategories({ page, search, franchisor_id: franchisorId })
+                      : getCategories({ page, search })
+                  }
                   getLabel={(item: any) => item?.name}
                   renderItem={(item: any) => item?.name}
                   value={category}
@@ -683,12 +695,20 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                               value={opt.addon_menu}
                               hook={menusResult as any}
                               fetchData={(page, search) =>
-                                getMenus({
-                                  page,
-                                  search,
-                                  addons: "yes",
-                                  is_active: true,
-                                })
+                                franchisorId
+                                  ? getMenus({
+                                      page,
+                                      search,
+                                      addons: "yes",
+                                      is_active: true,
+                                      franchisor_id: franchisorId,
+                                    })
+                                  : getMenus({
+                                      page,
+                                      search,
+                                      addons: "yes",
+                                      is_active: true,
+                                    })
                               }
                               getLabel={(item: any) => item?.name || ""}
                               getValue={(item: any) => item?.id}
@@ -780,7 +800,9 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                             required
                             hook={catalogResult as any}
                             fetchData={(page, search) =>
-                              getCatalog({ page, search })
+                              franchisorId
+                                ? getCatalog({ page, search, franchisor_id: franchisorId })
+                                : getCatalog({ page, search })
                             }
                             getLabel={(it: any) => it?.name}
                             getValue={(cat: any) => cat?.id}

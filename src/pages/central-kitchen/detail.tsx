@@ -3,16 +3,21 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Page } from "@/components/app/layout";
-import { Loading, Button, Badge, Modal, Dropdown } from "@/components/ui";
+import {
+  Loading,
+  Button,
+  Badge,
+  Modal,
+  Dropdown,
+  Input,
+} from "@/components/ui";
 import { useSalesOrder } from "@/services/sales/hooks";
 import { useEnigmaUI } from "@/components";
-import {
-  formatCurrency,
-  formatDate,
-  formatDateTime,
-  getStatusVariant,
-} from "@/utils";
-import type { SalesOrderDetail } from "@/services/types/sales";
+import { formatDate, formatDateTime, getStatusVariant } from "@/utils";
+import type {
+  SalesOrderDetail,
+  SalesOrderItemDetail,
+} from "@/services/types/sales";
 import { useSalesOrderGuards } from "@/hooks";
 import { useCan, useIsSuperuser } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
@@ -22,20 +27,21 @@ import {
   Hash,
   AlertCircle,
   ListOrdered,
-  CreditCard,
-  Trash2,
   CornerDownRight,
   Edit,
   Send,
   Printer,
   MoreVertical,
   Wheat,
+  CheckCircle2,
+  BadgeCheck,
+  Trash2,
 } from "lucide-react";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import Plan from "@/components/app/print/production-label";
 import ProductionPlanThermalPrint from "@/components/app/print/production-plan";
 
-export default function SalesOrderDetailPage() {
+export default function CentralKitchenDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
@@ -45,8 +51,10 @@ export default function SalesOrderDetailPage() {
     showResult,
     publish,
     publishResult,
-    paid,
-    paidResult,
+    fulfill,
+    fulfillResult,
+    complete,
+    completeResult,
     remove,
     removeResult,
   } = useSalesOrder();
@@ -56,12 +64,24 @@ export default function SalesOrderDetailPage() {
   const isLoading = showResult?.isLoading || showResult?.isFetching;
 
   const [confirmModal, setConfirmModal] = useState<{
-    type: "publish" | "paid" | "delete";
+    type: "complete" | "delete";
     title: string;
     message: string;
     onConfirm: (v?: any) => void;
     variant: "primary" | "error";
   } | null>(null);
+
+  /** Item yang sedang di-proses "Selesai Produksi" beserta qty input-nya. */
+  const [fulfillItem, setFulfillItem] = useState<SalesOrderItemDetail | null>(
+    null,
+  );
+  const [fulfillQty, setFulfillQty] = useState<string>("");
+
+  /** Sisa qty yang belum fulfilled pada sebuah item. */
+  const remainingQty = (item: SalesOrderItemDetail | null) => {
+    if (!item) return 0;
+    return (item.quantity_ordered || 0) - (item.quantity_fulfilled || 0);
+  };
 
   const guards = useSalesOrderGuards(order);
   const canManage = useCan(ACTION.salesOrder);
@@ -121,35 +141,9 @@ export default function SalesOrderDetailPage() {
   }, [id, show]);
 
   useEffect(() => {
-    if (paidResult.isSuccess) {
-      showToast({
-        message: "Pembayaran berhasil",
-        type: "success",
-        position: "bottom-center",
-      });
-      setConfirmModal(null);
-      if (id) show({ id });
-      paidResult.reset?.();
-    }
-  }, [paidResult.isSuccess, id, show, paidResult, showToast]);
-
-  useEffect(() => {
-    if (removeResult.isSuccess) {
-      showToast({
-        message: "Sales order berhasil dihapus",
-        type: "success",
-        position: "bottom-center",
-      });
-      setConfirmModal(null);
-      removeResult.reset?.();
-      navigate("/sales/order");
-    }
-  }, [removeResult.isSuccess, navigate, removeResult, showToast]);
-
-  useEffect(() => {
     if (publishResult.isSuccess) {
       showToast({
-        message: "Sales order berhasil diterbitkan",
+        message: "Order berhasil diterbitkan",
         type: "success",
         position: "bottom-center",
       });
@@ -159,6 +153,46 @@ export default function SalesOrderDetailPage() {
     }
   }, [publishResult.isSuccess, id, show, publishResult, showToast]);
 
+  useEffect(() => {
+    if (fulfillResult.isSuccess) {
+      showToast({
+        message: "Produksi berhasil diselesaikan",
+        type: "success",
+        position: "bottom-center",
+      });
+      setFulfillItem(null);
+      setFulfillQty("");
+      if (id) show({ id });
+      fulfillResult.reset?.();
+    }
+  }, [fulfillResult.isSuccess, id, show, fulfillResult, showToast]);
+
+  useEffect(() => {
+    if (completeResult.isSuccess) {
+      showToast({
+        message: "Dokumen berhasil diselesaikan",
+        type: "success",
+        position: "bottom-center",
+      });
+      setConfirmModal(null);
+      if (id) show({ id });
+      completeResult.reset?.();
+    }
+  }, [completeResult.isSuccess, id, show, completeResult, showToast]);
+
+  useEffect(() => {
+    if (removeResult.isSuccess) {
+      showToast({
+        message: "Order berhasil dihapus",
+        type: "success",
+        position: "bottom-center",
+      });
+      setConfirmModal(null);
+      removeResult.reset?.();
+      navigate("/central-kitchen");
+    }
+  }, [removeResult.isSuccess, navigate, removeResult, showToast]);
+
   const handlePublish = async () => {
     if (id) {
       await publish({ id });
@@ -166,15 +200,30 @@ export default function SalesOrderDetailPage() {
     }
   };
 
-  const handlePaid = () => {
+  const openFulfillModal = (item: SalesOrderItemDetail) => {
+    setFulfillItem(item);
+    setFulfillQty(String(remainingQty(item)));
+  };
+
+  const handleConfirmFulfill = async () => {
+    if (!fulfillItem) return;
+
+    await fulfill({
+      id: fulfillItem.id,
+      payload: { quantity_fulfilled: Number(fulfillQty) },
+    });
+  };
+
+  /** Selesaikan dokumen central kitchen (PUT /sales/order/:id/complete). */
+  const handleCompleteDocument = () => {
     setConfirmModal({
-      type: "paid",
-      title: "Konfirmasi Pembayaran",
+      type: "complete",
+      title: "Selesaikan Dokumen",
       message:
-        "Apakah Anda yakin ingin memproses pembayaran untuk Sales Order ini?",
+        "Yakin ingin menyelesaikan dokumen central kitchen ini? Status dokumen akan menjadi completed.",
       variant: "primary",
       onConfirm: () => {
-        if (id) paid({ id });
+        if (id) complete({ id });
       },
     });
   };
@@ -182,9 +231,9 @@ export default function SalesOrderDetailPage() {
   const handleDelete = () => {
     setConfirmModal({
       type: "delete",
-      title: "Hapus Sales Order",
+      title: "Hapus Order",
       message:
-        "Apakah Anda yakin ingin menghapus Sales Order ini? Tindakan ini tidak dapat dibatalkan.",
+        "Apakah Anda yakin ingin menghapus Order ini? Tindakan ini tidak dapat dibatalkan.",
       variant: "error",
       onConfirm: () => {
         if (id) remove({ id });
@@ -216,7 +265,7 @@ export default function SalesOrderDetailPage() {
               </p>
               <Button
                 variant='primary'
-                onClick={() => navigate("/sales/order")}
+                onClick={() => navigate("/central-kitchen")}
               >
                 <ArrowLeft className='w-4 h-4 mr-2' />
                 Kembali
@@ -231,8 +280,8 @@ export default function SalesOrderDetailPage() {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Sales'
-        title='Sales Order Detail'
+        category='Produksi'
+        title='Detail Central Kitchen'
         backTo={() => navigate(-1)}
         action={
           <div className='flex gap-2'>
@@ -244,7 +293,9 @@ export default function SalesOrderDetailPage() {
                 {isSuperuser && guards.canEdit && (
                   <Button
                     variant='info'
-                    onClick={() => navigate(`/sales/order/update/${order?.id}`)}
+                    onClick={() =>
+                      navigate(`/central-kitchen/update/${order?.id}`)
+                    }
                     title='Edit'
                   >
                     <Edit className='w-4 h-4' />
@@ -260,14 +311,14 @@ export default function SalesOrderDetailPage() {
                     <Send className='w-4 h-4' />
                   </Button>
                 )}
-                {guards.canPay && (
+                {guards.canComplete && (
                   <Button
-                    variant='success'
-                    onClick={handlePaid}
-                    isLoading={paidResult.isLoading}
-                    title='Pay'
+                    variant='primary'
+                    onClick={handleCompleteDocument}
+                    isLoading={completeResult.isLoading}
+                    title='Selesaikan Dokumen'
                   >
-                    <CreditCard className='w-4 h-4' />
+                    <BadgeCheck className='w-4 h-4' />
                   </Button>
                 )}
                 {guards.canDelete && (
@@ -301,7 +352,7 @@ export default function SalesOrderDetailPage() {
                   <dt className='info-label'>Nama Outlet</dt>
                   <dd className='info-value'>
                     <span className='block'>
-                      {`${order?.franchisor.name} - ${order.outlet?.name}`}
+                      {`${order?.franchisor?.name ? order.franchisor.name + " - " : ""}${order?.outlet?.name ?? ""}`}
                     </span>
                   </dd>
                 </div>
@@ -358,7 +409,7 @@ export default function SalesOrderDetailPage() {
                 </dd>
               </div>
               <div className='info-row'>
-                <dt className='info-label'>Tanggal Kirim</dt>
+                <dt className='info-label'>Tanggal Produksi</dt>
                 <dd className='info-value'>
                   {formatDate(order.shipping_date)}
                 </dd>
@@ -376,19 +427,7 @@ export default function SalesOrderDetailPage() {
                 </dd>
               </div>
               <div className='info-row'>
-                <dt className='info-label'>Payment Status</dt>
-                <dd className='info-value'>
-                  <Badge
-                    variant={getStatusVariant(order.payment_status)}
-                    size='xs'
-                    className='px-2.5 font-semibold text-[10px] tracking-wider'
-                  >
-                    {order.payment_status?.toLowerCase()}
-                  </Badge>
-                </dd>
-              </div>
-              <div className='info-row'>
-                <dt className='info-label'>Fulfillment Status</dt>
+                <dt className='info-label'>Produksi Status</dt>
                 <dd className='info-value'>
                   <Badge
                     variant={getStatusVariant(order.fulfillment_status)}
@@ -398,6 +437,10 @@ export default function SalesOrderDetailPage() {
                     {order.fulfillment_status?.toLowerCase()}
                   </Badge>
                 </dd>
+              </div>
+              <div className='info-row'>
+                <dt className='info-label'>Dibuat Oleh</dt>
+                <dd className='info-value'>{order.created_by}</dd>
               </div>
             </dl>
           </div>
@@ -434,12 +477,6 @@ export default function SalesOrderDetailPage() {
                   </th>
                   <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     Qty Fulfil
-                  </th>
-                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
-                    Harga
-                  </th>
-                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
-                    Total
                   </th>
                   <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'></th>
                 </tr>
@@ -494,15 +531,17 @@ export default function SalesOrderDetailPage() {
                           )}
                         </td>
                         <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
-                          {item.quantity_fulfilled}
-                        </td>
-                        <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
-                          {formatCurrency(item.unit_nett || 0)}
-                        </td>
-                        <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
-                          {formatCurrency(
-                            (item.unit_nett || 0) *
-                              (item.quantity_ordered || 0),
+                          {item.quantity_fulfilled > 0 ? (
+                            <>
+                              {item.quantity_fulfilled}{" "}
+                              <span className='text-[12px] text-slate-400'>
+                                {item.fraction?.name ||
+                                  item.item?.default_fraction ||
+                                  "PCS"}
+                              </span>
+                            </>
+                          ) : (
+                            "-"
                           )}
                         </td>
                         <td className='px-4 py-3 align-middle text-right'>
@@ -515,6 +554,28 @@ export default function SalesOrderDetailPage() {
                             position='end'
                             contentClassName='dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2 text-left'
                           >
+                            {canManage &&
+                              order?.document_status === "published" &&
+                              remainingQty(item) > 0 && (
+                                <Dropdown.Item
+                                  onSelect={() => openFulfillModal(item)}
+                                  className='hover:bg-emerald-50 hover:text-emerald-600'
+                                >
+                                  <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700 w-full text-left'>
+                                    <div className='w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600'>
+                                      <CheckCircle2 className='w-4 h-4' />
+                                    </div>
+                                    <div className='flex flex-col items-start leading-tight'>
+                                      <span className='font-bold text-[13px]'>
+                                        Selesai Produksi
+                                      </span>
+                                      <span className='text-[11px] text-slate-400'>
+                                        Masukkan qty produksi
+                                      </span>
+                                    </div>
+                                  </button>
+                                </Dropdown.Item>
+                              )}
                             <Dropdown.Item
                               onSelect={() => handleOpenPrintItem(item, "roti")}
                               className='hover:bg-amber-50 hover:text-amber-600'
@@ -610,34 +671,6 @@ export default function SalesOrderDetailPage() {
                 {order.note || "-"}
               </p>
             </div>
-            <div className='md:w-80 space-y-2'>
-              <div className='flex justify-between text-sm'>
-                <span className='text-slate-600'>Subtotal</span>
-                <span className='font-semibold text-slate-800 mono'>
-                  {formatCurrency(order.subtotal_nett || 0)}
-                </span>
-              </div>
-              <div className='flex justify-between text-sm'>
-                <span className='text-slate-600'>Shipping Charges</span>
-                <span className='font-semibold text-slate-800 mono'>
-                  {formatCurrency(order.shipping_charges || 0)}
-                </span>
-              </div>
-              <div className='flex justify-between text-sm'>
-                <span className='text-slate-600'>Tax</span>
-                <span className='font-semibold text-slate-800 mono'>
-                  {formatCurrency(order.subtotal_tax || 0)}
-                </span>
-              </div>
-              <div className='flex justify-between text-sm pt-2 border-t border-slate-200'>
-                <span className='text-base font-bold text-slate-800'>
-                  Total Bill
-                </span>
-                <span className='text-base font-bold text-slate-900 mono'>
-                  {formatCurrency(order.total_charges || 0)}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </Page.Body>
@@ -659,7 +692,52 @@ export default function SalesOrderDetailPage() {
               }
             }}
             variant={confirmModal?.variant === "error" ? "error" : "primary"}
-            isLoading={paidResult.isLoading || removeResult.isLoading}
+            isLoading={completeResult.isLoading || removeResult.isLoading}
+          >
+            Konfirmasi
+          </Button>
+        </Modal.Footer>
+      </Modal.Wrapper>
+
+      {/* Modal Selesai Produksi — input qty per item */}
+      <Modal.Wrapper
+        open={!!fulfillItem}
+        onClose={() => setFulfillItem(null)}
+        closeOnOutsideClick={false}
+      >
+        <Modal.Header>
+          <div className='font-bold leading-7'>Selesai Produksi</div>
+        </Modal.Header>
+        <Modal.Body className='text-sm font-normal leading-5 space-y-4'>
+          <p>
+            Masukkan jumlah produksi untuk{" "}
+            <strong>
+              {fulfillItem?.catalog?.name || fulfillItem?.item?.name || "-"}
+            </strong>
+            . Sisa qty: {remainingQty(fulfillItem)}.
+          </p>
+          <Input
+            type='number'
+            label='Quantity Produksi'
+            value={fulfillQty}
+            min={1}
+            placeholder='0'
+            onChange={(e) => setFulfillQty(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className='flex-1 rounded-xl'
+            variant='default'
+            onClick={() => setFulfillItem(null)}
+          >
+            Batal
+          </Button>
+          <Button
+            className='flex-1 rounded-xl'
+            variant='primary'
+            onClick={handleConfirmFulfill}
+            isLoading={fulfillResult.isLoading}
           >
             Konfirmasi
           </Button>

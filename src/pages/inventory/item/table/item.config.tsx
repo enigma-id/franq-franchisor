@@ -58,6 +58,13 @@ const createTableConfig = ({
         </div>
       ),
     },
+    franchisor_id: {
+      title: "Franchise",
+      sortable: true,
+      component: (row: InventoryItemDetail) => (
+        <span className='text-sm text-gray-600'>{row?.franchisor?.name}</span>
+      ),
+    },
     type: {
       title: "Tipe",
       sortable: true,

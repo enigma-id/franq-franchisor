@@ -41,10 +41,8 @@ export function InventoryCatalogForm({
     useInventoryItem();
   const { show: getItemFractions, showResult: itemFractionsResult } =
     useItemFractions();
-  const {
-    get: getFranchisors,
-    getResult: franchisorsResult,
-  } = useFranchisorList();
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
 
   // Mode create = belum ada initialData (update tidak bisa ganti franchisor).
   const isCreateMode = !initialData;
@@ -344,16 +342,14 @@ export function InventoryCatalogForm({
 
       {/* Select Franchise — khusus superuser saat create */}
       {isSuperuser && isCreateMode && (
-        <div className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm'>
+        <div className='bg-white border border-slate-200 rounded-xl p-5 shadow-sm overflow-visible relative z-30'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <RemoteSelect
               label='Franchise'
               placeholder='Pilih Franchise...'
               value={franchise}
               hook={franchisorsResult as any}
-              fetchData={(page, search) =>
-                getFranchisors({ page, search })
-              }
+              fetchData={(page, search) => getFranchisors({ page, search })}
               getLabel={(item: any) => item?.name || ""}
               renderItem={(item: any) =>
                 item
@@ -361,7 +357,26 @@ export function InventoryCatalogForm({
                   : ""
               }
               getValue={(item: any) => item?.id}
-              onChange={(item: any) => setFranchise(item)}
+              onChange={(item: any) => {
+                setFranchise(item);
+                // Reset item/fraction selection karena item tergantung franchise.
+                setSingularItem(null);
+                setSingularFraction(null);
+                setBundleItems((prev) =>
+                  prev.map((b) => ({
+                    ...b,
+                    itemSelected: null,
+                    fractionSelected: null,
+                    item_id: "",
+                    fraction_id: "",
+                  })),
+                );
+                setFormData((prev) => ({
+                  ...prev,
+                  item_id: "",
+                  fraction_id: "",
+                }));
+              }}
               onClear={() => setFranchise(null)}
               required
               error={FormState?.errors?.franchisor_id as string}
@@ -510,6 +525,7 @@ export function InventoryCatalogForm({
                         search,
                         status: "active",
                         in_catalog: false,
+                        franchisor_id: franchise?.id || undefined,
                       })
                     }
                     getLabel={(item: any) =>
@@ -520,6 +536,7 @@ export function InventoryCatalogForm({
                     onClear={handleSingularItemClear}
                     required
                     error={FormState?.errors?.item_id as string}
+                    watchKey={franchise?.id}
                   />
                   <RemoteSelect
                     label='Satuan Barang (Fraction)'
@@ -645,6 +662,7 @@ export function InventoryCatalogForm({
                                   page,
                                   search,
                                   status: "active",
+                                  franchisor_id: franchise?.id || undefined,
                                 })
                               }
                               getLabel={(it: any) => it?.alias_name || it?.name}

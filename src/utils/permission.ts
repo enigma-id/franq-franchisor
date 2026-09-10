@@ -156,7 +156,6 @@ import type { User } from "@/services/types/auth";
 export const ROUTE_BY_PERMISSION: Array<{ slug: MenuSlug; path: string }> = [
   { slug: MENU.dashboard, path: "/dashboard" },
   { slug: MENU.b2bOrder, path: "/b2b/order" },
-  { slug: MENU.salesOrder, path: "/sales/order" },
   { slug: MENU.withdrawal, path: "/withdrawal" },
   { slug: MENU.outletTopup, path: "/outlet-topup" },
   { slug: MENU.inventoryItem, path: "/inventory/item" },

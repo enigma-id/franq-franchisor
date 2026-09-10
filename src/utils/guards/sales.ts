@@ -39,3 +39,13 @@ export const canDeleteSo = (so: SalesOrderDetail): boolean => {
 export const canPaySo = (so: SalesOrderDetail): boolean => {
   return so.payment_status === "unpaid";
 };
+
+/**
+ * Validates if a Sales Order can be marked fulfilled (complete).
+ * Hanya order yang sudah published dan fulfillment belum selesai.
+ */
+export const canCompleteSo = (so: SalesOrderDetail): boolean => {
+  return (
+    so.document_status === "published" && so.fulfillment_status !== "fulfilled"
+  );
+};
