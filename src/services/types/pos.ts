@@ -5,26 +5,6 @@
 
 // ── POS Menu ──
 
-export interface POSChannelPriceRequest {
-  pos_channel_id: string;
-  price: number;
-}
-
-export interface POSIngredientRequest {
-  catalog_id: string;
-  porsi: number;
-}
-
-export interface POSAddonItemRequest {
-  addon_menu_id: string;
-}
-
-export interface POSAddonGroupRequest {
-  name: string;
-  type: "options" | "checkbox" | "quantity";
-  items: POSAddonItemRequest[];
-}
-
 export interface POSChannelPrice {
   id: string;
   menu_id: string;
@@ -110,22 +90,6 @@ export interface POSMenuBase {
   is_additional: boolean;
 }
 
-export interface POSMenuCreateRequest extends POSMenuBase {
-  channel_prices: POSChannelPriceRequest[];
-  ingredients: POSIngredientRequest[];
-  addon_groups?: POSAddonGroupRequest[];
-  /** Diisi superuser saat create utk brand tertentu (backend menerima franchisor_id di POST). */
-  franchisor_id?: string;
-}
-
-export interface POSMenuUpdateRequest extends Partial<POSMenuCreateRequest> {
-  id?: string;
-}
-
-export interface POSMenuTypesUpdateRequest {
-  outlet_type_ids: string[];
-}
-
 export interface POSMenuDetail extends POSMenuBase {
   id: string;
   code: string;
@@ -194,12 +158,6 @@ export interface POSChannelBase {
   name: string;
   code: string;
 }
-
-export interface POSChannelCreateRequest extends POSChannelBase {
-  is_active: boolean;
-}
-
-export type POSChannelUpdateRequest = Partial<POSChannelCreateRequest>;
 
 export interface POSChannelDetail extends POSChannelBase {
   id: string;

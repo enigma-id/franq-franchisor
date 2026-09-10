@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useMemo, useState } from "react";
 
 import { RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import TableFilters from "@/components/ui/table/filter";
+import { useFranchisorList } from "@/services/franchisor/hooks";
+import { useIsSuperuser } from "@/utils/permission";
 
 interface TableFilterProps {
   table: {
@@ -33,20 +36,47 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       : null;
   });
 
+  // ── Franchise (khusus superuser) ──
+  const isSuperuser = useIsSuperuser();
+  const { get: getFranchisors, getResult: getFranchisorsResult } =
+    useFranchisorList();
+  const [franchise, setFranchise] = useState<any | null>(null);
+
+  useEffect(() => {
+    getFranchisors({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    if (current.franchisor_id && getFranchisorsResult?.data?.data) {
+      const franchisors = getFranchisorsResult.data.data as any[];
+      const found = franchisors.find(
+        (c: any) => c.id === current.franchisor_id,
+      );
+      if (found) setFranchise(found);
+    } else if (!current.franchisor_id) {
+      setFranchise(null);
+    }
+  }, [current.franchisor_id, getFranchisorsResult?.data?.data]);
+
   const buildFilters = () => ({
     is_active: isActive?.value ?? "",
+    franchisor_id: franchise?.id ?? "",
   });
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
-    return (f.is_active || "") !== (current.is_active || "");
-  }, [isActive, current]);
+    return (
+      (f.is_active || "") !== (current.is_active || "") ||
+      (f.franchisor_id || "") !== (current.franchisor_id || "")
+    );
+  }, [isActive, franchise, current]);
 
-  const anyActive = !!current.is_active;
+  const anyActive = !!(current.is_active || current.franchisor_id);
 
   const handleClear = () => {
     setIsActive(null);
-    table.filter({ is_active: "" });
+    setFranchise(null);
+    table.filter({ is_active: "", franchisor_id: "" });
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -69,6 +99,23 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
+
+        {isSuperuser && (
+          <RemoteSelect
+            label="Franchise"
+            placeholder="Filter Franchise"
+            value={franchise}
+            onChange={(val) => setFranchise(val)}
+            onClear={() => setFranchise(null)}
+            fetchData={(page, search) =>
+              getFranchisors({ page: page || 1, limit: 20, search })
+            }
+            hook={getFranchisorsResult as any}
+            getLabel={(item: any) => item?.name ?? ""}
+            renderItem={(item: any) => item?.name}
+            getValue={(item: any) => item.id}
+          />
+        )}
       </div>
     </TableFilters>
   );

@@ -65,6 +65,15 @@ const createTableConfig = ({
         </div>
       ),
     },
+    franchisor_id: {
+      title: "Franchise",
+      sortable: true,
+      component: (row: B2BOrderDetail) => (
+        <span className='text-sm text-gray-600'>
+          {row?.franchisor?.name || "-"}
+        </span>
+      ),
+    },
     document_status: {
       title: "Status",
       sortable: true,

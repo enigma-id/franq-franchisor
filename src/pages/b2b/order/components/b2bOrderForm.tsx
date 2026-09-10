@@ -5,10 +5,12 @@ import { Trash2, Plus, ShoppingBag, Percent } from "lucide-react";
 import { Input, RemoteSelect, DatePicker, Button, Checkbox } from "@/components/ui";
 import { usePOSMenu, usePOSChannel } from "@/services/pos/hooks";
 import { useCustomer } from "@/services/customer/hooks";
+import { useFranchisorList } from "@/services/franchisor/hooks";
+import { useIsSuperuser } from "@/utils/permission";
 import { useAppSelector } from "@/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { currencyFormat } from "@/utils";
-import type { B2BOrderDetail } from "@/services/types";
+import type { B2BOrderDetail, FranchisorRow } from "@/services/types";
 
 type B2BOrderItemForm = {
   menuSelected: unknown;
@@ -19,6 +21,7 @@ type B2BOrderItemForm = {
 };
 
 type B2BOrderFormData = {
+  franchisor_id: string;
   customer_id: string;
   customer_name: string;
   customer_phone: string;
@@ -52,13 +55,22 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
+  const isSuperuser = useIsSuperuser();
   const { get: getMenus, getResult: menusResult, getPrices, getPricesResult } = usePOSMenu();
   const { get: getChannels, getResult: channelsResult } = usePOSChannel();
   const { get: getCustomers, getResult: customersResult } = useCustomer();
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
 
+  // Mode create → superuser wajib memilih brand (backend menolak bila kosong).
+  const isCreateMode = !initialData;
+  const needsFranchise = isSuperuser && isCreateMode;
+
+  const [franchise, setFranchise] = useState<FranchisorRow | null>(null);
   const [customerSelected, setCustomerSelected] = useState<RemoteOption | null>(null);
 
   const [formData, setFormData] = useState<B2BOrderFormData>({
+    franchisor_id: "",
     customer_id: "",
     customer_name: "",
     customer_phone: "",
@@ -127,6 +139,7 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
       }
 
       setFormData({
+        franchisor_id: (initialData as any)?.franchisor_id ?? "",
         customer_id: (initialData as any)?.customer_id ?? "",
         customer_name: initialData?.customer_name || "",
         customer_phone: initialData?.customer_phone || "",
@@ -277,6 +290,29 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
     });
   };
 
+  // Ganti franchise → reset customer & daftar menu (data tergantung brand).
+  const handleFranchiseChange = (item: FranchisorRow | null) => {
+    setFranchise(item);
+    setCustomerSelected(null);
+    setFormData((prev) => ({
+      ...prev,
+      franchisor_id: item?.id ?? "",
+      customer_id: "",
+      customer_name: "",
+      customer_phone: "",
+      customer_address: "",
+      items: [
+        {
+          menuSelected: null,
+          menu_id: "",
+          menu_name: "",
+          quantity: 1,
+          unit_price: 0,
+        },
+      ],
+    }));
+  };
+
   // Pilih customer dari master → isi snapshot (nama/telepon/alamat) & customer_id.
   // Saat create, backend menimpa snapshot dari master bila customer_id dikirim,
   // jadi setelah pilih, field snapshot dibuat read-only.
@@ -324,6 +360,13 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
       items,
     };
 
+    // franchisor_id hanya relevan saat create oleh superuser; selain itu pakai session.
+    if (needsFranchise) {
+      payload.franchisor_id = franchise?.id || undefined;
+    } else {
+      delete payload.franchisor_id;
+    }
+
     // Backend update B2B tidak menerima customer_id → hanya kirim saat create.
     if (initialData) {
       delete payload.customer_id;
@@ -354,6 +397,32 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
           <ShoppingBag size={16} className="text-primary" />
           Detail Order
         </h3>
+
+        {/* Select Franchise — khusus superuser saat create */}
+        {needsFranchise && (
+          <div className="mb-6 max-w-md">
+            <RemoteSelect<FranchisorRow>
+              label="Franchise"
+              required
+              placeholder="Pilih Franchise..."
+              value={franchise}
+              hook={franchisorsResult as any}
+              fetchData={(page, search) => getFranchisors({ page, search })}
+              getLabel={(item: any) => item?.name || ""}
+              renderItem={(item: any) =>
+                item
+                  ? `${item.name} (${item.type === "mitra" ? "Mitra" : "Outlet"})`
+                  : ""
+              }
+              onChange={(item: FranchisorRow | null) =>
+                handleFranchiseChange(item)
+              }
+              onClear={() => handleFranchiseChange(null)}
+              error={FormState?.errors?.franchisor_id as string}
+            />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left: Customer info */}
           <div className="space-y-4">
@@ -363,7 +432,14 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               value={customerSelected}
               hook={customersResult as any}
               fetchData={(page, search) =>
-                getCustomers({ page, search, is_active: "true" })
+                getCustomers({
+                  page,
+                  search,
+                  is_active: "true",
+                  ...(formData.franchisor_id
+                    ? { franchisor_id: formData.franchisor_id }
+                    : {}),
+                })
               }
               getLabel={(item: any) => item?.name ?? ""}
               renderItem={(item: any) =>
@@ -372,6 +448,8 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
               getValue={(item: any) => item?.id}
               onChange={(item: any) => handleCustomerChange(item)}
               onClear={handleCustomerClear}
+              disabled={needsFranchise && !formData.franchisor_id}
+              watchKey={formData.franchisor_id}
               error={
                 typeof FormState?.errors?.customer_id === "string"
                   ? FormState.errors.customer_id
@@ -489,13 +567,26 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
                         placeholder="Pilih Menu"
                         value={item.menuSelected}
                         hook={menusResult as any}
-                        fetchData={(page, search) => getMenus({ page, search, addons: "no", is_already_order: "true", is_active: "true" })}
+                        fetchData={(page, search) =>
+                          getMenus({
+                            page,
+                            search,
+                            addons: "no",
+                            is_already_order: "true",
+                            is_active: "true",
+                            ...(formData.franchisor_id
+                              ? { franchisor_id: formData.franchisor_id }
+                              : {}),
+                          })
+                        }
                         getLabel={(item: any) =>
                           item?.is_custom ? "{custom name}" : item?.name ?? ""
                         }
                         getValue={(item: any) => item?.id}
                         onChange={(item: any) => handleItemChange(idx, item)}
                         onClear={() => handleItemClear(idx)}
+                        disabled={needsFranchise && !formData.franchisor_id}
+                        watchKey={formData.franchisor_id}
                         required
                       />
                       {(item as any).menuSelected?.is_custom === true && (

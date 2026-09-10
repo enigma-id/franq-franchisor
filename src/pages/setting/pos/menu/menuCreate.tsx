@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Page } from "@/components/app/layout";
 import { POSMenuForm } from "./components/menuForm";
-import { usePOSMenu } from "@/services/pos/hooks";
+import { useProduct } from "@/services/product/hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Loading, useEnigmaUI } from "@/components";
 import { Save } from "lucide-react";
@@ -12,10 +12,10 @@ import { ACTION } from "@/utils/permissions";
 const POSMenuCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { create, createResult } = usePOSMenu();
+  const { create, createResult } = useProduct();
   const { isLoading: isCreating, isSuccess } = createResult;
   const { showToast } = useEnigmaUI();
-  const canManage = useCan(ACTION.posMenu);
+  const canManage = useCan(ACTION.product);
 
   // Scope brand: diisi saat create dari tab Franchise detail.
   const franchisorId = searchParams.get("franchisor_id") ?? undefined;

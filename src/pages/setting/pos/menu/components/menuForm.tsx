@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Input,
   Button,
@@ -8,25 +8,13 @@ import {
   Checkbox,
   ImageUpload,
 } from "@/components/ui";
-import {
-  usePOSCategory,
-  usePOSChannel,
-  usePOSMenu,
-} from "@/services/pos/hooks";
-import type {
-  POSMenuDetail,
-  POSMenuCreateRequest,
-  POSMenuBase,
-  POSChannelDetail,
-  POSCategoryDetail,
-} from "@/services/types/pos";
-import { Plus, Trash2, Layers, Info } from "lucide-react";
-import type { InventoryItemDetail } from "@/services/types";
+import { usePOSCategory, usePOSChannel, usePOSMenu } from "@/services/pos/hooks";
+import type { POSMenuDetail, POSChannelDetail, POSCategoryDetail } from "@/services/types/pos";
+import type { ProductCreateRequest } from "@/services/types/product";
+import { Plus, Trash2, Layers, Info, Wallet } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
-import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { useEnigmaUI } from "@/components";
-import clsx from "clsx";
 
 const addonTypeOptions: SelectOptionValue[] = [
   { label: "Quantity", value: "quantity" },
@@ -34,12 +22,32 @@ const addonTypeOptions: SelectOptionValue[] = [
   { label: "Options", value: "options" },
 ];
 
+type ProductFormState = Omit<
+  ProductCreateRequest,
+  "channel_prices" | "addon_groups" | "franchisor_id"
+>;
+
+interface POSAddonMenuOption {
+  id: string;
+  name: string;
+  base_price?: number;
+}
+
 interface POSMenuFormProps {
   id?: string;
-  initialData?: Partial<POSMenuDetail>;
+  /**
+   * Data menu dari detail aggregate (`{ item, catalog, menu }`), sudah di-merge
+   * dengan `unit_price`/`production_price` milik catalog oleh halaman update.
+   */
+  initialData?: Partial<POSMenuDetail> & {
+    unit_price?: number;
+    production_price?: number;
+  };
   /** Scope brand (dari ?franchisor_id). Mengisi payload saat create & mem-filter pilihan. */
   franchisorId?: string;
-  onSubmit: (data: POSMenuCreateRequest) => void;
+  /** Mode edit: `is_additional` dikunci (backend menolak perubahannya). */
+  isEdit?: boolean;
+  onSubmit: (data: ProductCreateRequest) => void;
 }
 
 interface POSFormChannelPrice {
@@ -48,16 +56,10 @@ interface POSFormChannelPrice {
   price: number;
 }
 
-interface POSIngredientForm {
-  catalog: InventoryItemDetail | null;
-  catalog_id: string;
-  porsi: number;
-}
-
 type POSAddonGroupType = "options" | "checkbox" | "quantity";
 
 interface POSAddonItemForm {
-  addon_menu: InventoryItemDetail | null;
+  addon_menu: POSAddonMenuOption | null;
   addon_menu_id: string;
 }
 
@@ -71,19 +73,21 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   id = "pos-catalog-form",
   initialData,
   franchisorId,
+  isEdit = false,
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
   const { get: getCategories, getResult: categoriesResult } = usePOSCategory();
   const { get: getChannels, getResult: channelsResult } = usePOSChannel();
-  const { get: getCatalog, getResult: catalogResult } = useInventoryCatalog();
   const { get: getMenus, getResult: menusResult } = usePOSMenu();
   const { showToast } = useEnigmaUI();
 
-  const [formData, setFormData] = useState<POSMenuBase>({
+  const [formData, setFormData] = useState<ProductFormState>({
     category_id: "",
     name: "",
     base_price: 0,
+    unit_price: 0,
+    production_price: 0,
     image: "",
     is_vatable: false,
     is_additional: false,
@@ -92,11 +96,16 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
   const [channel, setChannel] = useState<POSFormChannelPrice[]>([]);
   const [category, setCategory] = useState<POSCategoryDetail | null>(null);
 
-  const [ingredient, setIngredient] = useState<POSIngredientForm[]>([]);
-
   const [addGroup, setAddGroup] = useState<POSAddonGroupForm[]>([
     { name: "", type: "", items: [{ addon_menu: null, addon_menu_id: "" }] },
   ]);
+
+  /** Channel aktif = harga produksi diturunkan backend (tidak perlu diisi). */
+  const activeChannelCount = useMemo(
+    () => channel.filter((c) => c.is_active && c.channel?.id).length,
+    [channel],
+  );
+  const needsProductionPrice = !formData.is_additional && activeChannelCount > 1;
 
   useEffect(() => {
     getChannels({ status: "active" });
@@ -119,20 +128,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
 
   useEffect(() => {
     if (initialData) {
-      const newIng = (initialData.ingredients || []).map((item: any) => {
-        return {
-          catalog: item?.catalog,
-          catalog_id: item?.catalog_id,
-          porsi: item?.porsi,
-        };
-      });
-
-      setIngredient(newIng);
-
       setFormData({
         category_id: initialData.category_id ?? "",
         name: initialData.name ?? "",
         base_price: initialData.base_price ?? 0,
+        unit_price: initialData.unit_price ?? 0,
+        production_price: initialData.production_price ?? 0,
         image: initialData.image ?? "",
         is_vatable: initialData.is_vatable ?? false,
         is_additional: initialData.is_additional ?? false,
@@ -175,18 +176,23 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {
-      ...formData,
+    const payload: ProductCreateRequest = {
+      name: formData.name,
+      category_id: formData.category_id,
+      image: formData.image,
+      is_vatable: formData.is_vatable,
+      is_additional: formData.is_additional,
+      base_price: formData.base_price,
+      // Addon tidak punya catalog → unit_price diabaikan backend.
+      unit_price: formData.is_additional ? 0 : formData.unit_price,
+      // Channel tunggal → backend override dari harga channel; cukup kirim 0.
+      production_price: needsProductionPrice ? formData.production_price : 0,
       channel_prices: channel
         .filter((c) => c.is_active)
         .map((c) => ({
           pos_channel_id: c.channel?.id ?? "",
           price: c.price,
         })),
-      ingredients: ingredient.map((c) => ({
-        catalog_id: c.catalog?.id ?? "",
-        porsi: c.porsi,
-      })),
       addon_groups: !formData.is_additional
         ? addGroup
             .filter((group) => group.type !== "")
@@ -198,10 +204,10 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               })),
             }))
         : [],
-    } as POSMenuCreateRequest;
+    };
 
     // Create utk brand tertentu (superuser dari halaman Franchise).
-    if (franchisorId && !initialData) {
+    if (franchisorId && !isEdit) {
       payload.franchisor_id = franchisorId;
     }
 
@@ -356,29 +362,6 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
     });
   };
 
-  const updateIngredient = (
-    index: number,
-    field: keyof POSIngredientForm,
-    value: any,
-  ) => {
-    setIngredient((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
-
-  const addIngredient = () => {
-    setIngredient((prev) => [
-      ...prev,
-      { catalog: null, catalog_id: "", porsi: 0 },
-    ]);
-  };
-
-  const removeIngredient = (index: number) => {
-    setIngredient((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const getAddonError = (
     groupIndex: number,
     field: "name" | "type" | string,
@@ -427,45 +410,29 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                 }
                 error={FormState?.errors?.name as string}
               />
-              <div className="grid grid-cols-2 gap-3">
-                <RemoteSelect<POSCategoryDetail>
-                  label="Kategori"
-                  required
-                  hook={categoriesResult as any}
-                  fetchData={(page, search) =>
-                    franchisorId
-                      ? getCategories({ page, search, franchisor_id: franchisorId })
-                      : getCategories({ page, search })
-                  }
-                  getLabel={(item: any) => item?.name}
-                  renderItem={(item: any) => item?.name}
-                  value={category}
-                  onChange={(item: any) => {
-                    setCategory(item);
-                    setFormData({ ...formData, category_id: item?.id });
-                  }}
-                  onClear={() => {
-                    setCategory(null);
-                    setFormData({ ...formData, category_id: "" });
-                  }}
-                  placeholder="Pilih kategori"
-                  error={FormState?.errors?.category_id as string}
-                />
-                <Input
-                  label="Harga Dasar"
-                  type="currency"
-                  required
-                  value={formData.base_price}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      base_price: Number(e.target.value),
-                    })
-                  }
-                  prefix="Rp"
-                  error={FormState?.errors?.base_price as string}
-                />
-              </div>
+              <RemoteSelect<POSCategoryDetail>
+                label="Kategori"
+                required
+                hook={categoriesResult as any}
+                fetchData={(page, search) =>
+                  franchisorId
+                    ? getCategories({ page, search, franchisor_id: franchisorId })
+                    : getCategories({ page, search })
+                }
+                getLabel={(item: any) => item?.name}
+                renderItem={(item: any) => item?.name}
+                value={category}
+                onChange={(item: any) => {
+                  setCategory(item);
+                  setFormData({ ...formData, category_id: item?.id });
+                }}
+                onClear={() => {
+                  setCategory(null);
+                  setFormData({ ...formData, category_id: "" });
+                }}
+                placeholder="Pilih kategori"
+                error={FormState?.errors?.category_id as string}
+              />
 
               <Checkbox
                 label="Dikenakan PPN?"
@@ -481,6 +448,7 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
               <Checkbox
                 label="Merupakan menu topping / tambahan?"
                 checked={formData.is_additional}
+                disabled={isEdit}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
@@ -489,6 +457,12 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
                 }
                 variant="primary"
               />
+              {isEdit && (
+                <p className="text-xs text-slate-400 leading-5">
+                  Tipe menu (topping / tambahan) tidak dapat diubah setelah
+                  dibuat.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -511,6 +485,81 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
             />
           </div>
         </div>
+      </div>
+
+      {/* Section: Harga Produk */}
+      <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! z-10">
+        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl flex items-center gap-2">
+          <Wallet size={16} className="text-slate-400" />
+          <div>
+            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+              Harga Produk
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {formData.is_additional
+                ? "Menu tambahan hanya memakai harga dasar."
+                : "Harga dasar untuk katalog, harga beli outlet, dan harga jual produksi."}
+            </p>
+          </div>
+        </div>
+
+        <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Input
+            label="Harga Dasar"
+            type="currency"
+            required
+            value={formData.base_price}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                base_price: Number(e.target.value),
+              })
+            }
+            prefix="Rp"
+            error={FormState?.errors?.base_price as string}
+          />
+
+          {!formData.is_additional && (
+            <Input
+              label="Harga Beli Outlet"
+              type="currency"
+              required
+              value={formData.unit_price}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  unit_price: Number(e.target.value),
+                })
+              }
+              prefix="Rp"
+              error={FormState?.errors?.unit_price as string}
+            />
+          )}
+
+          {needsProductionPrice && (
+            <Input
+              label="Harga Produksi"
+              type="currency"
+              required
+              value={formData.production_price}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  production_price: Number(e.target.value),
+                })
+              }
+              prefix="Rp"
+              error={FormState?.errors?.production_price as string}
+            />
+          )}
+        </div>
+
+        {!formData.is_additional && !needsProductionPrice && (
+          <p className="px-5 pb-4 text-xs text-slate-400 leading-5">
+            Harga produksi mengikuti harga channel aktif secara otomatis. Isi
+            manual hanya bila channel aktif lebih dari satu.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-5">
@@ -760,113 +809,6 @@ export const POSMenuForm: React.FC<POSMenuFormProps> = ({
           <div /> /* Empty div to maintain grid layout when addons are hidden */
         )}
       </div>
-      {formData.is_additional === false ? (
-        <div>
-          <div className="card-table card-animate bg-white border border-slate-200 rounded-xl shadow-sm overflow-visible! z-10">
-            <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                  Bahan Baku
-                </h2>
-                <Button
-                  variant="success"
-                  styleType="soft"
-                  size="sm"
-                  onClick={addIngredient}
-                  type="button"
-                >
-                  <Plus className="w-4 h-4" />
-                  Tambah
-                </Button>
-              </div>
-
-              <div className="p-4">
-                <div className="space-y-3">
-                  {ingredient.map((ig, index) => (
-                    <div
-                      key={index}
-                      className={clsx(
-                        "flex items-center gap-3 p-4 rounded-xl border transition-all bg-white  hover:border-violet-300",
-                        FormState.errors?.ingredients
-                          ? "border-red-600"
-                          : "border-slate-200",
-                      )}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <RemoteSelect<InventoryItemDetail>
-                            label="Item"
-                            placeholder="Pilih item..."
-                            required
-                            hook={catalogResult as any}
-                            fetchData={(page, search) =>
-                              franchisorId
-                                ? getCatalog({ page, search, franchisor_id: franchisorId })
-                                : getCatalog({ page, search })
-                            }
-                            getLabel={(it: any) => it?.name}
-                            getValue={(cat: any) => cat?.id}
-                            value={ig.catalog} // Simplification for now
-                            onChange={(it: any) => {
-                              updateIngredient(index, "catalog", it);
-                            }}
-                            error={
-                              (typeof FormState?.errors?.[
-                                `ingredients.${index}.catalog_id`
-                              ] === "string"
-                                ? FormState.errors?.[
-                                    `ingredients.${index}.catalog_id`
-                                  ]
-                                : undefined) as any
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="w-28">
-                        <Input
-                          label="Porsi"
-                          type="number"
-                          value={ig.porsi}
-                          onChange={(e) =>
-                            updateIngredient(
-                              index,
-                              "porsi",
-                              Number(e.target.value),
-                            )
-                          }
-                          variant="primary"
-                          error={
-                            (typeof FormState?.errors?.[
-                              `ingredients.${index}.porsi`
-                            ] === "string"
-                              ? FormState.errors?.[`ingredients.${index}.porsi`]
-                              : undefined) as any
-                          }
-                        />
-                      </div>
-                      <Button
-                        variant="error"
-                        styleType="ghost"
-                        onClick={() => removeIngredient(index)}
-                        className="mt-7"
-                        type="button"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-
-                  {FormState.errors?.boms ? (
-                    <div className="text-error text-xs font-medium leading-[1.66] pt-1">
-                      {FormState.errors?.boms as string}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </form>
   );
 };

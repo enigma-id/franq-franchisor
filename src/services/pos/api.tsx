@@ -8,67 +8,16 @@ export const posApi = createApi({
   endpoints: (builder) => ({
     // ── /pos/menu ──
 
+    /**
+     * GET /pos/menu
+     * Dipakai dropdown add-on (form menu) & pemilihan menu di form B2B order.
+     * CRUD menu dipindah ke `/inventory/product` (lihat services/product).
+     */
     getMenus: builder.query({
       query: (params) => ({
         url: "/pos/menu",
         method: "GET",
         params,
-      }),
-    }),
-
-    getMenu: builder.query({
-      query: ({ id, ...params }) => ({
-        url: `/pos/menu/${id}`,
-        method: "GET",
-        params,
-      }),
-    }),
-
-    createMenu: builder.mutation({
-      query: (payload) => ({
-        url: "/pos/menu",
-        method: "POST",
-        body: payload,
-      }),
-    }),
-
-    updateMenu: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/menu/${id}`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    deleteMenu: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/menu/${id}`,
-        method: "DELETE",
-        body: payload,
-      }),
-    }),
-
-    activateMenu: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/menu/${id}/activate`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    deactivateMenu: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/menu/${id}/deactivate`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    updateMenuTypes: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/menu/${id}/types`,
-        method: "PUT",
-        body: payload,
       }),
     }),
 
@@ -140,58 +89,12 @@ export const posApi = createApi({
         params,
       }),
     }),
-
-    createChannel: builder.mutation({
-      query: (payload) => ({
-        url: "/pos/channel",
-        method: "POST",
-        body: payload,
-      }),
-    }),
-
-    updateChannel: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/channel/${id}`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    deleteChannel: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/channel/${id}`,
-        method: "DELETE",
-        body: payload,
-      }),
-    }),
-
-    activateChannel: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/channel/${id}/activate`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    deactivateChannel: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/pos/channel/${id}/deactivate`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
   }),
 });
 
 export const {
   useLazyGetMenusQuery,
-  useLazyGetMenuQuery,
-  useCreateMenuMutation,
-  useUpdateMenuMutation,
-  useDeleteMenuMutation,
-  useActivateMenuMutation,
-  useDeactivateMenuMutation,
-  useUpdateMenuTypesMutation,
+  useLazyGetMenuPricesQuery,
   useLazyGetCategoriesQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
@@ -199,10 +102,4 @@ export const {
   useActivateCategoryMutation,
   useDeactivateCategoryMutation,
   useLazyGetChannelsQuery,
-  useCreateChannelMutation,
-  useUpdateChannelMutation,
-  useDeleteChannelMutation,
-  useActivateChannelMutation,
-  useDeactivateChannelMutation,
-  useLazyGetMenuPricesQuery,
 } = posApi;

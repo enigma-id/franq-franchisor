@@ -91,8 +91,8 @@ export default function CentralKitchen() {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Produksi'
-        title='Central Kitchen'
+        category='Central Kitchen'
+        title='Order'
         subtitle='Kelola order pengadaan dari central kitchen ke seluruh outlet.'
         action={
           canManage &&

@@ -8,6 +8,7 @@ export * from "./inventory";
 export * from "./outlet";
 export * from "./permission";
 export * from "./pos";
+export * from "./product";
 export * from "./purchase";
 export * from "./region";
 export * from "./reports";

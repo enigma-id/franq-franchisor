@@ -1,13 +1,7 @@
 import { createCrudHook } from "../hooks/createCrudHook";
 import {
   useLazyGetMenusQuery,
-  useLazyGetMenuQuery,
-  useCreateMenuMutation,
-  useUpdateMenuMutation,
-  useDeleteMenuMutation,
-  useActivateMenuMutation,
-  useDeactivateMenuMutation,
-  useUpdateMenuTypesMutation,
+  useLazyGetMenuPricesQuery,
   useLazyGetCategoriesQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
@@ -15,31 +9,17 @@ import {
   useActivateCategoryMutation,
   useDeactivateCategoryMutation,
   useLazyGetChannelsQuery,
-  useCreateChannelMutation,
-  useUpdateChannelMutation,
-  useDeleteChannelMutation,
-  useActivateChannelMutation,
-  useDeactivateChannelMutation,
-  useLazyGetMenuPricesQuery,
 } from "./api";
-import type {
-  POSMenuDetail,
-  POSCategoryDetail,
-  POSChannelDetail,
-} from "../types/pos";
+import type { POSCategoryDetail, POSChannelDetail } from "../types/pos";
 
-export const usePOSMenu = createCrudHook<POSMenuDetail>({
+/**
+ * Menu POS — sisa yang masih dipakai UI: list (`getMenus`, untuk dropdown add-on &
+ * form B2B order) dan `getPrices` (`/pos/menu/price`, untuk form B2B order).
+ * CRUD/detail/activate/deactivate menu memakai `useProduct` (`/inventory/product`).
+ */
+export const usePOSMenu = createCrudHook({
   entityName: "posMenu",
   useLazyGetQuery: useLazyGetMenusQuery,
-  useLazyShowQuery: useLazyGetMenuQuery,
-  useCreateMutation: useCreateMenuMutation,
-  useUpdateMutation: useUpdateMenuMutation,
-  useRemoveMutation: useDeleteMenuMutation,
-  customOperations: {
-    activate: { hook: useActivateMenuMutation },
-    deactivate: { hook: useDeactivateMenuMutation },
-    updateTypes: { hook: useUpdateMenuTypesMutation },
-  },
   additionalQueries: {
     getPrices: useLazyGetMenuPricesQuery,
   },
@@ -57,14 +37,8 @@ export const usePOSCategory = createCrudHook<POSCategoryDetail>({
   },
 });
 
+/** Channel POS — read-only (endpoint tulis tidak dipakai UI, sudah dihapus). */
 export const usePOSChannel = createCrudHook<POSChannelDetail>({
   entityName: "posChannel",
   useLazyGetQuery: useLazyGetChannelsQuery,
-  useCreateMutation: useCreateChannelMutation,
-  useUpdateMutation: useUpdateChannelMutation,
-  useRemoveMutation: useDeleteChannelMutation,
-  customOperations: {
-    activate: { hook: useActivateChannelMutation },
-    deactivate: { hook: useDeactivateChannelMutation },
-  },
 });

@@ -35,8 +35,8 @@ export function CentralKitchenCreate() {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Produksi'
-        title='Tambah Produksi'
+        category='Central Kitchen'
+        title='Tambah Order'
         subtitle='Buat order pengadaan baru untuk outlet waralaba.'
         backTo={() => navigate(-1)}
         action={

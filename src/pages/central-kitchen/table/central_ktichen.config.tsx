@@ -1,5 +1,5 @@
 import config from "@/services/table/const";
-import { formatDate, getStatusVariant, formatDateTime } from "@/utils";
+import { formatDate, formatCurrency, getStatusVariant, formatDateTime } from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { Eye, MoreVertical, Check, Edit, Trash } from "lucide-react";
@@ -62,6 +62,17 @@ const createTableConfig = ({
       align: "center",
       component: (row: SalesOrderDetail) => (
         <span className='font-medium'>{formatDate(row.shipping_date)}</span>
+      ),
+    },
+    total_charges: {
+      title: "Total Charges",
+      sortable: true,
+      class: "text-right",
+      align: "right",
+      component: (row: SalesOrderDetail) => (
+        <span className='font-bold text-primary'>
+          {formatCurrency(row.total_charges || 0)}
+        </span>
       ),
     },
     document_status: {

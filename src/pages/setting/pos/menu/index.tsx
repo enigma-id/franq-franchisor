@@ -5,7 +5,7 @@ import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/menu.config";
 import type { TableConfig } from "@/services/table/const";
-import { usePOSMenu } from "@/services/pos/hooks";
+import { useProduct } from "@/services/product/hooks";
 import type { POSMenuDetail } from "@/services/types";
 import { Button, Modal, useEnigmaUI } from "@/components";
 import { Plus } from "lucide-react";
@@ -16,7 +16,7 @@ const POSMenuListPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { openModal, closeModal, showToast } = useEnigmaUI();
-  const canManage = useCan(ACTION.posMenu);
+  const canManage = useCan(ACTION.product);
   const {
     remove,
     removeResult,
@@ -24,7 +24,7 @@ const POSMenuListPage: React.FC = () => {
     activateResult,
     deactivate,
     deactivateResult,
-  } = usePOSMenu();
+  } = useProduct();
   const { isSuccess: isActivateSuccess } = activateResult;
   const { isSuccess: isDeactivateSuccess } = deactivateResult;
 

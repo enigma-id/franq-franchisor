@@ -10,7 +10,7 @@ import {
 } from "@/utils/permission";
 import {
   LayoutDashboard,
-  Package,
+  // Package,
   ShoppingCart,
   LogOut,
   Menu,
@@ -19,7 +19,7 @@ import {
   Receipt,
   Users,
   Store,
-  Grid,
+  // Grid,
   Building,
   Building2,
   Monitor,
@@ -82,10 +82,10 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    label: "Produksi",
+    label: "Central Kitchen",
     items: [
       {
-        label: "Central Kitchen",
+        label: "Order",
         path: "/central-kitchen",
         icon: <ShoppingCart size={18} />,
         permission: MENU.salesOrder,
@@ -129,23 +129,24 @@ const menuSections: MenuSection[] = [
       },
     ],
   },
-  {
-    label: "Master Data",
-    items: [
-      {
-        label: "Item",
-        path: "/inventory/item",
-        icon: <Package size={18} />,
-        permission: MENU.inventoryItem,
-      },
-      {
-        label: "Catalog",
-        path: "/inventory/catalog",
-        icon: <Grid size={18} />,
-        permission: MENU.inventoryCatalog,
-      },
-    ],
-  },
+  // Temporarily hidden — Master Data (Item & Catalog) disembunyikan dulu.
+  // {
+  //   label: "Master Data",
+  //   items: [
+  //     {
+  //       label: "Item",
+  //       path: "/inventory/item",
+  //       icon: <Package size={18} />,
+  //       permission: MENU.inventoryItem,
+  //     },
+  //     {
+  //       label: "Catalog",
+  //       path: "/inventory/catalog",
+  //       icon: <Grid size={18} />,
+  //       permission: MENU.inventoryCatalog,
+  //     },
+  //   ],
+  // },
   {
     label: "Purchase",
     items: [

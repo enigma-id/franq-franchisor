@@ -1,5 +1,6 @@
 import type { DocumentStatusB2B, PaymentStatus, ApprovalStatus } from "./api";
 import type { CustomerDetail } from "./customer";
+import type { FranchisorDetail } from "./franchisor";
 
 export interface B2BOrderItemRequest {
   menu_id: string;
@@ -8,6 +9,8 @@ export interface B2BOrderItemRequest {
 }
 
 export interface B2BOrderRequest {
+  /** Diisi superuser saat create untuk brand tertentu (backend mewajibkan bila session kosong). */
+  franchisor_id?: string;
   /** FK ke master customer (diisi saat create; backend snapshot name/phone/address dari master). */
   customer_id?: string;
   customer_name: string;
@@ -40,6 +43,8 @@ export interface B2BOrderItemDetail {
 export interface B2BOrderDetail {
   id: string;
   franchisor_id: string;
+  /** Relasi brand/franchisor (di-preload backend pd list & detail). */
+  franchisor?: FranchisorDetail;
   code: string;
   customer_id?: string;
   /** Relasi master customer (bila order ter-link). */

@@ -13,7 +13,12 @@ import {
 } from "@/components/ui";
 import { useSalesOrder } from "@/services/sales/hooks";
 import { useEnigmaUI } from "@/components";
-import { formatDate, formatDateTime, getStatusVariant } from "@/utils";
+import {
+  formatDate,
+  formatDateTime,
+  formatCurrency,
+  getStatusVariant,
+} from "@/utils";
 import type {
   SalesOrderDetail,
   SalesOrderItemDetail,
@@ -280,8 +285,8 @@ export default function CentralKitchenDetailPage() {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Produksi'
-        title='Detail Central Kitchen'
+        category='Central Kitchen'
+        title='Detail Order'
         backTo={() => navigate(-1)}
         action={
           <div className='flex gap-2'>
@@ -338,57 +343,6 @@ export default function CentralKitchenDetailPage() {
       />
       <Page.Body>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {/* Outlet Info */}
-          <div className='card-info card-animate p-6 flex flex-col justify-between'>
-            <div>
-              <div className='card-section-header'>
-                <div className='card-section-icon'>
-                  <Store size={18} />
-                </div>
-                <h2 className='card-section-title'>Informasi Outlet</h2>
-              </div>
-              <dl className='space-y-1'>
-                <div className='info-row'>
-                  <dt className='info-label'>Nama Outlet</dt>
-                  <dd className='info-value'>
-                    <span className='block'>
-                      {`${order?.franchisor?.name ? order.franchisor.name + " - " : ""}${order?.outlet?.name ?? ""}`}
-                    </span>
-                  </dd>
-                </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Penerima</dt>
-                  <dd className='info-value'>{order.recipient_name}</dd>
-                </div>
-                <div className='info-row'>
-                  <dt className='info-label'>Telepon</dt>
-                  <dd className='info-value'>{order.recipient_phone}</dd>
-                </div>
-                <div className='info-row flex-col items-start gap-1'>
-                  <dt className='info-label'>Alamat</dt>
-                  <dd className='info-value text-left w-full wrap-break-words mt-0.5'>
-                    {order.recipient_address || "-"}
-                  </dd>
-                </div>
-                {order.source_warehouse_name && (
-                  <div className='info-row'>
-                    <dt className='info-label'>Warehouse</dt>
-                    <dd className='info-value'>
-                      {order.source_warehouse_name}
-                    </dd>
-                  </div>
-                )}
-              </dl>
-            </div>
-            {order.void_note && (
-              <div className='mt-4 p-3 bg-red-50 rounded-lg border border-red-100'>
-                <p className='text-xs font-medium text-red-600'>
-                  Void Note: {order.void_note}
-                </p>
-              </div>
-            )}
-          </div>
-
           {/* Order Info */}
           <div className='card-info card-animate p-6'>
             <div className='card-section-header'>
@@ -410,9 +364,7 @@ export default function CentralKitchenDetailPage() {
               </div>
               <div className='info-row'>
                 <dt className='info-label'>Tanggal Produksi</dt>
-                <dd className='info-value'>
-                  {formatDate(order.shipping_date)}
-                </dd>
+                <dd className='info-value'>{formatDate(order.shipping_date)}</dd>
               </div>
               <div className='info-row'>
                 <dt className='info-label'>Document Status</dt>
@@ -438,9 +390,43 @@ export default function CentralKitchenDetailPage() {
                   </Badge>
                 </dd>
               </div>
+            </dl>
+
+            {order.void_note && (
+              <div className='mt-4 p-3 bg-red-50 rounded-lg border border-red-100'>
+                <p className='text-xs font-medium text-red-600'>
+                  Void Note: {order.void_note}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Outlet Info */}
+          <div className='card-info card-animate p-6'>
+            <div className='card-section-header'>
+              <div className='card-section-icon'>
+                <Store size={18} />
+              </div>
+              <h2 className='card-section-title'>Informasi Outlet</h2>
+            </div>
+            <dl className='space-y-1'>
+              <div className='info-row'>
+                <dt className='info-label'>Nama Outlet</dt>
+                <dd className='info-value'>
+                  <span className='block'>
+                    {`${order?.franchisor?.name ? order.franchisor.name + " - " : ""}${order?.outlet?.name ?? ""}`}
+                  </span>
+                </dd>
+              </div>
               <div className='info-row'>
                 <dt className='info-label'>Dibuat Oleh</dt>
                 <dd className='info-value'>{order.created_by}</dd>
+              </div>
+              <div className='info-row'>
+                <dt className='info-label'>Total Charges</dt>
+                <dd className='info-value font-semibold text-primary'>
+                  {formatCurrency(order.total_charges || 0)}
+                </dd>
               </div>
             </dl>
           </div>
@@ -477,6 +463,12 @@ export default function CentralKitchenDetailPage() {
                   </th>
                   <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
                     Qty Fulfil
+                  </th>
+                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
+                    Harga
+                  </th>
+                  <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'>
+                    Total
                   </th>
                   <th className='px-4 py-4 text-right text-[11px] font-bold tracking-wider text-[#8B95A5] uppercase select-none'></th>
                 </tr>
@@ -530,7 +522,7 @@ export default function CentralKitchenDetailPage() {
                             </>
                           )}
                         </td>
-                        <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right'>
+                        <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right whitespace-nowrap'>
                           {item.quantity_fulfilled > 0 ? (
                             <>
                               {item.quantity_fulfilled}{" "}
@@ -542,6 +534,14 @@ export default function CentralKitchenDetailPage() {
                             </>
                           ) : (
                             "-"
+                          )}
+                        </td>
+                        <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right whitespace-nowrap'>
+                          {formatCurrency(item.unit_nett || 0)}
+                        </td>
+                        <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right whitespace-nowrap'>
+                          {formatCurrency(
+                            (item.unit_nett || 0) * (item.quantity_ordered || 0),
                           )}
                         </td>
                         <td className='px-4 py-3 align-middle text-right'>

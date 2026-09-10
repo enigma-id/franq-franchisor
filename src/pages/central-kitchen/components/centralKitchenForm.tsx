@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Truck, Plus, Store } from "lucide-react";
 import { Input, RemoteSelect, DatePicker, Button } from "@/components/ui";
+import { formatCurrency } from "@/utils";
 import { useOutlet } from "@/services/outlet/hooks";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { useFranchisorList } from "@/services/franchisor/hooks";
@@ -335,6 +336,7 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
                 <tr className='bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider'>
                   <th className='px-4 py-3 w-12 text-center'>#</th>
                   <th className='px-4 py-3'>Katalog Barang</th>
+                  <th className='px-4 py-3 w-28 text-right'>Harga</th>
                   <th className='px-4 py-3 w-32 text-center'>Satuan (Qty)</th>
                   <th className='px-4 py-3 w-16 text-center'></th>
                 </tr>
@@ -370,6 +372,12 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
                         watchKey={formData.franchisor_id}
                         error={getErrorItem(idx, "catalog_id")}
                       />
+                    </td>
+                    <td className='px-4 py-3 align-top text-right whitespace-nowrap pt-5 text-[13px] font-medium text-slate-700'>
+                      {typeof (item.catalogSelected as any)?.unit_price ===
+                      "number"
+                        ? formatCurrency((item.catalogSelected as any).unit_price)
+                        : "-"}
                     </td>
                     <td className='px-4 py-3 align-top'>
                       <Input

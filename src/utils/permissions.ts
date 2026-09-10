@@ -65,6 +65,7 @@ export const ACTION = {
   outlet: "svc-franchisor.outlet.manage",
   inventory: "svc-franchisor.inventory.manage",
   catalog: "svc-franchisor.catalog.manage",
+  product: "svc-franchisor.product.manage",
   posCategory: "svc-franchisor.pos-category.manage",
   posMenu: "svc-franchisor.pos-menu.manage",
   supplier: "svc-franchisor.supplier.manage",

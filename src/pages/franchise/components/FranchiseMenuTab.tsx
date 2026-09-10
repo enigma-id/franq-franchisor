@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useTable from "@/services/table/hooks";
 import createTableConfig from "@/pages/setting/pos/menu/table/menu.config";
 import type { TableConfig } from "@/services/table/const";
-import { usePOSMenu } from "@/services/pos/hooks";
+import { useProduct } from "@/services/product/hooks";
 import type { POSMenuDetail } from "@/services/types";
 import { Button, Modal, useEnigmaUI } from "@/components";
 import { UtensilsCrossed, Plus } from "lucide-react";
@@ -32,7 +32,7 @@ export const FranchiseMenuTab: React.FC<FranchiseMenuTabProps> = ({
     activateResult,
     deactivate,
     deactivateResult,
-  } = usePOSMenu();
+  } = useProduct();
 
   const back = `/franchise/${franchisorId}`;
   const ctxQuery = `?franchisor_id=${encodeURIComponent(franchisorId)}&back=${encodeURIComponent(back)}`;

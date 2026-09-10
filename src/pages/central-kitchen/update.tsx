@@ -44,8 +44,8 @@ export function CentralKitchenUpdate() {
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
-        category='Produksi'
-        title='Edit Produksi'
+        category='Central Kitchen'
+        title='Edit Order'
         subtitle='Perbarui order pengadaan untuk outlet waralaba.'
         backTo={() => navigate(-1)}
         action={

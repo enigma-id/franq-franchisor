@@ -92,18 +92,6 @@ export const outletApi = createApi({
       }),
     }),
 
-    /**
-     * PUT /outlet/:id
-     * Channels outlet
-     */
-    updateChannelOutlet: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/outlet/${id}/channels`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
     // ── /outlet/type ──
 
     /**
@@ -200,7 +188,6 @@ export const {
   useDeleteOutletMutation,
   useActivateOutletMutation,
   useDeactivateOutletMutation,
-  useUpdateChannelOutletMutation,
 
   useLazyGetOutletTypesQuery,
   useLazyGetOutletTypeQuery,

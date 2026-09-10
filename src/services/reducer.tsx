@@ -18,6 +18,7 @@ import { tableReducer } from "./table/slice";
 import { tableApi } from "./table/api";
 import { reportApi } from "./report/api";
 import { inventoryApi } from "./inventory/api";
+import { productApi } from "./product/api";
 import { uploadApi } from "./upload/api";
 import { withdrawalApi } from "./withdrawal/api";
 import { b2bApi } from "./b2b/api";
@@ -45,6 +46,7 @@ const appReducer = combineReducers({
   [salesApi.reducerPath]: salesApi.reducer,
   [warehouseApi.reducerPath]: warehouseApi.reducer,
   [inventoryApi.reducerPath]: inventoryApi.reducer,
+  [productApi.reducerPath]: productApi.reducer,
   [regionApi.reducerPath]: regionApi.reducer,
   [reportApi.reducerPath]: reportApi.reducer,
   [uploadApi.reducerPath]: uploadApi.reducer,
@@ -72,6 +74,7 @@ export const apiMiddlewares = [
   paymentMethodApi.middleware,
   memberTopupBonusApi.middleware,
   inventoryApi.middleware,
+  productApi.middleware,
   regionApi.middleware,
   supplierApi.middleware,
   reportApi.middleware,

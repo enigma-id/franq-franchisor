@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui";
-import { MapPin, StickyNote } from "lucide-react";
+import { Input, RemoteSelect } from "@/components/ui";
 import { useAppSelector } from "@/hooks";
+import { useFranchisorList } from "@/services/franchisor/hooks";
+import { useIsSuperuser } from "@/utils/permission";
+import type { FranchisorRow } from "@/services/types/franchisor";
 
 export interface CustomerFormData extends Record<string, unknown> {
+  franchisor_id?: string;
   name: string;
   phone: string;
   address: string;
@@ -24,8 +28,17 @@ export function CustomerForm({
   onSubmit,
 }: CustomerFormProps) {
   const FormState = useAppSelector((s) => s.form);
+  const isSuperuser = useIsSuperuser();
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
+
+  // Mode create → superuser wajib memilih brand (backend menolak bila kosong).
+  const isCreateMode = !initialData;
+
+  const [franchise, setFranchise] = useState<FranchisorRow | null>(null);
 
   const [formData, setFormData] = useState<CustomerFormData>({
+    franchisor_id: "",
     name: "",
     phone: "",
     address: "",
@@ -36,22 +49,58 @@ export function CustomerForm({
   useEffect(() => {
     if (initialData) {
       setFormData({
+        franchisor_id: initialData.franchisor_id ?? "",
         name: initialData.name ?? "",
         phone: initialData.phone ?? "",
         address: initialData.address ?? "",
         email: initialData.email ?? "",
         note: initialData.note ?? "",
       });
+
+      const initialFranchise = (initialData as any)?.franchisor ?? null;
+      if (initialFranchise?.id) setFranchise(initialFranchise);
     }
   }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...formData });
+    onSubmit({
+      ...formData,
+      // Hanya dikirim saat create; backend PUT customer tidak menerima franchisor_id.
+      franchisor_id: isCreateMode ? franchise?.id || undefined : undefined,
+    });
   };
 
   return (
     <form id={id} onSubmit={handleSubmit} className='space-y-4'>
+      {isSuperuser && isCreateMode && (
+        <RemoteSelect<FranchisorRow>
+          label='Franchise'
+          required
+          placeholder='Pilih Franchise...'
+          value={franchise}
+          hook={franchisorsResult as any}
+          fetchData={(page, search) => getFranchisors({ page, search })}
+          getLabel={(item: any) => item?.name || ""}
+          renderItem={(item: any) =>
+            item
+              ? `${item.name} (${item.type === "mitra" ? "Mitra" : "Outlet"})`
+              : ""
+          }
+          onChange={(item: FranchisorRow | null) => {
+            setFranchise(item);
+            setFormData((prev) => ({
+              ...prev,
+              franchisor_id: item?.id ?? "",
+            }));
+          }}
+          onClear={() => {
+            setFranchise(null);
+            setFormData((prev) => ({ ...prev, franchisor_id: "" }));
+          }}
+          error={FormState?.errors?.franchisor_id as string}
+        />
+      )}
       <Input
         label='Nama Customer'
         required
