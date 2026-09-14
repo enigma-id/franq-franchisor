@@ -31,6 +31,11 @@ export interface OutletDetail extends OutletBase {
   /** FK user owner outlet (diisi backend; dipakai utk fetch detail user). */
   user_id?: string;
   franchisor_id?: string;
+  /** Relasi brand/franchisor (kalau di-embed backend). */
+  franchisor?: {
+    id?: string;
+    name: string;
+  };
   pos_channels: {
     id: string;
     pos_channel: {

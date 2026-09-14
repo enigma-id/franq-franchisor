@@ -79,6 +79,10 @@ import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
 import WarehouseStockPage from "@/pages/report/franchisor/warehouseStock";
 import OutletMapPage from "@/pages/report/franchisor/outletMap";
 
+// ==== REPORT OUTLET ====//
+import OutletReportPage from "@/pages/report/outlet";
+import OutletReportDetailPage from "@/pages/report/outlet/detail";
+
 // ==== REPORT MEMBERSHIP ==== //
 import MembershipReportPage from "@/pages/report/membership/membership";
 import SaldoLogReportPage from "@/pages/report/membership/saldoLog";
@@ -504,6 +508,14 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
+        <Route
+          path='/report/mitra/outlet-maps'
+          element={
+            <PermissionGuard permission={MENU.reportOutletMap}>
+              <OutletMapPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Report B2B */}
         <Route
@@ -556,11 +568,21 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
+
+        {/* Report Outlet (rekap per-outlet + detail) */}
         <Route
-          path='/report/outlet-maps'
+          path='/report/outlet'
           element={
-            <PermissionGuard permission={MENU.reportOutletMap}>
-              <OutletMapPage />
+            <PermissionGuard permission={MENU.reportOutlet}>
+              <OutletReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/outlet/:outletId'
+          element={
+            <PermissionGuard permission={MENU.reportOutlet}>
+              <OutletReportDetailPage />
             </PermissionGuard>
           }
         />

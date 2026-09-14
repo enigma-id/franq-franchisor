@@ -6,9 +6,11 @@ import { ChevronRight } from "lucide-react";
 
 const createTableConfig = ({
   filter,
+  lockedFilter,
   onRowClick,
 }: {
   filter?: Record<string, unknown>;
+  lockedFilter?: Record<string, unknown>;
   onRowClick?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
@@ -17,6 +19,7 @@ const createTableConfig = ({
   filter,
   lockedFilter: {
     periode_type: "yearly",
+    ...lockedFilter,
   },
   onRowClick,
   dynamicColumns: (rows: any[]) => {

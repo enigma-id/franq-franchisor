@@ -81,8 +81,8 @@ export default function RawMaterialSalesPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Product Sales'
-        subtitle='Laporan penjualan produk.'
+        title='Penjualan Produk'
+        subtitle='Rekap penjualan produk.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />

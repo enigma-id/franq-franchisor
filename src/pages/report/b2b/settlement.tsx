@@ -101,8 +101,8 @@ export default function B2BSettlementPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='B2B Settlement'
-        subtitle='Laporan penyelesaian pembayaran B2B.'
+        title='Settlement'
+        subtitle='Rekap penyelesaian pembayaran B2B.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
         <SettlementSummaryCards summary={summary} />

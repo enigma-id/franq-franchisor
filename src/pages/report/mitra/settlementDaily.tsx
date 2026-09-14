@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect, useState } from "react";
@@ -124,8 +125,8 @@ function SettlementDailyTable({ outletTypeId }: { outletTypeId: string }) {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title={`Mitra Settlement Daily — ${periode}`}
-        subtitle='Laporan penyelesaian pembayaran.'
+        title={`Settlement Harian — ${periode}`}
+        subtitle='Rekap penyelesaian pembayaran mitra.'
         backTo={() => navigate(-1)}
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>

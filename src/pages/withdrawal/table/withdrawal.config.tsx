@@ -21,7 +21,7 @@ const createTableConfig = ({
       sortable: true,
       class: "font-medium",
       component: (row: WithdrawalRequest) => (
-        <span className="text-xs font-mono">{row.code || "-"}</span>
+        <span className='text-xs font-mono'>{row.code || "-"}</span>
       ),
     },
     outlet: {
@@ -30,7 +30,9 @@ const createTableConfig = ({
       alias: "outlet_id",
       class: "font-medium",
       component: (row: WithdrawalRequest) => (
-        <span>{row.outlet?.name || "-"}</span>
+        <span>
+          {`${row?.franchisor?.name ? row.franchisor.name + " - " : ""}${row.outlet?.name ?? ""}`}
+        </span>
       ),
     },
     amount: {
@@ -39,7 +41,7 @@ const createTableConfig = ({
       class: "font-mono text-right",
       headerClass: "text-right",
       component: (row: WithdrawalRequest) => (
-        <span className="font-semibold">{currencyFormat(row.amount)}</span>
+        <span className='font-semibold'>{currencyFormat(row.amount)}</span>
       ),
     },
     balance_at_request: {
@@ -79,14 +81,18 @@ const createTableConfig = ({
       class: "text-center",
       headerClass: "text-center",
       component: (row: WithdrawalRequest) => (
-        <Badge variant={getStatusVariant(row.document_status)}>{row.document_status}</Badge>
+        <Badge variant={getStatusVariant(row.document_status)}>
+          {row.document_status}
+        </Badge>
       ),
     },
     rejected_reason: {
       title: "Alasan Ditolak",
       sortable: false,
       component: (row: WithdrawalRequest) => (
-        <span className="text-sm text-red-600">{row.rejected_reason || "-"}</span>
+        <span className='text-sm text-red-600'>
+          {row.rejected_reason || "-"}
+        </span>
       ),
     },
     created_at: {
@@ -103,44 +109,48 @@ const createTableConfig = ({
       sortable: false,
       component: (row: WithdrawalRequest) =>
         canManage && row.document_status === "pending" ? (
-        <Dropdown
-          trigger={
-            <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
-              <MoreVertical className="w-5 h-5 text-slate-600" />
-            </button>
-          }
-          position="end"
-          contentClassName="dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2"
-        >
-          <Dropdown.Item
-            onSelect={() => onApprove?.(row)}
-            className="hover:bg-emerald-50 hover:text-emerald-600"
+          <Dropdown
+            trigger={
+              <button className='p-2 rounded-lg hover:bg-slate-100 transition-colors'>
+                <MoreVertical className='w-5 h-5 text-slate-600' />
+              </button>
+            }
+            position='end'
+            contentClassName='dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2'
           >
-            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">Approve</span>
-                <span className="text-[11px] text-slate-400">Approve withdrawal</span>
-              </div>
-            </button>
-          </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => onReject?.(row)}
-            className="hover:bg-red-50 hover:text-red-600"
-          >
-            <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                <XCircle className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">Reject</span>
-                <span className="text-[11px] text-slate-400">Reject withdrawal</span>
-              </div>
-            </button>
-          </Dropdown.Item>
-        </Dropdown>
+            <Dropdown.Item
+              onSelect={() => onApprove?.(row)}
+              className='hover:bg-emerald-50 hover:text-emerald-600'
+            >
+              <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+                <div className='w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600'>
+                  <CheckCircle2 className='w-4 h-4' />
+                </div>
+                <div className='flex flex-col items-start leading-tight'>
+                  <span className='font-bold text-[13px]'>Approve</span>
+                  <span className='text-[11px] text-slate-400'>
+                    Approve withdrawal
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+            <Dropdown.Item
+              onSelect={() => onReject?.(row)}
+              className='hover:bg-red-50 hover:text-red-600'
+            >
+              <button className='flex items-center gap-3 py-1 rounded-xl text-slate-700'>
+                <div className='w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600'>
+                  <XCircle className='w-4 h-4' />
+                </div>
+                <div className='flex flex-col items-start leading-tight'>
+                  <span className='font-bold text-[13px]'>Reject</span>
+                  <span className='text-[11px] text-slate-400'>
+                    Reject withdrawal
+                  </span>
+                </div>
+              </button>
+            </Dropdown.Item>
+          </Dropdown>
         ) : null,
     },
   },

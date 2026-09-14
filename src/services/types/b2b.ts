@@ -99,6 +99,7 @@ export interface OutletTopupDetail {
   processed_at: string;
   created_at: string;
   updated_at: string;
+  franchisor: FranchisorDetail;
   outlet: {
     id: string;
     name: string;

@@ -44,6 +44,7 @@ export const MENU = {
   reportInventoryMaterialSales: "frontend.franchisor.report.material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
   reportOutletMap: "frontend.franchisor.report.outlet-maps",
+  reportOutlet: "frontend.franchisor.report.outlet",
   reportMembership: "frontend.franchisor.report.membership",
   reportMembershipSaldoLog: "frontend.franchisor.report.membership-saldo-log",
   // Setting

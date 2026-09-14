@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect, useState } from "react";
 import createTableConfig from "./table/cancelled-product-sales.config";
@@ -46,6 +47,77 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
+/**
+ * Body report reusable — dipakai halaman Transaction Cancel standalone dan tab
+ * di detail Laporan Outlet (outlet dikunci saat `outletId` diisi).
+ */
+export function CancelledProductSalesReport({
+  outletId,
+  outletTypeId,
+}: {
+  outletId?: string;
+  outletTypeId?: string;
+}) {
+  const lockOutlet = !!outletId;
+
+  const tableConfig = useMemo(
+    () =>
+      createTableConfig({
+        filter: lockOutlet
+          ? { outlet_id: outletId }
+          : { outlet_type_id: outletTypeId },
+        lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
+      }),
+    [lockOutlet, outletId, outletTypeId],
+  );
+
+  const Table = useTable(
+    lockOutlet
+      ? "outlet_tab_cancelled_product_sales"
+      : "pos_report_cancelled_product_sales",
+    tableConfig as TableConfig<unknown>,
+  );
+
+  const currentFilter = useMemo(() => {
+    return {
+      ...(Table.State?.lockedFilter || {}),
+      ...(Table.State?.filter || {}),
+      search: Table.State?.textSearch || "",
+    };
+  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
+
+  const currentFilterString = JSON.stringify(currentFilter);
+
+  const { cancelledProductSalesSummary, cancelledProductSalesSummaryResult } =
+    usePOSReport();
+  const { data: summaryResult } = cancelledProductSalesSummaryResult;
+
+  useEffect(() => {
+    cancelledProductSalesSummary(JSON.parse(currentFilterString));
+  }, [currentFilterString, Table.State !== undefined]);
+
+  const summary = summaryResult?.data;
+
+  return (
+    <>
+      <OverviewCards data={summary} />
+
+      <Table.Tools downloadable>
+        <TableFilter
+          table={Table}
+          outletTypeId={outletTypeId}
+          lockOutlet={lockOutlet}
+        />
+      </Table.Tools>
+      <Table.Render
+        emptyTitle='Belum Ada Data'
+        emptyDescription='Data transaksi yang dibatalkan akan muncul di sini.'
+      />
+      <Table.Pagination />
+    </>
+  );
+}
+
 export default function POSCancelledProductSalesPage() {
   const [outletType, setOutletType] = useState<any>(null);
 
@@ -74,64 +146,15 @@ export default function POSCancelledProductSalesPage() {
     );
   }
 
-  return <CancelledProductSalesTable outletTypeId={outletType.id} />;
-}
-
-function CancelledProductSalesTable({
-  outletTypeId,
-}: {
-  outletTypeId: string;
-}) {
-  const tableConfig = useMemo(
-    () =>
-      createTableConfig({
-        filter: { outlet_type_id: outletTypeId },
-      }),
-    [outletTypeId],
-  );
-  const Table = useTable(
-    "pos_report_cancelled_product_sales",
-    tableConfig as TableConfig<unknown>,
-  );
-
-  const currentFilter = useMemo(() => {
-    return {
-      ...(Table.State?.lockedFilter || {}),
-      ...(Table.State?.filter || {}),
-      search: Table.State?.textSearch || "",
-    };
-  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
-
-  const currentFilterString = JSON.stringify(currentFilter);
-
-  const { cancelledProductSalesSummary, cancelledProductSalesSummaryResult } =
-    usePOSReport();
-  const { data: summaryResult } = cancelledProductSalesSummaryResult;
-
-  useEffect(() => {
-    cancelledProductSalesSummary(JSON.parse(currentFilterString));
-  }, [currentFilterString, Table.State !== undefined]);
-
-  const summary = summaryResult?.data;
-
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Transaction Cancel'
-        subtitle='Laporan transaksi POS yang dibatalkan.'
+        title='Transaksi Dibatalkan'
+        subtitle='Rekap transaksi POS yang dibatalkan.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <OverviewCards data={summary} />
-
-        <Table.Tools downloadable>
-          <TableFilter table={Table} outletTypeId={outletTypeId} />
-        </Table.Tools>
-        <Table.Render
-          emptyTitle='Belum Ada Data'
-          emptyDescription='Data transaksi yang dibatalkan akan muncul di sini.'
-        />
-        <Table.Pagination />
+        <CancelledProductSalesReport outletTypeId={outletType.id} />
       </Page.Body>
     </Page>
   );

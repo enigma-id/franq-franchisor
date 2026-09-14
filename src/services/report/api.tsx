@@ -43,6 +43,29 @@ export const reportApi = createApi({
       }),
     }),
 
+    getOutletReport: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/outlet`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getOutletReportSummary: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/outlet/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getSessionReport: builder.query({
+      query: (params) => ({
+        url: `/report/franchise/session`,
+        method: "GET",
+        params,
+      }),
+    }),
+
     getProductSales: builder.query({
       query: (params) => ({
         url: `/report/franchise/product-sales`,
@@ -212,6 +235,9 @@ export const {
   useLazyGetRawMaterialSalesSummaryQuery,
   useLazyGetWarehouseStockQuery,
   useLazyGetOutletMapQuery,
+  useLazyGetOutletReportQuery,
+  useLazyGetOutletReportSummaryQuery,
+  useLazyGetSessionReportQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
   useLazyGetProductItemQuery,

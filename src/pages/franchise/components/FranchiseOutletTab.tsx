@@ -16,11 +16,14 @@ import type {
   OutletCreateRequest,
   OutletDetail,
 } from "@/services/types/outlet";
+import type { FranchisorType } from "@/services/types/franchisor";
 
 interface FranchiseOutletTabProps {
   /** Brand (franchisor_id) yang kelola outlet-nya. */
   franchisorId: string;
   franchiseName?: string;
+  /** Tipe brand — brand mitra tidak pakai Biaya Layanan outlet. */
+  franchiseType?: FranchisorType;
 }
 
 /**
@@ -30,6 +33,7 @@ interface FranchiseOutletTabProps {
 const FranchiseOutletTab: React.FC<FranchiseOutletTabProps> = ({
   franchisorId,
   franchiseName,
+  franchiseType,
 }) => {
   const canManage = useCan(ACTION.outlet);
   const canManageUser = useCan(ACTION.user);
@@ -435,6 +439,7 @@ const FranchiseOutletTab: React.FC<FranchiseOutletTabProps> = ({
                 }
                 hideOwnerSection={!!editingOutlet}
                 defaultFranchisorId={franchisorId}
+                franchisorType={franchiseType}
                 onSubmit={handleOutletSubmit}
               />
             )}

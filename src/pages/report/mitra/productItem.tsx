@@ -108,8 +108,8 @@ function ProductItemTable({ outletTypeId }: { outletTypeId: string }) {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Mitra Menu'
-        subtitle='Laporan penjualan menu Mitra.'
+        title='Penjualan Menu'
+        subtitle='Rekap penjualan menu mitra.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
         <OverviewCards data={summary} />

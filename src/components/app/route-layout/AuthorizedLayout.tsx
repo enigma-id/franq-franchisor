@@ -7,6 +7,7 @@ import {
   useUserPermissions,
   hasPermission,
   useIsMitraAccess,
+  useFranchisorType,
 } from "@/utils/permission";
 import {
   LayoutDashboard,
@@ -24,7 +25,6 @@ import {
   Building2,
   Monitor,
   BarChart3,
-  MapPinned,
   ArrowDownLeft,
   ShoppingBag,
   Contact,
@@ -46,6 +46,8 @@ interface MenuChild {
   superAdminOnly?: boolean;
   /** Sembunyikan utk superuser (mis. menu yg hanya utk non-superuser). */
   superuserHidden?: boolean;
+  /** Sembunyikan utk brand bertipe mitra (mis. report Outlet/Member). */
+  mitraHidden?: boolean;
 }
 
 interface MenuItem {
@@ -58,6 +60,8 @@ interface MenuItem {
   superAdminOnly?: boolean;
   /** Sembunyikan utk superuser (mis. menu yg hanya utk non-superuser). */
   superuserHidden?: boolean;
+  /** Sembunyikan utk brand bertipe mitra (mis. report Outlet/Member). */
+  mitraHidden?: boolean;
   /** Hanya tampil utk user mitra / superuser (franchisor.type = mitra). */
   mitraOnly?: boolean;
   children?: MenuChild[];
@@ -101,12 +105,14 @@ const menuSections: MenuSection[] = [
         path: "/customer",
         icon: <Contact size={18} />,
         permission: MENU.b2bOrder,
+        superAdminOnly: true,
       },
       {
         label: "B2B Order",
         path: "/b2b/order",
         icon: <ShoppingBag size={18} />,
         permission: MENU.b2bOrder,
+        superAdminOnly: true,
       },
     ],
   },
@@ -170,120 +176,127 @@ const menuSections: MenuSection[] = [
     label: "Report",
     items: [
       {
-        label: "POS Report",
+        label: "Rekap Outlet",
+        path: "/report/outlet",
+        icon: <Store size={18} />,
+        permission: MENU.reportOutlet,
+      },
+      {
+        label: "Outlet",
         icon: <Monitor size={18} />,
+        mitraHidden: true,
         children: [
           {
-            label: "Report Outstanding",
+            label: "Outstanding",
             path: "/report/pos/outstanding",
             permission: MENU.reportPosOutstanding,
           },
           {
-            label: "Report Settlement",
+            label: "Settlement",
             path: "/report/pos/settlement",
             permission: MENU.reportPosSettlement,
           },
           {
-            label: "Report Product Sales",
+            label: "Penjualan Produk",
             path: "/report/pos/product-sales",
             permission: MENU.reportPosProductSales,
           },
           {
-            label: "Report Menu",
+            label: "Penjualan Menu",
             path: "/report/pos/product-item",
             permission: MENU.reportPosProductItem,
           },
           {
-            label: "Report Transaction Cancel",
+            label: "Transaksi Dibatalkan",
             path: "/report/pos/cancelled-product-sales",
             permission: MENU.reportPosTransactionCancelled,
           },
         ],
       },
       {
-        label: "Mitra Report",
+        label: "Mitra",
         icon: <UserRound size={18} />,
         children: [
           {
-            label: "Report Settlement",
+            label: "Settlement",
             path: "/report/mitra/settlement",
             permission: MENU.reportMitraSettlement,
           },
           {
-            label: "Report Product Sales",
+            label: "Penjualan Produk",
             path: "/report/mitra/product-sales",
             permission: MENU.reportMitraProductSales,
           },
           {
-            label: "Report Menu",
+            label: "Penjualan Menu",
             path: "/report/mitra/product-item",
             permission: MENU.reportMitraProductItem,
           },
           {
-            label: "Report Outlet Saldo",
+            label: "Saldo Outlet",
             path: "/report/mitra/outlet-saldo",
             permission: MENU.reportMitraOutletSaldo,
+          },
+          {
+            label: "Peta Outlet",
+            path: "/report/mitra/outlet-maps",
+            permission: MENU.reportOutletMap,
           },
         ],
       },
       {
-        label: "B2B Report",
+        label: "B2B",
         icon: <Building size={18} />,
         children: [
           {
-            label: "Report Settlement",
+            label: "Settlement",
             path: "/report/b2b/settlement",
             permission: MENU.reportB2BSettlement,
           },
           {
-            label: "Report Product Sales",
+            label: "Penjualan Produk",
             path: "/report/b2b/product-sales",
             permission: MENU.reportB2BProductSales,
           },
           {
-            label: "Report Menu",
+            label: "Penjualan Menu",
             path: "/report/b2b/product-item",
             permission: MENU.reportB2BProductItem,
           },
         ],
       },
       {
-        label: "Member Report",
+        label: "Member",
         icon: <IdCard size={18} />,
+        mitraHidden: true,
         children: [
           {
-            label: "Report Membership",
+            label: "Daftar Member",
             path: "/report/membership",
             permission: MENU.reportMembership,
           },
           {
-            label: "Report Saldo Membership",
+            label: "Mutasi Saldo",
             path: "/report/membership/saldo-log",
             permission: MENU.reportMembershipSaldoLog,
           },
         ],
       },
       {
-        label: "Inventory & Sales",
+        label: "Gudang & Penjualan",
         icon: <BarChart3 size={18} />,
         children: [
           {
-            label: "Report Product Sales",
+            label: "Penjualan Produk",
             path: "/report/inventory/material-sales",
             permission: MENU.reportInventoryMaterialSales,
           },
           {
-            label: "Report Warehouse Stock",
+            label: "Stok Gudang",
             path: "/report/inventory/warehouse-stock",
             permission: MENU.reportWarehouseStock,
           },
         ],
-      },
-      {
-        label: "Report Outlet Maps",
-        path: "/report/outlet-maps",
-        icon: <MapPinned size={18} />,
-        permission: MENU.reportOutletMap,
       },
     ],
   },
@@ -370,15 +383,22 @@ function isItemAllowed(
   userPermissions: string[] | undefined,
   item: Pick<
     MenuItem,
-    "permission" | "superAdminOnly" | "superuserHidden" | "mitraOnly"
+    | "permission"
+    | "superAdminOnly"
+    | "superuserHidden"
+    | "mitraOnly"
+    | "mitraHidden"
   >,
   isSuperAdmin: boolean,
   isMitraAccess: boolean,
+  isMitraBrand: boolean,
 ) {
   // Item khusus super admin hanya utk superuser.
   if (item.superAdminOnly) return isSuperAdmin;
   // Item yang disembunyikan utk superuser (mis. kelola outlet global).
   if (item.superuserHidden && isSuperAdmin) return false;
+  // Item yang disembunyikan utk brand mitra (mis. report Outlet/Member).
+  if (item.mitraHidden && isMitraBrand) return false;
   // Item khusus mitra hanya utk user mitra / superuser.
   if (item.mitraOnly) return isMitraAccess;
   return (
@@ -393,14 +413,34 @@ function isParentAllowed(
   item: MenuItem,
   isSuperAdmin: boolean,
   isMitraAccess: boolean,
+  isMitraBrand: boolean,
 ) {
+  // Parent sendiri bisa di-hide (mis. grup report Outlet/Member utk brand mitra).
+  if (
+    !isItemAllowed(
+      userPermissions,
+      item,
+      isSuperAdmin,
+      isMitraAccess,
+      isMitraBrand,
+    )
+  ) {
+    return false;
+  }
+
   return item.children!.some(
     (c) =>
       // Child punya permission sendiri → gate sendiri.
       // Child tanpa permission → mewarisi permission parent (mis. Demand).
-      isItemAllowed(userPermissions, c, isSuperAdmin, isMitraAccess) &&
+      isItemAllowed(userPermissions, c, isSuperAdmin, isMitraAccess, isMitraBrand) &&
       (c.permission !== undefined ||
-        isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess)),
+        isItemAllowed(
+          userPermissions,
+          item,
+          isSuperAdmin,
+          isMitraAccess,
+          isMitraBrand,
+        )),
   );
 }
 
@@ -485,20 +525,34 @@ function ParentItem({
   userPermissions,
   isSuperAdmin,
   isMitraAccess,
+  isMitraBrand,
 }: {
   item: MenuItem;
   onNavigate: () => void;
   userPermissions: string[] | undefined;
   isSuperAdmin: boolean;
   isMitraAccess: boolean;
+  isMitraBrand: boolean;
 }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
   const visibleChildren = item.children?.filter(
     (c) =>
-      isItemAllowed(userPermissions, c, isSuperAdmin, isMitraAccess) &&
+      isItemAllowed(
+        userPermissions,
+        c,
+        isSuperAdmin,
+        isMitraAccess,
+        isMitraBrand,
+      ) &&
       (c.permission !== undefined ||
-        isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess)),
+        isItemAllowed(
+          userPermissions,
+          item,
+          isSuperAdmin,
+          isMitraAccess,
+          isMitraBrand,
+        )),
   );
   const isChildActive =
     visibleChildren?.some((c) => isPathActive(location.pathname, c.path)) ??
@@ -593,6 +647,8 @@ export function AuthorizedLayout() {
   const isSuperAdmin = !user?.user?.usergroup_id || !!user?.user?.is_superuser;
   // Akses mitra = superuser ATAU franchisor.type === 'mitra'.
   const isMitraAccess = useIsMitraAccess();
+  // Brand mitra asli (dipakai gate `mitraHidden`; superuser tidak termasuk).
+  const isMitraBrand = useFranchisorType() === "mitra";
 
   // Filter menu berdasarkan permission — super admin (tanpa permission) lihat semua.
   const visibleSections = useMemo(() => {
@@ -605,13 +661,20 @@ export function AuthorizedLayout() {
                 item,
                 isSuperAdmin,
                 isMitraAccess,
+                isMitraBrand,
               )
-            : isItemAllowed(userPermissions, item, isSuperAdmin, isMitraAccess),
+            : isItemAllowed(
+                userPermissions,
+                item,
+                isSuperAdmin,
+                isMitraAccess,
+                isMitraBrand,
+              ),
         );
         return items.length > 0 ? { ...section, items } : null;
       })
       .filter((s): s is MenuSection => s !== null);
-  }, [userPermissions, isSuperAdmin, isMitraAccess]);
+  }, [userPermissions, isSuperAdmin, isMitraAccess, isMitraBrand]);
 
   return (
     <div className='flex h-screen overflow-hidden bg-base-200'>
@@ -686,6 +749,7 @@ export function AuthorizedLayout() {
                       userPermissions={userPermissions}
                       isSuperAdmin={isSuperAdmin}
                       isMitraAccess={isMitraAccess}
+                      isMitraBrand={isMitraBrand}
                     />
                   ) : (
                     <NavItem

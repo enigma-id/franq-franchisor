@@ -7,25 +7,22 @@ import { Loading, MonthPicker } from "@/components/ui";
 import {
   TrendingUp,
   Package,
-  CreditCard,
   Store,
   Wallet,
-  Clock,
-  CheckCircle2,
-  FileText,
-  PieChart,
-  ConciergeBell,
   Receipt,
   Users,
   Medal,
   TriangleAlert,
+  PieChart,
+  ConciergeBell,
 } from "lucide-react";
 import { Page } from "@/components/app/layout";
 import { formatCurrency } from "@/utils";
-import { useIsSuperuser } from "@/utils/permission";
+import { useIsSuperuser, useIsMitraAccess } from "@/utils/permission";
 import { SummaryCard } from "@/components/app";
 import { useDashboard } from "@/services/dashboard/hooks";
 import SalesChart from "./components/SalesChart";
+import LiveMap from "./components/LiveMap";
 
 const THEMES = {
   green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
@@ -38,85 +35,10 @@ const THEMES = {
   amber: { text: "text-amber-500", iconBg: "#fef3c7", wave: "#f59e0b" },
 };
 
-const PipelineCard = ({
-  title,
-  data,
-  icon: Icon,
-  theme,
-  onClick,
-}: {
-  title: string;
-  data: any;
-  icon: any;
-  theme: any;
-  onClick?: () => void;
-}) => (
-  <div
-    onClick={onClick}
-    className={`bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full ${
-      onClick
-        ? "cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-150 group"
-        : ""
-    }`}
-  >
-    <div className='flex items-center gap-3 mb-3'>
-      <div
-        className='w-9 h-9 rounded-2xl flex items-center justify-center shadow-lg'
-        style={{ backgroundColor: theme.iconBg }}
-      >
-        <Icon className={`w-5 h-5 ${theme.text}`} />
-      </div>
-      <h3 className='text-sm font-bold text-slate-800'>{title}</h3>
-    </div>
-    <div className='space-y-3'>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          <Clock className='w-4 h-4 text-amber-500' />
-          <span className='text-xs font-medium text-slate-500'>Pending</span>
-        </div>
-        <span className='text-xs font-bold text-slate-800'>
-          {data?.pending || 0}
-        </span>
-      </div>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          <FileText className='w-4 h-4 text-blue-500' />
-          <span className='text-xs font-medium text-slate-500'>Published</span>
-        </div>
-        <span className='text-xs font-bold text-slate-800'>
-          {data?.published || 0}
-        </span>
-      </div>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          <CheckCircle2 className='w-4 h-4 text-emerald-500' />
-          <span className='text-xs font-bold text-slate-700'>Completed</span>
-        </div>
-        <span className='text-xs font-bold text-emerald-600'>
-          {data?.completed || 0}
-        </span>
-      </div>
-    </div>
-  </div>
-);
-
-const CompositionCard = ({
-  data,
-  onClick,
-}: {
-  data: any;
-  onClick?: () => void;
-}) => {
+const CompositionCard = ({ data }: { data: any }) => {
   const total = data?.data?.reduce((a: number, b: number) => a + b, 0) || 0;
   return (
-    <div
-      onClick={onClick}
-      className={`bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full ${
-        onClick
-          ? "cursor-pointer hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-150 group"
-          : ""
-      }`}
-    >
+    <div className='bg-white rounded-3xl p-4 shadow-xl shadow-slate-200/20 border border-slate-100 h-full'>
       <div className='flex items-center gap-3 mb-3'>
         <div className='w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-lg shadow-indigo-100'>
           <PieChart className='w-5 h-5 text-indigo-500' />
@@ -223,6 +145,11 @@ const DashboardPage: React.FC = () => {
   const [periode, setPeriode] = React.useState(dayjs().format("YYYY-MM"));
   const { get, getResult } = useDashboard();
   const isSuperuser = useIsSuperuser();
+  const isMitraAccess = useIsMitraAccess();
+  // Tab dashboard: "maps" hanya untuk user yang punya akses peta.
+  const [activeTab, setActiveTab] = React.useState<"maps" | "ringkasan">(
+    "maps",
+  );
   const { data: response, isLoading } = getResult;
 
   // The API returns the dashboard data directly at the root
@@ -248,14 +175,35 @@ const DashboardPage: React.FC = () => {
       />
 
       <Page.Body className='flex flex-col gap-6 pb-10'>
-        {isLoading ? (
+        {/* Tab Maps / Ringkasan — hanya kalau user punya akses peta */}
+        {isMitraAccess && (
+          <div className='shrink-0 inline-flex items-center gap-1 bg-white rounded-2xl p-1 border border-slate-100 shadow-sm w-fit'>
+            {(["maps", "ringkasan"] as const).map((key) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`px-4 py-2 text-sm font-bold rounded-xl transition-colors cursor-pointer ${
+                  activeTab === key
+                    ? "bg-primary text-primary-content shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {key === "maps" ? "Maps" : "Ringkasan"}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {isMitraAccess && activeTab === "maps" ? (
+          <LiveMap />
+        ) : isLoading ? (
           <div className='flex items-center justify-center h-80'>
             <Loading size='lg' variant='spinner' />
           </div>
         ) : (
           <>
             {/* Sales Chart */}
-            <div>
+            <div className='shrink-0'>
               <SalesChart
                 data={data?.sales_graph}
                 isLoading={isLoading}
@@ -264,20 +212,51 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Omset */}
-            <div className='grid grid-cols-2 md:grid-cols-5 gap-4'>
+            <div
+              className={`shrink-0 grid grid-cols-2 gap-4 ${
+                isSuperuser ? "md:grid-cols-6" : "md:grid-cols-5"
+              }`}
+            >
               <SummaryCard
                 label='Omset Total'
                 value={formatCurrency(data?.omset_total || 0)}
                 icon={TrendingUp}
                 theme={THEMES.indigo}
               />
-              <SummaryCard
-                label='Omset POS'
-                value={formatCurrency(data?.pos_summary?.omset || 0)}
-                icon={TrendingUp}
-                theme={THEMES.blue}
-                onClick={go(`/report/pos/settlement/daily?periode=${periode}`)}
-              />
+              {isSuperuser ? (
+                <>
+                  <SummaryCard
+                    label='Omset POS Mitra'
+                    value={formatCurrency(data?.pos_summary_mitra?.omset || 0)}
+                    icon={TrendingUp}
+                    theme={THEMES.teal}
+                    onClick={go(
+                      `/report/mitra/settlement/daily?periode=${periode}`,
+                    )}
+                  />
+                  <SummaryCard
+                    label='Omset POS Outlet'
+                    value={formatCurrency(
+                      data?.pos_summary_outlet?.omset || 0,
+                    )}
+                    icon={TrendingUp}
+                    theme={THEMES.blue}
+                    onClick={go(
+                      `/report/pos/settlement/daily?periode=${periode}`,
+                    )}
+                  />
+                </>
+              ) : (
+                <SummaryCard
+                  label='Omset POS'
+                  value={formatCurrency(data?.pos_summary?.omset || 0)}
+                  icon={TrendingUp}
+                  theme={THEMES.blue}
+                  onClick={go(
+                    `/report/pos/settlement/daily?periode=${periode}`,
+                  )}
+                />
+              )}
               <SummaryCard
                 label='Omset Franchise'
                 value={formatCurrency(data?.omset_franchise || 0)}
@@ -302,14 +281,40 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Middle Stats */}
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-              <SummaryCard
-                label='Outstanding POS'
-                value={formatCurrency(data?.pos_summary?.outstanding || 0)}
-                icon={Receipt}
-                theme={THEMES.rose}
-                onClick={go("/report/pos/outstanding")}
-              />
+            <div
+              className={`shrink-0 grid grid-cols-2 md:grid-cols-3 gap-4 ${
+                isSuperuser ? "lg:grid-cols-6" : "lg:grid-cols-5"
+              }`}
+            >
+              {isSuperuser ? (
+                <>
+                  <SummaryCard
+                    label='Outstanding POS Mitra'
+                    value={formatCurrency(
+                      data?.pos_summary_mitra?.outstanding || 0,
+                    )}
+                    icon={Receipt}
+                    theme={THEMES.rose}
+                  />
+                  <SummaryCard
+                    label='Outstanding POS Outlet'
+                    value={formatCurrency(
+                      data?.pos_summary_outlet?.outstanding || 0,
+                    )}
+                    icon={Receipt}
+                    theme={THEMES.rose}
+                    onClick={go("/report/pos/outstanding")}
+                  />
+                </>
+              ) : (
+                <SummaryCard
+                  label='Outstanding POS'
+                  value={formatCurrency(data?.pos_summary?.outstanding || 0)}
+                  icon={Receipt}
+                  theme={THEMES.rose}
+                  onClick={go("/report/pos/outstanding")}
+                />
+              )}
               <SummaryCard
                 label='Outstanding B2B'
                 value={formatCurrency(data?.b2b_summary?.outstanding || 0)}
@@ -325,32 +330,25 @@ const DashboardPage: React.FC = () => {
                 onClick={go("/withdrawal")}
               />
               <SummaryCard
-                label='Outlet Aktif'
-                value={`${data?.outlet_aktif || 0} / ${data?.total_outlet || 0}`}
+                label='Total Outlet'
+                value={data?.total_outlet || 0}
                 icon={Store}
                 theme={THEMES.teal}
                 onClick={go("/setting/outlet")}
               />
               <SummaryCard
-                label='Saldo Membership All Periode'
-                value={formatCurrency(data?.total_saldo_membership || 0)}
+                label='Transaksi Saldo Membership'
+                value={formatCurrency(
+                  data?.transaction_saldo_membership || 0,
+                )}
                 icon={Users}
                 theme={THEMES.purple}
                 onClick={go("/report/membership/saldo-log")}
               />
-              {isSuperuser && (
-                <SummaryCard
-                  label='Sales Order Pipeline'
-                  value={`${data?.so_pipeline?.published || 0} / ${data?.so_pipeline?.pending || 0}`}
-                  icon={Package}
-                  theme={THEMES.indigo}
-                  onClick={go("/central-kitchen")}
-                />
-              )}
             </div>
 
             {/* Top Menu / Top Member / Top Outlet / Top Outstanding */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+            <div className='shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
               <TopListCard
                 title='Top Menu'
                 items={data?.top_menu?.map((m: any) => ({
@@ -395,24 +393,8 @@ const DashboardPage: React.FC = () => {
               />
             </div>
 
-            {/* Pipeline & Composition */}
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              {isSuperuser && (
-                <PipelineCard
-                  title='Pipeline Sales Order'
-                  data={data?.so_pipeline}
-                  icon={TrendingUp}
-                  theme={THEMES.indigo}
-                  onClick={go("/central-kitchen")}
-                />
-              )}
-              <PipelineCard
-                title='Pipeline Purchase Order'
-                data={data?.po_pipeline}
-                icon={CreditCard}
-                theme={THEMES.rose}
-                onClick={go("/purchase/order")}
-              />
+            {/* Komposisi Pendapatan */}
+            <div className='shrink-0 grid grid-cols-1 md:grid-cols-3 gap-4'>
               <CompositionCard data={data?.revenue_composition} />
             </div>
           </>

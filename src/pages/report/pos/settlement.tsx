@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
@@ -13,60 +14,38 @@ import { SettlementSummaryCards } from "@/components/app";
 import { useNavigate } from "react-router-dom";
 import { useOutletType } from "@/services/outlet/hooks";
 
-export default function POSSettlementMonthlyPage() {
-  const [outletType, setOutletType] = useState<any>(null);
-
-  const { get: getOutletType, getResult: getOutletTypeResult } =
-    useOutletType();
-
-  useEffect(() => {
-    getOutletType({ search: "Outlet" });
-  }, []);
-
-  useEffect(() => {
-    if (getOutletTypeResult?.data?.data) {
-      const items = getOutletTypeResult?.data?.data as any[] | undefined;
-      if (items?.length === 1) {
-        const item = items[0];
-        setOutletType(item);
-      }
-    }
-  }, [getOutletTypeResult]);
-
-  if (!outletType) {
-    return (
-      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
-        Loading...
-      </Page>
-    );
-  }
-
-  return <SettlementMonthlyTable outletTypeId={outletType.id} />;
-}
-
-function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
-  const navigate = useNavigate();
-
-  const activeOutletId = useSelector(
-    (state: RootState) => state?.table?.data?.pos_settlement?.filter?.outlet_id,
-  );
+/**
+ * Body report reusable — dipakai halaman Settlement tahunan standalone dan tab di
+ * detail Laporan Outlet (outlet dikunci saat `outletId` diisi).
+ */
+export function SettlementReport({
+  outletId,
+  outletTypeId,
+  onRowClick,
+}: {
+  outletId?: string;
+  outletTypeId?: string;
+  onRowClick?: (row: any) => void;
+}) {
+  const lockOutlet = !!outletId;
 
   const tableConfig = useMemo(() => {
     return createTableConfig({
       filter: {
         periode: new Date().getFullYear(),
-        outlet_type_id: outletTypeId,
+        ...(lockOutlet
+          ? { outlet_id: outletId }
+          : { outlet_type_id: outletTypeId }),
       },
-      onRowClick: (row: any) =>
-        navigate(
-          `/report/pos/settlement/daily?periode=${row.date}${
-            activeOutletId ? `&outlet_id=${activeOutletId}` : ""
-          }`,
-        ),
+      lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
+      onRowClick,
     });
-  }, [navigate, activeOutletId]);
+  }, [lockOutlet, outletId, outletTypeId, onRowClick]);
 
-  const Table = useTable("pos_settlement", tableConfig as TableConfig<unknown>);
+  const Table = useTable(
+    lockOutlet ? "outlet_tab_settlement" : "pos_settlement",
+    tableConfig as TableConfig<unknown>,
+  );
 
   const currentFilter = useMemo(() => {
     return {
@@ -121,22 +100,84 @@ function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
   }, [summaryResponse]);
 
   return (
+    <>
+      <SettlementSummaryCards summary={summary} />
+
+      <Table.Tools downloadable hideSearch>
+        <TableFilter
+          table={Table}
+          outletTypeId={outletTypeId}
+          lockOutlet={lockOutlet}
+        />
+      </Table.Tools>
+
+      <Table.Render
+        emptyTitle='No Settlement Data'
+        emptyDescription='Settlement data will appear here once available.'
+      />
+    </>
+  );
+}
+
+export default function POSSettlementMonthlyPage() {
+  const [outletType, setOutletType] = useState<any>(null);
+
+  const { get: getOutletType, getResult: getOutletTypeResult } =
+    useOutletType();
+
+  useEffect(() => {
+    getOutletType({ search: "Outlet" });
+  }, []);
+
+  useEffect(() => {
+    if (getOutletTypeResult?.data?.data) {
+      const items = getOutletTypeResult?.data?.data as any[] | undefined;
+      if (items?.length === 1) {
+        const item = items[0];
+        setOutletType(item);
+      }
+    }
+  }, [getOutletTypeResult]);
+
+  if (!outletType) {
+    return (
+      <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
+        Loading...
+      </Page>
+    );
+  }
+
+  return <SettlementMonthlyTable outletTypeId={outletType.id} />;
+}
+
+function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
+  const navigate = useNavigate();
+
+  const activeOutletId = useSelector(
+    (state: RootState) => state?.table?.data?.pos_settlement?.filter?.outlet_id,
+  );
+
+  const onRowClick = useCallback(
+    (row: any) =>
+      navigate(
+        `/report/pos/settlement/daily?periode=${row.date}${
+          activeOutletId ? `&outlet_id=${activeOutletId}` : ""
+        }`,
+      ),
+    [navigate, activeOutletId],
+  );
+
+  return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='POS Settlement'
-        subtitle='Laporan penyelesaian pembayaran.'
+        title='Settlement'
+        subtitle='Rekap penyelesaian pembayaran outlet.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
-        <SettlementSummaryCards summary={summary} />
-
-        <Table.Tools downloadable hideSearch>
-          <TableFilter table={Table} outletTypeId={outletTypeId} />
-        </Table.Tools>
-
-        <Table.Render
-          emptyTitle='No Settlement Data'
-          emptyDescription='Settlement data will appear here once available.'
+        <SettlementReport
+          outletTypeId={outletTypeId}
+          onRowClick={onRowClick}
         />
       </Page.Body>
     </Page>

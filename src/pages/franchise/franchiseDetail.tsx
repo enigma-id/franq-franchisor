@@ -210,6 +210,7 @@ const FranchiseDetailPage: React.FC = () => {
               <FranchiseOutletTab
                 franchisorId={franchisorId}
                 franchiseName={franchise.name}
+                franchiseType={franchise.type}
               />
             )}
             {activeTab === "menu" && (

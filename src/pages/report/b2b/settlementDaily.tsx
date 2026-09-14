@@ -106,8 +106,8 @@ export default function B2BSettlementDailyPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title={`B2B Settlement Daily — ${periode}`}
-        subtitle='Laporan penyelesaian pembayaran B2B.'
+        title={`Settlement Harian — ${periode}`}
+        subtitle='Rekap penyelesaian pembayaran B2B.'
         backTo={() => navigate(-1)}
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>

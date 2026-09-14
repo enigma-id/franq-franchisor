@@ -1,4 +1,5 @@
 import type { ApprovalStatus } from "./api";
+import type { FranchisorDetail } from "./franchisor";
 
 export interface WithdrawalRequest {
   id: string;
@@ -17,6 +18,7 @@ export interface WithdrawalRequest {
   processed_at: string;
   created_at: string;
   updated_at: string;
+  franchisor: FranchisorDetail;
   outlet?: {
     id: string;
     name: string;

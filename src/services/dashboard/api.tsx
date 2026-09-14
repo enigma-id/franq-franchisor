@@ -13,7 +13,15 @@ export const dashboardApi = createApi({
         params,
       }),
     }),
+    getLiveMap: builder.query({
+      query: (params) => ({
+        url: "/dashboard/live-map",
+        method: "GET",
+        params,
+      }),
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
-export const { useLazyGetDashboardQuery } = dashboardApi;
+export const { useLazyGetDashboardQuery, useLazyGetLiveMapQuery } = dashboardApi;

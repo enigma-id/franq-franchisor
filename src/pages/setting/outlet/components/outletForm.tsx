@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import type { OutletCreateRequest } from "@/services/types/outlet";
+import type { FranchisorType } from "@/services/types/franchisor";
 import { Input } from "@/components";
 import { useAppSelector } from "@/hooks";
 
@@ -12,6 +13,8 @@ interface OutletFormProps {
   hideOwnerSection?: boolean;
   /** Brand/franchisor default saat create (mis. dari detail franchise). */
   defaultFranchisorId?: string;
+  /** Tipe brand outlet — brand mitra tidak pakai Biaya Layanan. */
+  franchisorType?: FranchisorType;
   onSubmit: (data: OutletCreateRequest) => void;
 }
 
@@ -20,9 +23,11 @@ export const OutletForm: React.FC<OutletFormProps> = ({
   initialData,
   hideOwnerSection = false,
   defaultFranchisorId,
+  franchisorType,
   onSubmit,
 }) => {
   const FormState = useAppSelector((s) => s.form);
+  const hideServiceCharges = franchisorType === "mitra";
 
   const [formData, setFormData] = useState<OutletCreateRequest>({
     name: "",
@@ -45,7 +50,7 @@ export const OutletForm: React.FC<OutletFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({ ...formData, owner_name: formData.recipient_name });
   };
 
   return (
@@ -90,19 +95,21 @@ export const OutletForm: React.FC<OutletFormProps> = ({
             placeholder='Contoh: 081234567890'
             error={FormState?.errors?.phone as string}
           />
-          <Input
-            label='Biaya Layanan (%)'
-            type='number'
-            required
-            value={formData.service_charges}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                service_charges: Number(e.target.value),
-              })
-            }
-            error={FormState?.errors?.service_charges as string}
-          />
+          {!hideServiceCharges && (
+            <Input
+              label='Biaya Layanan (%)'
+              type='number'
+              required
+              value={formData.service_charges}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  service_charges: Number(e.target.value),
+                })
+              }
+              error={FormState?.errors?.service_charges as string}
+            />
+          )}
         </div>
 
         {/* Alamat (di dalam Informasi Utama) */}
@@ -134,16 +141,6 @@ export const OutletForm: React.FC<OutletFormProps> = ({
           </div>
           <div className='p-5 space-y-4'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <Input
-                label='Nama Pemilik'
-                required
-                value={formData.owner_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, owner_name: e.target.value })
-                }
-                placeholder='Contoh: Budi Pemilik'
-                error={FormState?.errors?.owner_name as string}
-              />
               <Input
                 label='Username'
                 required

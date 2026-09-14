@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect, useState } from "react";
 import createTableConfig from "./table/outlet-saldo.config";
@@ -39,6 +40,64 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
+/**
+ * Body report reusable — dipakai halaman Saldo Outlet standalone dan tab di
+ * detail Rekap Outlet. `tableName` dipakai supaya state tabel tab tidak bentrok
+ * dengan halaman standalone.
+ */
+export function OutletSaldoReport({
+  outletTypeId,
+  tableName,
+}: {
+  outletTypeId?: string;
+  tableName?: string;
+}) {
+  const tableConfig = useMemo(
+    () =>
+      createTableConfig(
+        outletTypeId ? { filter: { outlet_type_id: outletTypeId } } : {},
+      ),
+    [outletTypeId],
+  );
+
+  const Table = useTable(
+    tableName ?? "mitra_report_outlet_saldo",
+    tableConfig as TableConfig<unknown>,
+  );
+
+  const currentFilter = useMemo(() => {
+    return {
+      ...(Table.State?.lockedFilter || {}),
+      ...(Table.State?.filter || {}),
+      search: Table.State?.textSearch || "",
+    };
+  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
+
+  const currentFilterString = JSON.stringify(currentFilter);
+
+  const { outletSaldoSummary, outletSaldoSummaryResult } = useReport();
+  const { data: summaryResult } = outletSaldoSummaryResult;
+
+  useEffect(() => {
+    outletSaldoSummary(JSON.parse(currentFilterString));
+  }, [currentFilterString, Table.State !== undefined]);
+
+  const summary = summaryResult?.data;
+
+  return (
+    <>
+      <OverviewCards data={summary} />
+
+      <Table.Tools downloadable />
+      <Table.Render
+        emptyTitle='Belum Ada Data'
+        emptyDescription='Data mitra saldo akan muncul di sini.'
+      />
+      <Table.Pagination />
+    </>
+  );
+}
+
 export default function MitraOutletSaldoPage() {
   const [outletType, setOutletType] = useState<any>(null);
 
@@ -67,58 +126,15 @@ export default function MitraOutletSaldoPage() {
     );
   }
 
-  return <OutletSaldoTable outletTypeId={outletType.id} />;
-}
-
-function OutletSaldoTable({ outletTypeId }: { outletTypeId: string }) {
-  const tableConfig = useMemo(
-    () =>
-      createTableConfig({
-        filter: { outlet_type_id: outletTypeId },
-      }),
-    [outletTypeId],
-  );
-
-  const Table = useTable(
-    "mitra_report_outlet_saldo",
-    tableConfig as TableConfig<unknown>,
-  );
-
-  const currentFilter = useMemo(() => {
-    return {
-      ...(Table.State?.lockedFilter || {}),
-      ...(Table.State?.filter || {}),
-      search: Table.State?.textSearch || "",
-    };
-  }, [Table.State?.lockedFilter, Table.State?.filter, Table.State?.textSearch]);
-
-  const currentFilterString = JSON.stringify(currentFilter);
-
-  const { outletSaldoSummary, outletSaldoSummaryResult } = useReport();
-  const { data: summaryResult } = outletSaldoSummaryResult;
-
-  useEffect(() => {
-    outletSaldoSummary(JSON.parse(currentFilterString));
-  }, [currentFilterString, Table.State !== undefined]);
-
-  const summary = summaryResult?.data;
-
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Mitra Saldo'
-        subtitle='Laporan mitra saldo mitra.'
+        title='Saldo Outlet'
+        subtitle='Rekap saldo mitra.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <OverviewCards data={summary} />
-
-        <Table.Tools downloadable />
-        <Table.Render
-          emptyTitle='Belum Ada Data'
-          emptyDescription='Data mitra saldo akan muncul di sini.'
-        />
-        <Table.Pagination />
+        <OutletSaldoReport outletTypeId={outletType.id} />
       </Page.Body>
     </Page>
   );

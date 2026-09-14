@@ -58,13 +58,25 @@ export interface OutletMapHistory {
   latitude: number
   longitude: number
   created_at: string
+  cashier_id?: string
+  cashier_name?: string
+  battery_health?: string
+  total_charges?: number
+  total_transactions?: number
+}
+
+/** Satu kasir + jejak GPS-nya di dalam sebuah outlet. */
+export interface OutletMapCashier {
+  cashier_id: string
+  cashier_name: string
+  historys: OutletMapHistory[]
 }
 
 export interface OutletMapRow {
   outlet: string
   outlet_name: string
   total_charges: number
-  historys: OutletMapHistory[]
+  cashiers: OutletMapCashier[]
 }
 
 // Membership Report
@@ -103,4 +115,82 @@ export interface SaldoLogReportRow {
 export interface SaldoLogReportSummary {
   total_nominal: number
   total_count: number
+}
+
+// Laporan Outlet (rekap per-outlet — baris = outlet)
+export interface ReportOutletRow {
+  outlet_id: string
+  outlet_name: string
+  brand_name: string
+  brand_type: string
+  status: string
+  total_sales: number
+  omzet: number
+  total_outstanding: number
+  outstanding_amount: number
+  total_session: number
+  aov: number
+  cancelled_count: number
+}
+
+export interface ReportOutletSummary {
+  total_outlet: number
+  active_outlet: number
+  total_sales: number
+  total_omzet: number
+  total_outstanding: number
+  outstanding_amount: number
+  total_session: number
+  cancelled_count: number
+}
+
+// Laporan Sesi
+export interface ReportSessionRow {
+  session_id: string
+  outlet_id: string
+  outlet_name: string
+  cashier_id: string
+  cashier_name: string
+  transaction_date: string
+  started_at: string
+  finished_at: string
+  status: string
+  cash_started: number
+  cash_finished: number
+  total_sales: number
+  total_discount: number
+  total_service: number
+  grand_total: number
+  outstanding_bill: number
+}
+
+// Live Map dashboard — satu item per operator (kasir/manager)
+export interface CashierLiveMapItem {
+  cashier_id: string
+  cashier_name: string
+  outlet_id?: string
+  outlet_name?: string
+  status: string
+  last_activity_at?: string
+  last_battery_health?: string
+  last_latitude: number
+  last_longitude: number
+  historys?: OutletMapHistory[]
+}
+
+/**
+ * Item yang digambar di peta kasir — dipakai bersama oleh Live Map dashboard
+ * (`CashierLiveMapItem`) dan Peta Outlet (hasil group `historys[]` per `cashier_id`).
+ */
+export interface CashierMapItem {
+  cashier_id: string
+  cashier_name: string
+  outlet_id?: string
+  outlet_name?: string
+  status?: string
+  last_activity_at?: string
+  last_battery_health?: string
+  last_latitude?: number
+  last_longitude?: number
+  historys?: OutletMapHistory[]
 }

@@ -38,22 +38,27 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
-export default function MembershipReportPage() {
+/**
+ * Body report reusable — dipakai halaman Daftar Member standalone dan tab di
+ * detail Rekap Outlet (filter `outlet_id` diisi saat dipakai sebagai tab).
+ */
+export function MembershipReport({ outletId }: { outletId?: string }) {
   const navigate = useNavigate();
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
+        filter: outletId ? { outlet_id: outletId } : undefined,
         onRowClick: (row: any) =>
           navigate(
             `/report/membership/saldo-log?membership_id=${row.membership_id}`,
           ),
       }),
-    [],
+    [outletId, navigate],
   );
 
   const Table = useTable(
-    "report_membership",
+    outletId ? "outlet_tab_membership" : "report_membership",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -77,23 +82,31 @@ export default function MembershipReportPage() {
   const summary = summaryResult?.data;
 
   return (
+    <>
+      <OverviewCards data={summary} />
+
+      <Table.Tools downloadable>
+        <TableFilter table={Table} />
+      </Table.Tools>
+      <Table.Render
+        emptyTitle='Belum Ada Data'
+        emptyDescription='Data member akan muncul di sini.'
+      />
+      <Table.Pagination />
+    </>
+  );
+}
+
+export default function MembershipReportPage() {
+  return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Report Membership'
-        subtitle='Laporan member beserta saldo dan transaksi terakhir.'
+        title='Daftar Member'
+        subtitle='Rekap member beserta saldo dan transaksi terakhir.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <OverviewCards data={summary} />
-
-        <Table.Tools downloadable>
-          <TableFilter table={Table} />
-        </Table.Tools>
-        <Table.Render
-          emptyTitle='Belum Ada Data'
-          emptyDescription='Data member akan muncul di sini.'
-        />
-        <Table.Pagination />
+        <MembershipReport />
       </Page.Body>
     </Page>
   );

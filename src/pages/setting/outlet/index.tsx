@@ -12,7 +12,7 @@ import type { TableConfig } from "@/services/table/const";
 import { OutletUserForm } from "./components/OutletUserForm";
 import { OutletForm } from "./components/outletForm";
 import type { OutletCreateRequest, OutletDetail } from "@/services/types/outlet.ts";
-import { useCan } from "@/utils/permission";
+import { useCan, useFranchisorType } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import { useUser } from "@/services/user/hooks";
 import { UserRound, Save, Store, Plus } from "lucide-react";
@@ -21,6 +21,7 @@ const OutletListPage: React.FC = () => {
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.outlet);
   const canManageUser = useCan(ACTION.user);
+  const franchisorType = useFranchisorType();
 
   const {
     create,
@@ -415,6 +416,7 @@ const OutletListPage: React.FC = () => {
                 id='outlet-form'
                 initialData={editingOutlet ? (outletEditData ?? editingOutlet) : null}
                 hideOwnerSection={!!editingOutlet}
+                franchisorType={franchisorType}
                 onSubmit={handleOutletSubmit}
               />
             )}

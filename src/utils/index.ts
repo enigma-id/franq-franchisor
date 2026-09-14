@@ -15,6 +15,7 @@ export * from "./url";
 export * from "./permission";
 export * from "./errors";
 export * from "./cn";
+export * from "./deviceStatus";
 
 // Convenience alias
 export const formatCurrency = currencyFormat;
