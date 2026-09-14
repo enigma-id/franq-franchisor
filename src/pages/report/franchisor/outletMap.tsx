@@ -140,6 +140,10 @@ function CashierMapPanel({
       isOngoing(s.finished_at) ? "Sekarang" : formatDateTime(s.finished_at)
     }`;
 
+  /** Label nilai terpilih di select: kasir • rentang waktunya. */
+  const sessionValueLabel = (s: ReportSessionRow) =>
+    `${s.cashier_name || "-"} • ${sessionTimes(s)}`;
+
   return (
     <div className='flex-1 min-w-0 flex flex-col bg-white border border-slate-200/60 rounded-2xl overflow-hidden'>
       <div className='px-5 py-4 border-b border-slate-100 flex flex-wrap items-center gap-3 shrink-0'>
@@ -157,7 +161,7 @@ function CashierMapPanel({
             onChange={(row) => onSessionSelect?.(row.session_id)}
             onClear={() => onSessionSelect?.(null)}
             data={sessions}
-            getLabel={sessionLabel}
+            getLabel={sessionValueLabel}
             renderItem={(row) => (
               <div className='flex items-start justify-between gap-3'>
                 <div className='flex flex-col'>
