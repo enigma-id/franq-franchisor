@@ -87,14 +87,17 @@ export function ReceivingForm({
         const existing = data?.items?.find((di) => di.plan_item_id === pi.id);
         const frac = existing?.received_fraction ?? null;
         const rawReceived = toNumber(existing?.quantity_received);
+        // Prefill sisa dari plan hanya saat create; update ikut dokumen apa adanya.
         const receivedQty = existing
           ? frac?.quantity
             ? rawReceived / frac.quantity
             : rawReceived
-          : Math.max(
-              0,
-              toNumber(pi.quantity_planned) - toNumber(pi.quantity_received),
-            );
+          : data
+            ? 0
+            : Math.max(
+                0,
+                toNumber(pi.quantity_planned) - toNumber(pi.quantity_received),
+              );
 
         const defectFrac = existing?.defect_fraction ?? null;
         const rawDefect = toNumber(existing?.quantity_defect);
@@ -184,10 +187,10 @@ export function ReceivingForm({
               f)
             : f;
 
-        // Item dengan satu satuan langsung dipilihkan.
+        // Item dengan satu satuan dipilihkan saat create; update ikut dokumen.
         const receivedFraction =
           toFranchisor(r.receivedFraction) ??
-          (fractions.length === 1 ? fractions[0] : null);
+          (!data && fractions.length === 1 ? fractions[0] : null);
         const defectFraction = toFranchisor(r.defectFraction);
 
         if (
@@ -200,7 +203,7 @@ export function ReceivingForm({
         return { ...r, receivedFraction, defectFraction };
       }),
     );
-  }, [fractionsCache]);
+  }, [fractionsCache, data]);
 
   const updateRow = (index: number, patch: Partial<RowState>) => {
     setRows((prev) =>

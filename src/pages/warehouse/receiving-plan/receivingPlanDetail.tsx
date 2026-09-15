@@ -53,6 +53,7 @@ export default function ReceivingPlanDetailPage() {
   } = useReceivingPlan();
 
   const {
+    show: showReceiving,
     complete: completeReceiving,
     completeResult: completeReceivingResult,
     remove: removeReceiving,
@@ -148,6 +149,16 @@ export default function ReceivingPlanDetailPage() {
       message: `Apakah Anda yakin ingin menghapus dokumen penerimaan ${r.code}?`,
       onConfirm: () => removeReceiving({ id: r.id }),
     });
+  };
+
+  // Baris list tidak membawa items[] — ambil detailnya dulu agar print lengkap.
+  const handlePrintReceiving = async (r: Receiving) => {
+    try {
+      const res = await showReceiving({ id: r.id });
+      openPrint(<ReceivingDocPrint data={(res?.data as Receiving) ?? r} />);
+    } catch {
+      openPrint(<ReceivingDocPrint data={r} />);
+    }
   };
 
   return (
@@ -394,9 +405,7 @@ export default function ReceivingPlanDetailPage() {
                             <Tooltip label='Print'>
                               <Button
                                 size='sm'
-                                onClick={() =>
-                                  openPrint(<ReceivingDocPrint data={r} />)
-                                }
+                                onClick={() => handlePrintReceiving(r)}
                               >
                                 <Printer className='w-4 h-4' />
                               </Button>
