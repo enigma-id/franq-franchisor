@@ -224,9 +224,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
           </Button>
         </div>
         <div className='flex-1 flex flex-col min-h-0'>
-          <Table.Tools hideSearch>
-            <div />
-          </Table.Tools>
+          <Table.Tools />
           <Table.Render
             emptyTitle='Belum Ada Kategori POS'
             emptyDescription={`Belum ada kategori POS untuk brand ${franchiseName ?? "ini"}.`}

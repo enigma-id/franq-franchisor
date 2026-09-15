@@ -168,9 +168,7 @@ export const FranchiseMenuTab: React.FC<FranchiseMenuTabProps> = ({
         </Button>
       </div>
       <div className='flex-1 flex flex-col min-h-0'>
-        <Table.Tools hideSearch>
-          <div />
-        </Table.Tools>
+        <Table.Tools />
         <Table.Render
           emptyTitle='Belum Ada Menu POS'
           emptyDescription={`Belum ada menu POS untuk brand ${franchiseName ?? "ini"}.`}

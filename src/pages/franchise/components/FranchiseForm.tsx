@@ -106,6 +106,7 @@ export function FranchiseForm({
         label='Tipe'
         placeholder='Pilih Tipe...'
         required
+        disabled={isEdit}
         data={TYPES}
         value={typeSelected}
         getLabel={(item: any) => item?.label || ""}

@@ -175,7 +175,10 @@ const FranchiseOutletTab: React.FC<FranchiseOutletTabProps> = ({
     ],
   );
 
-  const Table = useTable("franchise-outlet-list", tableConfig as any);
+  const Table = useTable(
+    `franchise-outlet-list-${franchisorId}`,
+    tableConfig as any,
+  );
 
   const bootTable = () => Table.boot();
 
@@ -326,9 +329,7 @@ const FranchiseOutletTab: React.FC<FranchiseOutletTabProps> = ({
           </Button>
         </div>
         <div className='flex-1 flex flex-col min-h-0'>
-          <Table.Tools hideSearch>
-            <div />
-          </Table.Tools>
+          <Table.Tools />
           <Table.Render
             emptyTitle='Belum Ada Outlet'
             emptyDescription={`Belum ada outlet untuk brand ${franchiseName ?? "ini"}.`}
