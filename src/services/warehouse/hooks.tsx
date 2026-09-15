@@ -1,22 +1,32 @@
 import { createCrudHook } from "../hooks/createCrudHook";
 import type {
   DeliveryPlanDetail,
+  ItemBatch,
+  Receiving,
   ReceivingPlanDetail,
   WarehouseDetail,
+  WarehouseLocation,
 } from "../types";
 import {
   useCompleteDeliveryPlanMutation,
+  useCompleteReceivingMutation,
   useCompleteReceivingPlanMutation,
+  useCreateReceivingMutation,
+  useDeleteReceivingMutation,
   useDeliverDeliveryPlanMutation,
   useFulfilledDeliveryPlanMutation,
+  useLazyGetBatchesQuery,
   useLazyGetDeliveryPlanQuery,
   useLazyGetDeliveryPlanSummaryQuery,
   useLazyGetDeliveryPlansQuery,
+  useLazyGetLocationsQuery,
   useLazyGetReceivingPlanQuery,
   useLazyGetReceivingPlanSummaryQuery,
   useLazyGetReceivingPlansQuery,
+  useLazyGetReceivingQuery,
   useLazyGetReceivingsQuery,
   useLazyGetWarehousesQuery,
+  useUpdateReceivingMutation,
 } from "./api";
 
 export const useWarehouse = createCrudHook<WarehouseDetail>({
@@ -49,4 +59,28 @@ export const useReceivingPlan = createCrudHook<ReceivingPlanDetail>({
     summary: useLazyGetReceivingPlanSummaryQuery,
     receivings: useLazyGetReceivingsQuery,
   },
+});
+
+export const useReceiving = createCrudHook<Receiving>({
+  entityName: "receiving",
+  useLazyGetQuery: useLazyGetReceivingsQuery,
+  useLazyShowQuery: useLazyGetReceivingQuery,
+  useCreateMutation: useCreateReceivingMutation,
+  useUpdateMutation: useUpdateReceivingMutation,
+  useRemoveMutation: useDeleteReceivingMutation,
+  customOperations: {
+    complete: { hook: useCompleteReceivingMutation },
+  },
+});
+
+// Lokasi gudang (area receiving/quarantine) — proxy BE menyusul.
+export const useWarehouseLocation = createCrudHook<WarehouseLocation>({
+  entityName: "warehouseLocation",
+  useLazyGetQuery: useLazyGetLocationsQuery,
+});
+
+// Batch item — proxy BE menyusul.
+export const useItemBatch = createCrudHook<ItemBatch>({
+  entityName: "itemBatch",
+  useLazyGetQuery: useLazyGetBatchesQuery,
 });

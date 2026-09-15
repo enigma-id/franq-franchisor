@@ -10,9 +10,19 @@ import type { OutletDetail } from "./outlet";
 export interface DeliveryPlanItem {
   id: string;
   item_id: string;
-  item?: { name?: string };
+  item?: {
+    /** ID item di warehouse (proxy memakai ref_id, bukan id). */
+    ref_id?: string;
+    name?: string;
+    code?: string;
+    alias_name?: string;
+    default_fraction?: string;
+  };
+  fraction_id?: string;
   quantity_planned: number;
   quantity_fulfilled: number;
+  quantity_planned_fracted?: string;
+  quantity_fulfilled_fracted?: string;
 }
 
 export interface DeliveryPlanWarehouse {

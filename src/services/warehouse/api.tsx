@@ -4,7 +4,7 @@ import { baseQuery } from "../baseQuery";
 export const warehouseApi = createApi({
   reducerPath: "warehouseApi",
   baseQuery,
-  tagTypes: ["Warehouse", "DeliveryPlan", "ReceivingPlan"],
+  tagTypes: ["Warehouse", "DeliveryPlan", "ReceivingPlan", "Receiving"],
   endpoints: (builder) => ({
     getWarehouses: builder.query({
       query: (params) => ({
@@ -94,6 +94,57 @@ export const warehouseApi = createApi({
         params,
       }),
     }),
+    getReceiving: builder.query({
+      query: ({ id, ...params }) => ({
+        url: `/receiving/${id}`,
+        method: "GET",
+        params,
+      }),
+    }),
+    createReceiving: builder.mutation({
+      query: (body) => ({
+        url: "/receiving",
+        method: "POST",
+        body,
+      }),
+    }),
+    updateReceiving: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/receiving/${id}`,
+        method: "PUT",
+        body,
+      }),
+    }),
+    completeReceiving: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/receiving/${id}/complete`,
+        method: "PUT",
+        body,
+      }),
+    }),
+    deleteReceiving: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/receiving/${id}`,
+        method: "DELETE",
+        body,
+      }),
+    }),
+
+    // ─── Warehouse Location & Batch (proxy BE, menyusul) ───────────────────
+    getLocations: builder.query({
+      query: (params) => ({
+        url: "/location",
+        method: "GET",
+        params,
+      }),
+    }),
+    getBatches: builder.query({
+      query: (params) => ({
+        url: "/batch",
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -110,4 +161,11 @@ export const {
   useLazyGetReceivingPlanSummaryQuery,
   useCompleteReceivingPlanMutation,
   useLazyGetReceivingsQuery,
+  useLazyGetReceivingQuery,
+  useCreateReceivingMutation,
+  useUpdateReceivingMutation,
+  useCompleteReceivingMutation,
+  useDeleteReceivingMutation,
+  useLazyGetLocationsQuery,
+  useLazyGetBatchesQuery,
 } = warehouseApi;

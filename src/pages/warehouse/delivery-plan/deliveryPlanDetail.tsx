@@ -7,6 +7,7 @@ import {
   ListOrdered,
   Minus,
   Plus,
+  Printer,
   Store,
   Truck,
 } from "lucide-react";
@@ -14,11 +15,13 @@ import {
 import { Page } from "@/components/app/layout";
 import { Badge, Button, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
+import DeliveryPlanPrint from "@/components/app/print/delivery-plan";
 import { useDeliveryPlan } from "@/services/warehouse/hooks";
 import type { DeliveryPlanDetail } from "@/services/types";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 import { formatDate, getStatusVariant } from "@/utils";
+import { usePrintWindow } from "@/utils/usePrintWindow";
 import { useAppSelector } from "@/hooks";
 
 type ConfirmState = {
@@ -35,6 +38,10 @@ export default function DeliveryPlanDetailPage() {
   const navigate = useNavigate();
   const { showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.delivery);
+  const { open: openPrint } = usePrintWindow({
+    title: "Print Delivery Plan",
+    autoClose: true,
+  });
 
   const {
     show,
@@ -194,28 +201,35 @@ export default function DeliveryPlanDetailPage() {
         title={`Delivery #${data?.code ?? "-"}`}
         backTo={() => navigate("/warehouse/delivery-plan")}
         action={
-          canManage && (
-            <div className='flex gap-2'>
-              {canComplete && (
-                <Button
-                  variant='primary'
-                  onClick={handleComplete}
-                  isLoading={completeResult?.isLoading}
-                >
-                  <CheckCircle2 className='w-4 h-4' /> Complete
-                </Button>
-              )}
-              {canDeliver && (
-                <Button
-                  variant='primary'
-                  onClick={handleDelivered}
-                  isLoading={deliveredResult?.isLoading}
-                >
-                  <Truck className='w-4 h-4' /> Sudah Diambil
-                </Button>
-              )}
-            </div>
-          )
+          <div className='flex gap-2'>
+            <Button
+              onClick={() => openPrint(<DeliveryPlanPrint data={data} />)}
+            >
+              <Printer className='w-4 h-4' />
+            </Button>
+            {canManage && (
+              <>
+                {canComplete && (
+                  <Button
+                    variant='primary'
+                    onClick={handleComplete}
+                    isLoading={completeResult?.isLoading}
+                  >
+                    <CheckCircle2 className='w-4 h-4' /> Complete
+                  </Button>
+                )}
+                {canDeliver && (
+                  <Button
+                    variant='primary'
+                    onClick={handleDelivered}
+                    isLoading={deliveredResult?.isLoading}
+                  >
+                    <Truck className='w-4 h-4' /> Sudah Diambil
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
         }
       />
 
@@ -364,17 +378,35 @@ export default function DeliveryPlanDetailPage() {
                     <td className='px-4 py-3'>{idx + 1}</td>
                     <td className='px-4 py-3'>
                       <div className='flex flex-col'>
-                        <span>{item.item?.name || "-"}</span>
+                        <span>{item.item?.alias_name || "-"}</span>
                         <span className='text-[11px] text-slate-400'>
                           {item.item?.code || ""}
                         </span>
                       </div>
                     </td>
                     <td className='px-4 py-3 text-right'>
-                      {item.quantity_planned}
+                      <div className='text-sm text-start! py-2'>
+                        {item?.quantity_planned} {item?.item?.default_fraction}
+                        <p className='text-xs text-slate-400'>{`(${item?.quantity_planned_fracted})`}</p>
+                      </div>
                     </td>
                     <td className='px-4 py-3 text-right'>
-                      {item.quantity_fulfilled}
+                      <div
+                        className={`text-sm text-start! py-2 font-semibold ${
+                          data?.fulfillment_status === "new"
+                            ? "font-normal!"
+                            : item?.quantity_fulfilled ===
+                                item?.quantity_planned
+                              ? "text-success!"
+                              : "text-error!"
+                        }`}
+                      >
+                        {item?.quantity_fulfilled}{" "}
+                        {item?.item?.default_fraction}
+                        {item?.quantity_fulfilled > 0 && (
+                          <p className='text-xs text-slate-400'>{`(${item?.quantity_fulfilled_fracted})`}</p>
+                        )}
+                      </div>
                     </td>
                     {canFulfill && (
                       <td className='px-4 py-3'>

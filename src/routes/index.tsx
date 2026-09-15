@@ -58,6 +58,9 @@ import DeliveryPlanListPage from "@/pages/warehouse/delivery-plan";
 import DeliveryPlanDetailPage from "@/pages/warehouse/delivery-plan/deliveryPlanDetail";
 import ReceivingPlanListPage from "@/pages/warehouse/receiving-plan";
 import ReceivingPlanDetailPage from "@/pages/warehouse/receiving-plan/receivingPlanDetail";
+import ReceivingDetailPage from "@/pages/warehouse/receiving-plan/receivingDetail";
+import ReceivingCreatePage from "@/pages/warehouse/receiving-plan/receiveCreate";
+import ReceivingUpdatePage from "@/pages/warehouse/receiving-plan/receiveUpdate";
 
 // ==== REPORT B2B ===== //
 import B2BProductItemPage from "@/pages/report/b2b/productItem";
@@ -454,6 +457,32 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.receivingPlan}>
               <ReceivingPlanDetailPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Warehouse - Receiving (dokumen penerimaan) */}
+        <Route
+          path='/warehouse/receiving/create/:planId'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/receiving/update/:id'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingUpdatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/receiving/:id'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingDetailPage />
             </PermissionGuard>
           }
         />

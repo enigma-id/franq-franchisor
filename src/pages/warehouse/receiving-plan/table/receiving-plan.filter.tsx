@@ -43,28 +43,14 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
-  const { get: getWarehouse, getResult: getWarehouseResult } = useWarehouse();
-  const [warehouse, setWarehouse] = useState<any | null>(null);
-
-  useEffect(() => {
-    getWarehouse({ page: 1, limit: 20, status: "active" });
-  }, []);
-
-  useEffect(() => {
-    if (current.warehouse_id && getWarehouseResult?.data?.data) {
-      const items = getWarehouseResult.data.data as any[];
-      const found = items.find((c: any) => c.id === current.warehouse_id);
-      if (found) setWarehouse(found);
-    } else if (!current.warehouse_id) {
-      setWarehouse(null);
-    }
-  }, [current.warehouse_id, getWarehouseResult?.data?.data]);
-
   // ── Franchise (khusus superuser) ──
   const isSuperuser = useIsSuperuser();
   const { get: getFranchisors, getResult: getFranchisorsResult } =
     useFranchisorList();
   const [franchise, setFranchise] = useState<any | null>(null);
+
+  // Superuser wajib memilih franchise dulu sebelum daftar gudang bisa diambil.
+  const canPickWarehouse = !isSuperuser || !!franchise?.id;
 
   useEffect(() => {
     if (!isSuperuser) return;
@@ -83,6 +69,35 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       setFranchise(null);
     }
   }, [current.franchisor_id, getFranchisorsResult?.data?.data, isSuperuser]);
+
+  // ── Gudang ──
+  const { get: getWarehouse, getResult: getWarehouseResult } = useWarehouse();
+  const [warehouse, setWarehouse] = useState<any | null>(null);
+
+  const warehouseParams = useMemo(
+    () => ({
+      page: 1,
+      limit: 20,
+      status: "active",
+      ...(isSuperuser ? { franchisor_id: franchise?.id ?? "" } : {}),
+    }),
+    [isSuperuser, franchise?.id],
+  );
+
+  useEffect(() => {
+    if (!canPickWarehouse) return;
+    getWarehouse(warehouseParams);
+  }, [canPickWarehouse, warehouseParams]);
+
+  useEffect(() => {
+    if (current.warehouse_id && getWarehouseResult?.data?.data) {
+      const items = getWarehouseResult.data.data as any[];
+      const found = items.find((c: any) => c.id === current.warehouse_id);
+      if (found) setWarehouse(found);
+    } else if (!current.warehouse_id) {
+      setWarehouse(null);
+    }
+  }, [current.warehouse_id, getWarehouseResult?.data?.data]);
 
   const findOpt = (options: Opt[], value?: string): Opt | null =>
     value ? (options.find((o) => o.value === value) ?? null) : null;
@@ -152,8 +167,14 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
             label="Franchise"
             placeholder="Filter Franchise"
             value={franchise}
-            onChange={(val) => setFranchise(val)}
-            onClear={() => setFranchise(null)}
+            onChange={(val) => {
+              setFranchise(val);
+              setWarehouse(null);
+            }}
+            onClear={() => {
+              setFranchise(null);
+              setWarehouse(null);
+            }}
             fetchData={(page, search) =>
               getFranchisors({ page: page || 1, limit: 20, search })
             }
@@ -176,12 +197,20 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
 
         <RemoteSelect
           label="Gudang"
-          placeholder="Filter Gudang"
+          placeholder={
+            canPickWarehouse ? "Filter Gudang" : "Pilih Franchise dulu"
+          }
           value={warehouse}
           onChange={(val) => setWarehouse(val)}
           onClear={() => setWarehouse(null)}
+          disabled={!canPickWarehouse}
           fetchData={(page, search) =>
-            getWarehouse({ page: page || 1, limit: 20, search })
+            getWarehouse({
+              page: page || 1,
+              limit: 20,
+              search,
+              ...(isSuperuser ? { franchisor_id: franchise?.id ?? "" } : {}),
+            })
           }
           hook={getWarehouseResult as any}
           getLabel={(item: any) => item?.name ?? ""}

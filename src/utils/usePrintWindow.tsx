@@ -96,6 +96,12 @@ export function usePrintWindow({
           flex-direction: column;
           overflow: hidden;
         }
+        .sheet.A5-landscape {
+          width: 210mm;
+          height: 147mm;
+          padding: 8mm;
+          overflow: hidden;
+        }
         .plan-label {
           width: 100%;
           height: 50mm; /* Changed from 15mm */
@@ -120,6 +126,12 @@ export function usePrintWindow({
             padding: 10mm 15mm;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+          }
+          .sheet.A5-landscape {
+            width: 210mm;
+            height: 147mm;
+            padding: 8mm;
             overflow: hidden;
           }
           .sheet.plan-sheet {
