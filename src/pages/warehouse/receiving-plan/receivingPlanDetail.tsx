@@ -64,13 +64,13 @@ export default function ReceivingPlanDetailPage() {
   const reload = () => {
     if (!id) return;
     show({ id });
-    receivings({ plan_id: id });
+    receivings({ plan_id: id, order_by: "created_at" });
   };
 
   useEffect(() => {
     if (id) {
       show({ id });
-      receivings({ plan_id: id });
+      receivings({ plan_id: id, order_by: "created_at" });
     }
   }, [id]);
 
@@ -156,8 +156,8 @@ export default function ReceivingPlanDetailPage() {
         category='Warehouse'
         title={`Receiving #${data?.code ?? "-"}`}
         subtitle={
-          data?.plan_date
-            ? `Tanggal rencana ${formatDate(data.plan_date)}`
+          data?.created_at
+            ? `Tanggal buat ${formatDateTime(data.created_at)}`
             : undefined
         }
         backTo={() => navigate("/warehouse/receiving-plan")}
@@ -372,7 +372,7 @@ export default function ReceivingPlanDetailPage() {
                             onClick={() =>
                               navigate(`/warehouse/receiving/${r.id}`)
                             }
-                            className='font-medium text-primary hover:underline'
+                            className='font-medium text-primary underline text-success cursor-pointer'
                           >
                             {r.code || "-"}
                           </button>

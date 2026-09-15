@@ -20,7 +20,7 @@ import { useDeliveryPlan } from "@/services/warehouse/hooks";
 import type { DeliveryPlanDetail } from "@/services/types";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
-import { formatDate, getStatusVariant } from "@/utils";
+import { formatDate, formatDateTime, getStatusVariant } from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 import { useAppSelector } from "@/hooks";
 
@@ -199,6 +199,11 @@ export default function DeliveryPlanDetailPage() {
       <Page.Header
         category='Warehouse'
         title={`Delivery #${data?.code ?? "-"}`}
+        subtitle={
+          data?.created_at
+            ? `Tanggal buat ${formatDateTime(data.created_at)}`
+            : undefined
+        }
         backTo={() => navigate("/warehouse/delivery-plan")}
         action={
           <div className='flex gap-2'>

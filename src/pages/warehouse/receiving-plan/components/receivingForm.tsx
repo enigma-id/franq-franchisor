@@ -23,7 +23,12 @@ import { PhotoUpload } from "./photoUpload";
 
 type RowState = {
   planItemId: string;
+  /** ID receiving_item dari dokumen (null = item baru, BE akan insert). */
+  receivingItemId: string | null;
+  /** ID item di warehouse (dipakai endpoint batch). */
   itemId: string;
+  /** ID item di franchisor (item.ref_id — dipakai endpoint inventory/fraction). */
+  refId: string;
   name: string;
   code: string;
   quantityPlanned: number;
@@ -117,7 +122,9 @@ export function ReceivingForm({
 
         return {
           planItemId: pi.id,
+          receivingItemId: existing?.id ?? null,
           itemId: pi.item_id,
+          refId: pi.item?.ref_id ?? "",
           name: pi.item?.name ?? "-",
           code: (pi.item as any)?.code ?? "",
           quantityPlanned: toNumber(pi.quantity_planned),
@@ -139,9 +146,7 @@ export function ReceivingForm({
 
     Array.from(
       new Set(
-        plan.items
-          .map((pi) => pi.item?.ref_id)
-          .filter((v): v is string => !!v),
+        plan.items.map((pi) => pi.item?.ref_id).filter((v): v is string => !!v),
       ),
     ).forEach(async (itemId) => {
       try {
@@ -163,16 +168,36 @@ export function ReceivingForm({
     });
   }, [plan]);
 
-  // ── Auto-pilih fraction bila item hanya punya satu ──────────────────────
+  // ── Selaraskan fraction baris dengan opsi franchisor ────────────────────
+  // Fraction dari dokumen (mode edit) memakai id warehouse — opsi di form
+  // memakai id franchisor, jadi dicocokkan lewat ref_id.
   useEffect(() => {
     setRows((prev) =>
       prev.map((r) => {
-        if (r.receivedFraction || !r.itemId) return r;
-        const fractions = fractionsCache[r.itemId];
-        if (fractions?.length === 1) {
-          return { ...r, receivedFraction: fractions[0] };
+        const fractions = fractionsCache[r.refId];
+        if (!fractions?.length) return r;
+
+        const toFranchisor = (f: ItemFraction | null) =>
+          f
+            ? (fractions.find((x) => x.id === f.id) ??
+              fractions.find((x) => x.id === f.ref_id) ??
+              f)
+            : f;
+
+        // Item dengan satu satuan langsung dipilihkan.
+        const receivedFraction =
+          toFranchisor(r.receivedFraction) ??
+          (fractions.length === 1 ? fractions[0] : null);
+        const defectFraction = toFranchisor(r.defectFraction);
+
+        if (
+          receivedFraction === r.receivedFraction &&
+          defectFraction === r.defectFraction
+        ) {
+          return r;
         }
-        return r;
+
+        return { ...r, receivedFraction, defectFraction };
       }),
     );
   }, [fractionsCache]);
@@ -233,7 +258,7 @@ export function ReceivingForm({
       note,
       photos,
       items: rows.map((r) => ({
-        id: null,
+        id: r.receivingItemId,
         plan_item_id: r.planItemId,
         received_fraction_id: r.receivedFraction?.id,
         quantity_received: toNumber(r.quantityReceived),
@@ -312,7 +337,7 @@ export function ReceivingForm({
                     {row.quantityReceivedBefore}
                   </div>
                 </div>
-                {batchTracking[row.itemId] && (
+                {batchTracking[row.refId] && (
                   <div className='w-full lg:w-56'>
                     <RemoteSelect<ItemBatch>
                       placeholder='Pilih Batch'
@@ -371,7 +396,7 @@ export function ReceivingForm({
                     />
                     <RemoteSelect<ItemFraction>
                       placeholder='Satuan'
-                      data={fractionsCache[row.itemId] || []}
+                      data={fractionsCache[row.refId] || []}
                       value={row.receivedFraction}
                       onChange={(f) => updateRow(i, { receivedFraction: f })}
                       onClear={() => updateRow(i, { receivedFraction: null })}
@@ -400,7 +425,7 @@ export function ReceivingForm({
                     />
                     <RemoteSelect<ItemFraction>
                       placeholder='Satuan'
-                      data={fractionsCache[row.itemId] || []}
+                      data={fractionsCache[row.refId] || []}
                       value={row.defectFraction}
                       onChange={(f) => updateRow(i, { defectFraction: f })}
                       onClear={() => updateRow(i, { defectFraction: null })}
@@ -412,6 +437,7 @@ export function ReceivingForm({
 
                 <div className='lg:col-span-2'>
                   <Input
+                    type='textarea'
                     label='Catatan Item'
                     placeholder='Catatan untuk item ini...'
                     value={row.note}

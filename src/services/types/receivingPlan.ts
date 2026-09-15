@@ -1,6 +1,6 @@
 /**
  * Receiving Plan & Receiving Types
- * Data di-proxy dari warehouse (gRPC). created_at/created_by TIDAK dikirim.
+ * Data di-proxy dari warehouse (gRPC).
  */
 
 export interface ReceivingPlanItem {
@@ -37,6 +37,8 @@ export interface ReceivingPlanDetail {
   plan_date: string;
   document_status: string;
   receiving_status: string;
+  created_at?: string;
+  created_by?: string;
   warehouse?: { id?: string; name?: string };
   items?: ReceivingPlanItem[];
 }
@@ -49,6 +51,8 @@ export interface ReceivingPlanSummary {
 
 export interface ItemFraction {
   id: string;
+  /** ID fraction di franchisor (item fraction dari warehouse memakai ref_id). */
+  ref_id?: string;
   item_id?: string;
   name: string;
   quantity: number;
@@ -80,6 +84,7 @@ export interface ReceivingItem {
       name?: string;
       alias_name?: string;
       code?: string;
+      default_fraction?: string;
       is_batch_tracking?: boolean;
       picking_strategy?: string;
     };
@@ -91,6 +96,8 @@ export interface ReceivingItem {
   batch?: ItemBatch;
   quantity_received: number;
   quantity_defect: number;
+  quantity_received_fracted?: string;
+  quantity_defect_fracted?: string;
   note: string;
 }
 
@@ -101,11 +108,12 @@ export interface Receiving {
   warehouse_id: string;
   received_at: string;
   received_by?: string;
+  created_by?: string;
   document_status: string;
   note: string;
   photos?: string[];
   warehouse?: { id?: string; name?: string };
-  plan?: { id: string; code?: string; ref_code?: string; sender_name?: string };
+  plan?: ReceivingPlanDetail;
   items?: ReceivingItem[];
 }
 

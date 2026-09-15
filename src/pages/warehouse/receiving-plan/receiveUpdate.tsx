@@ -50,7 +50,11 @@ export function ReceivingUpdatePage() {
         position: "bottom-center",
       });
       updateResult.reset?.();
-      navigate(`/warehouse/receiving/${id}`);
+      navigate(
+        receiving?.plan_id
+          ? `/warehouse/receiving-plan/${receiving.plan_id}`
+          : "/warehouse/receiving-plan",
+      );
     }
   }, [updateResult?.isSuccess]);
 

@@ -2,7 +2,12 @@ import config from "@/services/table/const";
 import type { DeliveryPlanDetail } from "@/services/types";
 import { Badge, Dropdown } from "@/components/ui";
 import { Eye, MoreVertical, Truck } from "lucide-react";
-import { formatDate, getStatusVariant, getTypeVariant } from "@/utils";
+import {
+  formatDate,
+  formatDateTime,
+  getStatusVariant,
+  getTypeVariant,
+} from "@/utils";
 
 const createTableConfig = ({
   onClick,
@@ -105,6 +110,20 @@ const createTableConfig = ({
         <Badge variant={getStatusVariant(row.shipping_status)} size='xs'>
           {row.shipping_status?.toLowerCase() || "-"}
         </Badge>
+      ),
+    },
+    created_at: {
+      title: "Dibuat",
+      sortable: true,
+      component: (row: DeliveryPlanDetail) => (
+        <div className='flex flex-col gap-0.5'>
+          <span className='text-[13px] font-medium text-gray-700'>
+            {formatDateTime(row?.created_at)}
+          </span>
+          <span className='text-[12px] text-gray-500'>
+            by {row?.created_by || "-"}
+          </span>
+        </div>
       ),
     },
     action: {

@@ -17,11 +17,16 @@ import { Page } from "@/components/app/layout";
 import { Badge, Button, Modal, Tooltip } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import ReceivingDocPrint from "@/components/app/print/receiving-doc";
-import { useReceiving, useReceivingPlan } from "@/services/warehouse/hooks";
-import type { Receiving, ReceivingPlanDetail } from "@/services/types";
+import { useReceiving } from "@/services/warehouse/hooks";
+import type { Receiving } from "@/services/types";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
-import { formatDate, formatDateTime, getStatusVariant } from "@/utils";
+import {
+  dateFormat,
+  formatDate,
+  formatDateTime,
+  getStatusVariant,
+} from "@/utils";
 import { usePrintWindow } from "@/utils/usePrintWindow";
 
 type ConfirmState = {
@@ -41,31 +46,19 @@ export default function ReceivingDetailPage() {
     autoClose: true,
   });
 
-  const {
-    show,
-    showResult,
-    complete,
-    completeResult,
-    remove,
-    removeResult,
-  } = useReceiving();
-
-  const { show: showPlan, showResult: planResult } = useReceivingPlan();
+  const { show, showResult, complete, completeResult, remove, removeResult } =
+    useReceiving();
 
   const [confirmModal, setConfirmModal] = useState<ConfirmState>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   const data = showResult?.data?.data as Receiving | undefined;
-  const plan = planResult?.data?.data as ReceivingPlanDetail | undefined;
+  // Rencana sudah ikut di response dokumen ini (relasi Plan diteruskan BE).
+  const plan = data?.plan;
 
   useEffect(() => {
     if (id) show({ id });
   }, [id]);
-
-  // Info rencana diambil dari receiving plan-nya (bukan dari dokumen ini saja).
-  useEffect(() => {
-    if (data?.plan_id) showPlan({ id: data.plan_id });
-  }, [data?.plan_id]);
 
   const backToPlan = () =>
     navigate(
@@ -129,14 +122,16 @@ export default function ReceivingDetailPage() {
         title={`Receiving #${data?.code ?? "-"}`}
         subtitle={
           data?.received_at
-            ? `Diterima ${formatDateTime(data.received_at)}`
+            ? `Tanggal diterima ${formatDateTime(data.received_at)}`
             : undefined
         }
         backTo={backToPlan}
         action={
           <div className='flex gap-2'>
             <Tooltip label='Print'>
-              <Button onClick={() => openPrint(<ReceivingDocPrint data={data} />)}>
+              <Button
+                onClick={() => openPrint(<ReceivingDocPrint data={data} />)}
+              >
                 <Printer className='w-4 h-4' />
               </Button>
             </Tooltip>
@@ -145,7 +140,9 @@ export default function ReceivingDetailPage() {
                 <Tooltip label='Edit'>
                   <Button
                     variant='secondary'
-                    onClick={() => navigate(`/warehouse/receiving/update/${id}`)}
+                    onClick={() =>
+                      navigate(`/warehouse/receiving/update/${id}`)
+                    }
                   >
                     <Pencil className='w-4 h-4' />
                   </Button>
@@ -220,9 +217,7 @@ export default function ReceivingDetailPage() {
                         <td className='px-4 py-3'>
                           <div className='flex flex-col'>
                             <span>
-                              {item.plan_item?.item?.name ||
-                                item.plan_item?.item?.alias_name ||
-                                "-"}
+                              {item.plan_item?.item?.alias_name || "-"}
                             </span>
                             <span className='text-[11px] text-slate-400'>
                               {item.plan_item?.item?.code || ""}
@@ -230,34 +225,48 @@ export default function ReceivingDetailPage() {
                           </div>
                         </td>
                         <td className='px-4 py-3'>
-                          {item.batch?.code ? (
-                            <div className='flex flex-col'>
-                              <span>{item.batch.code}</span>
-                              <span className='text-[11px] text-slate-400'>
-                                {formatDate(
-                                  item.batch.expired_at ||
-                                    item.batch.entry_at,
+                          {item?.plan_item?.item?.is_batch_tracking ? (
+                            <div className='text-sm text-start! py-2'>
+                              {item?.batch?.code}
+                              <p className='text-xs text-slate-400'>
+                                {item?.plan_item?.item?.picking_strategy ===
+                                "fefo" ? (
+                                  <>
+                                    {dateFormat(
+                                      item?.batch?.expired_at,
+                                      "DD/MM/YYYY",
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    {dateFormat(
+                                      item?.batch?.entry_at,
+                                      "DD/MM/YYYY",
+                                    )}
+                                  </>
                                 )}
-                              </span>
+                              </p>
                             </div>
                           ) : (
-                            <span className='text-slate-400'>-</span>
+                            "-"
                           )}
                         </td>
                         <td className='px-4 py-3'>
-                          <div className='text-sm text-start! py-2 font-semibold'>
+                          <div className='text-sm text-center! py-2'>
                             {item?.quantity_received}{" "}
-                            {item?.received_fraction?.name || ""}
+                            {item?.plan_item?.item?.default_fraction}
+                            {item?.quantity_received > 0 && (
+                              <p className='text-xs text-slate-400'>{`(${item?.quantity_received_fracted})`}</p>
+                            )}
                           </div>
                         </td>
                         <td className='px-4 py-3'>
-                          <div
-                            className={`text-sm text-start! py-2 font-semibold ${
-                              item?.quantity_defect > 0 ? "text-error!" : ""
-                            }`}
-                          >
+                          <div className='text-sm text-center py-2'>
                             {item?.quantity_defect}{" "}
-                            {item?.defect_fraction?.name || ""}
+                            {item?.plan_item?.item?.default_fraction}
+                            {item?.quantity_defect > 0 && (
+                              <p className='text-xs text-slate-400'>{`(${item?.quantity_defect_fracted})`}</p>
+                            )}
                           </div>
                         </td>
                         <td className='px-4 py-3'>{item.note || "-"}</td>
@@ -300,13 +309,11 @@ export default function ReceivingDetailPage() {
                 </div>
                 <div className='info-row'>
                   <dt className='info-label'>Diterima Oleh</dt>
-                  <dd className='info-value'>{data?.received_by || "-"}</dd>
+                  <dd className='info-value'>{data?.created_by || "-"}</dd>
                 </div>
                 <div className='info-row'>
                   <dt className='info-label'>Gudang</dt>
-                  <dd className='info-value'>
-                    {data?.warehouse?.name || "-"}
-                  </dd>
+                  <dd className='info-value'>{data?.warehouse?.name || "-"}</dd>
                 </div>
                 <div className='info-row'>
                   <dt className='info-label'>Status</dt>
@@ -325,7 +332,8 @@ export default function ReceivingDetailPage() {
               {!!data?.photos?.length && (
                 <div className='mt-4'>
                   <div className='flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2'>
-                    <Images className='w-3.5 h-3.5' /> Foto ({data.photos.length})
+                    <Images className='w-3.5 h-3.5' /> Foto (
+                    {data.photos.length})
                   </div>
                   <div className='flex flex-wrap gap-2'>
                     {data.photos.map((photo, index) => (
@@ -369,9 +377,7 @@ export default function ReceivingDetailPage() {
                 </div>
                 <div className='info-row'>
                   <dt className='info-label'>Tanggal Rencana</dt>
-                  <dd className='info-value'>
-                    {formatDate(plan?.plan_date)}
-                  </dd>
+                  <dd className='info-value'>{formatDate(plan?.plan_date)}</dd>
                 </div>
               </dl>
             </div>

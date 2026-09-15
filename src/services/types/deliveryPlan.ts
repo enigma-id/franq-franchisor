@@ -1,7 +1,7 @@
 /**
  * Delivery Plan Types
  * Data di-proxy dari warehouse (gRPC). Hanya field yang benar-benar diisi
- * converter yang dipakai UI — created_at/created_by TIDAK dikirim.
+ * converter yang dipakai UI.
  */
 
 import type { FranchisorDetail } from "./franchisor";
@@ -49,6 +49,8 @@ export interface DeliveryPlanDetail {
   fulfillment_status: string;
   shipping_status: string;
   self_pickup: boolean;
+  created_at?: string;
+  created_by?: string;
   picked_up_by?: { id: string; name: string };
   warehouse?: DeliveryPlanWarehouse;
   items?: DeliveryPlanItem[];
