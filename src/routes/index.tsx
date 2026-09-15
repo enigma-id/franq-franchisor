@@ -53,6 +53,12 @@ import SalesOrderCreatePage from "@/pages/central-kitchen/create";
 import SalesOrderUpdatePage from "@/pages/central-kitchen/update";
 import SalesOrderDetailPage from "@/pages/central-kitchen/detail";
 
+// ==== WAREHOUSE ==== //
+import DeliveryPlanListPage from "@/pages/warehouse/delivery-plan";
+import DeliveryPlanDetailPage from "@/pages/warehouse/delivery-plan/deliveryPlanDetail";
+import ReceivingPlanListPage from "@/pages/warehouse/receiving-plan";
+import ReceivingPlanDetailPage from "@/pages/warehouse/receiving-plan/receivingPlanDetail";
+
 // ==== REPORT B2B ===== //
 import B2BProductItemPage from "@/pages/report/b2b/productItem";
 import B2BSettlementPage from "@/pages/report/b2b/settlement";
@@ -412,6 +418,42 @@ export function AppRoutes() {
               <SuperuserGuard>
                 <SalesOrderDetailPage />
               </SuperuserGuard>
+            </PermissionGuard>
+          }
+        />
+
+        {/* Warehouse - Delivery Plan */}
+        <Route
+          path='/warehouse/delivery-plan'
+          element={
+            <PermissionGuard permission={MENU.deliveryPlan}>
+              <DeliveryPlanListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/delivery-plan/:id'
+          element={
+            <PermissionGuard permission={MENU.deliveryPlan}>
+              <DeliveryPlanDetailPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Warehouse - Receiving Plan */}
+        <Route
+          path='/warehouse/receiving-plan'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingPlanListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/receiving-plan/:id'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingPlanDetailPage />
             </PermissionGuard>
           }
         />

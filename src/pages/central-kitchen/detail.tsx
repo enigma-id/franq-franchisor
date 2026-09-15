@@ -311,8 +311,9 @@ export default function CentralKitchenDetailPage() {
                     variant='primary'
                     onClick={handlePublish}
                     isLoading={publishResult.isLoading}
-                    title='Publish'
+                    title='Mulai Produksi'
                   >
+                    Mulai Produksi
                     <Send className='w-4 h-4' />
                   </Button>
                 )}
@@ -323,6 +324,7 @@ export default function CentralKitchenDetailPage() {
                     isLoading={completeResult.isLoading}
                     title='Selesaikan Dokumen'
                   >
+                    Selesaikan Dokumen
                     <BadgeCheck className='w-4 h-4' />
                   </Button>
                 )}
@@ -364,7 +366,9 @@ export default function CentralKitchenDetailPage() {
               </div>
               <div className='info-row'>
                 <dt className='info-label'>Tanggal Produksi</dt>
-                <dd className='info-value'>{formatDate(order.shipping_date)}</dd>
+                <dd className='info-value'>
+                  {formatDate(order.shipping_date)}
+                </dd>
               </div>
               <div className='info-row'>
                 <dt className='info-label'>Document Status</dt>
@@ -416,6 +420,14 @@ export default function CentralKitchenDetailPage() {
                   <span className='block'>
                     {`${order?.franchisor?.name ? order.franchisor.name + " - " : ""}${order?.outlet?.name ?? ""}`}
                   </span>
+                </dd>
+              </div>
+              <div className='info-row'>
+                <dt className='info-label'>Gudang Tujuan</dt>
+                <dd className='info-value'>
+                  {(order as any)?.destination_warehouse?.name ||
+                    (order as any)?.destination_warehouse_name ||
+                    "-"}
                 </dd>
               </div>
               <div className='info-row'>
@@ -541,7 +553,8 @@ export default function CentralKitchenDetailPage() {
                         </td>
                         <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 text-right whitespace-nowrap'>
                           {formatCurrency(
-                            (item.unit_nett || 0) * (item.quantity_ordered || 0),
+                            (item.unit_nett || 0) *
+                              (item.quantity_ordered || 0),
                           )}
                         </td>
                         <td className='px-4 py-3 align-middle text-right'>

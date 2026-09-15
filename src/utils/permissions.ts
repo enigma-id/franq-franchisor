@@ -22,6 +22,9 @@ export const MENU = {
   // Master Data (Inventory & Warehouse)
   inventoryItem: "frontend.franchisor.master-data.item",
   inventoryCatalog: "frontend.franchisor.master-data.catalog",
+  // Warehouse
+  deliveryPlan: "frontend.franchisor.delivery.plan",
+  receivingPlan: "frontend.franchisor.receiving.plan",
   // Report POS
   reportPosOutstanding: "frontend.franchisor.report.pos.outstanding",
   reportPosSettlement: "frontend.franchisor.report.pos.settlement",
@@ -78,6 +81,8 @@ export const ACTION = {
   b2bCancel: "svc-franchisor.b2b.cancel",
   outletTopupRequest: "svc-franchisor.outlet-topup-request.manage",
   withdrawalRequest: "svc-franchisor.withdrawal-request.manage",
+  delivery: "svc-franchisor.delivery.manage",
+  receiving: "svc-franchisor.receiving.manage",
 } as const;
 
 export type ActionSlug = (typeof ACTION)[keyof typeof ACTION];

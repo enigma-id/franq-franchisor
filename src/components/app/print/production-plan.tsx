@@ -40,13 +40,24 @@ const ProductionPlanThermalPrint = ({
             <td style={{ verticalAlign: "top" }}>Outlet</td>
             <td style={{ verticalAlign: "top" }}>:</td>
             <td style={{ textTransform: "capitalize" }}>
-              {data.type?.replace("_", " ") || "-"}
+              {data.outlet?.name
+                ? `${data.franchisor?.name ? data.franchisor.name + " - " : ""}${data.outlet.name}`
+                : data.type?.replace("_", " ") || "-"}
             </td>
           </tr>
           <tr>
             <td style={{ verticalAlign: "top" }}>Tanggal Produksi</td>
             <td style={{ verticalAlign: "top" }}>:</td>
             <td>{formatDate(data.production_date)}</td>
+          </tr>
+          <tr>
+            <td style={{ verticalAlign: "top" }}>Gudang Tujuan</td>
+            <td style={{ verticalAlign: "top" }}>:</td>
+            <td>
+              {data.destination_warehouse?.name ||
+                data.destination_warehouse_name ||
+                "-"}
+            </td>
           </tr>
         </tbody>
       </table>

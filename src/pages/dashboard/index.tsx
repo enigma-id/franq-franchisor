@@ -171,7 +171,11 @@ const DashboardPage: React.FC = () => {
         category='Main Menu'
         title='Dashboard'
         subtitle='Ringkasan performa bisnis Anda.'
-        action={<MonthPicker value={periode} onChange={setPeriode} />}
+        action={
+          isMitraAccess && activeTab === "maps" ? undefined : (
+            <MonthPicker value={periode} onChange={setPeriode} />
+          )
+        }
       />
 
       <Page.Body className='flex flex-col gap-6 pb-10'>

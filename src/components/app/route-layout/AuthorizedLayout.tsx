@@ -33,6 +33,7 @@ import {
   UserRound,
   IdCard,
   CreditCard,
+  Warehouse,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -82,6 +83,22 @@ const menuSections: MenuSection[] = [
         path: "/dashboard",
         icon: <LayoutDashboard size={18} />,
         permission: MENU.dashboard,
+      },
+      {
+        label: "Warehouse",
+        icon: <Warehouse size={18} />,
+        children: [
+          {
+            label: "Delivery Plan",
+            path: "/warehouse/delivery-plan",
+            permission: MENU.deliveryPlan,
+          },
+          {
+            label: "Receiving Plan",
+            path: "/warehouse/receiving-plan",
+            permission: MENU.receivingPlan,
+          },
+        ],
       },
     ],
   },

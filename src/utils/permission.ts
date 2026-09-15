@@ -162,6 +162,8 @@ export const ROUTE_BY_PERMISSION: Array<{ slug: MenuSlug; path: string }> = [
   { slug: MENU.inventoryCatalog, path: "/inventory/catalog" },
   { slug: MENU.supplier, path: "/purchase/supplier" },
   { slug: MENU.purchaseOrder, path: "/purchase/order" },
+  { slug: MENU.deliveryPlan, path: "/warehouse/delivery-plan" },
+  { slug: MENU.receivingPlan, path: "/warehouse/receiving-plan" },
   { slug: MENU.reportPosOutstanding, path: "/report/pos/outstanding" },
   { slug: MENU.reportMitraSettlement, path: "/report/mitra/settlement" },
   { slug: MENU.reportB2BSettlement, path: "/report/b2b/settlement" },

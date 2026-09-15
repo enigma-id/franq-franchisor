@@ -1,5 +1,10 @@
 import config from "@/services/table/const";
-import { formatDate, formatCurrency, getStatusVariant, formatDateTime } from "@/utils";
+import {
+  formatDate,
+  formatCurrency,
+  getStatusVariant,
+  formatDateTime,
+} from "@/utils";
 import { Badge, Dropdown } from "@/components/ui";
 import type { SalesOrderDetail } from "@/services/types/sales";
 import { Eye, MoreVertical, Check, Edit, Trash } from "lucide-react";
@@ -157,7 +162,7 @@ const createTableConfig = ({
                   <div className='flex flex-col items-start leading-tight'>
                     <span className='font-bold text-[13px]'>Publish</span>
                     <span className='text-[11px] text-slate-400'>
-                      Approve order
+                      Mulai Produksi
                     </span>
                   </div>
                 </button>

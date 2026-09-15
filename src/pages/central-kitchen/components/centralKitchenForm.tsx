@@ -7,12 +7,14 @@ import { formatCurrency } from "@/utils";
 import { useOutlet } from "@/services/outlet/hooks";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
 import { useFranchisorList } from "@/services/franchisor/hooks";
+import { useWarehouse } from "@/services/warehouse/hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { useAppSelector } from "@/hooks";
 import type {
   OutletDetail,
   SalesOrderDetail,
   FranchisorRow,
+  WarehouseDetail,
 } from "@/services/types";
 
 type CentralKitchenItemForm = {
@@ -25,6 +27,7 @@ type CentralKitchenFormData = {
   ref_code: string;
   franchisor_id: string;
   outlet_id: string;
+  destination_warehouse_id?: string;
   recipient_name: string;
   recipient_phone: string;
   recipient_address: string;
@@ -58,6 +61,7 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
   const { get: getCatalogs, getResult: catalogsResult } = useInventoryCatalog();
   const { get: getFranchisors, getResult: franchisorsResult } =
     useFranchisorList();
+  const { get: getWarehouses, getResult: warehousesResult } = useWarehouse();
 
   // Keep runtime shape as-is; fix TS to match the existing formData fields
   const [formData, setFormData] = useState<CentralKitchenFormData>({
@@ -82,6 +86,38 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
   const [shipping_date, setShippingDate] = useState<Dayjs | null>(dayjs());
   const [outlet, setOutlet] = useState<OutletDetail | null>(null);
   const [franchise, setFranchise] = useState<FranchisorRow | null>(null);
+  const [destinationWarehouse, setDestinationWarehouse] =
+    useState<WarehouseDetail | null>(null);
+
+  // Fetch gudang sesuai franchise terpilih (superuser wajib pilih franchise dulu).
+  useEffect(() => {
+    if (!formData.franchisor_id) return;
+    getWarehouses({
+      page: 1,
+      limit: 50,
+      is_active: "true",
+      franchisor_id: formData.franchisor_id,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.franchisor_id]);
+
+  // Hydrate Gudang Tujuan dari data detail (embedded object / id saja).
+  useEffect(() => {
+    const embedded = (initialData as any)?.destination_warehouse;
+    if (embedded?.id) setDestinationWarehouse(embedded);
+  }, [initialData]);
+
+  useEffect(() => {
+    const id = formData.destination_warehouse_id;
+    if (!id || destinationWarehouse?.id === id) return;
+    const items = warehousesResult?.data?.data as any[] | undefined;
+    const found = items?.find((w) => w.id === id);
+    if (found) setDestinationWarehouse(found);
+  }, [
+    formData.destination_warehouse_id,
+    warehousesResult?.data?.data,
+    destinationWarehouse,
+  ]);
 
   useEffect(() => {
     if (initialData) {
@@ -100,6 +136,10 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
           (initialData as any)?.franchisor?.id ??
           "",
         outlet_id: initialData?.outlet_id,
+        destination_warehouse_id:
+          (initialData as any)?.destination_warehouse_id ??
+          (initialData as any)?.destination_warehouse?.id ??
+          "",
         recipient_name: initialData?.recipient_name,
         recipient_phone: initialData?.recipient_phone,
         recipient_address: initialData?.recipient_address,
@@ -191,10 +231,12 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
   const handleFranchiseChange = (item: FranchisorRow | null) => {
     setFranchise(item);
     setOutlet(null);
+    setDestinationWarehouse(null);
     setFormData((prev) => ({
       ...prev,
       franchisor_id: item?.id ?? "",
       outlet_id: "",
+      destination_warehouse_id: "",
       recipient_name: "",
       recipient_phone: "",
       recipient_address: "",
@@ -212,6 +254,7 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
 
     const payload = {
       ...formData,
+      destination_warehouse_id: formData.destination_warehouse_id || undefined,
       self_pickup: true,
       shipping_charges: formData.shipping_charges ?? 0,
       items: formData.items.map((item) => ({
@@ -287,6 +330,39 @@ export const CentralKitchenForm: React.FC<CentralKitchenFormProps> = ({
               disabled={!formData.franchisor_id}
               watchKey={formData.franchisor_id}
               error={FormState?.errors?.outlet_id as string}
+            />
+
+            <RemoteSelect<WarehouseDetail>
+              label='Gudang Tujuan'
+              placeholder='Opsional — pilih jika dikirim ke gudang'
+              hook={warehousesResult as any}
+              fetchData={(page, search) =>
+                getWarehouses({
+                  page,
+                  search,
+                  is_active: "true",
+                  franchisor_id: formData.franchisor_id || undefined,
+                }) as any
+              }
+              getLabel={(item: any) => item?.name || ""}
+              getValue={(item: any) => item?.id}
+              value={destinationWarehouse}
+              disabled={!formData.franchisor_id}
+              watchKey={formData.franchisor_id}
+              onChange={(item: WarehouseDetail | null) => {
+                setDestinationWarehouse(item);
+                setFormData((prev) => ({
+                  ...prev,
+                  destination_warehouse_id: item?.id ?? "",
+                }));
+              }}
+              onClear={() => {
+                setDestinationWarehouse(null);
+                setFormData((prev) => ({
+                  ...prev,
+                  destination_warehouse_id: "",
+                }));
+              }}
             />
 
             <DatePicker
