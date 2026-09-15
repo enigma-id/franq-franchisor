@@ -49,6 +49,8 @@ interface MenuChild {
   superuserHidden?: boolean;
   /** Sembunyikan utk brand bertipe mitra (mis. report Outlet/Member). */
   mitraHidden?: boolean;
+  /** Sembunyikan utk brand bertipe outlet (mis. report Mitra). */
+  outletHidden?: boolean;
 }
 
 interface MenuItem {
@@ -63,6 +65,8 @@ interface MenuItem {
   superuserHidden?: boolean;
   /** Sembunyikan utk brand bertipe mitra (mis. report Outlet/Member). */
   mitraHidden?: boolean;
+  /** Sembunyikan utk brand bertipe outlet (mis. report Mitra). */
+  outletHidden?: boolean;
   /** Hanya tampil utk user mitra / superuser (franchisor.type = mitra). */
   mitraOnly?: boolean;
   children?: MenuChild[];
@@ -233,6 +237,7 @@ const menuSections: MenuSection[] = [
       {
         label: "Mitra",
         icon: <UserRound size={18} />,
+        outletHidden: true,
         children: [
           {
             label: "Settlement",
@@ -405,10 +410,12 @@ function isItemAllowed(
     | "superuserHidden"
     | "mitraOnly"
     | "mitraHidden"
+    | "outletHidden"
   >,
   isSuperAdmin: boolean,
   isMitraAccess: boolean,
   isMitraBrand: boolean,
+  isOutletBrand: boolean,
 ) {
   // Item khusus super admin hanya utk superuser.
   if (item.superAdminOnly) return isSuperAdmin;
@@ -416,6 +423,8 @@ function isItemAllowed(
   if (item.superuserHidden && isSuperAdmin) return false;
   // Item yang disembunyikan utk brand mitra (mis. report Outlet/Member).
   if (item.mitraHidden && isMitraBrand) return false;
+  // Item yang disembunyikan utk brand outlet (mis. report Mitra).
+  if (item.outletHidden && isOutletBrand) return false;
   // Item khusus mitra hanya utk user mitra / superuser.
   if (item.mitraOnly) return isMitraAccess;
   return (
@@ -431,6 +440,7 @@ function isParentAllowed(
   isSuperAdmin: boolean,
   isMitraAccess: boolean,
   isMitraBrand: boolean,
+  isOutletBrand: boolean,
 ) {
   // Parent sendiri bisa di-hide (mis. grup report Outlet/Member utk brand mitra).
   if (
@@ -440,6 +450,7 @@ function isParentAllowed(
       isSuperAdmin,
       isMitraAccess,
       isMitraBrand,
+      isOutletBrand,
     )
   ) {
     return false;
@@ -449,7 +460,14 @@ function isParentAllowed(
     (c) =>
       // Child punya permission sendiri → gate sendiri.
       // Child tanpa permission → mewarisi permission parent (mis. Demand).
-      isItemAllowed(userPermissions, c, isSuperAdmin, isMitraAccess, isMitraBrand) &&
+      isItemAllowed(
+        userPermissions,
+        c,
+        isSuperAdmin,
+        isMitraAccess,
+        isMitraBrand,
+        isOutletBrand,
+      ) &&
       (c.permission !== undefined ||
         isItemAllowed(
           userPermissions,
@@ -457,6 +475,7 @@ function isParentAllowed(
           isSuperAdmin,
           isMitraAccess,
           isMitraBrand,
+          isOutletBrand,
         )),
   );
 }
@@ -543,6 +562,7 @@ function ParentItem({
   isSuperAdmin,
   isMitraAccess,
   isMitraBrand,
+  isOutletBrand,
 }: {
   item: MenuItem;
   onNavigate: () => void;
@@ -550,6 +570,7 @@ function ParentItem({
   isSuperAdmin: boolean;
   isMitraAccess: boolean;
   isMitraBrand: boolean;
+  isOutletBrand: boolean;
 }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
@@ -561,6 +582,7 @@ function ParentItem({
         isSuperAdmin,
         isMitraAccess,
         isMitraBrand,
+        isOutletBrand,
       ) &&
       (c.permission !== undefined ||
         isItemAllowed(
@@ -569,6 +591,7 @@ function ParentItem({
           isSuperAdmin,
           isMitraAccess,
           isMitraBrand,
+          isOutletBrand,
         )),
   );
   const isChildActive =
@@ -664,8 +687,12 @@ export function AuthorizedLayout() {
   const isSuperAdmin = !user?.user?.usergroup_id || !!user?.user?.is_superuser;
   // Akses mitra = superuser ATAU franchisor.type === 'mitra'.
   const isMitraAccess = useIsMitraAccess();
-  // Brand mitra asli (dipakai gate `mitraHidden`; superuser tidak termasuk).
-  const isMitraBrand = useFranchisorType() === "mitra";
+  // Brand asli dari session (superuser tidak termasuk).
+  const franchisorType = useFranchisorType();
+  // Brand mitra asli (dipakai gate `mitraHidden`).
+  const isMitraBrand = franchisorType === "mitra";
+  // Brand outlet asli (dipakai gate `outletHidden`).
+  const isOutletBrand = franchisorType === "outlet";
 
   // Filter menu berdasarkan permission — super admin (tanpa permission) lihat semua.
   const visibleSections = useMemo(() => {
@@ -679,6 +706,7 @@ export function AuthorizedLayout() {
                 isSuperAdmin,
                 isMitraAccess,
                 isMitraBrand,
+                isOutletBrand,
               )
             : isItemAllowed(
                 userPermissions,
@@ -686,12 +714,19 @@ export function AuthorizedLayout() {
                 isSuperAdmin,
                 isMitraAccess,
                 isMitraBrand,
+                isOutletBrand,
               ),
         );
         return items.length > 0 ? { ...section, items } : null;
       })
       .filter((s): s is MenuSection => s !== null);
-  }, [userPermissions, isSuperAdmin, isMitraAccess, isMitraBrand]);
+  }, [
+    userPermissions,
+    isSuperAdmin,
+    isMitraAccess,
+    isMitraBrand,
+    isOutletBrand,
+  ]);
 
   return (
     <div className='flex h-screen overflow-hidden bg-base-200'>
@@ -767,6 +802,7 @@ export function AuthorizedLayout() {
                       isSuperAdmin={isSuperAdmin}
                       isMitraAccess={isMitraAccess}
                       isMitraBrand={isMitraBrand}
+                      isOutletBrand={isOutletBrand}
                     />
                   ) : (
                     <NavItem
