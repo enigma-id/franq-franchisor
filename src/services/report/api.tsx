@@ -216,6 +216,81 @@ export const reportApi = createApi({
         params,
       }),
     }),
+
+    getPointLog: builder.query({
+      query: (params) => ({
+        url: `/report/point/log`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getPointLogSummary: builder.query({
+      query: (params) => ({
+        url: `/report/point/log/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    // ── Membership Settlement (HO ↔ outlet) ──
+    getMembershipSettlement: builder.query({
+      query: (params) => ({
+        url: `/report/membership-settlement`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getMembershipSettlementSummary: builder.query({
+      query: (params) => ({
+        url: `/report/membership-settlement/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+    // Header + `outlet`/`franchisor` + `items` satu row — dipakai halaman detail.
+    getMembershipSettlementDetail: builder.query({
+      query: (id) => ({
+        url: `/report/membership-settlement/${id}`,
+        method: "GET",
+      }),
+    }),
+    getMembershipSettlementItems: builder.query({
+      query: (params) => ({
+        url: `/report/membership-settlement/items`,
+        method: "GET",
+        params,
+      }),
+    }),
+    getMembershipSettlementItemsSummary: builder.query({
+      query: (params) => ({
+        url: `/report/membership-settlement/items/summary`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    // Aksi settle/unsettle/reconcile — {id} = id header settlement.
+    settleMembershipSettlement: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/report/membership-settlement/${id}/settle`,
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    unsettleMembershipSettlement: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/report/membership-settlement/${id}/unsettle`,
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    reconcileMembershipSettlement: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/report/membership-settlement/${id}/reconcile`,
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -249,4 +324,14 @@ export const {
   useLazyGetMembershipSummaryQuery,
   useLazyGetSaldoLogQuery,
   useLazyGetSaldoLogSummaryQuery,
+  useLazyGetPointLogQuery,
+  useLazyGetPointLogSummaryQuery,
+  useLazyGetMembershipSettlementQuery,
+  useLazyGetMembershipSettlementSummaryQuery,
+  useLazyGetMembershipSettlementDetailQuery,
+  useLazyGetMembershipSettlementItemsQuery,
+  useLazyGetMembershipSettlementItemsSummaryQuery,
+  useSettleMembershipSettlementMutation,
+  useUnsettleMembershipSettlementMutation,
+  useReconcileMembershipSettlementMutation,
 } = reportApi;

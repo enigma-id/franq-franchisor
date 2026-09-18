@@ -302,6 +302,16 @@ const menuSections: MenuSection[] = [
             path: "/report/membership/saldo-log",
             permission: MENU.reportMembershipSaldoLog,
           },
+          {
+            label: "Mutasi Point",
+            path: "/report/membership/point-log",
+            permission: MENU.reportMembershipPointLog,
+          },
+          {
+            label: "Settlement",
+            path: "/report/membership/settlement",
+            permission: MENU.reportMembershipSettlement,
+          },
         ],
       },
       {

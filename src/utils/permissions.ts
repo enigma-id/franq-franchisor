@@ -50,6 +50,10 @@ export const MENU = {
   reportOutlet: "frontend.franchisor.report.outlet",
   reportMembership: "frontend.franchisor.report.membership",
   reportMembershipSaldoLog: "frontend.franchisor.report.membership-saldo-log",
+  reportMembershipPointLog: "frontend.franchisor.report.membership-point-log",
+  // Slug BE ber-namespace `report.pos.*` walau menunya ditempatkan di grup Member.
+  reportMembershipSettlement:
+    "frontend.franchisor.report.pos.membership-settlement",
   // Setting
   outlet: "frontend.franchisor.setting.outlet",
   posCategory: "frontend.franchisor.setting.pos-category",
@@ -83,6 +87,13 @@ export const ACTION = {
   withdrawalRequest: "svc-franchisor.withdrawal-request.manage",
   delivery: "svc-franchisor.delivery.manage",
   receiving: "svc-franchisor.receiving.manage",
+  /**
+   * Aksi settlement membership (settle/unsettle/reconcile).
+   * Satu-satunya slug aksi ber-namespace `frontend.*` — mengikuti seed BE
+   * (`src/permission.go`); ketiga aksi memakai slug yang sama + wajib superuser.
+   */
+  membershipSettlementSettle:
+    "frontend.franchisor.report.pos.membership-settlement.settle",
 } as const;
 
 export type ActionSlug = (typeof ACTION)[keyof typeof ACTION];

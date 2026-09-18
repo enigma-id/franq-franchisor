@@ -15,7 +15,7 @@ export default function B2BSettlementPage() {
     () =>
       createTableConfig({
         filter: { periode: new Date().getFullYear() },
-        onRowClick: (row: any) =>
+        onDetail: (row: any) =>
           navigate(`/report/b2b/settlement/daily?periode=${row.periode}`),
       }),
     [navigate],

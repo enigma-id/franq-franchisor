@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Loading } from "@/components/ui";
@@ -11,6 +11,7 @@ import { ProductItemReport } from "@/pages/report/pos/productItem";
 import { OutstandingReport } from "@/pages/report/pos/outstanding";
 import { CancelledProductSalesReport } from "@/pages/report/pos/cancelledProductSales";
 import { SettlementReport } from "@/pages/report/pos/settlement";
+import { MembershipSettlementReport } from "@/pages/report/membership/settlement";
 import { OutletMapReport } from "@/pages/report/franchisor/outletMap";
 
 type OutletTab = { key: string; label: string };
@@ -20,6 +21,7 @@ const TABS_OUTLET: OutletTab[] = [
   { key: "session", label: "Sesi" },
   { key: "outstanding", label: "Outstanding" },
   { key: "settlement", label: "Settlement" },
+  { key: "membership-settlement", label: "Settlement Membership" },
   { key: "product-sales", label: "Penjualan Produk" },
   { key: "product-item", label: "Penjualan Menu" },
   { key: "cancelled", label: "Transaksi Dibatalkan" },
@@ -29,6 +31,7 @@ const TABS_OUTLET: OutletTab[] = [
 const TABS_MITRA: OutletTab[] = [
   { key: "session", label: "Sesi" },
   { key: "settlement", label: "Settlement" },
+  { key: "membership-settlement", label: "Settlement Membership" },
   { key: "product-sales", label: "Penjualan Produk" },
   { key: "product-item", label: "Penjualan Menu" },
   { key: "outlet-maps", label: "Peta Outlet" },
@@ -62,6 +65,18 @@ export default function OutletReportDetailPage() {
 
   // Set tab mengikuti tipe brand outlet-nya.
   const tabs = outletRow?.brand_type === "mitra" ? TABS_MITRA : TABS_OUTLET;
+
+  // Drill-down Settlement ke detail harian, outlet terkunci di URL.
+  const handleSettlementDetail = useCallback(
+    (row: any) => {
+      const base =
+        outletRow?.brand_type === "mitra" ? "/report/mitra" : "/report/pos";
+      navigate(
+        `${base}/settlement/daily?periode=${row.date}&outlet_id=${outletId}`,
+      );
+    },
+    [navigate, outletRow?.brand_type, outletId],
+  );
 
   const summary = outletReportSummaryResult?.data?.data;
   const isLoading =
@@ -111,7 +126,13 @@ export default function OutletReportDetailPage() {
                   <OutstandingReport outletId={outletId} />
                 )}
                 {activeTab === "settlement" && (
-                  <SettlementReport outletId={outletId} />
+                  <SettlementReport
+                    outletId={outletId}
+                    onDetail={handleSettlementDetail}
+                  />
+                )}
+                {activeTab === "membership-settlement" && (
+                  <MembershipSettlementReport outletId={outletId} />
                 )}
                 {activeTab === "product-sales" && (
                   <ProductSalesReport outletId={outletId} />

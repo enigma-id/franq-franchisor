@@ -38,6 +38,16 @@ const createTableConfig = ({
         </div>
       ),
     },
+    point_percentage: {
+      title: "Point %",
+      sortable: true,
+      class: "font-mono",
+      component: (row: POSCategoryDetail) => (
+        <span className="text-slate-600">
+          {row?.point_percentage ?? 0}%
+        </span>
+      ),
+    },
     is_active: {
       title: "Status",
       sortable: true,

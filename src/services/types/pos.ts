@@ -135,6 +135,8 @@ export interface POSMenuDetail extends POSMenuBase {
 export interface POSCategoryBase {
   name: string;
   image?: string;
+  /** Rate point belanja kategori (0–100). 0 = tidak dapat point. */
+  point_percentage?: number;
 }
 
 export type POSCategoryCreateRequest = POSCategoryBase & {

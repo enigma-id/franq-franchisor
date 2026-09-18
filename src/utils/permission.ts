@@ -172,6 +172,11 @@ export const ROUTE_BY_PERMISSION: Array<{ slug: MenuSlug; path: string }> = [
   { slug: MENU.reportOutletMap, path: "/report/mitra/outlet-maps" },
   { slug: MENU.reportMembership, path: "/report/membership" },
   { slug: MENU.reportMembershipSaldoLog, path: "/report/membership/saldo-log" },
+  { slug: MENU.reportMembershipPointLog, path: "/report/membership/point-log" },
+  {
+    slug: MENU.reportMembershipSettlement,
+    path: "/report/membership/settlement",
+  },
   { slug: MENU.outlet, path: "/setting/outlet" },
   { slug: MENU.posCategory, path: "/setting/pos/category" },
   { slug: MENU.posMenu, path: "/setting/pos/menu" },

@@ -9,19 +9,20 @@ import { useMembershipReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
-import { Users, Wallet } from "lucide-react";
+import { Gift, Users, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const THEMES: Record<string, any> = {
   blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
   orange: { text: "text-orange-500", iconBg: "#ffedd5", wave: "#f97316" },
+  green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
 };
 
 const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
       <SummaryCard
         label='Total Member'
         value={data.total_member ?? 0}
@@ -33,6 +34,12 @@ const OverviewCards = ({ data }: { data: any | null }) => {
         value={currencyFormat(data.total_saldo ?? 0)}
         icon={Wallet}
         theme={THEMES.blue}
+      />
+      <SummaryCard
+        label='Total Poin'
+        value={currencyFormat(data.total_point ?? 0)}
+        icon={Gift}
+        theme={THEMES.green}
       />
     </div>
   );
@@ -52,6 +59,10 @@ export function MembershipReport({ outletId }: { outletId?: string }) {
         onRowClick: (row: any) =>
           navigate(
             `/report/membership/saldo-log?membership_id=${row.membership_id}`,
+          ),
+        onNavigate: (row: any, target: "saldo" | "point") =>
+          navigate(
+            `${target === "point" ? "/report/membership/point-log" : "/report/membership/saldo-log"}?membership_id=${row.membership_id}`,
           ),
       }),
     [outletId, navigate],

@@ -95,6 +95,9 @@ import OutletReportDetailPage from "@/pages/report/outlet/detail";
 // ==== REPORT MEMBERSHIP ==== //
 import MembershipReportPage from "@/pages/report/membership/membership";
 import SaldoLogReportPage from "@/pages/report/membership/saldoLog";
+import PointLogReportPage from "@/pages/report/membership/pointLog";
+import MembershipSettlementPage from "@/pages/report/membership/settlement";
+import MembershipSettlementDetailPage from "@/pages/report/membership/settlement/detail";
 
 import WithdrawalList from "@/pages/withdrawal/WithdrawalList";
 import OutletTopupListPage from "@/pages/outletTopup";
@@ -677,6 +680,32 @@ export function AppRoutes() {
               ]}
             >
               <SaldoLogReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/point-log'
+          element={
+            <PermissionGuard
+              permission={[MENU.reportMembershipPointLog, MENU.reportMembership]}
+            >
+              <PointLogReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/settlement'
+          element={
+            <PermissionGuard permission={MENU.reportMembershipSettlement}>
+              <MembershipSettlementPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/settlement/:id'
+          element={
+            <PermissionGuard permission={MENU.reportMembershipSettlement}>
+              <MembershipSettlementDetailPage />
             </PermissionGuard>
           }
         />

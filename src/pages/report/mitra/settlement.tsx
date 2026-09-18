@@ -59,7 +59,7 @@ function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
         periode: new Date().getFullYear(),
         outlet_type_id: outletTypeId,
       },
-      onRowClick: (row: any) =>
+      onDetail: (row: any) =>
         navigate(
           `/report/mitra/settlement/daily?periode=${row.date}${
             activeOutletId ? `&outlet_id=${activeOutletId}` : ""

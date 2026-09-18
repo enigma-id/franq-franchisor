@@ -39,17 +39,20 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<POSCategoryDetail | null>(null);
   const [name, setName] = useState("");
+  const [pointPercentage, setPointPercentage] = useState<string | number>("");
   const submitting = Boolean(createResult?.isLoading || updateResult?.isLoading);
 
   const openCreate = () => {
     setEditing(null);
     setName("");
+    setPointPercentage("");
     setModalOpen(true);
   };
 
   const openEdit = (v: POSCategoryDetail) => {
     setEditing(v);
     setName(v.name);
+    setPointPercentage(v.point_percentage ?? "");
     setModalOpen(true);
   };
 
@@ -57,6 +60,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     setModalOpen(false);
     setEditing(null);
     setName("");
+    setPointPercentage("");
     createResult?.reset?.();
     updateResult?.reset?.();
   };
@@ -65,6 +69,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     if (!name.trim()) return;
     const payload = {
       name: name.trim(),
+      point_percentage: Number(pointPercentage || 0),
       ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
     if (editing) {
@@ -262,6 +267,20 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
               }
             }}
           />
+          <div className='mt-4'>
+            <Input
+              label='Point Belanja'
+              type='number'
+              min={0}
+              max={100}
+              suffix='%'
+              value={pointPercentage}
+              onChange={(e) => setPointPercentage(e.target.value)}
+              placeholder='Contoh: 1'
+              hint='Rate point belanja kategori ini (0–100). 0 = tidak dapat point.'
+              variant='primary'
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer className='flex justify-end gap-2 pt-4'>
           <Button

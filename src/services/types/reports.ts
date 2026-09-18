@@ -87,6 +87,8 @@ export interface MembershipReportRow {
   name: string
   reff_code: string
   saldo: number
+  /** Saldo point member (`membership.point`) — global, tidak terikat brand. */
+  point: number
   /** Kosong jika member belum pernah bertransaksi. */
   last_transaction: string
 }
@@ -94,6 +96,92 @@ export interface MembershipReportRow {
 export interface MembershipReportSummary {
   total_member: number
   total_saldo: number
+  total_point: number
+}
+
+// Point Log Report (ledger point murni — tanpa status)
+export interface PointLogReportRow {
+  date: string
+  reference_type: string
+  reference_code: string
+  /** Delta saldo point: earn & revert positif, redeem & revert_earn negatif. */
+  nominal: number
+  membership: string
+  card_id: string
+  outlet: string
+  cashier_name: string
+}
+
+export interface PointLogReportSummary {
+  total_earn: number
+  total_redeem: number
+  total_revert: number
+  total_revert_earn: number
+  total_count: number
+}
+
+// Membership Settlement (HO ↔ outlet) — header per (outlet, tanggal)
+export interface MembershipSettlementRow {
+  id: string
+  franchisor_id: string
+  outlet_id: string
+  date: string
+  topup_cash: number
+  topup_transfer: number
+  payment_saldo: number
+  payment_point: number
+  payment_total: number
+  net_amount: number
+  /** `ho_to_outlet` | `outlet_to_ho` | kosong saat net = 0. */
+  transfer_direction: string
+  /** `pending` | `settled`. */
+  status: string
+  settled_by: string
+  settled_at: string
+  transfer_reference: string
+  transfer_note: string
+  unsettled_reason: string
+  created_at: string
+  updated_at: string
+  outlet?: { id: string; name: string }
+  franchisor?: { id: string; name: string }
+  /** Cuma ada di response `GET /report/membership-settlement/{id}` (show). */
+  items?: MembershipSettlementItemRow[]
+}
+
+export interface MembershipSettlementSummary {
+  topup_cash: number
+  topup_transfer: number
+  payment_saldo: number
+  payment_point: number
+  payment_total: number
+  net_amount: number
+  total_data: number
+}
+
+// Item sumber settlement (topup / pemakaian saldo & point per transaksi)
+export interface MembershipSettlementItemRow {
+  id: string
+  settlement_id: string
+  franchisor_id: string
+  outlet_id: string
+  date: string
+  /** `topup_cash` | `topup_transfer` | `payment_saldo` | `payment_point`. */
+  type: string
+  /** `normal` | `reversal`. */
+  kind: string
+  amount: number
+  reference_id: string
+  reference_code: string
+  created_at: string
+}
+
+export interface MembershipSettlementItemSummary {
+  topup_cash: number
+  topup_transfer: number
+  payment_saldo: number
+  payment_point: number
+  total_data: number
 }
 
 // Saldo Log Report

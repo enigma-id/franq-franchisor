@@ -21,11 +21,11 @@ import { useOutletType } from "@/services/outlet/hooks";
 export function SettlementReport({
   outletId,
   outletTypeId,
-  onRowClick,
+  onDetail,
 }: {
   outletId?: string;
   outletTypeId?: string;
-  onRowClick?: (row: any) => void;
+  onDetail?: (row: any) => void;
 }) {
   const lockOutlet = !!outletId;
 
@@ -38,9 +38,9 @@ export function SettlementReport({
           : { outlet_type_id: outletTypeId }),
       },
       lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
-      onRowClick,
+      onDetail,
     });
-  }, [lockOutlet, outletId, outletTypeId, onRowClick]);
+  }, [lockOutlet, outletId, outletTypeId, onDetail]);
 
   const Table = useTable(
     lockOutlet ? "outlet_tab_settlement" : "pos_settlement",
@@ -157,7 +157,7 @@ function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
     (state: RootState) => state?.table?.data?.pos_settlement?.filter?.outlet_id,
   );
 
-  const onRowClick = useCallback(
+  const onDetail = useCallback(
     (row: any) =>
       navigate(
         `/report/pos/settlement/daily?periode=${row.date}${
@@ -175,10 +175,7 @@ function SettlementMonthlyTable({ outletTypeId }: { outletTypeId: string }) {
         subtitle='Rekap penyelesaian pembayaran outlet.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0 '>
-        <SettlementReport
-          outletTypeId={outletTypeId}
-          onRowClick={onRowClick}
-        />
+        <SettlementReport outletTypeId={outletTypeId} onDetail={onDetail} />
       </Page.Body>
     </Page>
   );
