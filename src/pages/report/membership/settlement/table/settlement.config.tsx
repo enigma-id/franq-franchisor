@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
 import { Badge, Dropdown } from "@/components/ui";
-import { currencyFormat, formatDate } from "@/utils";
+import { currencyFormat, formatDate, getStatusVariant } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 import {
   CheckCircle2,
@@ -53,16 +53,21 @@ const createTableConfig = ({
       title: "Outlet",
       sortable: true,
       component: (row: any) => (
-        <span className='font-semibold text-sm'>
-          {row?.outlet?.name || "-"}
-        </span>
+        <div>
+          <span className='font-medium block'>
+            {`${row?.franchisor?.name ? row.franchisor.name + " - " : ""}${row.outlet?.name ?? ""}`}
+          </span>
+          <span className='text-xs text-gray-500 block'>
+            {row.outlet?.phone ?? ""}
+          </span>
+        </div>
       ),
     },
     date: {
       title: "Tanggal",
       sortable: true,
       component: (row: any) => (
-        <span className='text-sm'>{row?.date ? formatDate(row.date) : "-"}</span>
+        <span className='font-medium'>{formatDate(row.date)}</span>
       ),
     },
     topup_cash: {
@@ -71,12 +76,7 @@ const createTableConfig = ({
       class: "text-right font-mono",
       component: (row: any) => currencyFormat(row?.topup_cash ?? 0),
     },
-    topup_transfer: {
-      title: "Topup Transfer",
-      align: "right",
-      class: "text-right font-mono",
-      component: (row: any) => currencyFormat(row?.topup_transfer ?? 0),
-    },
+
     payment_saldo: {
       title: "Payment Saldo",
       align: "right",
@@ -96,24 +96,16 @@ const createTableConfig = ({
       component: (row: any) => currencyFormat(row?.payment_total ?? 0),
     },
     net_amount: {
-      title: "Net",
+      title: "Nominal",
       align: "right",
       class: "text-right font-mono font-semibold",
       component: (row: any) => {
-        const net = row?.net_amount ?? 0;
-        return (
-          <span
-            className={
-              net < 0 ? "text-red-500 font-semibold" : "text-green-600"
-            }
-          >
-            {currencyFormat(net)}
-          </span>
-        );
+        const net = row.net_amount < 0 ? -1 * row.net_amount : row.net_amount;
+        return <span className='font-semibold'>{currencyFormat(net)}</span>;
       },
     },
     transfer_direction: {
-      title: "Arah",
+      title: "Aksi",
       component: (row: any) => (
         <span className='text-sm'>
           {DIRECTION_LABEL[row?.transfer_direction] || "-"}
@@ -124,8 +116,12 @@ const createTableConfig = ({
       title: "Status",
       sortable: true,
       component: (row: any) => (
-        <Badge variant={row?.status === "settled" ? "success" : "warning"}>
-          {row?.status || "-"}
+        <Badge
+          variant={getStatusVariant(row.status)}
+          size='xs'
+          className='px-2.5 font-semibold text-[10px] tracking-wider'
+        >
+          {row.status?.toLowerCase()}
         </Badge>
       ),
     },

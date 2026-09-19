@@ -78,37 +78,47 @@ export function getStatusVariant(
     | "warning"
     | "error"
   > = {
-    // General / Purchase / Sales order statuses
-    approved: "success",
+    // default
     draft: "default",
-    pending: "warning",
-    submitted: "info",
+    none: "default",
+
     confirmed: "primary",
+    active: "primary",
     published: "primary",
+
+    // warning
+    pending: "warning",
     process: "warning",
+    awaiting_approval: "warning",
+    partial: "warning",
+
+    // secondary
     processing: "secondary",
-    completed: "success",
+
+    // accent
+    refunded: "accent",
     shipped: "accent",
-    received: "success",
-    invoiced: "info",
+
+    // success
+    settled: "success",
     delivered: "success",
+    received: "success",
+    completed: "success",
+    approved: "success",
+    paid: "success",
+    finished: "success",
+
+    // info
+    shipping: "info",
+    submitted: "info",
+    invoiced: "info",
+
+    // error
+    unpaid: "error",
     void: "error",
     cancelled: "error",
     rejected: "error",
     disputed: "error",
-    active: "primary",
-    finished: "default",
-    awaiting_approval: "warning",
-
-    // Payment statuses
-    unpaid: "error",
-    partial: "warning",
-    paid: "success",
-    refunded: "accent",
-
-    // Delivery statuses
-    shipping: "info",
-    none: "default",
   };
   return variantMap[normalized] || "default";
 }

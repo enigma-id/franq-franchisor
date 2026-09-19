@@ -13,13 +13,6 @@ import SettlementActionModals from "./components/SettlementActionModals";
 import type { SettlementAction } from "./table/settlement.config";
 import { CheckCircle2, ListOrdered, RefreshCw, XCircle } from "lucide-react";
 
-const TYPE_LABEL: Record<string, string> = {
-  topup_cash: "Topup Cash",
-  topup_transfer: "Topup Transfer",
-  payment_saldo: "Payment Saldo",
-  payment_point: "Payment Point",
-};
-
 const DIRECTION_LABEL: Record<string, string> = {
   ho_to_outlet: "HO → Outlet",
   outlet_to_ho: "Outlet → HO",
@@ -81,7 +74,7 @@ export default function MembershipSettlementDetailPage() {
         category='Report'
         title={`Settlement — ${detail?.outlet?.name ?? "-"}`}
         subtitle={`Settlement tanggal ${dateOnly ? formatDate(dateOnly) : "-"}.`}
-        backTo={() => navigate("/report/membership/settlement")}
+        backTo={() => navigate(-1)}
         action={
           detail &&
           canSettle && (
@@ -150,10 +143,6 @@ export default function MembershipSettlementDetailPage() {
                     value={detail.settled_by || "-"}
                   />
                   <InfoRow
-                    label='Aksi'
-                    value={DIRECTION_LABEL[detail.transfer_direction] || "-"}
-                  />
-                  <InfoRow
                     label='Settled At'
                     value={
                       detail.settled_at
@@ -192,27 +181,12 @@ export default function MembershipSettlementDetailPage() {
                       </span>
                     }
                   />
-                  <InfoRow
-                    label='Topup Transfer'
-                    value={
-                      <span className='font-mono font-semibold'>
-                        {currencyFormat(detail.topup_transfer ?? 0)}
-                      </span>
-                    }
-                  />
+
                   <InfoRow
                     label='Payment Saldo'
                     value={
                       <span className='font-mono font-semibold'>
                         {currencyFormat(detail.payment_saldo ?? 0)}
-                      </span>
-                    }
-                  />
-                  <InfoRow
-                    label='Payment Point'
-                    value={
-                      <span className='font-mono font-semibold'>
-                        {currencyFormat(detail.payment_point ?? 0)}
                       </span>
                     }
                   />
@@ -225,21 +199,27 @@ export default function MembershipSettlementDetailPage() {
                     }
                   />
                   <InfoRow
-                    label='Net'
+                    label='Payment Point'
                     value={
-                      <span
-                        className={
-                          (detail.net_amount ?? 0) < 0
-                            ? "font-mono font-semibold text-red-500"
-                            : "font-mono font-semibold text-green-600"
-                        }
-                      >
-                        {currencyFormat(detail.net_amount ?? 0)}
+                      <span className='font-mono font-semibold'>
+                        {currencyFormat(detail.payment_point ?? 0)}
                       </span>
                     }
                   />
                   <InfoRow
-                    label='Total Item'
+                    label={DIRECTION_LABEL[detail.transfer_direction] || "-"}
+                    value={
+                      <span className='font-mono font-semibold'>
+                        {currencyFormat(
+                          detail.net_amount < 0
+                            ? -1 * detail.net_amount
+                            : detail.net_amount,
+                        )}
+                      </span>
+                    }
+                  />
+                  <InfoRow
+                    label='Total Transkasi'
                     value={
                       <span className='font-semibold'>{items.length}</span>
                     }
@@ -255,7 +235,7 @@ export default function MembershipSettlementDetailPage() {
                   <ListOrdered size={16} />
                 </div>
                 <h2 className='table-header-title'>
-                  Item Settlement ({items.length})
+                  Transkasi Settlement ({items.length})
                 </h2>
               </div>
               <div className='flex-1 overflow-auto'>
@@ -301,8 +281,8 @@ export default function MembershipSettlementDetailPage() {
                           <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700'>
                             {formatDateTime(item.created_at)}
                           </td>
-                          <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700'>
-                            {TYPE_LABEL[item.type] || item.type || "-"}
+                          <td className='px-4 py-3 align-middle text-[13px] font-medium text-gray-700 capitalize'>
+                            {item?.type?.replace("_", " ")}
                           </td>
                           <td className='px-4 py-3 align-middle'>
                             <Badge

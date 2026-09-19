@@ -6,7 +6,6 @@ import {
   BarChart3,
   CircleDollarSign,
   Gift,
-  Landmark,
   ListOrdered,
   Wallet,
 } from "lucide-react";
@@ -25,19 +24,14 @@ export function SettlementSummaryCards({ data }: { data: any | null }) {
   if (!data) return null;
 
   return (
-    <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4 mb-6'>
+    <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 mb-6'>
       <SummaryCard
         label='Topup Cash'
         value={currencyFormat(data.topup_cash ?? 0)}
         icon={Banknote}
         theme={THEMES.green}
       />
-      <SummaryCard
-        label='Topup Transfer'
-        value={currencyFormat(data.topup_transfer ?? 0)}
-        icon={Landmark}
-        theme={THEMES.blue}
-      />
+
       <SummaryCard
         label='Payment Saldo'
         value={currencyFormat(data.payment_saldo ?? 0)}
