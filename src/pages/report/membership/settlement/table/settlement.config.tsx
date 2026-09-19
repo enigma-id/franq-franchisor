@@ -13,17 +13,6 @@ import {
 
 export type SettlementAction = "settle" | "unsettle" | "reconcile";
 
-/** Tanggal lokal (YYYY-MM-DD) — dibandingkan dengan `date` header (date-only). */
-const todayString = () => {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
-
-/** BE hanya mengizinkan settle untuk tanggal < hari ini. */
-const isPastDate = (date?: string) =>
-  !!date && date.slice(0, 10) < todayString();
-
 const DIRECTION_LABEL: Record<string, string> = {
   ho_to_outlet: "HO → Outlet",
   outlet_to_ho: "Outlet → HO",
@@ -131,7 +120,6 @@ const createTableConfig = ({
       sortable: false,
       component: (row: any) => {
         const settled = row?.status === "settled";
-        const canSettleRow = !settled && isPastDate(row?.date);
 
         return (
           <Dropdown
@@ -159,7 +147,7 @@ const createTableConfig = ({
                 </div>
               </button>
             </Dropdown.Item>
-            {canSettle && canSettleRow && (
+            {canSettle && !settled && (
               <Dropdown.Item
                 onSelect={() => onAction?.(row, "settle")}
                 className='hover:bg-emerald-50 hover:text-emerald-600'
@@ -212,11 +200,6 @@ const createTableConfig = ({
                   </div>
                 </button>
               </Dropdown.Item>
-            )}
-            {canSettle && !settled && !canSettleRow && (
-              <div className='px-3 py-2 text-[11px] text-slate-400 leading-snug'>
-                Settle hanya untuk tanggal sebelum hari ini.
-              </div>
             )}
           </Dropdown>
         );

@@ -4,6 +4,7 @@
 **Status:** Draft (menunggu review sebelum implementasi)
 
 > **Revisi (Settlement detail):** list tidak lagi redirect saat baris diklik — detail dibuka lewat item **"Lihat Detail"** di dropdown aksi; halaman detail pindah sumber data ke **`GET /report/membership-settlement/{id}`** (show) sehingga `location.state` + kompensasi tanggal dibuang dan tabel item dirender dari `items` response itu; section ringkasan di detail berubah dari kartu jadi section label–nilai; section Informasi Settlement jadi layout kanan-kiri grid 2 kolom. Detail per area ada di §D/§E/§G, catatan di §Catatan.
+> **Revisi (Settle tanpa batas tanggal):** gate `tanggal < hari ini` pada aksi **Settle** dilepas di FE — baik item dropdown di list (§D) maupun tombol di detail (§E) — mengikuti BE yang sudah menghapus batas tanggal (`MembershipSettlementUsecase.Settle`, commit *"lepas batas tanggal settle"*). Helper `todayString`/`isPastDate`, variabel `canSettleRow`/`canSettleThisRow`, dan teks "Belum bisa settle" dihapus; row `pending` kini selalu bisa di-settle. Syarat yang tersisa: **superuser + slug `.settle`**.
 **Repo:** `franq-franchisor` (React + Vite + Redux/RTK Query)
 **Backend spec:** `franq/docs/feature/membership_point.md` (status di doc masih *Planned*, padahal kode BE-nya sudah ada — lihat Catatan)
 
@@ -90,7 +91,7 @@ Diverifikasi langsung dari `~/Workspaces/franq/backend/...` (bukan asumsi).
 
 | Method | Path | Body | Validasi BE |
 |---|---|---|---|
-| `POST` | `/report/membership-settlement/{id}/settle` | `{ transfer_reference` **(wajib)**`, transfer_note? }` | superuser; belum settled; **tanggal < hari ini** |
+| `POST` | `/report/membership-settlement/{id}/settle` | `{ transfer_reference` **(wajib)**`, transfer_note? }` | superuser; belum settled |
 | `POST` | `/report/membership-settlement/{id}/unsettle` | `{ reason` **(wajib)** `}` | superuser; status **== settled** |
 | `POST` | `/report/membership-settlement/{id}/reconcile` | — (tanpa body) | superuser; **belum** settled |
 
@@ -157,10 +158,10 @@ Folder baru `src/pages/report/membership/settlement/`:
   - **Status**: `Badge` — `pending` / `settled` (pakai `getStatusVariant`).
   - `action`: `Dropdown` (`MoreVertical`) — **selalu tampil** (tidak lagi kosong untuk non-superuser), item:
     - **Lihat Detail** — selalu ada (cuma navigasi, tidak digate aksi) → `/report/membership/settlement/:id`;
-    - **Settle** — muncul bila `canSettle` **&&** `status !== "settled"` **&&** tanggal < hari ini;
+    - **Settle** — muncul bila `canSettle` **&&** `status !== "settled"` (tanpa gate tanggal — BE sudah melepas batas `tanggal < hari ini`);
     - **Unsettle** — muncul bila `canSettle` **&&** `status === "settled"`;
     - **Reconcile** — muncul bila `canSettle` **&&** `status !== "settled"`.
-    - Tombol `Settle` untuk tanggal >= hari ini **tidak ditampilkan** (BE menolaknya) — diganti teks kecil "Belum bisa settle".
+    - Tidak ada lagi cabang "Belum bisa settle": row pending selalu bisa di-settle berapa pun tanggalnya.
 - `table/settlement.filter.tsx` — Outlet (RemoteSelect), Rentang Tanggal (BE hanya menerapkan filter bila `start_date` & `end_date` dua-duanya terisi), Status (`pending`/`settled`), Arah (`ho_to_outlet`/`outlet_to_ho`).
 - **Klik baris tidak lagi navigasi** — `onRowClick` dilepas dari config; `onDetail` (item dropdown) yang membawa ke halaman detail, tanpa `location.state`.
 
@@ -279,7 +280,7 @@ Tidak ada.
 4. **Mutasi Point**: list + ringkasan konsisten untuk filter yang sama; filter outlet/tanggal/tipe & search jalan; `nominal` bertanda tampil dengan warna benar; drill-down per member menyembunyikan kolom Member dan menampilkan `backTo`.
 5. **Settlement list**: filter outlet/status/arah jalan (uji juga filter tanggal dengan hanya salah satu dari start/end → memang tidak terfilter, sesuai BE); kolom Arah tampil benar untuk kedua arah dan `-` saat null; search menyaring nama outlet; **klik baris tidak membuka apa pun**, detail dibuka dari item **"Lihat Detail"** di dropdown (dropdown tetap muncul meski user tidak punya aksi settle). **Catatan:** filter tanggal sedang off-by-one di BE (lihat Catatan) — verifikasi apakah hasilnya bergeser sehari.
 6. **Settlement detail**: header + item dari `GET /report/membership-settlement/{id}`; **refresh langsung di URL detail menampilkan data** (tidak lagi "buka dari daftar"); section **Informasi Settlement** (kiri) & **Ringkasan Settlement** (kanan) tampil **berdampingan** sebagai section label–nilai (bukan kartu), label kiri / nilai kanan, grid 2 kolom saat lebar cukup — di layar sempit keduanya menumpuk vertikal; tabel item hanya berisi item milik settlement itu, tanpa paginasi/search/download. Section **Perbandingan Item vs Header sudah tidak ada**.
-7. **Aksi**: `settle` (form) berhasil → status jadi `settled`, tombol berubah jadi Unsettle; `settle` untuk tanggal hari ini **tidak tersedia**; `unsettle` (alasan wajib) mengembalikan ke `pending`; `reconcile` mengubah item + header sesuai ledger — semuanya dengan **refetch `/{id}`** (bukan patch lokal), jadi nilai header & daftar item selalu dari BE.
+7. **Aksi**: `settle` (form) berhasil → status jadi `settled`, tombol berubah jadi Unsettle; `settle` tersedia untuk **semua** row pending (tanggal lampau maupun hari ini — BE tidak lagi membatasi tanggal); `unsettle` (alasan wajib) mengembalikan ke `pending`; `reconcile` mengubah item + header sesuai ledger — semuanya dengan **refetch `/{id}`** (bukan patch lokal), jadi nilai header & daftar item selalu dari BE.
 8. **Gating**: login superuser + punya slug `.settle` → tombol muncul; login non-superuser yang punya slug `.settle` → tombol **tidak muncul**; tanpa slug `.settle` → tidak muncul.
 9. **Menu**: grup Member menampilkan 4 item; brand bertipe `mitra` tidak melihat grup Member sama sekali; non-superuser tanpa slug terkait tidak melihat menu & tidak bisa membuka route langsung (`PermissionGuard`).
 10. **Regresi**: Mutasi Saldo, Settlement POS/Mitra/B2B, dan seluruh report lain tidak berubah perilakunya.

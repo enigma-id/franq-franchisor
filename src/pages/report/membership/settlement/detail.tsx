@@ -32,13 +32,6 @@ function InfoRow({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-/** Tanggal lokal (YYYY-MM-DD) — BE hanya mengizinkan settle untuk tanggal < hari ini. */
-const todayString = () => {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
-
 export default function MembershipSettlementDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -66,7 +59,6 @@ export default function MembershipSettlementDetailPage() {
   const dateOnly = detail?.date?.slice(0, 10) ?? "";
   const items = detail?.items ?? [];
   const settled = detail?.status === "settled";
-  const canSettleThisRow = !settled && !!dateOnly && dateOnly < todayString();
 
   return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
@@ -79,7 +71,7 @@ export default function MembershipSettlementDetailPage() {
           detail &&
           canSettle && (
             <div className='flex items-center gap-2'>
-              {canSettleThisRow && (
+              {!settled && (
                 <Button
                   variant='success'
                   size='sm'
@@ -216,12 +208,6 @@ export default function MembershipSettlementDetailPage() {
                             : detail.net_amount,
                         )}
                       </span>
-                    }
-                  />
-                  <InfoRow
-                    label='Total Transkasi'
-                    value={
-                      <span className='font-semibold'>{items.length}</span>
                     }
                   />
                 </div>
