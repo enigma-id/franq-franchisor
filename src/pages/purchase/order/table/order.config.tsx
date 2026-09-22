@@ -1,7 +1,15 @@
 import config from "@/services/table/const";
 import type { PurchaseOrderDetail } from "@/services/types/purchase";
 import { Badge, Dropdown } from "@/components/ui";
-import { Edit, Eye, MoreVertical, ShoppingCart, Trash, Check, CreditCard } from "lucide-react";
+import {
+  Edit,
+  Eye,
+  MoreVertical,
+  ShoppingCart,
+  Trash,
+  Check,
+  CreditCard,
+} from "lucide-react";
 import { formatCurrency, getStatusVariant, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
@@ -29,25 +37,34 @@ const createTableConfig = ({
       title: "Tanggal",
       sortable: true,
       component: (row: PurchaseOrderDetail) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
+        <div className='flex items-center gap-3'>
+          <div className='w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0'>
             <ShoppingCart size={16} />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-slate-700">
+          <div className='flex flex-col'>
+            <span className='font-bold text-slate-700'>
               {formatDateTime(row.created_at)}
             </span>
-            <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
+            <span className='text-[11px] text-slate-400 font-medium uppercase tracking-wider'>
               {row.code}
             </span>
           </div>
         </div>
       ),
     },
+    franchisor_id: {
+      title: "Franchise",
+      sortable: true,
+      component: (row: PurchaseOrderDetail) => (
+        <span className='text-sm text-gray-600'>
+          {row?.franchisor?.name || "-"}
+        </span>
+      ),
+    },
     supplier: {
       title: "Supplier",
       component: (row: PurchaseOrderDetail) => (
-        <span className="text-slate-600 font-medium">
+        <span className='text-slate-600 font-medium'>
           {row.supplier?.name || "-"}
         </span>
       ),
@@ -55,7 +72,7 @@ const createTableConfig = ({
     warehouse_name: {
       title: "Warehouse",
       component: (row: PurchaseOrderDetail) => (
-        <span className="text-slate-600 font-medium">
+        <span className='text-slate-600 font-medium'>
           {row.warehouse_name || "-"}
         </span>
       ),
@@ -64,7 +81,7 @@ const createTableConfig = ({
       title: "Total",
       sortable: true,
       component: (row: PurchaseOrderDetail) => (
-        <span className="font-bold text-primary">
+        <span className='font-bold text-primary'>
           {formatCurrency(row.total_charges)}
         </span>
       ),
@@ -76,8 +93,8 @@ const createTableConfig = ({
       component: (row: PurchaseOrderDetail) => (
         <Badge
           variant={getStatusVariant(row.document_status)}
-          size="xs"
-          className="px-2.5 font-semibold text-[10px] tracking-wider"
+          size='xs'
+          className='px-2.5 font-semibold text-[10px] tracking-wider'
         >
           {row.document_status?.toLowerCase() || "-"}
         </Badge>
@@ -90,8 +107,8 @@ const createTableConfig = ({
       component: (row: PurchaseOrderDetail) => (
         <Badge
           variant={getStatusVariant(row.receiving_status)}
-          size="xs"
-          className="px-2.5 font-semibold text-[10px] tracking-wider"
+          size='xs'
+          className='px-2.5 font-semibold text-[10px] tracking-wider'
         >
           {row.receiving_status?.toLowerCase() || "-"}
         </Badge>
@@ -104,8 +121,8 @@ const createTableConfig = ({
       component: (row: PurchaseOrderDetail) => (
         <Badge
           variant={getStatusVariant(row.payment_status)}
-          size="xs"
-          className="px-2.5 font-semibold text-[10px] tracking-wider"
+          size='xs'
+          className='px-2.5 font-semibold text-[10px] tracking-wider'
         >
           {row.payment_status?.toLowerCase() || "-"}
         </Badge>
@@ -119,24 +136,24 @@ const createTableConfig = ({
       component: (row: PurchaseOrderDetail) => (
         <Dropdown
           trigger={
-            <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
-              <MoreVertical className="w-5 h-5 text-slate-600" />
+            <button className='p-2 rounded-lg hover:bg-slate-100 transition-colors'>
+              <MoreVertical className='w-5 h-5 text-slate-600' />
             </button>
           }
-          position="end"
-          contentClassName="dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2"
+          position='end'
+          contentClassName='dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2'
         >
           <Dropdown.Item
             onSelect={() => onClick?.(row)}
-            className="hover:bg-green-50 hover:text-green-600"
+            className='hover:bg-green-50 hover:text-green-600'
           >
-            <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-success">
-                <Eye className="w-4 h-4" />
+            <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+              <div className='w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-success'>
+                <Eye className='w-4 h-4' />
               </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="font-bold text-[13px]">See Detail</span>
-                <span className="text-[11px] text-slate-400">
+              <div className='flex flex-col items-start leading-tight'>
+                <span className='font-bold text-[13px]'>See Detail</span>
+                <span className='text-[11px] text-slate-400'>
                   See purchase order info
                 </span>
               </div>
@@ -146,29 +163,31 @@ const createTableConfig = ({
             <>
               <Dropdown.Item
                 onSelect={() => onPublish?.(row)}
-                className="hover:bg-emerald-50 hover:text-emerald-600"
+                className='hover:bg-emerald-50 hover:text-emerald-600'
               >
-                <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                    <Check className="w-4 h-4" />
+                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+                  <div className='w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600'>
+                    <Check className='w-4 h-4' />
                   </div>
-                  <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Publish</span>
-                    <span className="text-[11px] text-slate-400">Approve purchase order</span>
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Publish</span>
+                    <span className='text-[11px] text-slate-400'>
+                      Approve purchase order
+                    </span>
                   </div>
                 </button>
               </Dropdown.Item>
               <Dropdown.Item
                 onSelect={() => onEdit?.(row)}
-                className="hover:bg-indigo-50 hover:text-indigo-600"
+                className='hover:bg-indigo-50 hover:text-indigo-600'
               >
-                <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                    <Edit className="w-4 h-4" />
+                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+                  <div className='w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600'>
+                    <Edit className='w-4 h-4' />
                   </div>
-                  <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Edit</span>
-                    <span className="text-[11px] text-slate-400">
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Edit</span>
+                    <span className='text-[11px] text-slate-400'>
                       Modify purchase order info
                     </span>
                   </div>
@@ -176,15 +195,15 @@ const createTableConfig = ({
               </Dropdown.Item>
               <Dropdown.Item
                 onSelect={() => onRemove?.(row)}
-                className="hover:bg-red-50 hover:text-red-600"
+                className='hover:bg-red-50 hover:text-red-600'
               >
-                <button className="flex items-center gap-3 py-1 rounded-xl text-slate-700">
-                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                    <Trash className="w-4 h-4" />
+                <button className='flex items-center gap-3 py-1 rounded-xl text-slate-700'>
+                  <div className='w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600'>
+                    <Trash className='w-4 h-4' />
                   </div>
-                  <div className="flex flex-col items-start leading-tight">
-                    <span className="font-bold text-[13px]">Delete</span>
-                    <span className="text-[11px] text-slate-400">
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Delete</span>
+                    <span className='text-[11px] text-slate-400'>
                       Remove purchase order
                     </span>
                   </div>
@@ -193,22 +212,26 @@ const createTableConfig = ({
             </>
           )}
 
-          {canManage && row?.payment_status === "unpaid" && row?.document_status !== "pending" && (
-            <Dropdown.Item
-              onSelect={() => onPaid?.(row)}
-              className="hover:bg-blue-50 hover:text-blue-600"
-            >
-              <button className="flex items-center py-1 gap-3 rounded-xl text-slate-700">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="font-bold text-[13px]">Paid</span>
-                  <span className="text-[11px] text-slate-400">Mark as paid</span>
-                </div>
-              </button>
-            </Dropdown.Item>
-          )}
+          {canManage &&
+            row?.payment_status === "unpaid" &&
+            row?.document_status !== "pending" && (
+              <Dropdown.Item
+                onSelect={() => onPaid?.(row)}
+                className='hover:bg-blue-50 hover:text-blue-600'
+              >
+                <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
+                  <div className='w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600'>
+                    <CreditCard className='w-4 h-4' />
+                  </div>
+                  <div className='flex flex-col items-start leading-tight'>
+                    <span className='font-bold text-[13px]'>Paid</span>
+                    <span className='text-[11px] text-slate-400'>
+                      Mark as paid
+                    </span>
+                  </div>
+                </button>
+              </Dropdown.Item>
+            )}
         </Dropdown>
       ),
     },

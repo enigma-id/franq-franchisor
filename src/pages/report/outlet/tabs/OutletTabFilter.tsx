@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
-import type { Dayjs } from "dayjs";
 
-import { DatePicker, RemoteSelect } from "@/components/ui";
+import { MonthPicker, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import TableFilters from "@/components/ui/table/filter";
 
@@ -39,42 +38,35 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, showStatus }) => {
     return found ? { label: found.label, value: found.value } : null;
   });
 
-  const [dateRange, setDateRange] = useState<
-    [Dayjs | null, Dayjs | null] | undefined
-  >(() => {
-    const start = current.start_date as string | undefined;
-    const end = current.end_date as string | undefined;
-    if (start && end) {
-      return [dayjs(start), dayjs(end)];
-    }
-    return undefined;
+  const [periode, setPeriode] = useState<string>(() => {
+    const cur = current.periode as string | undefined;
+    return cur || dayjs().format("YYYY-MM");
   });
 
   const buildFilters = (): Record<string, any> => ({
-    start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
-    end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
+    periode,
+    // Bersihkan nilai rentang tanggal lama yang mungkin masih tersimpan.
+    start_date: "",
+    end_date: "",
     ...(showStatus ? { status: status?.value ?? "" } : {}),
   });
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
     return (
-      (f.start_date || "") !== (current.start_date || "") ||
-      (f.end_date || "") !== (current.end_date || "") ||
+      (f.periode || "") !== (current.periode || "") ||
       (showStatus && (f.status || "") !== (current.status || ""))
     );
-  }, [status, dateRange, current, showStatus]);
+  }, [status, periode, current, showStatus]);
 
-  const anyActive = !!(
-    current.start_date ||
-    current.end_date ||
-    (showStatus && current.status)
-  );
+  const anyActive = !!(current.periode || (showStatus && current.status));
 
   const handleClear = () => {
+    const defaultPeriode = dayjs().format("YYYY-MM");
     setStatus(null);
-    setDateRange(undefined);
+    setPeriode(defaultPeriode);
     table.filter({
+      periode: defaultPeriode,
       start_date: "",
       end_date: "",
       ...(showStatus ? { status: "" } : {}),
@@ -91,16 +83,11 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, showStatus }) => {
       handleFilter={handleFilter}
     >
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
-        <DatePicker
-          label='Rentang Tanggal'
-          mode='range'
-          value={dateRange}
-          onChange={(date) => {
-            if (Array.isArray(date)) {
-              setDateRange(date as [Dayjs | null, Dayjs | null]);
-            }
-          }}
-          placeholder='Filter Tanggal'
+        <MonthPicker
+          label='Periode'
+          value={periode}
+          onChange={setPeriode}
+          placeholder='Filter Periode'
         />
         {showStatus && (
           <RemoteSelect<SelectOptionValue>

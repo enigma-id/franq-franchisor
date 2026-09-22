@@ -14,7 +14,6 @@ type PaymentMethodRow = PaymentMethodDetail & {
 };
 
 const createTableConfig = ({
-  onRowClick,
   lockFilter,
   filter,
   onClick,
@@ -23,7 +22,6 @@ const createTableConfig = ({
   onOutletType,
   canManage,
 }: {
-  onRowClick?: (row: PaymentMethodDetail) => void;
   lockFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: PaymentMethodDetail) => void;
@@ -36,7 +34,6 @@ const createTableConfig = ({
   url: "/payment/method",
   lockFilter,
   filter,
-  onRowClick,
   columns: {
     name: {
       title: "Nama Pembayaran",

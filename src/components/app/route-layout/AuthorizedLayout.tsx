@@ -355,6 +355,12 @@ const menuSections: MenuSection[] = [
         permission: MENU.user,
       },
       {
+        label: "Usergroup",
+        path: "/usergroup",
+        icon: <Users size={18} />,
+        permission: MENU.usergroup,
+      },
+      {
         label: "Outlet List",
         path: "/setting/outlet",
         icon: <Store size={18} />,

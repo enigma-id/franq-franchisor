@@ -2,7 +2,6 @@
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
 import {
-  Activity,
   CalendarClock,
   Receipt,
   ShoppingCart,
@@ -24,18 +23,12 @@ export function OutletSummaryCards({ data }: { data: any | null }) {
   if (!data) return null;
 
   return (
-    <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6'>
+    <div className='grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6'>
       <SummaryCard
         label='Total Outlet'
         value={data.total_outlet ?? 0}
         icon={Store}
         theme={THEMES.blue}
-      />
-      <SummaryCard
-        label='Outlet Aktif'
-        value={data.active_outlet ?? 0}
-        icon={Activity}
-        theme={THEMES.green}
       />
       <SummaryCard
         label='Total Omzet'

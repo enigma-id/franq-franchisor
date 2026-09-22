@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect, useState } from "react";
+import dayjs from "dayjs";
 import createTableConfig from "./table/outstanding.config";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
@@ -58,7 +59,7 @@ export function OutstandingReport({
     () =>
       createTableConfig({
         filter: lockOutlet
-          ? { outlet_id: outletId }
+          ? { outlet_id: outletId, periode: dayjs().format("YYYY-MM") }
           : { outlet_type_id: outletTypeId },
         lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
       }),

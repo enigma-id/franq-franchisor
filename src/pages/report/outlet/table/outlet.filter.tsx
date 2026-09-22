@@ -2,9 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
-import type { Dayjs } from "dayjs";
 
-import { DatePicker, RemoteSelect } from "@/components/ui";
+import { MonthPicker, RemoteSelect } from "@/components/ui";
 import { useOutlet } from "@/services/outlet/hooks";
 import { useFranchisorList } from "@/services/franchisor/hooks";
 import { useIsSuperuser } from "@/utils/permission";
@@ -76,20 +75,16 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     }
   }, [current.outlet_id, getOutletResult?.data?.data, isSuperuser]);
 
-  const [dateRange, setDateRange] = useState<
-    [Dayjs | null, Dayjs | null] | undefined
-  >(() => {
-    const start = current.start_date as string | undefined;
-    const end = current.end_date as string | undefined;
-    if (start && end) {
-      return [dayjs(start), dayjs(end)];
-    }
-    return undefined;
+  const [periode, setPeriode] = useState<string>(() => {
+    const cur = current.periode as string | undefined;
+    return cur || dayjs().format("YYYY-MM");
   });
 
   const buildFilters = (): Record<string, any> => ({
-    start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
-    end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
+    periode,
+    // Bersihkan nilai rentang tanggal lama yang mungkin masih tersimpan.
+    start_date: "",
+    end_date: "",
     // Scope brand/outlet hanya relevan untuk superuser — user brand sudah
     // otomatis ter-scope oleh session di backend.
     ...(isSuperuser
@@ -100,25 +95,25 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   const isDirty = useMemo(() => {
     const f = buildFilters();
     return (
-      (f.start_date || "") !== (current.start_date || "") ||
-      (f.end_date || "") !== (current.end_date || "") ||
+      (f.periode || "") !== (current.periode || "") ||
       (isSuperuser &&
         ((f.brand_id || "") !== (current.brand_id || "") ||
           (f.outlet_id || "") !== (current.outlet_id || "")))
     );
-  }, [dateRange, franchisor, outlet, current, isSuperuser]);
+  }, [periode, franchisor, outlet, current, isSuperuser]);
 
   const anyActive = !!(
-    current.start_date ||
-    current.end_date ||
+    current.periode ||
     (isSuperuser && (current.brand_id || current.outlet_id))
   );
 
   const handleClear = () => {
+    const defaultPeriode = dayjs().format("YYYY-MM");
     setFranchisor(null);
     setOutlet(null);
-    setDateRange(undefined);
+    setPeriode(defaultPeriode);
     table.filter({
+      periode: defaultPeriode,
       start_date: "",
       end_date: "",
       ...(isSuperuser ? { brand_id: "", outlet_id: "" } : {}),
@@ -178,16 +173,12 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
             />
           </>
         )}
-        <DatePicker
-          label='Rentang Tanggal'
-          mode='range'
-          value={dateRange}
-          onChange={(date) => {
-            if (Array.isArray(date)) {
-              setDateRange(date as [Dayjs | null, Dayjs | null]);
-            }
-          }}
-          placeholder='Filter Tanggal'
+        <MonthPicker
+          label='Periode'
+          value={periode}
+          onChange={setPeriode}
+          placeholder='Filter Periode'
+          className='w-full'
         />
       </div>
     </TableFilters>

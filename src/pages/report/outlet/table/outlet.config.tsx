@@ -7,12 +7,12 @@ import { ChevronRight } from "lucide-react";
 const createTableConfig = ({
   filter,
   lockedFilter,
-  onRowClick,
+  onDetail,
   showBrand,
 }: {
   filter?: Record<string, unknown>;
   lockedFilter?: Record<string, unknown>;
-  onRowClick?: (row: any) => void;
+  onDetail?: (row: any) => void;
   /** Tampilkan kolom Brand (superuser — lintas brand). */
   showBrand?: boolean;
 }): TableConfig<any> => {
@@ -96,8 +96,15 @@ const createTableConfig = ({
     title: "",
     width: 40,
     sortable: false,
-    component: () => (
-      <ChevronRight size={16} className='text-base-content/30' />
+    component: (row: any) => (
+      <button
+        type='button'
+        onClick={() => onDetail?.(row)}
+        aria-label='Lihat Detail'
+        className='p-1.5 rounded-lg text-base-content/30 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer'
+      >
+        <ChevronRight size={16} />
+      </button>
     ),
   };
 
@@ -106,7 +113,6 @@ const createTableConfig = ({
     url: "/report/franchise/outlet",
     filter,
     lockedFilter,
-    onRowClick,
     columns,
   };
 };

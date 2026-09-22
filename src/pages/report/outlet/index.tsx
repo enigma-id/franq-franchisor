@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 import { Page } from "@/components/app/layout";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
@@ -17,7 +18,8 @@ export default function OutletReportPage() {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onRowClick: (row: any) => navigate(`/report/outlet/${row.outlet_id}`),
+        filter: { periode: dayjs().format("YYYY-MM") },
+        onDetail: (row: any) => navigate(`/report/outlet/${row.outlet_id}`),
         showBrand: isSuperuser,
       }),
     [navigate, isSuperuser],

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import dayjs from "dayjs";
 import useTable from "@/services/table/hooks";
 import type { TableConfig } from "@/services/table/const";
 import createTableConfig from "../table/session.config";
@@ -9,7 +10,7 @@ export function SessionTab({ outletId }: { outletId: string }) {
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        filter: { outlet_id: outletId },
+        filter: { outlet_id: outletId, periode: dayjs().format("YYYY-MM") },
         lockedFilter: { outlet_id: outletId },
       }),
     [outletId],

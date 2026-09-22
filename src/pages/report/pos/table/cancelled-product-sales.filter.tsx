@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 
-import { DatePicker, RemoteSelect } from "@/components/ui";
+import { DatePicker, MonthPicker, RemoteSelect } from "@/components/ui";
 import { useOutlet } from "@/services/outlet/hooks";
 import TableFilters from "@/components/ui/table/filter";
 
@@ -68,35 +68,52 @@ const TableFilter: React.FC<TableFilterProps> = ({
     return undefined;
   });
 
-  const buildFilters = (): Record<string, any> => ({
-    start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
-    end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
-    ...(lockOutlet ? {} : { outlet_id: outlet?.id ?? "" }),
+  // Mode periode (tab detail Rekap Outlet) — pengganti rentang tanggal.
+  const [periode, setPeriode] = useState<string>(() => {
+    const cur = current.periode as string | undefined;
+    return cur || dayjs().format("YYYY-MM");
   });
+
+  const buildFilters = (): Record<string, any> =>
+    lockOutlet
+      ? {
+          periode,
+          // Bersihkan nilai rentang tanggal lama yang mungkin masih tersimpan.
+          start_date: "",
+          end_date: "",
+        }
+      : {
+          start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
+          end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
+          outlet_id: outlet?.id ?? "",
+        };
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
+    if (lockOutlet) {
+      return (f.periode || "") !== (current.periode || "");
+    }
     return (
       (f.start_date || "") !== (current.start_date || "") ||
       (f.end_date || "") !== (current.end_date || "") ||
-      (!lockOutlet && (f.outlet_id || "") !== (current.outlet_id || ""))
+      (f.outlet_id || "") !== (current.outlet_id || "")
     );
-  }, [dateRange, outlet, current, lockOutlet]);
+  }, [periode, dateRange, outlet, current, lockOutlet]);
 
-  const anyActive = !!(
-    current.start_date ||
-    current.end_date ||
-    (!lockOutlet && current.outlet_id)
-  );
+  const anyActive = lockOutlet
+    ? !!current.periode
+    : !!(current.start_date || current.end_date || current.outlet_id);
 
   const handleClear = () => {
+    const defaultPeriode = dayjs().format("YYYY-MM");
     setOutlet(null);
     setDateRange(undefined);
-    table.filter({
-      start_date: "",
-      end_date: "",
-      ...(lockOutlet ? {} : { outlet_id: "" }),
-    });
+    setPeriode(defaultPeriode);
+    table.filter(
+      lockOutlet
+        ? { periode: defaultPeriode, start_date: "", end_date: "" }
+        : { start_date: "", end_date: "", outlet_id: "" },
+    );
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -130,17 +147,26 @@ const TableFilter: React.FC<TableFilterProps> = ({
             getValue={(item: any) => item.id}
           />
         )}
-        <DatePicker
-          label='Rentang Tanggal'
-          mode='range'
-          value={dateRange}
-          onChange={(date) => {
-            if (Array.isArray(date)) {
-              setDateRange(date as [Dayjs | null, Dayjs | null]);
-            }
-          }}
-          placeholder='Filter Tanggal'
-        />
+        {lockOutlet ? (
+          <MonthPicker
+            label='Periode'
+            value={periode}
+            onChange={setPeriode}
+            placeholder='Filter Periode'
+          />
+        ) : (
+          <DatePicker
+            label='Rentang Tanggal'
+            mode='range'
+            value={dateRange}
+            onChange={(date) => {
+              if (Array.isArray(date)) {
+                setDateRange(date as [Dayjs | null, Dayjs | null]);
+              }
+            }}
+            placeholder='Filter Tanggal'
+          />
+        )}
       </div>
     </TableFilters>
   );

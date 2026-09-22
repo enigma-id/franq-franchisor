@@ -56,10 +56,6 @@ export function MembershipReport({ outletId }: { outletId?: string }) {
     () =>
       createTableConfig({
         filter: outletId ? { outlet_id: outletId } : undefined,
-        onRowClick: (row: any) =>
-          navigate(
-            `/report/membership/saldo-log?membership_id=${row.membership_id}`,
-          ),
         onNavigate: (row: any, target: "saldo" | "point") =>
           navigate(
             `${target === "point" ? "/report/membership/point-log" : "/report/membership/saldo-log"}?membership_id=${row.membership_id}`,

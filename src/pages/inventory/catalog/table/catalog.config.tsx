@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dropdown, Tooltip } from "@/components";
+import { Dropdown } from "@/components";
 import config from "@/services/table/const";
 import type { InventoryCatalogDetail } from "@/services/types/inventory";
 import { Edit, Layers, MoreVertical, Package, Trash, Eye } from "lucide-react";
 import { Toggle } from "@/components/ui";
 
 const createTableConfig = ({
-  onRowClick,
   lockFilter,
   filter,
   onClick,
@@ -15,7 +14,6 @@ const createTableConfig = ({
   onToggleActive,
   canManage,
 }: {
-  onRowClick?: (row: any) => void;
   lockFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
@@ -29,7 +27,6 @@ const createTableConfig = ({
     url: "/inventory/catalog",
     lockFilter,
     filter,
-    onRowClick,
     columns: {
       name: {
         title: "Catalog",

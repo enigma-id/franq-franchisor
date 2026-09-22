@@ -128,6 +128,7 @@ export interface InventoryCatalogRequest extends InventoryCatalogBase {
 export interface InventoryCatalogDetailBase extends InventoryCatalogBase {
   id: string;
   franchisor_id: string;
+  franchisor?: FranchisorDetail;
   code: string;
 
   base_price: number;

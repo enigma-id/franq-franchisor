@@ -6,7 +6,6 @@ import config from "@/services/table/const";
 import { currencyFormat, formatDateTime } from "@/utils";
 
 const createTableConfig = ({
-  onRowClick,
   lockFilter,
   filter,
   onClick,
@@ -16,7 +15,6 @@ const createTableConfig = ({
   canManage,
   canManageUser,
 }: {
-  onRowClick?: (row: any) => void;
   lockFilter?: Record<string, unknown>;
   filter?: Record<string, unknown>;
   onClick?: (row: any) => void;
@@ -30,7 +28,6 @@ const createTableConfig = ({
   url: "/outlet",
   lockFilter,
   filter,
-  onRowClick,
   columns: {
     name: {
       title: "Nama Outlet",

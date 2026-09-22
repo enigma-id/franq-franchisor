@@ -100,7 +100,7 @@ export default function OutletReportDetailPage() {
             <OutletSummaryCards data={summary} />
 
             {/* Tab navigasi laporan per-outlet */}
-            <div className='flex items-center gap-1 border-b border-slate-200 mb-4 overflow-x-auto'>
+            <div className='flex items-center gap-1 border-b border-slate-200 mb-4 '>
               {tabs.map((tab) => (
                 <button
                   key={tab.key}

@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 import createTableConfig from "./table/settlement.config";
 import type { SettlementAction } from "./table/settlement.config";
 import TableFilter from "./table/settlement.filter";
@@ -43,7 +44,9 @@ export function MembershipSettlementReport({
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        filter: lockOutlet ? { outlet_id: outletId } : undefined,
+        filter: lockOutlet
+          ? { outlet_id: outletId, periode: dayjs().format("YYYY-MM") }
+          : undefined,
         lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
         onDetail: (row: any) =>
           navigate(`/report/membership/settlement/${row.id}`),

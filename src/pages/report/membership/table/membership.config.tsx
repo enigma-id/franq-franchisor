@@ -7,24 +7,23 @@ import { Gift, MoreVertical, Wallet } from "lucide-react";
 
 const createTableConfig = ({
   filter,
-  onRowClick,
   onNavigate,
 }: {
   filter?: Record<string, unknown>;
-  onRowClick?: (row: any) => void;
   /** Buka mutasi saldo/point milik satu member (drill-down dari kolom aksi). */
   onNavigate?: (row: any, target: "saldo" | "point") => void;
 }): TableConfig<any> => ({
   ...config,
   url: "/report/membership",
   filter,
-  onRowClick,
   columns: {
     date: {
       title: "Tanggal Daftar",
       sortable: true,
       component: (row: any) => (
-        <span className='text-sm'>{row?.date ? formatDate(row.date) : "-"}</span>
+        <span className='text-sm'>
+          {row?.date ? formatDate(row.date) : "-"}
+        </span>
       ),
     },
     card_id: {
