@@ -41,20 +41,15 @@ export const deviceStatusFromTime = (
 };
 
 /**
- * Status device dari field `status` BE (mis. "Online" di live map). Kalau kosong
- * atau tak dikenal, fallback hitung dari timestamp log terakhir.
+ * Status device untuk baris live map. Field `status` BE tidak reliable (live map
+ * selalu kirim "Online"), jadi recency `last_activity_at` yang jadi acuan — status
+ * BE cuma dipercaya kalau ia menandai device TIDAK online (stale/offline).
  */
 export const deviceStatusFromRow = (
   status?: string | null,
   timestamp?: string | null,
 ): CashierDeviceStatus => {
   const normalized = status?.trim().toLowerCase();
-  if (
-    normalized === "online" ||
-    normalized === "stale" ||
-    normalized === "offline"
-  ) {
-    return normalized;
-  }
+  if (normalized === "stale" || normalized === "offline") return normalized;
   return deviceStatusFromTime(timestamp);
 };

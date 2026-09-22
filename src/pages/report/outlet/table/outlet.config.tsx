@@ -76,12 +76,12 @@ const createTableConfig = ({
     component: (row: any) => row?.total_session ?? 0,
   };
 
-  columns.aov = {
-    title: "AOV",
+  columns.saldo = {
+    title: "Saldo akhir",
     sortable: true,
     align: "right",
     class: "text-right font-mono font-medium",
-    component: (row: any) => currencyFormat(row?.aov ?? 0),
+    component: (row: any) => currencyFormat(row?.saldo ?? 0),
   };
 
   columns.cancelled_count = {

@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   Store,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 
 const THEMES: Record<string, any> = {
@@ -19,17 +20,32 @@ const THEMES: Record<string, any> = {
 };
 
 /** Summary cards Laporan Outlet — dipakai list (brand-wide) dan detail (per-outlet). */
-export function OutletSummaryCards({ data }: { data: any | null }) {
+export function OutletSummaryCards({
+  data,
+  variant = "list",
+}: {
+  data: any | null;
+  variant?: "list" | "detail";
+}) {
   if (!data) return null;
 
   return (
     <div className='grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6'>
-      <SummaryCard
-        label='Total Outlet'
-        value={data.total_outlet ?? 0}
-        icon={Store}
-        theme={THEMES.blue}
-      />
+      {variant === "detail" ? (
+        <SummaryCard
+          label='Saldo Saat Ini'
+          value={currencyFormat(data.saldo ?? 0)}
+          icon={Wallet}
+          theme={THEMES.green}
+        />
+      ) : (
+        <SummaryCard
+          label='Total Outlet'
+          value={data.total_outlet ?? 0}
+          icon={Store}
+          theme={THEMES.blue}
+        />
+      )}
       <SummaryCard
         label='Total Omzet'
         value={currencyFormat(data.total_omzet ?? 0)}

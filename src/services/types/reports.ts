@@ -227,6 +227,8 @@ export interface ReportOutletSummary {
   outstanding_amount: number;
   total_session: number;
   cancelled_count: number;
+  /** Saldo outlet saat ini — ada pada summary ter-scope `outlet_id` (detail). */
+  saldo?: number;
 }
 
 // Laporan Sesi

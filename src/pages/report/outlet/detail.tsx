@@ -97,7 +97,7 @@ export default function OutletReportDetailPage() {
           </div>
         ) : (
           <>
-            <OutletSummaryCards data={summary} />
+            <OutletSummaryCards data={summary} variant='detail' />
 
             {/* Tab navigasi laporan per-outlet */}
             <div className='flex items-center gap-1 border-b border-slate-200 mb-4 '>

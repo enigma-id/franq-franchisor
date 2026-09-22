@@ -76,9 +76,11 @@ export const MonthPicker: React.FC<MonthPickerProps> = ({
         value={value || ""}
         onChange={() => {}}
         position="end"
+        className="w-full"
         disabled={disabled}
         trigger={
           <button
+            type="button"
             className={clsx(
               "input input-md input-primary flex items-center gap-2 w-full cursor-pointer text-left",
               inputClassName
@@ -90,6 +92,8 @@ export const MonthPicker: React.FC<MonthPickerProps> = ({
             </span>
             {value && !isCurrentPeriod && (
               <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={handleReset}
                 className="w-5 h-5 rounded-full bg-base-200 hover:bg-base-300 text-base-content/50 hover:text-base-content flex items-center justify-center transition-colors shrink-0"
               >
