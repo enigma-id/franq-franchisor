@@ -6,4 +6,5 @@ export { PermissionGuard } from "./guards/PermissionGuard";
 export { SuperuserGuard } from "./guards/SuperuserGuard";
 export { MitraAccessGuard } from "./guards/MitraAccessGuard";
 export { NonSuperuserGuard } from "./guards/NonSuperuserGuard";
+export { DeliveryPlanScanner } from "./DeliveryPlanScanner";
 

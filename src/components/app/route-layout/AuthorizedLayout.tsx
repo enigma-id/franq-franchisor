@@ -35,6 +35,7 @@ import {
   CreditCard,
   Warehouse,
 } from "lucide-react";
+import { DeliveryPlanScanner } from "../DeliveryPlanScanner";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface MenuChild {
@@ -901,6 +902,9 @@ export function AuthorizedLayout() {
           <Outlet key={location.pathname} />
         </main>
       </div>
+
+      {/* Listener scan QR Delivery Plan (hardware barcode scanner) — global. */}
+      <DeliveryPlanScanner />
     </div>
   );
 }
