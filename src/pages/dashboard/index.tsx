@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 import { Loading, MonthPicker } from "@/components/ui";
 import {
   TrendingUp,
-  Package,
   Store,
   Wallet,
   Receipt,
@@ -240,9 +239,7 @@ const DashboardPage: React.FC = () => {
                   />
                   <SummaryCard
                     label='Omset POS Outlet'
-                    value={formatCurrency(
-                      data?.pos_summary_outlet?.omset || 0,
-                    )}
+                    value={formatCurrency(data?.pos_summary_outlet?.omset || 0)}
                     icon={TrendingUp}
                     theme={THEMES.blue}
                     onClick={go(
@@ -276,11 +273,11 @@ const DashboardPage: React.FC = () => {
                 onClick={go(`/report/b2b/settlement/daily?periode=${periode}`)}
               />
               <SummaryCard
-                label='Omset Bahan Baku'
-                value={formatCurrency(data?.omset_bahan_baku || 0)}
-                icon={Package}
-                theme={THEMES.orange}
-                onClick={go("report/inventory/material-sales")}
+                label='Transaksi Saldo Membership'
+                value={formatCurrency(data?.transaction_saldo_membership || 0)}
+                icon={Users}
+                theme={THEMES.purple}
+                onClick={go("/report/membership/saldo-log")}
               />
             </div>
 
@@ -332,22 +329,6 @@ const DashboardPage: React.FC = () => {
                 icon={Wallet}
                 theme={THEMES.amber}
                 onClick={go("/withdrawal")}
-              />
-              <SummaryCard
-                label='Total Outlet'
-                value={data?.total_outlet || 0}
-                icon={Store}
-                theme={THEMES.teal}
-                onClick={go("/setting/outlet")}
-              />
-              <SummaryCard
-                label='Transaksi Saldo Membership'
-                value={formatCurrency(
-                  data?.transaction_saldo_membership || 0,
-                )}
-                icon={Users}
-                theme={THEMES.purple}
-                onClick={go("/report/membership/saldo-log")}
               />
             </div>
 
