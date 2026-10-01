@@ -148,7 +148,7 @@ export function FranchiseForm({
         value={formData.address}
         onChange={(e) => handleInput("address", e.target.value)}
         placeholder='Contoh: Jl. Diponegoro No. 22'
-        error={err["address"]}
+        error={err("address")}
       />
 
       {!isEdit && (

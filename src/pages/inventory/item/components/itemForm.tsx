@@ -14,7 +14,7 @@ import type {
   InventoryItemCreateRequest,
   InventoryItemDetail,
   InventoryItemPickingStrategy,
-  POSCategoryDetail,
+  POSCategoryBase,
 } from "@/services/types";
 import type { SelectOptionValue } from "@/services/types/table";
 import { useInventoryItem } from "@/services/inventory/hooks";
@@ -100,7 +100,7 @@ export function InventoryItemForm({
       label: "First-In, First-Out",
     });
 
-  const [category, setCategory] = useState<POSCategoryDetail | null>(null);
+  const [category, setCategory] = useState<POSCategoryBase | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -130,7 +130,7 @@ export function InventoryItemForm({
 
       setFractions(initialData.fractions ?? initialFractions);
       setBoms(initialData.materials ?? initialBoms);
-      setCategory({ id: "", name: initialData?.category });
+      setCategory({ name: initialData?.category || "" });
       setFranchise({ id: initialData?.franchisor_id });
     }
   }, [initialData]);
@@ -219,9 +219,6 @@ export function InventoryItemForm({
     onSubmit(payload);
   };
 
-  console.log("===isSuperuser===", isSuperuser);
-  console.log("===isCreateMode===", isCreateMode);
-
   return (
     <form
       id={id}
@@ -299,7 +296,7 @@ export function InventoryItemForm({
                   : undefined
               }
             />
-            <RemoteSelect<POSCategoryDetail>
+            <RemoteSelect<POSCategoryBase>
               label='Kategori'
               required
               hook={categoriesResult as any}

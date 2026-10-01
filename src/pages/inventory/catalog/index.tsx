@@ -8,7 +8,6 @@ import { Button, Modal } from "@/components/ui";
 import { useEnigmaUI } from "@/components";
 import useTable from "@/services/table/hooks";
 import { useInventoryCatalog } from "@/services/inventory/hooks";
-import { useOutlet } from "@/services/outlet/hooks";
 import createTableConfig from "./table/catalog.config";
 import TableFilter from "./table/catalog.filter";
 import type { InventoryCatalogDetail } from "@/services/types/inventory";
