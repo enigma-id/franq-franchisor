@@ -1,6 +1,19 @@
 // Auth Types (v2 - New Collection)
 // Based on: auth/signup, auth/login, profile/me
 
+/** Objek franchisor yang di-embed di response user (dari relasi belongs-to). */
+export interface SessionFranchisor {
+  id: string;
+  type: "outlet" | "mitra";
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface User {
   id: string;
   franchisor_id: string;
@@ -9,11 +22,15 @@ export interface User {
   username: string;
   name: string;
   is_active: boolean;
+  /** Penanda superuser (bisa kelola semua brand / akses halaman khusus superuser). */
+  is_superuser: boolean;
   /** Permission slugs dari usergroup. Undefined = super admin (akses semua). */
   permissions?: string[];
   last_activity_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Relasi franchisor (diisi backend saat /profile/me & login). */
+  franchisor?: SessionFranchisor | null;
 }
 
 export interface SignupRequest {

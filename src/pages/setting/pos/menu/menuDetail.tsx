@@ -1,47 +1,52 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Edit, Loader2, Package, Store } from "lucide-react";
+import { Loader2, Package, Store } from "lucide-react";
 import { Page } from "@/components/app/layout";
-import { usePOSMenu } from "@/services/pos/hooks";
+import { useProduct } from "@/services/product/hooks";
 import { Button, Badge } from "@/components/ui";
 import { formatCurrency, formatDateTime } from "@/utils";
-import type { POSMenuDetail } from "@/services/types";
-import { useEnigmaUI } from "@/components";
-import { AssignOutletTypeModal } from "./components/AssignOutletTypeModal";
+import type { ProductDetail, POSMenuDetail } from "@/services/types";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
 
 const POSMenuDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { openModal, closeModal } = useEnigmaUI();
-  const canManage = useCan(ACTION.posMenu);
-  const { show, showResult } = usePOSMenu();
+  const canManage = useCan(ACTION.product);
+  const { show, showResult } = useProduct();
   const { data, isLoading } = showResult;
 
-  const menu = data?.data as POSMenuDetail;
+  const detail = data?.data as ProductDetail | undefined;
+  const menu = detail?.menu as POSMenuDetail | undefined;
+  // Harga dasar = item.base_price (non-addon); addon tidak punya item/catalog
+  // sehingga memakai menu.base_price. `menu.base_price` non-addon diturunkan dari
+  // ingredient = catalog.unit_price, jadi tidak bisa dipakai sebagai harga dasar.
+  const item = detail?.item ?? null;
+  const catalog = detail?.catalog ?? null;
+
+  const priceStats = useMemo(
+    () => [
+      {
+        label: "Harga Dasar",
+        value: formatCurrency(item?.base_price ?? menu?.base_price ?? 0),
+      },
+      {
+        label: "Harga Beli Outlet",
+        value: catalog ? formatCurrency(catalog.unit_price) : "-",
+      },
+      {
+        label: "Harga Produksi",
+        value: catalog ? formatCurrency(catalog.production_price) : "-",
+      },
+    ],
+    [menu, item, catalog],
+  );
 
   useEffect(() => {
     if (id) {
       show({ id });
     }
   }, [id, show]);
-
-  const openOutletType = (row: POSMenuDetail) => {
-    openModal({
-      id: "assign-outlet-catalog",
-      content: (
-        <AssignOutletTypeModal
-          catalog={row}
-          onClose={() => closeModal("assign-outlet-menu")}
-          onSuccess={() => {
-            closeModal("assign-outlet-menu");
-            show({ id });
-          }}
-        />
-      ),
-    });
-  };
 
   if (isLoading) {
     return (
@@ -64,7 +69,7 @@ const POSMenuDetailPage: React.FC = () => {
       <Page.Header
         category='Settings'
         title={menu.name}
-        backTo={() => navigate("/setting/pos/menu")}
+        backTo={() => navigate(-1)}
         action={
           <div className='flex gap-4'>
             {canManage && (
@@ -108,25 +113,36 @@ const POSMenuDetailPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            <dl className='grid grid-cols-2 gap-x-4 mt-6'>
-              <div className='info-row'>
-                <dt className='info-label'>Vatable</dt>
-                <dd className='info-value'>{menu.is_vatable ? "Yes" : "No"}</dd>
-              </div>
-              <div className='info-row'>
-                <dt className='info-label'>Additional</dt>
-                <dd className='info-value'>
-                  {menu.is_additional ? "Yes" : "No"}
+            <div className='mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3'>
+              {priceStats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className='rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3'
+                >
+                  <p className='text-[11px] font-semibold uppercase tracking-wider text-slate-400'>
+                    {stat.label}
+                  </p>
+                  <p className='mt-1 text-lg font-bold text-indigo-600 truncate'>
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <dl className='mt-4 grid grid-cols-3 gap-3 border-t border-slate-100 pt-4'>
+              <div>
+                <dt className='text-[11px] font-semibold uppercase tracking-wider text-slate-400'>
+                  Vatable
+                </dt>
+                <dd className='mt-0.5 text-sm font-semibold text-slate-700'>
+                  {menu.is_vatable ? "Yes" : "No"}
                 </dd>
               </div>
-              <div className='info-row'>
-                <dt className='info-label'>Custom</dt>
-                <dd className='info-value'>{menu.is_custom ? "Yes" : "No"}</dd>
-              </div>
-              <div className='info-row'>
-                <dt className='info-label'>Base Price</dt>
-                <dd className='info-value text-2xl text-indigo-600 font-bold'>
-                  {formatCurrency(menu.base_price)}
+              <div>
+                <dt className='text-[11px] font-semibold uppercase tracking-wider text-slate-400'>
+                  Additional
+                </dt>
+                <dd className='mt-0.5 text-sm font-semibold text-slate-700'>
+                  {menu.is_additional ? "Yes" : "No"}
                 </dd>
               </div>
             </dl>
@@ -160,35 +176,6 @@ const POSMenuDetailPage: React.FC = () => {
         {/* Content Tabs Area */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <div className='lg:col-span-2 space-y-6'>
-            {/* Ingredients */}
-            <div className='card-info p-6'>
-              <div className='card-section-header'>
-                <div className='card-section-icon'>
-                  <Package size={18} />
-                </div>
-                <h3 className='card-section-title'>Ingredients</h3>
-              </div>
-              {menu.ingredients && menu.ingredients.length > 0 ? (
-                <div className='space-y-3'>
-                  {menu.ingredients.map((ing, i) => (
-                    <div
-                      key={i}
-                      className='flex justify-between items-center py-2 border-b border-slate-50 last:border-0'
-                    >
-                      <p className='text-sm font-medium text-slate-700'>
-                        {ing.catalog?.name}
-                      </p>
-                      <p className='text-sm font-medium text-slate-700'>
-                        {ing.catalog.unit} {ing.catalog.measurement}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className='text-slate-400 text-sm italic'>No ingredients.</p>
-              )}
-            </div>
-
             {/* Add-ons */}
             {!menu?.is_additional && (
               <div className='card-info p-6'>
@@ -265,58 +252,6 @@ const POSMenuDetailPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Outlet Types */}
-            {!menu?.is_additional && (
-              <div className='card-info p-6'>
-                <div className='card-section-header mb-0! justify-between'>
-                  <div className='flex items-center gap-4'>
-                    <div className='card-section-icon'>
-                      <Store size={16} />
-                    </div>
-                    <h2 className='card-section-title'>Outlet Types</h2>
-                  </div>
-                  {canManage && (
-                    <Button
-                      variant='primary'
-                      styleType='ghost'
-                      onClick={() => openOutletType(menu)}
-                      size='sm'
-                    >
-                      <Edit size={14} />
-                    </Button>
-                  )}
-                </div>
-
-                <div className='flex-1 overflow-auto'>
-                  <table
-                    className='table-hover table-vcenter datatable table'
-                    width='100%'
-                  >
-                    <thead>
-                      <tr>
-                        <th className='px-4 py-4 text-left uppercase text-[#8B95A5] text-[11px] font-bold'>
-                          Outlet Type
-                        </th>
-                        <th className='px-4 py-4 text-left uppercase text-[#8B95A5] text-[11px] font-bold'>
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {menu.outlet_types?.map((ot: any) => (
-                        <tr key={ot.id} className='border-b'>
-                          <td className='px-4 py-3'>{ot.outlet_type?.name}</td>
-                          <td className='px-4 py-3'>
-                            <Badge variant='success'>Active</Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </Page.Body>

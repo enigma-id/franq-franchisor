@@ -19,17 +19,21 @@ const META_MAP: Record<string, RouteMeta> = {
     title: "Dashboard - Franchisor Portal",
     description: "Ringkasan performa bisnis Anda hari ini.",
   },
-  "/sales/order": {
-    title: "Sales Order - Franchisor Portal",
-    description: "Daftar pesanan penjualan franchise.",
+  "/central-kitchen": {
+    title: "Central Kitchen - Franchisor Portal",
+    description: "Daftar order pengadaan dari central kitchen.",
   },
-  "/sales/order/create": {
-    title: "Tambah Sales Order - Franchisor Portal",
-    description: "Buat pesanan penjualan baru.",
+  "/central-kitchen/create": {
+    title: "Tambah Order - Franchisor Portal",
+    description: "Buat order pengadaan baru.",
   },
-  "/sales/order/:id": {
-    title: "Sales Order Detail - Franchisor Portal",
-    description: "Detail informasi pesanan penjualan.",
+  "/central-kitchen/update/:id": {
+    title: "Ubah Order - Franchisor Portal",
+    description: "Perbarui order pengadaan.",
+  },
+  "/central-kitchen/:id": {
+    title: "Detail Order - Franchisor Portal",
+    description: "Detail informasi order pengadaan.",
   },
   "/purchase/supplier": {
     title: "Supplier - Franchisor Portal",
@@ -118,30 +122,6 @@ const META_MAP: Record<string, RouteMeta> = {
   "/setting/outlet": {
     title: "Outlet - Franchisor Portal",
     description: "Manajemen outlet franchise.",
-  },
-  "/setting/outlet/create": {
-    title: "Tambah Outlet - Franchisor Portal",
-    description: "Tambah outlet franchise baru.",
-  },
-  "/setting/outlet/update/:id": {
-    title: "Ubah Outlet - Franchisor Portal",
-    description: "Perbarui data outlet franchise.",
-  },
-  "/setting/type/outlet": {
-    title: "Tipe Outlet - Franchisor Portal",
-    description: "Manajemen tipe outlet franchise.",
-  },
-  "/setting/type/outlet/create": {
-    title: "Tambah Tipe Outlet - Franchisor Portal",
-    description: "Tambah tipe outlet franchise baru.",
-  },
-  "/setting/type/outlet/update/:id": {
-    title: "Ubah Tipe Outlet - Franchisor Portal",
-    description: "Perbarui tipe outlet franchise.",
-  },
-  "/setting/pos/channel": {
-    title: "POS Channel - Franchisor Portal",
-    description: "Manajemen POS channel.",
   },
   "/setting/pos/category": {
     title: "POS Category - Franchisor Portal",

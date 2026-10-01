@@ -6,7 +6,6 @@ import {
   useUpdateOutletMutation,
   useActivateOutletMutation,
   useDeactivateOutletMutation,
-  useUpdateChannelOutletMutation,
   useDeleteOutletMutation,
   useLazyGetOutletTypesQuery,
   useCreateOutletTypeMutation,
@@ -31,7 +30,6 @@ export const useOutlet = createCrudHook<OutletDetail>({
   customOperations: {
     activate: { hook: useActivateOutletMutation },
     deactivate: { hook: useDeactivateOutletMutation },
-    updateChannel: { hook: useUpdateChannelOutletMutation },
   },
 });
 

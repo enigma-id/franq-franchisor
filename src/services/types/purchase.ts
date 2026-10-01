@@ -14,6 +14,7 @@
  * }
  */
 
+import type { FranchisorDetail } from "./franchisor";
 import type { SupplierDetail } from "./supplier";
 
 export interface PurchaseOrderItem {
@@ -99,6 +100,7 @@ export interface PurchaseOrderBase {
   updated_at?: string;
 
   supplier?: SupplierDetail;
+  franchisor?: FranchisorDetail;
 }
 
 export interface PurchaseOrderRequest extends PurchaseOrderBase {

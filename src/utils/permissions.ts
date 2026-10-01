@@ -22,9 +22,9 @@ export const MENU = {
   // Master Data (Inventory & Warehouse)
   inventoryItem: "frontend.franchisor.master-data.item",
   inventoryCatalog: "frontend.franchisor.master-data.catalog",
-  // Production
-  demand: "frontend.franchisor.production.demand",
-  productionPlan: "frontend.franchisor.production.production-plan",
+  // Warehouse
+  deliveryPlan: "frontend.franchisor.delivery.plan",
+  receivingPlan: "frontend.franchisor.receiving.plan",
   // Report POS
   reportPosOutstanding: "frontend.franchisor.report.pos.outstanding",
   reportPosSettlement: "frontend.franchisor.report.pos.settlement",
@@ -47,12 +47,15 @@ export const MENU = {
   reportInventoryMaterialSales: "frontend.franchisor.report.material-sales",
   reportWarehouseStock: "frontend.franchisor.report.warehouse-stock",
   reportOutletMap: "frontend.franchisor.report.outlet-maps",
+  reportOutlet: "frontend.franchisor.report.outlet",
   reportMembership: "frontend.franchisor.report.membership",
   reportMembershipSaldoLog: "frontend.franchisor.report.membership-saldo-log",
+  reportMembershipPointLog: "frontend.franchisor.report.membership-point-log",
+  // Slug BE ber-namespace `report.pos.*` walau menunya ditempatkan di grup Member.
+  reportMembershipSettlement:
+    "frontend.franchisor.report.pos.membership-settlement",
   // Setting
   outlet: "frontend.franchisor.setting.outlet",
-  outletType: "frontend.franchisor.setting.outlet-type",
-  posChannel: "frontend.franchisor.setting.pos-channel",
   posCategory: "frontend.franchisor.setting.pos-category",
   posMenu: "frontend.franchisor.setting.pos-menu",
   posPayment: "frontend.franchisor.setting.pos-payment",
@@ -68,10 +71,9 @@ export const ACTION = {
   user: "svc-franchisor.user.manage",
   usergroup: "svc-franchisor.usergroup.manage",
   outlet: "svc-franchisor.outlet.manage",
-  outletType: "svc-franchisor.outlet-type.manage",
   inventory: "svc-franchisor.inventory.manage",
   catalog: "svc-franchisor.catalog.manage",
-  posChannel: "svc-franchisor.pos-channel.manage",
+  product: "svc-franchisor.product.manage",
   posCategory: "svc-franchisor.pos-category.manage",
   posMenu: "svc-franchisor.pos-menu.manage",
   supplier: "svc-franchisor.supplier.manage",
@@ -79,11 +81,19 @@ export const ACTION = {
   memberTopup: "svc-franchisor.member-topup.manage",
   purchaseOrder: "svc-franchisor.purchase-order.manage",
   salesOrder: "svc-franchisor.sales-order.manage",
-  production: "svc-franchisor.production.manage",
   b2b: "svc-franchisor.b2b.manage",
   b2bCancel: "svc-franchisor.b2b.cancel",
   outletTopupRequest: "svc-franchisor.outlet-topup-request.manage",
   withdrawalRequest: "svc-franchisor.withdrawal-request.manage",
+  delivery: "svc-franchisor.delivery.manage",
+  receiving: "svc-franchisor.receiving.manage",
+  /**
+   * Aksi settlement membership (settle/unsettle/reconcile).
+   * Satu-satunya slug aksi ber-namespace `frontend.*` — mengikuti seed BE
+   * (`src/permission.go`); ketiga aksi memakai slug yang sama + wajib superuser.
+   */
+  membershipSettlementSettle:
+    "frontend.franchisor.report.pos.membership-settlement.settle",
 } as const;
 
 export type ActionSlug = (typeof ACTION)[keyof typeof ACTION];

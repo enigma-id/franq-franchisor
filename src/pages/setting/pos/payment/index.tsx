@@ -12,6 +12,7 @@ import type { TableConfig } from "@/services/table/const";
 import { useAppSelector } from "@/hooks";
 import {
   Checkbox,
+  Drawer,
   Input,
   Loading,
   Modal,
@@ -383,22 +384,26 @@ const PaymentMethodListPage: React.FC = () => {
         <Table.Pagination />
       </Page.Body>
 
-      <Modal.Wrapper open={modalOpen} onClose={handleCloseModal}>
-        <Modal.Header>
-          <div className='flex flex-col text-left'>
-            <span className='text-lg font-bold text-slate-900'>
+      <Drawer
+        open={modalOpen}
+        onClose={handleCloseModal}
+        position='right'
+        className='!w-[30rem]'
+      >
+        <div className='flex flex-col h-full'>
+          <div className='p-5 border-b border-slate-100'>
+            <h3 className='text-lg font-bold text-slate-900 flex items-center gap-2'>
               {editingItem ? "Ubah Metode" : "Tambah Metode"}
-            </span>
-            <span className='text-xs text-slate-500 font-medium mt-0.5'>
+            </h3>
+            <p className='text-xs text-slate-500 mt-1'>
               {editingItem
                 ? "Ubah detail metode pembayaran."
                 : "Buat metode pembayaran baru."}
-            </span>
+            </p>
           </div>
-        </Modal.Header>
 
-        <Modal.Body className='pt-4 pb-2 text-left'>
-          <form onSubmit={handleSubmit} className='space-y-4'>
+          <div className='flex-1 overflow-y-auto p-5'>
+            <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <RemoteSelect<SelectOptionValue>
                 required
@@ -540,35 +545,36 @@ const PaymentMethodListPage: React.FC = () => {
                 variant='primary'
               />
             )}
-          </form>
-        </Modal.Body>
+            </form>
+          </div>
 
-        <Modal.Footer className='flex justify-end gap-2 pt-4'>
-          <Button
-            onClick={handleCloseModal}
-            variant='secondary'
-            disabled={isCreating || isUpdating}
-          >
-            Batal
-          </Button>
-          {canManage && (
+          <div className='p-5 border-t border-slate-100 flex justify-end gap-2'>
             <Button
-              onClick={handleSubmit}
+              onClick={handleCloseModal}
+              variant='secondary'
               disabled={isCreating || isUpdating}
-              variant='success'
             >
-              {isCreating || isUpdating ? (
-                <Loading size='sm' variant='spinner' />
-              ) : (
-                <>
-                  <Plus className='w-4 h-4 mr-2' />
-                  {editingItem ? "Simpan Perubahan" : "Simpan Metode"}
-                </>
-              )}
+              Batal
             </Button>
-          )}
-        </Modal.Footer>
-      </Modal.Wrapper>
+            {canManage && (
+              <Button
+                onClick={handleSubmit}
+                disabled={isCreating || isUpdating}
+                variant='success'
+              >
+                {isCreating || isUpdating ? (
+                  <Loading size='sm' variant='spinner' />
+                ) : (
+                  <>
+                    <Plus className='w-4 h-4 mr-2' />
+                    {editingItem ? "Simpan Perubahan" : "Simpan Metode"}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      </Drawer>
     </Page>
   );
 };

@@ -3,7 +3,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UnauthorizedLayout } from "@/components/app/route-layout/UnauthorizedLayout";
 import { AuthorizedLayout } from "@/components/app/route-layout/AuthorizedLayout";
-import { PermissionGuard } from "@/components/app";
+import {
+  PermissionGuard,
+  SuperuserGuard,
+  MitraAccessGuard,
+  NonSuperuserGuard,
+} from "@/components/app";
 import { MENU } from "@/utils/permissions";
 import { useAppSelector, useAppMetadata } from "@/hooks";
 import { useAuth } from "@/services/auth/hooks";
@@ -14,13 +19,8 @@ import SignUpPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
 
 import OutletListPage from "@/pages/setting/outlet";
-import OutletCreatePage from "@/pages/setting/outlet/outletCreate";
-import OutletUpdatePage from "@/pages/setting/outlet/outletUpdate";
 
-import OutletTypePage from "@/pages/setting/type";
-import POSChannelListPage from "@/pages/setting/pos/channel";
 import POSCategoryListPage from "@/pages/setting/pos/category";
-
 import POSMenuListPage from "@/pages/setting/pos/menu";
 import POSMenuCreatePage from "@/pages/setting/pos/menu/menuCreate";
 import POSMenuDetailPage from "@/pages/setting/pos/menu/menuDetail";
@@ -48,18 +48,19 @@ import PurchaseOrderCreatePage from "@/pages/purchase/order/purchaseOrderCreate"
 import PurchaseOrderUpdatePage from "@/pages/purchase/order/purchaseOrderUpdate";
 import PurchaseOrderDetailPage from "@/pages/purchase/order/purchaseOrderDetail";
 
-import SalesOrderCreatePage from "@/pages/sales/order/salesOrderCreate";
-import SalesOrderUpdatePage from "@/pages/sales/order/salesOrderUpdate";
-import SalesOrderListPage from "@/pages/sales/order";
-import SalesOrderDetailPage from "@/pages/sales/order/salesOrderDetail";
+import SalesOrderListPage from "@/pages/central-kitchen";
+import SalesOrderCreatePage from "@/pages/central-kitchen/create";
+import SalesOrderUpdatePage from "@/pages/central-kitchen/update";
+import SalesOrderDetailPage from "@/pages/central-kitchen/detail";
 
-import ProductionPlanListPage from "@/pages/production/plan";
-import ProductionPlanCreatePage from "@/pages/production/plan/productionPlanCreate";
-import ProductionPlanDetailPage from "@/pages/production/plan/productionPlanDetail";
-import ProductionPlanUpdatePage from "@/pages/production/plan/productionPlanUpdate";
-
-import DemandProductionPage from "@/pages/production/demand/demandProduction";
-import DemandItemPage from "@/pages/production/demand/demandItem";
+// ==== WAREHOUSE ==== //
+import DeliveryPlanListPage from "@/pages/warehouse/delivery-plan";
+import DeliveryPlanDetailPage from "@/pages/warehouse/delivery-plan/deliveryPlanDetail";
+import ReceivingPlanListPage from "@/pages/warehouse/receiving-plan";
+import ReceivingPlanDetailPage from "@/pages/warehouse/receiving-plan/receivingPlanDetail";
+import ReceivingDetailPage from "@/pages/warehouse/receiving-plan/receivingDetail";
+import ReceivingCreatePage from "@/pages/warehouse/receiving-plan/receiveCreate";
+import ReceivingUpdatePage from "@/pages/warehouse/receiving-plan/receiveUpdate";
 
 // ==== REPORT B2B ===== //
 import B2BProductItemPage from "@/pages/report/b2b/productItem";
@@ -87,9 +88,16 @@ import RawMaterialSalesPage from "@/pages/report/franchisor/rawMaterialSales";
 import WarehouseStockPage from "@/pages/report/franchisor/warehouseStock";
 import OutletMapPage from "@/pages/report/franchisor/outletMap";
 
+// ==== REPORT OUTLET ====//
+import OutletReportPage from "@/pages/report/outlet";
+import OutletReportDetailPage from "@/pages/report/outlet/detail";
+
 // ==== REPORT MEMBERSHIP ==== //
 import MembershipReportPage from "@/pages/report/membership/membership";
 import SaldoLogReportPage from "@/pages/report/membership/saldoLog";
+import PointLogReportPage from "@/pages/report/membership/pointLog";
+import MembershipSettlementPage from "@/pages/report/membership/settlement";
+import MembershipSettlementDetailPage from "@/pages/report/membership/settlement/detail";
 
 import WithdrawalList from "@/pages/withdrawal/WithdrawalList";
 import OutletTopupListPage from "@/pages/outletTopup";
@@ -99,9 +107,12 @@ import B2BOrderCreatePage from "@/pages/b2b/order/b2bOrderCreate";
 import B2BOrderDetailPage from "@/pages/b2b/order/b2bOrderDetail";
 import B2BOrderUpdatePage from "@/pages/b2b/order/b2bOrderUpdate";
 
+import CustomerListPage from "@/pages/customer";
+
 import UserListPage from "@/pages/user";
 import UserGroupListPage from "@/pages/usergroup";
-import FranchisorProfilePage from "@/pages/franchisor";
+import FranchiseListPage from "@/pages/franchise";
+import FranchiseDetailPage from "@/pages/franchise/franchiseDetail";
 import TopupBonusPage from "@/pages/setting/member/topupBonus";
 
 /**
@@ -154,10 +165,7 @@ export function AppRoutes() {
         }
       >
         {/* Root "/" → redirect ke route pertama yang diizinkan (bukan selalu /dashboard). */}
-        <Route
-          path='/'
-          element={<FirstAllowedRedirect />}
-        />
+        <Route path='/' element={<FirstAllowedRedirect />} />
 
         {/* Dashboard */}
         <Route
@@ -169,46 +177,14 @@ export function AppRoutes() {
           }
         />
 
-        {/* Setting - Outlet */}
+        {/* Setting - Outlet (khusus NON-superuser; superuser kelola via /franchise) */}
         <Route
           path='/setting/outlet'
           element={
             <PermissionGuard permission={MENU.outlet}>
-              <OutletListPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/setting/outlet/create'
-          element={
-            <PermissionGuard permission={MENU.outlet}>
-              <OutletCreatePage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/setting/outlet/update/:id'
-          element={
-            <PermissionGuard permission={MENU.outlet}>
-              <OutletUpdatePage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/setting/type/outlet'
-          element={
-            <PermissionGuard permission={MENU.outletType}>
-              <OutletTypePage />
-            </PermissionGuard>
-          }
-        />
-
-        {/* Setting - POS */}
-        <Route
-          path='/setting/pos/channel'
-          element={
-            <PermissionGuard permission={MENU.posChannel}>
-              <POSChannelListPage />
+              <NonSuperuserGuard>
+                <OutletListPage />
+              </NonSuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -257,12 +233,14 @@ export function AppRoutes() {
           }
         />
 
-        {/* Setting - POS Payment */}
+        {/* Setting - POS Payment (khusus superuser) */}
         <Route
           path='/setting/pos/payment'
           element={
             <PermissionGuard permission={MENU.posPayment}>
-              <PaymentMethodListPage />
+              <SuperuserGuard>
+                <PaymentMethodListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -334,64 +312,14 @@ export function AppRoutes() {
           }
         />
 
-        {/* Production - Plan */}
-        <Route
-          path='/production/plan'
-          element={
-            <PermissionGuard permission={MENU.productionPlan}>
-              <ProductionPlanListPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/production/plan/create'
-          element={
-            <PermissionGuard permission={MENU.productionPlan}>
-              <ProductionPlanCreatePage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/production/plan/:id'
-          element={
-            <PermissionGuard permission={MENU.productionPlan}>
-              <ProductionPlanDetailPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/production/plan/update/:id'
-          element={
-            <PermissionGuard permission={MENU.productionPlan}>
-              <ProductionPlanUpdatePage />
-            </PermissionGuard>
-          }
-        />
-
-        {/* Production - Demand */}
-        <Route
-          path='/production/demand/production'
-          element={
-            <PermissionGuard permission={MENU.demand}>
-              <DemandProductionPage />
-            </PermissionGuard>
-          }
-        />
-        <Route
-          path='/production/demand/item'
-          element={
-            <PermissionGuard permission={MENU.demand}>
-              <DemandItemPage />
-            </PermissionGuard>
-          }
-        />
-
-        {/* Purchase - Supplier */}
+        {/* Purchase - Supplier (khusus superuser) */}
         <Route
           path='/purchase/supplier'
           element={
             <PermissionGuard permission={MENU.supplier}>
-              <SupplierListPage />
+              <SuperuserGuard>
+                <SupplierListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -399,7 +327,9 @@ export function AppRoutes() {
           path='/purchase/supplier/create'
           element={
             <PermissionGuard permission={MENU.supplier}>
-              <SupplierCreatePage />
+              <SuperuserGuard>
+                <SupplierCreatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -407,17 +337,21 @@ export function AppRoutes() {
           path='/purchase/supplier/update/:id'
           element={
             <PermissionGuard permission={MENU.supplier}>
-              <SupplierUpdatePage />
+              <SuperuserGuard>
+                <SupplierUpdatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
 
-        {/* Purchase - Order */}
+        {/* Purchase - Order (khusus superuser) */}
         <Route
           path='/purchase/order'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderListPage />
+              <SuperuserGuard>
+                <PurchaseOrderListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -425,7 +359,9 @@ export function AppRoutes() {
           path='/purchase/order/create'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderCreatePage />
+              <SuperuserGuard>
+                <PurchaseOrderCreatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -433,7 +369,9 @@ export function AppRoutes() {
           path='/purchase/order/:id'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderDetailPage />
+              <SuperuserGuard>
+                <PurchaseOrderDetailPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
@@ -441,41 +379,113 @@ export function AppRoutes() {
           path='/purchase/order/update/:id'
           element={
             <PermissionGuard permission={MENU.purchaseOrder}>
-              <PurchaseOrderUpdatePage />
+              <SuperuserGuard>
+                <PurchaseOrderUpdatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
 
-        {/* Sales - Order */}
+        {/* Central Kitchen (Sales Order) — khusus superuser */}
         <Route
-          path='/sales/order'
+          path='/central-kitchen'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
-              <SalesOrderListPage />
+              <SuperuserGuard>
+                <SalesOrderListPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
         <Route
-          path='/sales/order/create'
+          path='/central-kitchen/create'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
-              <SalesOrderCreatePage />
+              <SuperuserGuard>
+                <SalesOrderCreatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
         <Route
-          path='/sales/order/update/:id'
+          path='/central-kitchen/update/:id'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
-              <SalesOrderUpdatePage />
+              <SuperuserGuard>
+                <SalesOrderUpdatePage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />
         <Route
-          path='/sales/order/:id'
+          path='/central-kitchen/:id'
           element={
             <PermissionGuard permission={MENU.salesOrder}>
-              <SalesOrderDetailPage />
+              <SuperuserGuard>
+                <SalesOrderDetailPage />
+              </SuperuserGuard>
+            </PermissionGuard>
+          }
+        />
+
+        {/* Warehouse - Delivery Plan */}
+        <Route
+          path='/warehouse/delivery-plan'
+          element={
+            <PermissionGuard permission={MENU.deliveryPlan}>
+              <DeliveryPlanListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/delivery-plan/:id'
+          element={
+            <PermissionGuard permission={MENU.deliveryPlan}>
+              <DeliveryPlanDetailPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Warehouse - Receiving Plan */}
+        <Route
+          path='/warehouse/receiving-plan'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingPlanListPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/receiving-plan/:id'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingPlanDetailPage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Warehouse - Receiving (dokumen penerimaan) */}
+        <Route
+          path='/warehouse/receiving/create/:planId'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingCreatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/receiving/update/:id'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingUpdatePage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/warehouse/receiving/:id'
+          element={
+            <PermissionGuard permission={MENU.receivingPlan}>
+              <ReceivingDetailPage />
             </PermissionGuard>
           }
         />
@@ -572,6 +582,14 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
+        <Route
+          path='/report/mitra/outlet-maps'
+          element={
+            <PermissionGuard permission={MENU.reportOutletMap}>
+              <OutletMapPage />
+            </PermissionGuard>
+          }
+        />
 
         {/* Report B2B */}
         <Route
@@ -624,11 +642,21 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
+
+        {/* Report Outlet (rekap per-outlet + detail) */}
         <Route
-          path='/report/outlet-maps'
+          path='/report/outlet'
           element={
-            <PermissionGuard permission={MENU.reportOutletMap}>
-              <OutletMapPage />
+            <PermissionGuard permission={MENU.reportOutlet}>
+              <OutletReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/outlet/:outletId'
+          element={
+            <PermissionGuard permission={MENU.reportOutlet}>
+              <OutletReportDetailPage />
             </PermissionGuard>
           }
         />
@@ -655,12 +683,40 @@ export function AppRoutes() {
             </PermissionGuard>
           }
         />
+        <Route
+          path='/report/membership/point-log'
+          element={
+            <PermissionGuard
+              permission={[MENU.reportMembershipPointLog, MENU.reportMembership]}
+            >
+              <PointLogReportPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/settlement'
+          element={
+            <PermissionGuard permission={MENU.reportMembershipSettlement}>
+              <MembershipSettlementPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/membership/settlement/:id'
+          element={
+            <PermissionGuard permission={MENU.reportMembershipSettlement}>
+              <MembershipSettlementDetailPage />
+            </PermissionGuard>
+          }
+        />
 
         <Route
           path='/withdrawal'
           element={
             <PermissionGuard permission={MENU.withdrawal}>
-              <WithdrawalList />
+              <MitraAccessGuard>
+                <WithdrawalList />
+              </MitraAccessGuard>
             </PermissionGuard>
           }
         />
@@ -699,12 +755,24 @@ export function AppRoutes() {
           }
         />
 
+        {/* Customer */}
+        <Route
+          path='/customer'
+          element={
+            <PermissionGuard permission={MENU.b2bOrder}>
+              <CustomerListPage />
+            </PermissionGuard>
+          }
+        />
+
         {/* Outlet Topup */}
         <Route
           path='/outlet-topup'
           element={
             <PermissionGuard permission={MENU.outletTopup}>
-              <OutletTopupListPage />
+              <MitraAccessGuard>
+                <OutletTopupListPage />
+              </MitraAccessGuard>
             </PermissionGuard>
           }
         />
@@ -727,15 +795,32 @@ export function AppRoutes() {
           }
         />
 
-        {/* Franchisor Profile */}
-        <Route path='/franchisor' element={<FranchisorProfilePage />} />
+        {/* Franchise CRUD — khusus superuser */}
+        <Route
+          path='/franchise'
+          element={
+            <SuperuserGuard>
+              <FranchiseListPage />
+            </SuperuserGuard>
+          }
+        />
+        <Route
+          path='/franchise/:id'
+          element={
+            <SuperuserGuard>
+              <FranchiseDetailPage />
+            </SuperuserGuard>
+          }
+        />
 
-        {/* Member - Topup Bonus */}
+        {/* Member - Topup Bonus (khusus superuser) */}
         <Route
           path='/setting/member/topup-bonus'
           element={
             <PermissionGuard permission={MENU.topupBonus}>
-              <TopupBonusPage />
+              <SuperuserGuard>
+                <TopupBonusPage />
+              </SuperuserGuard>
             </PermissionGuard>
           }
         />

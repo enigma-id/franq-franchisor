@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useMemo, useState } from "react";
 
 import { RemoteSelect } from "@/components/ui";
+import { useFranchisorList } from "@/services/franchisor/hooks";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import { useInventoryItem } from "@/services/inventory/hooks";
+import { useIsSuperuser } from "@/utils/permission";
 import TableFilters from "@/components/ui/table/filter";
 
 interface TableFilterProps {
@@ -24,12 +28,49 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     [table.State?.filter],
   );
 
+  // ── Franchise (khusus superuser) ──
+  const isSuperuser = useIsSuperuser();
+  const { get: getFranchisors, getResult: getFranchisorsResult } =
+    useFranchisorList();
+  const [franchise, setFranchise] = useState<any | null>(null);
+
+  // Superuser wajib memilih franchise dulu sebelum daftar gudang bisa diambil.
+  const canPickWarehouse = !isSuperuser || !!franchise?.id;
+
+  useEffect(() => {
+    if (!isSuperuser) return;
+    getFranchisors({ page: 1, limit: 20 });
+  }, [isSuperuser]);
+
+  useEffect(() => {
+    if (!isSuperuser) return;
+    if (current.franchisor_id && getFranchisorsResult?.data?.data) {
+      const franchisors = getFranchisorsResult.data.data as any[];
+      const found = franchisors.find((c: any) => c.id === current.franchisor_id);
+      if (found) setFranchise(found);
+    } else if (!current.franchisor_id) {
+      setFranchise(null);
+    }
+  }, [current.franchisor_id, getFranchisorsResult?.data?.data, isSuperuser]);
+
+  // ── Gudang (ikut franchise saat superuser) ──
   const { get: getWarehouse, getResult: getWarehouseResult } = useWarehouse();
   const [warehouse, setWarehouse] = useState<any | null>(null);
 
+  const warehouseParams = useMemo(
+    () => ({
+      page: 1,
+      limit: 20,
+      status: "active",
+      ...(isSuperuser ? { franchisor_id: franchise?.id ?? "" } : {}),
+    }),
+    [isSuperuser, franchise?.id],
+  );
+
   useEffect(() => {
-    getWarehouse({ page: 1, limit: 20, status: "active" });
-  }, []);
+    if (!canPickWarehouse) return;
+    getWarehouse(warehouseParams);
+  }, [canPickWarehouse, warehouseParams]);
 
   useEffect(() => {
     if (current.warehouse_id && getWarehouseResult?.data?.data) {
@@ -59,6 +100,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   }, [current.item_id, getItemResult?.data?.data]);
 
   const buildFilters = () => ({
+    franchisor_id: franchise?.id ?? "",
     warehouse_id: warehouse?.id ?? "",
     item_id: item?.id ?? "",
   });
@@ -66,17 +108,23 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
   const isDirty = useMemo(() => {
     const f = buildFilters();
     return (
-      (f.warehouse_id || "") !== (current.warehouse_id || "") ||
-      (f.item_id || "") !== (current.item_id || "")
+      f.franchisor_id !== (current.franchisor_id || "") ||
+      f.warehouse_id !== (current.warehouse_id || "") ||
+      f.item_id !== (current.item_id || "")
     );
-  }, [warehouse, item, current]);
+  }, [franchise, warehouse, item, current]);
 
-  const anyActive = !!(current.warehouse_id || current.item_id);
+  const anyActive = !!(
+    current.franchisor_id ||
+    current.warehouse_id ||
+    current.item_id
+  );
 
   const handleClear = () => {
+    setFranchise(null);
     setWarehouse(null);
     setItem(null);
-    table.filter({ warehouse_id: "", item_id: "" });
+    table.filter({ franchisor_id: "", warehouse_id: "", item_id: "" });
   };
 
   const handleFilter = () => table.filter(buildFilters());
@@ -89,14 +137,44 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       handleFilter={handleFilter}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {isSuperuser && (
+          <RemoteSelect
+            label="Franchise"
+            placeholder="Filter Franchise"
+            value={franchise}
+            onChange={(val) => {
+              setFranchise(val);
+              setWarehouse(null);
+            }}
+            onClear={() => {
+              setFranchise(null);
+              setWarehouse(null);
+            }}
+            fetchData={(page, search) =>
+              getFranchisors({ page: page || 1, limit: 20, search })
+            }
+            hook={getFranchisorsResult as any}
+            getLabel={(item: any) => item?.name ?? ""}
+            renderItem={(item: any) => item?.name}
+            getValue={(item: any) => item.id}
+          />
+        )}
         <RemoteSelect
           label="Gudang"
-          placeholder="Filter Gudang"
+          placeholder={
+            canPickWarehouse ? "Filter Gudang" : "Pilih Franchise dulu"
+          }
           value={warehouse}
           onChange={(val) => setWarehouse(val)}
           onClear={() => setWarehouse(null)}
+          disabled={!canPickWarehouse}
           fetchData={(page, search) =>
-            getWarehouse({ page: page || 1, limit: 20, search })
+            getWarehouse({
+              page: page || 1,
+              limit: 20,
+              search,
+              ...(isSuperuser ? { franchisor_id: franchise?.id ?? "" } : {}),
+            })
           }
           hook={getWarehouseResult as any}
           getLabel={(item: any) => item?.name ?? ""}

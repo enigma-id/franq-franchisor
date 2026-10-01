@@ -155,18 +155,6 @@ export const inventoryApi = createApi({
     }),
 
     /**
-     * PUT /inventory/catalog/:id/types
-     * Update inventory catalog outlet
-     */
-    updateOutletCatalog: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/inventory/catalog/${id}/types`,
-        method: "PUT",
-        body: payload,
-      }),
-    }),
-
-    /**
      * DELETE /inventory/catalog/:id
      * Delete inventory catalog (soft delete)
      */
@@ -219,7 +207,6 @@ export const {
   useCreateCatalogMutation,
   useUpdateCatalogMutation,
   useDeleteCatalogMutation,
-  useUpdateOutletCatalogMutation,
   useActivateCatalogMutation,
   useDeactivateCatalogMutation,
 } = inventoryApi;

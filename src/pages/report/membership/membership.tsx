@@ -9,19 +9,20 @@ import { useMembershipReport } from "@/services/report/hooks";
 import { Page } from "@/components/app/layout";
 import { SummaryCard } from "@/components/app";
 import { currencyFormat } from "@/utils";
-import { Users, Wallet } from "lucide-react";
+import { Gift, Users, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const THEMES: Record<string, any> = {
   blue: { text: "text-blue-500", iconBg: "#dbeafe", wave: "#3b82f6" },
   orange: { text: "text-orange-500", iconBg: "#ffedd5", wave: "#f97316" },
+  green: { text: "text-green-500", iconBg: "#dcfce7", wave: "#22c55e" },
 };
 
 const OverviewCards = ({ data }: { data: any | null }) => {
   if (!data) return null;
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
       <SummaryCard
         label='Total Member'
         value={data.total_member ?? 0}
@@ -34,26 +35,37 @@ const OverviewCards = ({ data }: { data: any | null }) => {
         icon={Wallet}
         theme={THEMES.blue}
       />
+      <SummaryCard
+        label='Total Poin'
+        value={currencyFormat(data.total_point ?? 0)}
+        icon={Gift}
+        theme={THEMES.green}
+      />
     </div>
   );
 };
 
-export default function MembershipReportPage() {
+/**
+ * Body report reusable — dipakai halaman Daftar Member standalone dan tab di
+ * detail Rekap Outlet (filter `outlet_id` diisi saat dipakai sebagai tab).
+ */
+export function MembershipReport({ outletId }: { outletId?: string }) {
   const navigate = useNavigate();
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        onRowClick: (row: any) =>
+        filter: outletId ? { outlet_id: outletId } : undefined,
+        onNavigate: (row: any, target: "saldo" | "point") =>
           navigate(
-            `/report/membership/saldo-log?membership_id=${row.membership_id}`,
+            `${target === "point" ? "/report/membership/point-log" : "/report/membership/saldo-log"}?membership_id=${row.membership_id}`,
           ),
       }),
-    [],
+    [outletId, navigate],
   );
 
   const Table = useTable(
-    "report_membership",
+    outletId ? "outlet_tab_membership" : "report_membership",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -77,23 +89,31 @@ export default function MembershipReportPage() {
   const summary = summaryResult?.data;
 
   return (
+    <>
+      <OverviewCards data={summary} />
+
+      <Table.Tools downloadable>
+        <TableFilter table={Table} />
+      </Table.Tools>
+      <Table.Render
+        emptyTitle='Belum Ada Data'
+        emptyDescription='Data member akan muncul di sini.'
+      />
+      <Table.Pagination />
+    </>
+  );
+}
+
+export default function MembershipReportPage() {
+  return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Report Membership'
-        subtitle='Laporan member beserta saldo dan transaksi terakhir.'
+        title='Daftar Member'
+        subtitle='Rekap member beserta saldo dan transaksi terakhir.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <OverviewCards data={summary} />
-
-        <Table.Tools downloadable>
-          <TableFilter table={Table} />
-        </Table.Tools>
-        <Table.Render
-          emptyTitle='Belum Ada Data'
-          emptyDescription='Data member akan muncul di sini.'
-        />
-        <Table.Pagination />
+        <MembershipReport />
       </Page.Body>
     </Page>
   );

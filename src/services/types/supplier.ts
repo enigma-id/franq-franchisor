@@ -2,6 +2,8 @@
  * Supplier Types
  */
 
+import type { FranchisorDetail } from "./franchisor";
+
 export type SupplierType = "factory" | "distributor" | "store";
 
 export interface SupplierBase {
@@ -35,4 +37,5 @@ export interface SupplierDetail extends SupplierBase {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  franchisor?: FranchisorDetail;
 }

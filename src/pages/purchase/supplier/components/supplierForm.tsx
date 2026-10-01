@@ -5,6 +5,9 @@ import { Input, RemoteSelect } from "@/components/ui";
 import type { SelectOptionValue } from "@/services/types/table";
 import { Building, MapPin, Landmark } from "lucide-react";
 import { useAppSelector } from "@/hooks";
+import type { FranchisorRow } from "@/services/types";
+import { useFranchisorList } from "@/services/franchisor/hooks";
+import { useIsSuperuser } from "@/utils";
 
 const SUPPLIER_TYPES = [
   { value: "distributor", label: "Distributor" },
@@ -20,6 +23,7 @@ const TOP_OPTIONS: SelectOptionValue[] = [
 ];
 
 export interface SupplierFormData extends Record<string, unknown> {
+  franchisor_id: string;
   type: string;
   name: string;
   address: string;
@@ -43,6 +47,16 @@ export function SupplierForm({
   onSubmit,
 }: SupplierFormProps) {
   const FormState = useAppSelector((s) => s.form);
+  const isSuperuser = useIsSuperuser();
+
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
+
+  // Mode create → superuser wajib memilih brand (backend menolak bila kosong).
+  const isCreateMode = !initialData;
+  const needsFranchise = isSuperuser && isCreateMode;
+
+  const [franchise, setFranchise] = useState<FranchisorRow | null>(null);
 
   const [typeSelected, setTypeSelected] = useState<{
     value: string;
@@ -52,9 +66,12 @@ export function SupplierForm({
     label: "Distributor",
   });
 
-  const [topSelected, setTopSelected] = useState<SelectOptionValue | null>(null);
+  const [topSelected, setTopSelected] = useState<SelectOptionValue | null>(
+    null,
+  );
 
   const [formData, setFormData] = useState<SupplierFormData>({
+    franchisor_id: "",
     type: "",
     name: "",
     address: "",
@@ -66,9 +83,19 @@ export function SupplierForm({
     top: 0,
   });
 
+  // Pilih franchise → set franchisor_id, reset outlet, penerima, & item katalog.
+  const handleFranchiseChange = (item: FranchisorRow | null) => {
+    setFranchise(item);
+    setFormData((prev) => ({
+      ...prev,
+      franchisor_id: item?.id ?? "",
+    }));
+  };
+
   useEffect(() => {
     if (initialData) {
       setFormData({
+        franchisor_id: initialData.franchisor_id ?? "",
         type: initialData.type ?? "distributor",
         name: initialData.name ?? "",
         address: initialData.address ?? "",
@@ -88,9 +115,8 @@ export function SupplierForm({
       };
       setTypeSelected(typeOpt);
 
-      const topOpt = TOP_OPTIONS.find(
-        (opt) => opt.value === (initialData.top ?? 0),
-      ) ?? null;
+      const topOpt =
+        TOP_OPTIONS.find((opt) => opt.value === (initialData.top ?? 0)) ?? null;
       setTopSelected(topOpt);
     }
   }, [initialData]);
@@ -108,24 +134,42 @@ export function SupplierForm({
     <form
       id={id}
       onSubmit={handleSubmit}
-      className="max-w-5xl mx-auto space-y-6"
+      className='max-w-5xl mx-auto space-y-6'
     >
       {/* Section 1: Informasi Utama Supplier */}
-      <div className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm !overflow-visible z-10">
-        <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg">
-              <Building className="w-4 h-4" />
+      <div className='card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm !overflow-visible z-10'>
+        <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-t-xl'>
+          <div className='flex items-center gap-2'>
+            <div className='p-1 bg-emerald-50 text-emerald-600 rounded-lg'>
+              <Building className='w-4 h-4' />
             </div>
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
               Informasi Utama Supplier
             </h2>
           </div>
         </div>
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className='p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+          {/* Select Franchise — khusus superuser saat create */}
+          {needsFranchise && (
+            <RemoteSelect<FranchisorRow>
+              label='Franchise'
+              required
+              hook={franchisorsResult as any}
+              fetchData={(page, search) => getFranchisors({ page, search })}
+              getLabel={(item: any) => item?.name}
+              value={franchise}
+              onChange={(item: FranchisorRow | null) =>
+                handleFranchiseChange(item)
+              }
+              onClear={() => handleFranchiseChange(null)}
+              placeholder='Pilih franchise'
+              error={FormState?.errors?.franchisor_id as string}
+            />
+          )}
+
           <RemoteSelect
-            label="Tipe Supplier"
-            placeholder="Pilih Tipe..."
+            label='Tipe Supplier'
+            placeholder='Pilih Tipe...'
             required
             data={SUPPLIER_TYPES}
             value={typeSelected}
@@ -143,19 +187,19 @@ export function SupplierForm({
           />
 
           <Input
-            label="Nama Supplier"
+            label='Nama Supplier'
             required
             value={formData.name}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, name: e.target.value }))
             }
-            placeholder="Contoh: PT. Sinar Logistik Abadi"
-            variant="primary"
+            placeholder='Contoh: PT. Sinar Logistik Abadi'
+            variant='primary'
             error={FormState?.errors?.name as string}
           />
 
           <Input
-            label="Nama Sales"
+            label='Nama Sales'
             value={formData.sales_person}
             onChange={(e) =>
               setFormData((prev) => ({
@@ -163,25 +207,25 @@ export function SupplierForm({
                 sales_person: e.target.value,
               }))
             }
-            placeholder="Contoh: Adi Wijaya"
-            variant="primary"
+            placeholder='Contoh: Adi Wijaya'
+            variant='primary'
             error={FormState?.errors?.sales_person as string}
           />
 
           <Input
-            label="No. Telepon"
+            label='No. Telepon'
             value={formData.phone}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, phone: e.target.value }))
             }
-            placeholder="Contoh: 021987654"
-            variant="primary"
+            placeholder='Contoh: 021987654'
+            variant='primary'
             error={FormState?.errors?.phone as string}
           />
 
           <RemoteSelect<SelectOptionValue>
-            label="Term of Payment (Hari)"
-            placeholder="Pilih Term..."
+            label='Term of Payment (Hari)'
+            placeholder='Pilih Term...'
             required
             data={TOP_OPTIONS}
             value={topSelected}
@@ -189,7 +233,10 @@ export function SupplierForm({
             getValue={(item: any) => item?.value}
             onChange={(val) => {
               setTopSelected(val);
-              setFormData((prev) => ({ ...prev, top: Number(val?.value ?? 0) }));
+              setFormData((prev) => ({
+                ...prev,
+                top: Number(val?.value ?? 0),
+              }));
             }}
             onClear={() => {
               setTopSelected(null);
@@ -199,10 +246,10 @@ export function SupplierForm({
           />
         </div>
 
-        <div className="px-5 pb-5 space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-slate-400" />
-            <label className="text-xs font-bold text-slate-600 uppercase">
+        <div className='px-5 pb-5 space-y-1.5'>
+          <div className='flex items-center gap-1.5'>
+            <MapPin className='w-3.5 h-3.5 text-slate-400' />
+            <label className='text-xs font-bold text-slate-600 uppercase'>
               Alamat Lengkap
             </label>
           </div>
@@ -211,18 +258,18 @@ export function SupplierForm({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, address: e.target.value }))
             }
-            placeholder="Contoh: Kawasan Industri Jababeka Tahap 2, Blok C-18, Bekasi, Jawa Barat"
+            placeholder='Contoh: Kawasan Industri Jababeka Tahap 2, Blok C-18, Bekasi, Jawa Barat'
             className={`w-full min-h-17.5 px-3 py-2 text-sm rounded-lg border focus:outline-none transition-all ${
               FormState?.errors?.address
                 ? "border-rose-500 focus:border-rose-500 bg-rose-50/20"
                 : "border-slate-200 focus:border-emerald-500"
             }`}
           />
-          <div className="flex items-center justify-between text-xs mt-0.5">
-            <span className="text-rose-500 font-medium">
+          <div className='flex items-center justify-between text-xs mt-0.5'>
+            <span className='text-rose-500 font-medium'>
               {FormState?.errors?.address as string}
             </span>
-            <span className="text-slate-400">
+            <span className='text-slate-400'>
               {formData.address.length}/250 karakter
             </span>
           </div>
@@ -230,20 +277,20 @@ export function SupplierForm({
       </div>
 
       {/* Section 2 & 3: Rekening Bank & Contact Person */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className='grid grid-cols-1 gap-6'>
         {/* Rekening Bank Card */}
-        <div className="card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm">
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2 rounded-t-xl">
-            <div className="p-1 bg-blue-50 text-blue-600 rounded-lg">
-              <Landmark className="w-4 h-4" />
+        <div className='card-info card-animate bg-white border border-slate-200 rounded-xl relative shadow-sm'>
+          <div className='px-5 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2 rounded-t-xl'>
+            <div className='p-1 bg-blue-50 text-blue-600 rounded-lg'>
+              <Landmark className='w-4 h-4' />
             </div>
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            <h2 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>
               Informasi Rekening Bank
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-15 p-5 space-y-4">
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-15 p-5 space-y-4'>
             <Input
-              label="Nama Bank"
+              label='Nama Bank'
               value={formData.bank_name}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -251,12 +298,12 @@ export function SupplierForm({
                   bank_name: e.target.value,
                 }))
               }
-              placeholder="Contoh: Bank Central Asia (BCA)"
-              variant="primary"
+              placeholder='Contoh: Bank Central Asia (BCA)'
+              variant='primary'
               error={FormState?.errors?.bank_name as string}
             />
             <Input
-              label="Nomor Rekening"
+              label='Nomor Rekening'
               value={formData.bank_number}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -264,12 +311,12 @@ export function SupplierForm({
                   bank_number: e.target.value,
                 }))
               }
-              placeholder="Contoh: 8720123456"
-              variant="primary"
+              placeholder='Contoh: 8720123456'
+              variant='primary'
               error={FormState?.errors?.bank_number as string}
             />
             <Input
-              label="Nama Pemilik Rekening"
+              label='Nama Pemilik Rekening'
               value={formData.bank_account}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -277,8 +324,8 @@ export function SupplierForm({
                   bank_account: e.target.value,
                 }))
               }
-              placeholder="Contoh: PT Sinar Logistik Abadi"
-              variant="primary"
+              placeholder='Contoh: PT Sinar Logistik Abadi'
+              variant='primary'
               error={FormState?.errors?.bank_account as string}
             />
           </div>

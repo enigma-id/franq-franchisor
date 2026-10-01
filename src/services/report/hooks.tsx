@@ -15,6 +15,9 @@ import {
   useLazyGetRawMaterialSalesSummaryQuery,
   useLazyGetWarehouseStockQuery,
   useLazyGetOutletMapQuery,
+  useLazyGetOutletReportQuery,
+  useLazyGetOutletReportSummaryQuery,
+  useLazyGetSessionReportQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
   useLazyGetProductItemQuery,
@@ -26,6 +29,16 @@ import {
   useLazyGetMembershipSummaryQuery,
   useLazyGetSaldoLogQuery,
   useLazyGetSaldoLogSummaryQuery,
+  useLazyGetPointLogQuery,
+  useLazyGetPointLogSummaryQuery,
+  useLazyGetMembershipSettlementQuery,
+  useLazyGetMembershipSettlementSummaryQuery,
+  useLazyGetMembershipSettlementDetailQuery,
+  useLazyGetMembershipSettlementItemsQuery,
+  useLazyGetMembershipSettlementItemsSummaryQuery,
+  useSettleMembershipSettlementMutation,
+  useUnsettleMembershipSettlementMutation,
+  useReconcileMembershipSettlementMutation,
 } from "./api";
 
 export const useReport = createCrudHook<any>({
@@ -38,6 +51,9 @@ export const useReport = createCrudHook<any>({
     warehouseStock: useLazyGetWarehouseStockQuery,
     outletMap: useLazyGetOutletMapQuery,
     outletSaldoSummary: useLazyGetOutletSaldoSummaryQuery,
+    outletReport: useLazyGetOutletReportQuery,
+    outletReportSummary: useLazyGetOutletReportSummaryQuery,
+    sessionReport: useLazyGetSessionReportQuery,
   },
 });
 
@@ -74,5 +90,27 @@ export const useMembershipReport = createCrudHook<any>({
     membershipSummary: useLazyGetMembershipSummaryQuery,
     saldoLog: useLazyGetSaldoLogQuery,
     saldoLogSummary: useLazyGetSaldoLogSummaryQuery,
+    pointLog: useLazyGetPointLogQuery,
+    pointLogSummary: useLazyGetPointLogSummaryQuery,
+    settlement: useLazyGetMembershipSettlementQuery,
+    settlementSummary: useLazyGetMembershipSettlementSummaryQuery,
+    settlementDetail: useLazyGetMembershipSettlementDetailQuery,
+    settlementItems: useLazyGetMembershipSettlementItemsQuery,
+    settlementItemsSummary: useLazyGetMembershipSettlementItemsSummaryQuery,
+  },
+  // Aksi HO (superuser only) — {id} = id header settlement.
+  customOperations: {
+    settle: {
+      hook: useSettleMembershipSettlementMutation,
+      errorMessage: "Failed to settle membership settlement",
+    },
+    unsettle: {
+      hook: useUnsettleMembershipSettlementMutation,
+      errorMessage: "Failed to unsettle membership settlement",
+    },
+    reconcile: {
+      hook: useReconcileMembershipSettlementMutation,
+      errorMessage: "Failed to reconcile membership settlement",
+    },
   },
 });

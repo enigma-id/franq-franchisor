@@ -4,7 +4,6 @@
  */
 
 export interface OutletBase {
-  outlet_type_id: string;
   name: string;
   recipient_name: string;
   phone: string;
@@ -17,6 +16,8 @@ export interface OutletBase {
 
 export interface OutletCreateRequest extends OutletBase {
   channels: string[];
+  /** FK ke franchisor/brand — diisi superuser saat create dari detail franchise. */
+  franchisor_id?: string;
 }
 
 export type OutletUpdateRequest = Partial<OutletCreateRequest>;
@@ -27,7 +28,14 @@ export interface OutletChannelsUpdateRequest {
 
 export interface OutletDetail extends OutletBase {
   id: string;
+  /** FK user owner outlet (diisi backend; dipakai utk fetch detail user). */
+  user_id?: string;
   franchisor_id?: string;
+  /** Relasi brand/franchisor (kalau di-embed backend). */
+  franchisor?: {
+    id?: string;
+    name: string;
+  };
   pos_channels: {
     id: string;
     pos_channel: {

@@ -1,7 +1,10 @@
 import { createCrudHook } from "../hooks/createCrudHook";
-import { useLazyGetDashboardQuery } from "./api";
+import { useLazyGetDashboardQuery, useLazyGetLiveMapQuery } from "./api";
 
 export const useDashboard = createCrudHook({
   useLazyGetQuery: useLazyGetDashboardQuery,
+  additionalQueries: {
+    liveMap: useLazyGetLiveMapQuery,
+  },
   entityName: "dashboard",
 });

@@ -15,7 +15,6 @@ import {
   useDeleteCatalogMutation,
   useActivateCatalogMutation,
   useDeactivateCatalogMutation,
-  useUpdateOutletCatalogMutation,
 } from "./api";
 
 // Inventory Item
@@ -48,7 +47,6 @@ export const useInventoryCatalog = createCrudHook({
   customOperations: {
     activate: { hook: useActivateCatalogMutation },
     deactivate: { hook: useDeactivateCatalogMutation },
-    assignOutlet: { hook: useUpdateOutletCatalogMutation },
   },
   entityName: "inventoryCatalog",
 });

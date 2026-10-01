@@ -4,16 +4,16 @@ import { dateFormat } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 
 const createTableConfig = ({
-  onRowClick,
   filter,
+  lockedFilter,
 }: {
-  onRowClick?: (row: any) => void;
   filter?: Record<string, unknown>;
+  lockedFilter?: Record<string, unknown>;
 }): TableConfig<any> => ({
   ...config,
   url: "/report/franchise/outstanding",
   filter,
-  onRowClick,
+  lockedFilter,
   columns: {
     code: {
       title: "Code",

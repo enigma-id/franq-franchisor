@@ -14,7 +14,7 @@ export interface SalesOrderItemRequest {
 export interface SalesOrderBase {
   ref_code: string;
   outlet_id: string;
-  warehouse_id: string;
+  source_warehouse_id: string;
   recipient_name: string;
   recipient_phone: string;
   recipient_address: string;
@@ -27,7 +27,7 @@ export interface SalesOrderBase {
 export interface SalesOrderRequest {
   ref_code: string;
   outlet_id: string;
-  warehouse_id: string;
+  source_warehouse_id: string;
   recipient_name: string;
   recipient_phone: string;
   recipient_address: string;
@@ -62,7 +62,14 @@ export interface SalesOrderDetail extends SalesOrderBase {
   id: string;
   franchisor_id: string;
   code: string;
-  warehouse_name: string;
+  source_warehouse_name: string;
+  /** Relasi brand/franchisor (di-embed backend pd list & detail). */
+  franchisor?: {
+    id: string;
+    type: "outlet" | "mitra";
+    name: string;
+    [k: string]: unknown;
+  };
   /** API field: the order type, e.g. "default" */
   order_type: string;
   /** API field: document/approval status, e.g. "pending" | "published" | "cancelled" */

@@ -29,11 +29,6 @@ export interface B2BSummary {
   outstanding: number;
 }
 
-export interface ProductionPlanSummary {
-  plan: number;
-  completed: number;
-}
-
 export interface TopMenuItem {
   menu_name: string;
   total_qty: number;
@@ -73,17 +68,17 @@ export interface DashboardData {
   omset_franchise: number;
   omset_bahan_baku: number;
   pos_summary: PosSummary;
+  /** Hanya diisi untuk superuser — omset POS dipecah per tipe brand. */
+  pos_summary_mitra?: PosSummary;
+  pos_summary_outlet?: PosSummary;
   b2b_summary: B2BSummary;
   total_outlet: number;
-  outlet_aktif: number;
-  total_saldo_membership: number;
+  /** Nilai transaksi saldo member dalam periode (dari saldo_log). */
+  transaction_saldo_membership: number;
   top_menu: TopMenuItem[];
   top_member: TopMemberItem[];
   top_outlet: TopOutletItem[];
-  so_pipeline: PipelineSummary;
-  po_pipeline: PipelineSummary;
   revenue_composition: RevenueComposition;
   top_outstanding_outlets?: TopOutstandingOutlet[];
   outlet_map: OutletMapItem[];
-  production_plan_summary: ProductionPlanSummary;
 }

@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Page } from "@/components/app/layout";
 import { Button } from "@/components/ui";
 import useTable from "@/services/table/hooks";
@@ -16,8 +17,15 @@ import { ACTION } from "@/utils/permissions";
 
 const POSCategoryListPage: React.FC = () => {
   const FormState = useAppSelector((s) => s.form);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { openModal, closeModal, showToast } = useEnigmaUI();
   const canManage = useCan(ACTION.posCategory);
+
+  // Mode scoped per brand: dipanggil dari tab Franchise (?franchisor_id=&back=).
+  // Tanpa param → perilaku lama (scope session user).
+  const franchisorId = searchParams.get("franchisor_id") ?? undefined;
+  const back = searchParams.get("back") ?? "/setting/pos/category";
 
   const {
     create,
@@ -42,6 +50,7 @@ const POSCategoryListPage: React.FC = () => {
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     name: "",
+    point_percentage: "" as string | number,
   });
 
   const handleToggleActive = (v: any) => {
@@ -59,6 +68,7 @@ const POSCategoryListPage: React.FC = () => {
           setEditingItem(row);
           setFormData({
             name: row?.name ?? "",
+            point_percentage: row?.point_percentage ?? "",
           });
           setModalOpen(true);
         },
@@ -66,9 +76,10 @@ const POSCategoryListPage: React.FC = () => {
           openDelete(row);
         },
         onToggleActive: (row: any) => handleToggleActive(row),
+        filter: franchisorId ? { franchisor_id: franchisorId } : undefined,
         canManage,
       }),
-    [canManage],
+    [canManage, franchisorId],
   );
 
   const Table = useTable(
@@ -147,13 +158,15 @@ const POSCategoryListPage: React.FC = () => {
   const handleCloseModal = () => {
     setModalOpen(false);
     setEditingItem(null);
-    setFormData({ name: "" });
+    setFormData({ name: "", point_percentage: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
       name: formData.name,
+      point_percentage: Number(formData.point_percentage || 0),
+      ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
 
     if (editingItem) {
@@ -220,7 +233,12 @@ const POSCategoryListPage: React.FC = () => {
       <Page.Header
         category="Settings"
         title='Kategori POS'
-        subtitle='Kelola kategori menu untuk pengaturan POS.'
+        subtitle={
+          franchisorId
+            ? "Kelola kategori menu POS untuk brand ini."
+            : "Kelola kategori menu untuk pengaturan POS."
+        }
+        backTo={franchisorId ? () => navigate(back) : undefined}
         action={
           canManage && (
             <Button
@@ -273,6 +291,24 @@ const POSCategoryListPage: React.FC = () => {
               placeholder='Contoh: Makanan, Minuman'
               variant='primary'
               error={FormState?.errors?.name as string}
+            />
+            <Input
+              label='Point Belanja'
+              type='number'
+              min={0}
+              max={100}
+              suffix='%'
+              value={formData.point_percentage}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  point_percentage: e.target.value,
+                }))
+              }
+              placeholder='Contoh: 1'
+              hint='Rate point belanja kategori ini (0–100). 0 = tidak dapat point.'
+              variant='primary'
+              error={FormState?.errors?.point_percentage as string}
             />
           </form>
         </Modal.Body>

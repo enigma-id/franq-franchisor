@@ -15,10 +15,3 @@ export const fulfillmentStatusOptions = [
   { label: "Disputed", value: "disputed" },
   { label: "Selesai", value: "completed" },
 ];
-
-export const productionPlanStatusOptions = [
-  { label: "Draft", value: "draft" },
-  { label: "Published", value: "published" },
-  { label: "Selesai", value: "completed" },
-  { label: "Dibatalkan", value: "cancelled" },
-];

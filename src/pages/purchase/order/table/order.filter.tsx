@@ -7,6 +7,8 @@ import type { SelectOptionValue } from "@/services/types/table";
 import { useSupplier } from "@/services/supplier/hooks";
 import { useWarehouse } from "@/services/warehouse/hooks";
 import TableFilters from "@/components/ui/table/filter";
+import { useIsSuperuser } from "@/utils";
+import { useFranchisorList } from "@/services/franchisor/hooks";
 
 interface TableFilterProps {
   table: {
@@ -49,13 +51,14 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
         : null;
     });
 
-  const [paymentStatus, setPaymentStatus] =
-    useState<SelectOptionValue | null>(() => {
+  const [paymentStatus, setPaymentStatus] = useState<SelectOptionValue | null>(
+    () => {
       const value = current.payment_status;
       return value
         ? (paymentStatusOptions.find((opt) => opt.value === value) ?? null)
         : null;
-    });
+    },
+  );
 
   const [receivingStatus, setReceivingStatus] =
     useState<SelectOptionValue | null>(() => {
@@ -110,12 +113,35 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     return undefined;
   });
 
+  // ── Franchise (khusus superuser) ──
+  const isSuperuser = useIsSuperuser();
+  const { get: getFranchisors, getResult: getFranchisorsResult } =
+    useFranchisorList();
+  const [franchise, setFranchise] = useState<any | null>(null);
+
+  useEffect(() => {
+    getFranchisors({ page: 1, limit: 20 });
+  }, []);
+
+  useEffect(() => {
+    if (current.franchisor_id && getFranchisorsResult?.data?.data) {
+      const franchisors = getFranchisorsResult.data.data as any[];
+      const found = franchisors.find(
+        (c: any) => c.id === current.franchisor_id,
+      );
+      if (found) setFranchise(found);
+    } else if (!current.franchisor_id) {
+      setFranchise(null);
+    }
+  }, [current.franchisor_id, getFranchisorsResult?.data?.data]);
+
   const buildFilters = () => ({
     document_status: documentStatus?.value ?? "",
     payment_status: paymentStatus?.value ?? "",
     receiving_status: receivingStatus?.value ?? "",
     supplier_id: supplier?.id ?? "",
     warehouse_id: warehouse?.id ?? "",
+    franchisor_id: franchise?.id ?? "",
     start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
     end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
   });
@@ -128,10 +154,20 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       (f.receiving_status || "") !== (current.receiving_status || "") ||
       (f.supplier_id || "") !== (current.supplier_id || "") ||
       (f.warehouse_id || "") !== (current.warehouse_id || "") ||
+      (f.franchisor_id || "") !== (current.franchisor_id || "") ||
       (f.start_date || "") !== (current.start_date || "") ||
       (f.end_date || "") !== (current.end_date || "")
     );
-  }, [documentStatus, paymentStatus, receivingStatus, supplier, warehouse, dateRange, current]);
+  }, [
+    documentStatus,
+    paymentStatus,
+    receivingStatus,
+    supplier,
+    warehouse,
+    dateRange,
+    franchise,
+    current,
+  ]);
 
   const anyActive = !!(
     current.document_status ||
@@ -139,6 +175,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     current.receiving_status ||
     current.supplier_id ||
     current.warehouse_id ||
+    current.franchisor_id ||
     current.start_date ||
     current.end_date
   );
@@ -149,6 +186,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
     setReceivingStatus(null);
     setSupplier(null);
     setWarehouse(null);
+    setFranchise(null);
     setDateRange(undefined);
     table.filter({
       document_status: "",
@@ -156,6 +194,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       receiving_status: "",
       supplier_id: "",
       warehouse_id: "",
+      franchisor_id: "",
       start_date: "",
       end_date: "",
     });
@@ -170,10 +209,10 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
       handleClear={handleClear}
       handleFilter={handleFilter}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
         <RemoteSelect<SelectOptionValue>
-          label="Status Dokumen"
-          placeholder="Filter Status"
+          label='Status Dokumen'
+          placeholder='Filter Status'
           data={documentStatusOptions}
           value={documentStatus}
           onChange={(opt) => setDocumentStatus(opt)}
@@ -182,8 +221,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           renderItem={(item) => item?.label}
         />
         <RemoteSelect<SelectOptionValue>
-          label="Status Pembayaran"
-          placeholder="Filter Payment"
+          label='Status Pembayaran'
+          placeholder='Filter Payment'
           data={paymentStatusOptions}
           value={paymentStatus}
           onChange={(opt) => setPaymentStatus(opt)}
@@ -192,8 +231,8 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           renderItem={(item) => item?.label}
         />
         <RemoteSelect<SelectOptionValue>
-          label="Status Penerimaan"
-          placeholder="Filter Receiving"
+          label='Status Penerimaan'
+          placeholder='Filter Receiving'
           data={receivingStatusOptions}
           value={receivingStatus}
           onChange={(opt) => setReceivingStatus(opt)}
@@ -201,37 +240,69 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
           getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
+        {isSuperuser && (
+          <RemoteSelect
+            label='Franchise'
+            placeholder='Filter Franchise'
+            value={franchise}
+            onChange={(val) => setFranchise(val)}
+            onClear={() => setFranchise(null)}
+            fetchData={(page, search) =>
+              getFranchisors({ page: page || 1, limit: 20, search })
+            }
+            hook={getFranchisorsResult as any}
+            getLabel={(item: any) => item?.name ?? ""}
+            renderItem={(item: any) => item?.name}
+            getValue={(item: any) => item.id}
+          />
+        )}
         <RemoteSelect
-          label="Supplier"
-          placeholder="Filter Supplier"
+          label='Supplier'
+          placeholder='Filter Supplier'
           value={supplier}
           onChange={(val) => setSupplier(val)}
           onClear={() => setSupplier(null)}
           fetchData={(page, search) =>
-            getSupplier({ page: page || 1, limit: 20, search })
+            getSupplier({
+              page: page || 1,
+              limit: 20,
+              search,
+              ...(isSuperuser && franchise
+                ? { franchisor_id: franchise.id }
+                : {}),
+            })
           }
           hook={getSupplierResult as any}
           getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
+          watchKey={isSuperuser ? (franchise?.id ?? "") : ""}
         />
         <RemoteSelect
-          label="Warehouse"
-          placeholder="Filter Warehouse"
+          label='Warehouse'
+          placeholder='Filter Warehouse'
           value={warehouse}
           onChange={(val) => setWarehouse(val)}
           onClear={() => setWarehouse(null)}
           fetchData={(page, search) =>
-            getWarehouse({ page: page || 1, limit: 20, search })
+            getWarehouse({
+              page: page || 1,
+              limit: 20,
+              search,
+              ...(isSuperuser && franchise
+                ? { franchisor_id: franchise.id }
+                : {}),
+            })
           }
           hook={getWarehouseResult as any}
           getLabel={(item: any) => item?.name ?? ""}
           renderItem={(item: any) => item?.name}
           getValue={(item: any) => item.id}
+          watchKey={isSuperuser ? (franchise?.id ?? "") : ""}
         />
         <DatePicker
-          label="Rentang Tanggal"
-          mode="range"
+          label='Rentang Tanggal'
+          mode='range'
           value={dateRange}
           onChange={(date) => {
             if (date && !("format" in date)) {
@@ -240,7 +311,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table }) => {
               setDateRange(undefined);
             }
           }}
-          placeholder="Filter Tanggal"
+          placeholder='Filter Tanggal'
         />
       </div>
     </TableFilters>

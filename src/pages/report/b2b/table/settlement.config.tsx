@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "@/services/table/const";
 import { currencyFormat } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
@@ -5,10 +6,11 @@ import { ChevronRight } from "lucide-react";
 
 const createTableConfig = ({
   filter,
-  onRowClick,
+  onDetail,
 }: {
   filter?: Record<string, unknown>;
-  onRowClick?: (row: any) => void;
+  /** Drill-down ke detail harian — dipanggil dari tombol aksi di kolom kanan. */
+  onDetail?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
   url: "/report/b2b/settlement",
@@ -16,7 +18,6 @@ const createTableConfig = ({
     periode_type: "yearly",
   },
   filter,
-  onRowClick,
   dynamicColumns: (rows: any[]) => {
     if (!rows?.length) return {};
 
@@ -51,8 +52,15 @@ const createTableConfig = ({
         title: "",
         width: 40,
         sortable: false,
-        component: () => (
-          <ChevronRight size={16} className="text-base-content/30" />
+        component: (row: any) => (
+          <button
+            type='button'
+            onClick={() => onDetail?.(row)}
+            aria-label='Lihat Detail'
+            className='p-1.5 rounded-lg text-base-content/30 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer'
+          >
+            <ChevronRight size={16} />
+          </button>
         ),
       },
     };

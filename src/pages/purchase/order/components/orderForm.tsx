@@ -11,9 +11,14 @@ import { useSupplier } from "@/services/supplier/hooks";
 import { useLazyGetItemFractionsQuery } from "@/services/inventory/api";
 
 import { useAppSelector } from "@/hooks";
-import { currencyFormat } from "@/utils";
+import { currencyFormat, useIsSuperuser } from "@/utils";
 import { useWarehouse } from "@/services/warehouse/hooks";
-import type { SupplierDetail, WarehouseDetail } from "@/services/types";
+import type {
+  FranchisorRow,
+  SupplierDetail,
+  WarehouseDetail,
+} from "@/services/types";
+import { useFranchisorList } from "@/services/franchisor/hooks";
 
 export interface PurchaseOrderItemInput {
   itemSelected: any | null;
@@ -25,6 +30,7 @@ export interface PurchaseOrderItemInput {
 }
 
 export interface PurchaseOrderFormData extends Record<string, unknown> {
+  franchisor_id: string;
   supplier_id: string;
   warehouse_id: string;
   ref_code: string;
@@ -53,11 +59,20 @@ export function PurchaseOrderForm({
 }: PurchaseOrderFormProps) {
   const FormState = useAppSelector((s) => s.form);
   const { showToast } = useEnigmaUI();
+  const isSuperuser = useIsSuperuser();
+
+  const { get: getFranchisors, getResult: franchisorsResult } =
+    useFranchisorList();
   const { get: getSuppliers, getResult: suppliersResult } = useSupplier();
   const { get: getWarehouse, getResult: warehouseResult } = useWarehouse();
   const { get: getItems, getResult: itemsResult } = useInventoryItem();
   const [getItemFractions] = useLazyGetItemFractionsQuery();
 
+  // Mode create → superuser wajib memilih brand (backend menolak bila kosong).
+  const isCreateMode = !initialData;
+  const needsFranchise = isSuperuser && isCreateMode;
+
+  const [franchise, setFranchise] = useState<FranchisorRow | null>(null);
   const [fractionsCache, setFractionsCache] = useState<Record<number, any[]>>(
     {},
   );
@@ -66,7 +81,12 @@ export function PurchaseOrderForm({
 
   // Auto-select warehouse ketika data hanya satu.
   useEffect(() => {
-    getWarehouse({ page: 1, limit: 20, is_active: "true" });
+    getWarehouse({
+      page: 1,
+      limit: 20,
+      is_active: "true",
+      franchisor_id: needsFranchise ? franchise?.id : "",
+    });
   }, []);
 
   useEffect(() => {
@@ -89,6 +109,7 @@ export function PurchaseOrderForm({
     (warehouseResult?.data?.data as any[] | undefined)?.length === 1;
   const [etaAt, setEtaAt] = useState<Dayjs | null>(dayjs().add(1, "day"));
   const [formData, setFormData] = useState({
+    franchisor_id: "",
     supplier_id: "",
     warehouse_id: "",
     ref_code: "",
@@ -124,6 +145,8 @@ export function PurchaseOrderForm({
         },
       );
 
+      setFranchise(initialData?.franchisor);
+
       const newItems = (initialData.items || []).map(
         (item: any, idx: number) => {
           if (item.item?.id) {
@@ -156,9 +179,10 @@ export function PurchaseOrderForm({
       );
 
       setFormData({
+        franchisor_id: initialData?.franchisor_id,
         supplier_id: initialData.supplier?.id || 0,
         warehouse_id: initialData.warehouse?.id || 0,
-        ref_code: initialData.code || initialData.ref_code || "",
+        ref_code: initialData.ref_code || "",
         eta_date: dayjs(initialData.eta_date || initialData.eta_at).format(
           "YYYY-MM-DD",
         ),
@@ -181,6 +205,28 @@ export function PurchaseOrderForm({
       });
     }
   }, [initialData]);
+
+  // Pilih franchise → set franchisor_id, reset outlet, penerima, & item katalog.
+  const handleFranchiseChange = (item: FranchisorRow | null) => {
+    setFranchise(item);
+    setSupplierSelected(null);
+    setWarehouseSelected(null);
+    setFormData((prev) => ({
+      ...prev,
+      franchisor_id: item?.id ?? "",
+      supplier_id: "",
+      warehouse_id: "",
+      items: prev.items.map((it) => ({
+        ...it,
+        itemSelected: null,
+        fractionSelected: null,
+        item_id: "",
+        fraction_id: "",
+        quantity_ordered: 1,
+        unit_nett: 0,
+      })),
+    }));
+  };
 
   const handleSupplierChange = (val: any) => {
     setSupplierSelected(val);
@@ -359,6 +405,7 @@ export function PurchaseOrderForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
+      franchisor_id: formData.franchisor_id,
       supplier_id: formData.supplier_id,
       warehouse_id: warehouseSelected?.id ?? "",
       ref_code: formData.ref_code,
@@ -400,13 +447,35 @@ export function PurchaseOrderForm({
           </h2>
         </div>
         <div className='p-5 grid grid-cols-1 md:grid-cols-2 gap-5'>
+          {/* Select Franchise — khusus superuser saat create */}
+          {needsFranchise && (
+            <RemoteSelect<FranchisorRow>
+              label='Franchise'
+              required
+              hook={franchisorsResult as any}
+              fetchData={(page, search) => getFranchisors({ page, search })}
+              getLabel={(item: any) => item?.name}
+              value={franchise}
+              onChange={(item: FranchisorRow | null) =>
+                handleFranchiseChange(item)
+              }
+              onClear={() => handleFranchiseChange(null)}
+              placeholder='Pilih franchise'
+              error={FormState?.errors?.franchisor_id as string}
+            />
+          )}
           <RemoteSelect<SupplierDetail>
             label='Supplier'
             placeholder='Pilih Supplier'
             value={supplierSelected}
             hook={suppliersResult as any}
             fetchData={(page, search) =>
-              getSuppliers({ page, search, is_active: "true" }) as any
+              getSuppliers({
+                page,
+                search,
+                is_active: "true",
+                franchisor_id: franchise?.id ?? "",
+              }) as any
             }
             getLabel={(item: any) => item?.name || ""}
             getValue={(item: any) => item?.id}
@@ -418,6 +487,7 @@ export function PurchaseOrderForm({
                 ? FormState.errors.supplier_id
                 : undefined
             }
+            watchKey={franchise?.id}
           />
 
           <RemoteSelect<WarehouseDetail>
@@ -427,7 +497,12 @@ export function PurchaseOrderForm({
             value={warehouseSelected}
             hook={warehouseResult as any}
             fetchData={(page, search) =>
-              getWarehouse({ page, search, is_active: "true" }) as any
+              getWarehouse({
+                page,
+                search,
+                is_active: "true",
+                franchisor_id: franchise?.id ?? "",
+              }) as any
             }
             getLabel={(item: any) => item?.name || ""}
             getValue={(item: any) => item?.id}
@@ -455,6 +530,7 @@ export function PurchaseOrderForm({
                 ? FormState.errors.warehouse_id
                 : undefined
             }
+            watchKey={franchise?.id}
           />
 
           <DatePicker
@@ -588,6 +664,7 @@ export function PurchaseOrderForm({
                           search,
                           status: "active",
                           type: "raw_material",
+                          franchisor_id: franchise?.id ?? "",
                         }) as any
                       }
                       getLabel={(it: any) => it.alias_name}
@@ -595,6 +672,7 @@ export function PurchaseOrderForm({
                       onChange={(val) => handleItemChange(idx, val)}
                       onClear={() => handleItemClear(idx)}
                       error={getErrorItem(idx, "item_id")}
+                      watchKey={franchise?.id}
                     />
                   </td>
                   <td className='px-4 py-4'>

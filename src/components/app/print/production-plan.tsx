@@ -1,20 +1,22 @@
-import type { ProductionPlanDetail } from "@/services/types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { formatDate } from "@/utils";
 
 interface ProductionPlanThermalPrintProps {
-  data: ProductionPlanDetail | null;
+  // Dipakai utk data production plan ATAU data order (dipetakan oleh pemanggil).
+  data: any;
 }
 
 const ProductionPlanThermalPrint = ({
   data,
 }: ProductionPlanThermalPrintProps) => {
   if (!data) return null;
+  const items: any[] = data.items || [];
 
   return (
     <div className='sheet page-break' style={{ padding: "15px" }}>
       <div style={{ textAlign: "center", marginBottom: "5px" }}>
         <h4 style={{ margin: "10px 0", fontSize: "12px", fontWeight: "bold" }}>
-          PRODUCTION PLAN
+          Central Kitchen
         </h4>
         <div style={{ borderBottom: "1px dashed #000", margin: "5px 0" }}></div>
       </div>
@@ -35,34 +37,44 @@ const ProductionPlanThermalPrint = ({
             <td style={{ width: "60%", fontWeight: "bold" }}>{data.code}</td>
           </tr>
           <tr>
-            <td style={{ verticalAlign: "top" }}>Type</td>
+            <td style={{ verticalAlign: "top" }}>Outlet</td>
             <td style={{ verticalAlign: "top" }}>:</td>
             <td style={{ textTransform: "capitalize" }}>
-              {data.type?.replace("_", " ") || "-"}
+              {data.outlet?.name
+                ? `${data.franchisor?.name ? data.franchisor.name + " - " : ""}${data.outlet.name}`
+                : data.type?.replace("_", " ") || "-"}
             </td>
           </tr>
           <tr>
-            <td style={{ verticalAlign: "top" }}>Production Date</td>
+            <td style={{ verticalAlign: "top" }}>Tanggal Produksi</td>
             <td style={{ verticalAlign: "top" }}>:</td>
             <td>{formatDate(data.production_date)}</td>
           </tr>
-          {data.warehouse_name && (
-            <tr>
-              <td style={{ verticalAlign: "top" }}>Warehouse</td>
-              <td style={{ verticalAlign: "top" }}>:</td>
-              <td>{data.warehouse_name}</td>
-            </tr>
-          )}
+          <tr>
+            <td style={{ verticalAlign: "top" }}>Gudang Tujuan</td>
+            <td style={{ verticalAlign: "top" }}>:</td>
+            <td>
+              {data.destination_warehouse?.name ||
+                data.destination_warehouse_name ||
+                "-"}
+            </td>
+          </tr>
         </tbody>
       </table>
 
       {/* Note */}
       {data.note && (
         <>
-          <div style={{ borderBottom: "1px dashed #000", margin: "8px 0" }}></div>
+          <div
+            style={{ borderBottom: "1px dashed #000", margin: "8px 0" }}
+          ></div>
           <div style={{ marginBottom: "8px" }}>
             <div
-              style={{ fontWeight: "bold", marginBottom: "4px", fontSize: "10px" }}
+              style={{
+                fontWeight: "bold",
+                marginBottom: "4px",
+                fontSize: "10px",
+              }}
             >
               Note:
             </div>
@@ -82,7 +94,7 @@ const ProductionPlanThermalPrint = ({
         >
           Items:
         </div>
-        {data.items && data.items.length > 0 ? (
+        {items.length > 0 ? (
           <table
             style={{
               width: "100%",
@@ -97,7 +109,7 @@ const ProductionPlanThermalPrint = ({
               </tr>
             </thead>
             <tbody>
-              {data.items.map((item, index) => (
+              {items.map((item, index) => (
                 <tr
                   key={item.id || index}
                   style={{ borderBottom: "1px dashed #eee" }}
@@ -118,7 +130,7 @@ const ProductionPlanThermalPrint = ({
                     )}
                     {item.materials && item.materials.length > 0 && (
                       <div style={{ marginTop: "3px" }}>
-                        {item.materials.map((mat, mIdx) => (
+                        {item.materials.map((mat: any, mIdx: number) => (
                           <div
                             key={mat.id || mIdx}
                             style={{ fontSize: "8px", color: "#444" }}
@@ -141,7 +153,7 @@ const ProductionPlanThermalPrint = ({
                   >
                     {item.quantity_produced > 0
                       ? item.quantity_produced
-                      : (item.quantity_planned || 0)}
+                      : item.quantity_planned || 0}
                   </td>
                 </tr>
               ))}

@@ -38,22 +38,37 @@ const OverviewCards = ({ data }: { data: any | null }) => {
   );
 };
 
-export default function SaldoLogReportPage() {
-  const [params] = useSearchParams();
-  const membershipId = params.get("membership_id");
+/**
+ * Body report reusable — dipakai halaman Saldo Membership standalone/detail dan
+ * tab di detail Laporan Outlet (outlet dikunci saat `outletId` diisi).
+ */
+export function SaldoLogReport({
+  membershipId,
+  outletId,
+}: {
+  membershipId?: string;
+  outletId?: string;
+}) {
+  const lockOutlet = !!outletId;
 
   const tableConfig = useMemo(
     () =>
       createTableConfig({
         filter: {
-          membership_id: membershipId ?? "",
+          ...(membershipId ? { membership_id: membershipId } : {}),
+          ...(lockOutlet ? { outlet_id: outletId } : {}),
         },
+        lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
       }),
-    [membershipId],
+    [membershipId, lockOutlet, outletId],
   );
 
   const Table = useTable(
-    membershipId ? "report_saldo_log_detail" : "report_saldo_log",
+    outletId
+      ? "outlet_tab_saldo_log"
+      : membershipId
+        ? "report_saldo_log_detail"
+        : "report_saldo_log",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -77,26 +92,37 @@ export default function SaldoLogReportPage() {
   const summary = summaryResult?.data;
 
   return (
+    <>
+      <OverviewCards data={summary} />
+
+      <Table.Tools downloadable>
+        <TableFilter table={Table} lockOutlet={lockOutlet} />
+      </Table.Tools>
+      <Table.Render
+        emptyTitle='Belum Ada Data'
+        emptyDescription='Data mutasi saldo akan muncul di sini.'
+      />
+      <Table.Pagination />
+    </>
+  );
+}
+
+export default function SaldoLogReportPage() {
+  const [params] = useSearchParams();
+  const membershipId = params.get("membership_id");
+
+  return (
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
         title={
-          membershipId ? "Saldo Membership — Detail" : "Report Saldo Membership"
+          membershipId ? "Mutasi Saldo — Detail" : "Mutasi Saldo"
         }
-        subtitle='Laporan mutasi saldo member (top-up, bonus, dan pemakaian).'
+        subtitle='Rekap mutasi saldo member (top-up, bonus, dan pemakaian).'
         backTo={membershipId ? () => window.history.back() : undefined}
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>
-        <OverviewCards data={summary} />
-
-        <Table.Tools downloadable>
-          <TableFilter table={Table} />
-        </Table.Tools>
-        <Table.Render
-          emptyTitle='Belum Ada Data'
-          emptyDescription='Data mutasi saldo akan muncul di sini.'
-        />
-        <Table.Pagination />
+        <SaldoLogReport membershipId={membershipId ?? undefined} />
       </Page.Body>
     </Page>
   );

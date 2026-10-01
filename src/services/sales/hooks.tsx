@@ -7,6 +7,8 @@ import {
   usePublishSalesOrderMutation,
   usePaidSalesOrderMutation,
   useCancelSalesOrderMutation,
+  useFulfillSalesOrderItemMutation,
+  useCompleteSalesOrderMutation,
 } from "./api";
 
 // Sales Order
@@ -20,5 +22,7 @@ export const useSalesOrder = createCrudHook({
     cancel: { hook: useCancelSalesOrderMutation },
     publish: { hook: usePublishSalesOrderMutation },
     paid: { hook: usePaidSalesOrderMutation },
+    fulfill: { hook: useFulfillSalesOrderItemMutation },
+    complete: { hook: useCompleteSalesOrderMutation },
   },
 });
