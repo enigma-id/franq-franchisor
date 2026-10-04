@@ -367,11 +367,6 @@ export const B2BOrderForm: React.FC<B2BOrderFormProps> = ({
       delete payload.franchisor_id;
     }
 
-    // Backend update B2B tidak menerima customer_id → hanya kirim saat create.
-    if (initialData) {
-      delete payload.customer_id;
-    }
-
     if (formData.is_discount_percentage) {
       payload = {
         ...payload,
