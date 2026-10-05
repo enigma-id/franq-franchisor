@@ -137,6 +137,8 @@ export interface POSCategoryBase {
   image?: string;
   /** Rate point belanja kategori (0–100). 0 = tidak dapat point. */
   point_percentage?: number;
+  /** Kategori bagi hasil (revenue share); dipisah dari subtotal nett non-bagi-hasil di POS. */
+  is_bagi_hasil?: boolean;
 }
 
 export type POSCategoryCreateRequest = POSCategoryBase & {
