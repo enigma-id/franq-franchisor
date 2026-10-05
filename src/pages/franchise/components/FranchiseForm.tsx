@@ -155,6 +155,13 @@ export function FranchiseForm({
         error={err("address")}
       />
 
+      <Checkbox
+        label='Bagi Hasil'
+        checked={isBagiHasil}
+        onChange={(e) => setIsBagiHasil(e.target.checked)}
+        variant='primary'
+      />
+
       {!isEdit && (
         <>
           <div className='pt-2 border-t border-slate-100'>
