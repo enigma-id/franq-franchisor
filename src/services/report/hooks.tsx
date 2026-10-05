@@ -18,6 +18,7 @@ import {
   useLazyGetOutletReportQuery,
   useLazyGetOutletReportSummaryQuery,
   useLazyGetSessionReportQuery,
+  useLazyGetSessionDetailQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
   useLazyGetProductItemQuery,
@@ -54,6 +55,7 @@ export const useReport = createCrudHook<any>({
     outletReport: useLazyGetOutletReportQuery,
     outletReportSummary: useLazyGetOutletReportSummaryQuery,
     sessionReport: useLazyGetSessionReportQuery,
+    sessionDetail: useLazyGetSessionDetailQuery,
   },
 });
 

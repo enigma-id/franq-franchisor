@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Input, RemoteSelect } from "@/components/ui";
+import { Checkbox, Input, RemoteSelect } from "@/components/ui";
 import { useAppSelector } from "@/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
 import type {
@@ -50,6 +50,7 @@ export function FranchiseForm({
     password: "",
     confirm_password: "",
   });
+  const [isBagiHasil, setIsBagiHasil] = useState(!!initialData?.is_bagi_hasil);
 
   useEffect(() => {
     if (initialData) {
@@ -64,6 +65,7 @@ export function FranchiseForm({
         confirm_password: "",
       });
       setTypeSelected(TYPES.find((t) => t.value === initialData.type) ?? null);
+      setIsBagiHasil(!!initialData.is_bagi_hasil);
     }
   }, [initialData]);
 
@@ -79,6 +81,7 @@ export function FranchiseForm({
         address: formData.address,
         phone: formData.phone,
         email: formData.email,
+        is_bagi_hasil: isBagiHasil,
       });
     } else {
       onSubmit({
@@ -91,6 +94,7 @@ export function FranchiseForm({
         name_user: formData.name_user,
         password: formData.password,
         confirm_password: formData.confirm_password,
+        is_bagi_hasil: isBagiHasil,
       });
     }
   };
@@ -148,7 +152,14 @@ export function FranchiseForm({
         value={formData.address}
         onChange={(e) => handleInput("address", e.target.value)}
         placeholder='Contoh: Jl. Diponegoro No. 22'
-        error={err["address"]}
+        error={err("address")}
+      />
+
+      <Checkbox
+        label='Bagi Hasil'
+        checked={isBagiHasil}
+        onChange={(e) => setIsBagiHasil(e.target.checked)}
+        variant='primary'
       />
 
       {!isEdit && (

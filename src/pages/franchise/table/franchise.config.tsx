@@ -7,6 +7,7 @@ import {
   Building2,
   Store,
   UserRound,
+  Check,
 } from "lucide-react";
 import { formatDateTime, getTypeVariant } from "@/utils";
 import type { FranchisorRow } from "@/services/types/franchisor";
@@ -58,6 +59,21 @@ const createTableConfig = ({
         >
           {row.type}
         </Badge>
+      ),
+    },
+    is_bagi_hasil: {
+      title: "Bagi Hasil",
+      sortable: true,
+      align: "center",
+      headerClass: "text-center",
+      component: (row: FranchisorRow) => (
+        <div className='flex justify-center items-center'>
+          {row?.is_bagi_hasil ? (
+            <Check className='w-4 h-4 text-emerald-600' />
+          ) : (
+            <span className='text-slate-400'>-</span>
+          )}
+        </div>
       ),
     },
     email: {
