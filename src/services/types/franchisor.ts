@@ -9,6 +9,8 @@ export interface FranchisorDetail {
   address: string;
   phone: string;
   email: string;
+  /** Brand bagi hasil (revenue share) — di-sync BE ke brand.is_bagi_hasil (franchise/POS). */
+  is_bagi_hasil: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -32,6 +34,8 @@ export interface FranchisorCreateRequest {
   confirm_password: string;
   /** Nama owner. */
   name_user: string;
+  /** Brand bagi hasil (revenue share). */
+  is_bagi_hasil?: boolean;
 }
 
 /** Payload update brand (PUT /franchisor/:id) — superuser only */
@@ -41,4 +45,6 @@ export interface FranchisorRowUpdateRequest {
   address: string;
   phone: string;
   email: string;
+  /** Brand bagi hasil (revenue share). */
+  is_bagi_hasil?: boolean;
 }

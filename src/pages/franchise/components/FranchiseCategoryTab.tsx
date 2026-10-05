@@ -5,7 +5,7 @@ import createTableConfig from "@/pages/setting/pos/category/table/category.confi
 import type { TableConfig } from "@/services/table/const";
 import { usePOSCategory } from "@/services/pos/hooks";
 import type { POSCategoryDetail } from "@/services/types";
-import { Button, Input, Loading, Modal, useEnigmaUI } from "@/components";
+import { Button, Checkbox, Input, Loading, Modal, useEnigmaUI } from "@/components";
 import { Layers, Plus } from "lucide-react";
 
 interface FranchiseCategoryTabProps {
@@ -40,12 +40,14 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
   const [editing, setEditing] = useState<POSCategoryDetail | null>(null);
   const [name, setName] = useState("");
   const [pointPercentage, setPointPercentage] = useState<string | number>("");
+  const [isBagiHasil, setIsBagiHasil] = useState(false);
   const submitting = Boolean(createResult?.isLoading || updateResult?.isLoading);
 
   const openCreate = () => {
     setEditing(null);
     setName("");
     setPointPercentage("");
+    setIsBagiHasil(false);
     setModalOpen(true);
   };
 
@@ -53,6 +55,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     setEditing(v);
     setName(v.name);
     setPointPercentage(v.point_percentage ?? "");
+    setIsBagiHasil(!!v.is_bagi_hasil);
     setModalOpen(true);
   };
 
@@ -61,6 +64,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     setEditing(null);
     setName("");
     setPointPercentage("");
+    setIsBagiHasil(false);
     createResult?.reset?.();
     updateResult?.reset?.();
   };
@@ -70,6 +74,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     const payload = {
       name: name.trim(),
       point_percentage: Number(pointPercentage || 0),
+      is_bagi_hasil: isBagiHasil,
       ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
     if (editing) {
@@ -278,6 +283,14 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
               onChange={(e) => setPointPercentage(e.target.value)}
               placeholder='Contoh: 1'
               hint='Rate point belanja kategori ini (0–100). 0 = tidak dapat point.'
+              variant='primary'
+            />
+          </div>
+          <div className='mt-4'>
+            <Checkbox
+              label='Kategori Bagi Hasil'
+              checked={isBagiHasil}
+              onChange={(e) => setIsBagiHasil(e.target.checked)}
               variant='primary'
             />
           </div>
