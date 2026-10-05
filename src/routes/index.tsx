@@ -91,6 +91,7 @@ import OutletMapPage from "@/pages/report/franchisor/outletMap";
 // ==== REPORT OUTLET ====//
 import OutletReportPage from "@/pages/report/outlet";
 import OutletReportDetailPage from "@/pages/report/outlet/detail";
+import OutletSessionDetailPage from "@/pages/report/outlet/sessionDetail";
 
 // ==== REPORT MEMBERSHIP ==== //
 import MembershipReportPage from "@/pages/report/membership/membership";
@@ -657,6 +658,14 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.reportOutlet}>
               <OutletReportDetailPage />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path='/report/outlet/:outletId/session/:sessionId'
+          element={
+            <PermissionGuard permission={MENU.reportOutlet}>
+              <OutletSessionDetailPage />
             </PermissionGuard>
           }
         />

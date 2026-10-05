@@ -249,6 +249,83 @@ export interface ReportSessionRow {
   total_service: number;
   grand_total: number;
   outstanding_bill: number;
+  /** Breakdown pembayaran per metode — dipakai tooltip Grand Total. */
+  payment_methods?: SessionPaymentMethod[];
+}
+
+// Detail Sesi (GET /report/franchise/session/{id})
+export interface SessionPaymentMethod {
+  id?: string;
+  name: string;
+  total_paid: number;
+}
+
+export interface SessionCategorySold {
+  category_name: string;
+  is_bagi_hasil: boolean;
+  total_qty: number;
+  total_charges: number;
+  total_nett: number;
+}
+
+export interface SessionSummaryData {
+  id: string;
+  session_id: string;
+  sales: {
+    total_sales: number;
+    subtotal_nett_non_bagi_hasil: number;
+    total_discount: number;
+    total_after_discount: number;
+    total_service: number;
+    grand_total: number;
+    outstanding_bill: number;
+    outstanding_bill_payment: number;
+  };
+  payment_methods: SessionPaymentMethod[];
+  category_solds: SessionCategorySold[];
+  topups: { type: string; total_nominal: number }[];
+  cash: { expected_cash: number; topup_cash: number };
+  updated_at: string;
+}
+
+export interface SessionOrderRow {
+  id: string;
+  code: string;
+  bill_name?: string;
+  status: string;
+  subtotal_nett?: number;
+  discount_value?: number;
+  service_charge_value?: number;
+  total_charges: number;
+  total_payment?: number;
+  paid_at?: string;
+  is_point?: boolean;
+  point_earned?: number;
+  sales_channel?: { name?: string } | null;
+  payment_method?: { name?: string } | null;
+}
+
+export interface ReportSessionDetail {
+  id: string;
+  outlet_id: string;
+  cashier_id: string;
+  transaction_date: string;
+  started_at: string;
+  finished_at: string;
+  cash_started: number;
+  cash_finished: number;
+  status: string;
+  is_synced?: boolean;
+  outlet?: {
+    id: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    recipient_name?: string;
+  } | null;
+  cashier?: { id: string; name: string; username?: string } | null;
+  summary?: SessionSummaryData | null;
+  orders?: SessionOrderRow[];
 }
 
 // Live Map dashboard — satu item per operator (kasir/manager)

@@ -10,7 +10,7 @@ import useTable from "@/services/table/hooks";
 import createTableConfig from "./table/category.config";
 import type { TableConfig } from "@/services/table/const";
 import { useAppSelector } from "@/hooks";
-import { Input, Loading, Modal, useEnigmaUI } from "@/components";
+import { Checkbox, Input, Loading, Modal, useEnigmaUI } from "@/components";
 import { usePOSCategory } from "@/services/pos/hooks";
 import { useCan } from "@/utils/permission";
 import { ACTION } from "@/utils/permissions";
@@ -51,6 +51,7 @@ const POSCategoryListPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     point_percentage: "" as string | number,
+    is_bagi_hasil: false,
   });
 
   const handleToggleActive = (v: any) => {
@@ -69,6 +70,7 @@ const POSCategoryListPage: React.FC = () => {
           setFormData({
             name: row?.name ?? "",
             point_percentage: row?.point_percentage ?? "",
+            is_bagi_hasil: !!row?.is_bagi_hasil,
           });
           setModalOpen(true);
         },
@@ -158,7 +160,7 @@ const POSCategoryListPage: React.FC = () => {
   const handleCloseModal = () => {
     setModalOpen(false);
     setEditingItem(null);
-    setFormData({ name: "", point_percentage: "" });
+    setFormData({ name: "", point_percentage: "", is_bagi_hasil: false });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -166,6 +168,7 @@ const POSCategoryListPage: React.FC = () => {
     const payload = {
       name: formData.name,
       point_percentage: Number(formData.point_percentage || 0),
+      is_bagi_hasil: formData.is_bagi_hasil,
       ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
 
@@ -309,6 +312,17 @@ const POSCategoryListPage: React.FC = () => {
               hint='Rate point belanja kategori ini (0–100). 0 = tidak dapat point.'
               variant='primary'
               error={FormState?.errors?.point_percentage as string}
+            />
+            <Checkbox
+              label='Kategori Bagi Hasil'
+              checked={formData.is_bagi_hasil}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  is_bagi_hasil: e.target.checked,
+                }))
+              }
+              variant='primary'
             />
           </form>
         </Modal.Body>

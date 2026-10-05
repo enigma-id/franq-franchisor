@@ -1,7 +1,7 @@
 import config from "@/services/table/const";
 import type { POSCategoryDetail } from "@/services/types/pos";
 import { Dropdown, Toggle } from "@/components/ui";
-import { Edit, Layers, MoreVertical, Trash } from "lucide-react";
+import { Check, Edit, Layers, MoreVertical, Trash } from "lucide-react";
 
 const createTableConfig = ({
   lockFilter,
@@ -41,6 +41,20 @@ const createTableConfig = ({
       class: "font-mono",
       component: (row: POSCategoryDetail) => (
         <span className='text-slate-600'>{row?.point_percentage ?? 0}%</span>
+      ),
+    },
+    is_bagi_hasil: {
+      title: "Bagi Hasil",
+      sortable: true,
+      align: "center",
+      component: (row: POSCategoryDetail) => (
+        <div className='flex justify-center items-center'>
+          {row?.is_bagi_hasil ? (
+            <Check className='w-4 h-4 text-emerald-600' />
+          ) : (
+            <span className='text-slate-400'>-</span>
+          )}
+        </div>
       ),
     },
     is_active: {

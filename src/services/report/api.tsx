@@ -65,6 +65,12 @@ export const reportApi = createApi({
         params,
       }),
     }),
+    getSessionDetail: builder.query({
+      query: (id) => ({
+        url: `/report/franchise/session/${id}`,
+        method: "GET",
+      }),
+    }),
 
     getProductSales: builder.query({
       query: (params) => ({
@@ -313,6 +319,7 @@ export const {
   useLazyGetOutletReportQuery,
   useLazyGetOutletReportSummaryQuery,
   useLazyGetSessionReportQuery,
+  useLazyGetSessionDetailQuery,
   useLazyGetCancelledProductSalesQuery,
   useLazyGetCancelledProductSalesSummaryQuery,
   useLazyGetProductItemQuery,
