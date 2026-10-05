@@ -51,7 +51,7 @@ const POSCategoryListPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     point_percentage: "" as string | number,
-    is_bagi_hasil: false,
+    is_non_bagi_hasil: false,
   });
 
   const handleToggleActive = (v: any) => {
@@ -70,7 +70,7 @@ const POSCategoryListPage: React.FC = () => {
           setFormData({
             name: row?.name ?? "",
             point_percentage: row?.point_percentage ?? "",
-            is_bagi_hasil: !!row?.is_bagi_hasil,
+            is_non_bagi_hasil: !!row?.is_non_bagi_hasil,
           });
           setModalOpen(true);
         },
@@ -160,7 +160,7 @@ const POSCategoryListPage: React.FC = () => {
   const handleCloseModal = () => {
     setModalOpen(false);
     setEditingItem(null);
-    setFormData({ name: "", point_percentage: "", is_bagi_hasil: false });
+    setFormData({ name: "", point_percentage: "", is_non_bagi_hasil: false });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -168,7 +168,7 @@ const POSCategoryListPage: React.FC = () => {
     const payload = {
       name: formData.name,
       point_percentage: Number(formData.point_percentage || 0),
-      is_bagi_hasil: formData.is_bagi_hasil,
+      is_non_bagi_hasil: formData.is_non_bagi_hasil,
       ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
 
@@ -314,12 +314,12 @@ const POSCategoryListPage: React.FC = () => {
               error={FormState?.errors?.point_percentage as string}
             />
             <Checkbox
-              label='Kategori Bagi Hasil'
-              checked={formData.is_bagi_hasil}
+              label='Non Bagi Hasil'
+              checked={formData.is_non_bagi_hasil}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  is_bagi_hasil: e.target.checked,
+                  is_non_bagi_hasil: e.target.checked,
                 }))
               }
               variant='primary'

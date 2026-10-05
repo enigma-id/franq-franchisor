@@ -40,14 +40,14 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
   const [editing, setEditing] = useState<POSCategoryDetail | null>(null);
   const [name, setName] = useState("");
   const [pointPercentage, setPointPercentage] = useState<string | number>("");
-  const [isBagiHasil, setIsBagiHasil] = useState(false);
+  const [isNonBagiHasil, setIsNonBagiHasil] = useState(false);
   const submitting = Boolean(createResult?.isLoading || updateResult?.isLoading);
 
   const openCreate = () => {
     setEditing(null);
     setName("");
     setPointPercentage("");
-    setIsBagiHasil(false);
+    setIsNonBagiHasil(false);
     setModalOpen(true);
   };
 
@@ -55,7 +55,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     setEditing(v);
     setName(v.name);
     setPointPercentage(v.point_percentage ?? "");
-    setIsBagiHasil(!!v.is_bagi_hasil);
+    setIsNonBagiHasil(!!v.is_non_bagi_hasil);
     setModalOpen(true);
   };
 
@@ -64,7 +64,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     setEditing(null);
     setName("");
     setPointPercentage("");
-    setIsBagiHasil(false);
+    setIsNonBagiHasil(false);
     createResult?.reset?.();
     updateResult?.reset?.();
   };
@@ -74,7 +74,7 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
     const payload = {
       name: name.trim(),
       point_percentage: Number(pointPercentage || 0),
-      is_bagi_hasil: isBagiHasil,
+      is_non_bagi_hasil: isNonBagiHasil,
       ...(franchisorId ? { franchisor_id: franchisorId } : {}),
     };
     if (editing) {
@@ -288,9 +288,9 @@ export const FranchiseCategoryTab: React.FC<FranchiseCategoryTabProps> = ({
           </div>
           <div className='mt-4'>
             <Checkbox
-              label='Kategori Bagi Hasil'
-              checked={isBagiHasil}
-              onChange={(e) => setIsBagiHasil(e.target.checked)}
+              label='Non Bagi Hasil'
+              checked={isNonBagiHasil}
+              onChange={(e) => setIsNonBagiHasil(e.target.checked)}
               variant='primary'
             />
           </div>

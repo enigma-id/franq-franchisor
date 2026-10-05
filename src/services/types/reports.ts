@@ -262,7 +262,7 @@ export interface SessionPaymentMethod {
 
 export interface SessionCategorySold {
   category_name: string;
-  is_bagi_hasil: boolean;
+  is_non_bagi_hasil: boolean;
   total_qty: number;
   total_charges: number;
   total_nett: number;
@@ -273,7 +273,7 @@ export interface SessionSummaryData {
   session_id: string;
   sales: {
     total_sales: number;
-    subtotal_nett_non_bagi_hasil: number;
+    subtotal_nett_bagi_hasil: number;
     total_discount: number;
     total_after_discount: number;
     total_service: number;

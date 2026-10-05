@@ -55,7 +55,7 @@ export default function OutletSessionDetailPage() {
 
   const sales = session.summary?.sales;
   const grandTotal = sales?.grand_total ?? 0;
-  const subtotalNetSales = sales?.subtotal_nett_non_bagi_hasil ?? 0;
+  const subtotalNettSales = sales?.subtotal_nett_bagi_hasil ?? 0;
   const totalService = sales?.total_service ?? 0;
   const totalDiscount = sales?.total_discount ?? 0;
   const totalSales = sales?.total_sales ?? 0;
@@ -188,9 +188,9 @@ export default function OutletSessionDetailPage() {
                 <dd className='info-value mono'>{currencyFormat(grandTotal)}</dd>
               </div>
               <div className='info-row'>
-                <dt className='info-label'>Subtotal Net Sales</dt>
+                <dt className='info-label'>Subtotal Nett Sales</dt>
                 <dd className='info-value mono'>
-                  {currencyFormat(subtotalNetSales)}
+                  {currencyFormat(subtotalNettSales)}
                 </dd>
               </div>
               <div className='info-row'>
