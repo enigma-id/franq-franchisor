@@ -31,6 +31,13 @@ const createTableConfig = ({
         <span className='font-semibold text-sm'>{row?.menu ?? "-"}</span>
       ),
     },
+    category: {
+      title: "Category",
+      sortable: true,
+      component: (row: ProductSalesRow) => (
+        <span className='font-semibold text-sm'>{row?.category ?? "-"}</span>
+      ),
+    },
     quantity: {
       title: "Qty",
       align: "center",

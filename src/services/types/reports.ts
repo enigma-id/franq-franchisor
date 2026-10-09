@@ -47,6 +47,7 @@ export interface ProductSalesRow {
   outlet: string;
   code: string;
   menu: string;
+  category: string;
   quantity: number;
   unit_nett: number;
   discount: number;
