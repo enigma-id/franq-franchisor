@@ -84,6 +84,14 @@ const createTableConfig = ({
       class: "text-right font-mono font-semibold",
       component: (row: any) => currencyFormat(row?.payment_total ?? 0),
     },
+    transfer_direction: {
+      title: "Aksi",
+      component: (row: any) => (
+        <span className='text-sm'>
+          {DIRECTION_LABEL[row?.transfer_direction] || "-"}
+        </span>
+      ),
+    },
     net_amount: {
       title: "Nominal",
       align: "right",
@@ -92,14 +100,6 @@ const createTableConfig = ({
         const net = row.net_amount < 0 ? -1 * row.net_amount : row.net_amount;
         return <span className='font-semibold'>{currencyFormat(net)}</span>;
       },
-    },
-    transfer_direction: {
-      title: "Aksi",
-      component: (row: any) => (
-        <span className='text-sm'>
-          {DIRECTION_LABEL[row?.transfer_direction] || "-"}
-        </span>
-      ),
     },
     status: {
       title: "Status",
