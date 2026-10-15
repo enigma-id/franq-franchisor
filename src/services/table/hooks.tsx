@@ -59,6 +59,13 @@ const useTable = <T = unknown,>(
     (state: RootState) => state?.table?.data[name],
   );
 
+  // Ref ke state tabel terbaru — dibaca di DALAM callback (bukan saat render)
+  // supaya callback-nya bisa punya identitas stabil tanpa closure yang stale.
+  const tableStateRef = useRef<TableState<T> | undefined>(undefined);
+  useEffect(() => {
+    tableStateRef.current = TableState as TableState<T> | undefined;
+  }, [TableState]);
+
   const [triggerFetch] = useLazyGetTableDataQuery();
   const [triggerDownload] = useLazyDownloadTableDataQuery();
 
@@ -193,12 +200,13 @@ const useTable = <T = unknown,>(
 
   const updateAndFetch = useCallback(
     (updates: Partial<TableState<T>>) => {
-      if (!TableState) return;
+      const current = tableStateRef.current;
+      if (!current) return;
 
       // Only update if there are actual changes to prevent unnecessary re-renders
       const hasChanges = Object.keys(updates).some((key) => {
         const updateKey = key as keyof TableState<T>;
-        const currentValue = TableState[updateKey];
+        const currentValue = current[updateKey];
         const newValue = updates[updateKey];
 
         // Deep comparison for objects/arrays
@@ -211,10 +219,10 @@ const useTable = <T = unknown,>(
 
       if (!hasChanges) return;
 
-      const newState = { ...TableState, ...updates } as TableState<T>;
+      const newState = { ...current, ...updates } as TableState<T>;
       fetchData(newState);
     },
-    [TableState, fetchData],
+    [fetchData],
   );
 
   const onPageChange = useCallback(
@@ -280,12 +288,13 @@ const useTable = <T = unknown,>(
   );
 
   const onDownload = useCallback(() => {
-    if (!TableState) return;
+    const current = tableStateRef.current;
+    if (!current) return;
     triggerDownload({
-      url: TableState.url,
-      table: TableState as TableState<unknown>,
+      url: current.url,
+      table: current as TableState<unknown>,
     });
-  }, [TableState, triggerDownload]);
+  }, [triggerDownload]);
 
   const onClearFilters = useCallback(() => {
     dispatch(resetFilter({ name }));
@@ -335,24 +344,31 @@ const useTable = <T = unknown,>(
     />
   );
 
-  const Tools = ({
-    children,
-    downloadable,
-    hideSearch,
-  }: {
-    children?: React.ReactNode;
-    downloadable?: boolean;
-    hideSearch?: boolean;
-  }) => (
-    <TableTool
-      name={name}
-      onSearch={onSearched}
-      downloadable={downloadable}
-      onDownload={onDownload}
-      hideSearch={hideSearch}
-    >
-      {children}
-    </TableTool>
+  // Tools di-render sebagai <Table.Tools>. Kalau identitas fungsinya berubah tiap
+  // render, React me-remount subtree-nya setiap page re-render (mis. saat debounce
+  // search commit) → input search kehilangan fokus/value ("auto close"). Karena
+  // `onSearched`/`onDownload` identitasnya sudah stabil, `Tools` ikut stabil.
+  const Tools = useCallback(
+    ({
+      children,
+      downloadable,
+      hideSearch,
+    }: {
+      children?: React.ReactNode;
+      downloadable?: boolean;
+      hideSearch?: boolean;
+    }) => (
+      <TableTool
+        name={name}
+        onSearch={onSearched}
+        downloadable={downloadable}
+        onDownload={onDownload}
+        hideSearch={hideSearch}
+      >
+        {children}
+      </TableTool>
+    ),
+    [name, onSearched, onDownload],
   );
 
   return {
