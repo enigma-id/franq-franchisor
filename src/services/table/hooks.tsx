@@ -236,7 +236,8 @@ const useTable = <T = unknown,>(
   const onLimitChange = useCallback(
     (limit: number) => {
       dispatch(setLimit({ name, limit }));
-      updateAndFetch({ limit });
+      // Ganti jumlah baris/halaman → balik ke page 1.
+      updateAndFetch({ limit, page: 1 });
     },
     [name, dispatch, updateAndFetch],
   );
@@ -252,7 +253,9 @@ const useTable = <T = unknown,>(
   const onSearched = useCallback(
     (text: string) => {
       dispatch(setSearch({ name, text }));
-      updateAndFetch({ textSearch: text });
+      // Reset ke page 1 saat search berubah — kalau tidak, request masih meminta
+      // halaman lama (mis. page 4) padahal hasil search-nya beda.
+      updateAndFetch({ textSearch: text, page: 1 });
     },
     [name, dispatch, updateAndFetch],
   );
@@ -298,50 +301,72 @@ const useTable = <T = unknown,>(
 
   const onClearFilters = useCallback(() => {
     dispatch(resetFilter({ name }));
+    const current = tableStateRef.current;
     const newState = {
-      ...TableState,
+      ...current,
       filter: {
-        ...(TableState?.lockedFilter || {}),
-        ...(TableState?.filter?.periode ? { periode: TableState.filter.periode } : {}),
+        ...(current?.lockedFilter || {}),
+        ...(current?.filter?.periode ? { periode: current.filter.periode } : {}),
       },
       textSearch: "",
       page: 1,
     } as TableState<T>;
     fetchData(newState);
-  }, [name, dispatch, TableState, fetchData]);
+  }, [name, dispatch, fetchData]);
 
-  const Render = ({
-    emptyTitle,
-    emptyDescription,
-  }: {
-    emptyTitle?: string;
-    emptyDescription?: string;
-  } = {}) => {
-    if (!TableState) return null;
+  // Render di-render sebagai <Table.Render>. Identitasnya dijaga stabil supaya body
+  // tabel (termasuk container scroll-nya) tidak remount tiap page re-render —
+  // remount bikin posisi scroll lompat ke atas (mis. setelah toggle aktif/nonaktif
+  // di baris paling bawah). Data dibaca langsung dari store agar tetap fresh
+  // meskipun identitas komponennya stabil.
+  const Render = useCallback(
+    function Render({
+      emptyTitle,
+      emptyDescription,
+    }: {
+      emptyTitle?: string;
+      emptyDescription?: string;
+    } = {}) {
+      const state = useSelector(
+        (s: RootState) => s?.table?.data[name],
+      ) as TableState<T> | undefined;
+      if (!state) return null;
 
-    return (
-      <TableWrapper>
-        <TableRender
-          name={name}
-          columns={config?.columns}
-          rows={TableState.data as T[] | null}
-          dynamicColumns={config?.dynamicColumns}
-          onSorted={onSorted}
-          onRowClick={config?.onRowClick}
-          onClearFilters={onClearFilters}
-          emptyTitle={emptyTitle}
-          emptyDescription={emptyDescription}
-        />
-      </TableWrapper>
-    );
-  };
+      return (
+        <TableWrapper>
+          <TableRender
+            name={name}
+            columns={config?.columns}
+            rows={state.data as T[] | null}
+            dynamicColumns={config?.dynamicColumns}
+            onSorted={onSorted}
+            onRowClick={config?.onRowClick}
+            onClearFilters={onClearFilters}
+            emptyTitle={emptyTitle}
+            emptyDescription={emptyDescription}
+          />
+        </TableWrapper>
+      );
+    },
+    [
+      name,
+      config?.columns,
+      config?.dynamicColumns,
+      config?.onRowClick,
+      onSorted,
+      onClearFilters,
+    ],
+  );
 
-  const Pagination = () => (
-    <TablePagination
-      name={name}
-      onChangePage={onPageChange}
-      onChangeLimit={onLimitChange}
-    />
+  const Pagination = useCallback(
+    () => (
+      <TablePagination
+        name={name}
+        onChangePage={onPageChange}
+        onChangeLimit={onLimitChange}
+      />
+    ),
+    [name, onPageChange, onLimitChange],
   );
 
   // Tools di-render sebagai <Table.Tools>. Kalau identitas fungsinya berubah tiap
