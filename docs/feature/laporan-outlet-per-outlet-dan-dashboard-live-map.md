@@ -22,7 +22,7 @@
 |---|---|---|
 | 1 | Modul batch ini | **Laporan Outlet** (list + detail + tab), **Dashboard Live Maps**, **sinkron dashboard ke kontrak baru**. Laporan Sesi digabung sebagai tab, bukan modul/menu sendiri. |
 | 2 | Bentuk Laporan Outlet | **Rekap per-outlet** — tabel `baris = outlet`, klik baris → halaman detail outlet. |
-| 3 | Posisi menu | **Leaf** "Rekap Outlet" di grup **Report** (sejajar "Peta Outlet"), slug `frontend.franchisor.report.outlet`. |
+| 3 | Posisi menu | **Leaf** "Laporan Outlet" di grup **Report** (sejajar "Peta Outlet"), slug `frontend.franchisor.report.outlet`. |
 | 4 | Isi halaman detail | Nama outlet (dari response report) + **summary cards** (di-scope `outlet_id`) + **tab**. |
 | 5 | Isi tab | **8 report existing** (`product-sales`, `product-item`, `outstanding`, `cancelled-product-sales`, `cashier`, `settlement`, `saldo/log`, `outlet-maps`) + **Laporan Sesi** = 9 tab. |
 | 6 | Halaman Cashier | Sempat dibuat sebagai tab **Kasir**, lalu **di-drop** setelah review (lihat bagian C) — file & endpoint-nya dihapus. |
@@ -173,7 +173,7 @@ Pola mengikuti **`franq-franchisee`** (`src/components/app/CashierLiveMap.tsx`) 
 ### H. Menu & Permission
 
 - `src/utils/permissions.ts`: tambah `MENU.reportOutlet = "frontend.franchisor.report.outlet"`.
-- `src/components/app/route-layout/AuthorizedLayout.tsx`: tambah leaf item **"Rekap Outlet"** di grup Report (ikon `Store`) — **diletakkan paling atas** di section Report (sebelum grup Outlet/Mitra/B2B/Member/Gudang & Penjualan).
+- `src/components/app/route-layout/AuthorizedLayout.tsx`: tambah leaf item **"Laporan Outlet"** di grup Report (ikon `Store`) — **diletakkan paling atas** di section Report (sebelum grup Outlet/Mitra/B2B/Member/Gudang & Penjualan).
 - Section **`B2B`** (Customer, B2B Order) dibatasi **`superAdminOnly`** — cuma tampil untuk super admin (tanpa usergroup ATAU flag `is_superuser`), sama seperti menu Central Kitchen/Purchase/Franchise.
 - **Flag menu baru `mitraHidden`** (analog `superuserHidden`): item disembunyikan bila brand bertipe `mitra` (`useFranchisorType() === "mitra"`; **superuser tidak termasuk**). Dipasang di grup Report **`Outlet`** dan **`Member`** — untuk brand mitra keduanya hilang, grup parent juga otomatis hilang kalau semua child-nya tersembunyi (`isParentAllowed` sekarang mengecek parent-nya sendiri dulu).
 - `src/routes/index.tsx`: import + route `/report/outlet` dan `/report/outlet/:outletId` dengan `PermissionGuard permission={MENU.reportOutlet}`.
@@ -213,7 +213,7 @@ Semua label report diseragamkan: menu sidebar, judul halaman (`Page.Header.title
 | Grup sidebar | B2B Report | **B2B** |
 | Grup sidebar | Member Report | **Member** |
 | Grup sidebar | Inventory & Sales | **Gudang & Penjualan** |
-| Leaf sidebar | Report Outlet | **Rekap Outlet** |
+| Leaf sidebar | Report Outlet | **Laporan Outlet** |
 | Leaf sidebar | Report Outlet Maps | **Peta Outlet** |
 | POS | Report Outstanding / POS Outstanding | **Outstanding** |
 | POS | Report Settlement / POS Settlement | **Settlement** |
@@ -283,7 +283,7 @@ Subtitle ikut disesuaikan ke pola `Rekap ...` (mis. "Laporan penyelesaian pembay
 |---|---|
 | Card "Outlet Aktif" di dashboard | Field `outlet_aktif` dihapus backend |
 | Card "Sales Order Pipeline" & "Pipeline Purchase Order" + `PipelineCard` | Field `so_pipeline`/`po_pipeline` dihapus backend |
-| `src/pages/report/outlet/tabs/CashierTab.tsx` + `table/cashier.config.tsx` | Tab Kasir di-drop dari detail Rekap Outlet |
+| `src/pages/report/outlet/tabs/CashierTab.tsx` + `table/cashier.config.tsx` | Tab Kasir di-drop dari detail Laporan Outlet |
 | `getCashierReport`/`getCashierReportSummary` (+ hook-nya) di `report/api.tsx` + `report/hooks.tsx` | Hanya dipakai `CashierTab` yang sudah dihapus |
 
 ---

@@ -1,4 +1,4 @@
-# Frontend Franchisor — Rekap Outlet: Filter "Rentang Tanggal" → "Periode"
+# Frontend Franchisor — Laporan Outlet: Filter "Rentang Tanggal" → "Periode"
 
 **Date:** 2026-09-22
 **Status:** Final — keputusan terkonfirmasi (menunggu go-ahead implementasi)
@@ -9,8 +9,8 @@
 
 ## Problem
 
-1. Filter di **halaman list Rekap Outlet** (`/report/outlet`) masih memakai **rentang tanggal** (`DatePicker mode='range'` → `start_date`/`end_date`). Pengguna ingin **filter periode** supaya konsisten dengan Dashboard & tab Settlement.
-2. Di **halaman detail Rekap Outlet** (`/report/outlet/:outletId`), sebagian tab masih memakai rentang tanggal:
+1. Filter di **halaman list Laporan Outlet** (`/report/outlet`) masih memakai **rentang tanggal** (`DatePicker mode='range'` → `start_date`/`end_date`). Pengguna ingin **filter periode** supaya konsisten dengan Dashboard & tab Settlement.
+2. Di **halaman detail Laporan Outlet** (`/report/outlet/:outletId`), sebagian tab masih memakai rentang tanggal:
    - **Sesi, Outstanding, Settlement Membership, Penjualan Produk, Penjualan Menu, Transaksi Dibatalkan** → rentang tanggal.
    - Hanya tab **Settlement** yang sudah periode (select tahun).
    Tab yang belum periode perlu diubah jadi periode juga.
@@ -23,7 +23,7 @@
 |---|---|---|
 | 1 | Granularitas periode | **Bulanan** — pakai komponen `MonthPicker` yang sudah dipakai **Dashboard**; nilai `periode = "YYYY-MM"` (mis. `2026-09`). |
 | 2 | Payload ke API | **Kirim `periode` saja** (`periode=2026-09`). FE **tidak** menghitung/mengirim `start_date`/`end_date` turunan. Penyesuaian backend ada di ranah BE. |
-| 3 | Cakupan perubahan | **Hanya konteks Rekap Outlet** — halaman list Rekap Outlet + tab di detail Rekap Outlet. Halaman report **standalone** (`/report/pos/*`, `/report/mitra/*`, `/report/b2b/*`, `/report/membership/settlement`) **TIDAK** berubah. |
+| 3 | Cakupan perubahan | **Hanya konteks Laporan Outlet** — halaman list Laporan Outlet + tab di detail Laporan Outlet. Halaman report **standalone** (`/report/pos/*`, `/report/mitra/*`, `/report/b2b/*`, `/report/membership/settlement`) **TIDAK** berubah. |
 | 4 | Tab Settlement | **Tidak diubah** — sudah periode (select tahun `periode=YYYY` + `periode_type=yearly`). Tab **Settlement Membership** adalah tab terpisah dan **tetap diubah** ke periode (lihat bagian D). |
 | 5 | Default nilai periode | **Bulan berjalan** (`dayjs().format("YYYY-MM")`), konsisten dengan Dashboard. **Terkonfirmasi.** |
 | 6 | Nilai lama `start_date`/`end_date` | Di-**clear eksplisit** (`""`) saat mode periode, karena state tabel di-persist di `localStorage` (slice `table` tidak di-blacklist) sehingga nilai lama bisa tertinggal dan ikut terkirim. |
@@ -53,7 +53,7 @@
 
 ## Perubahan per Area
 
-### A. List Rekap Outlet — `table/outlet.filter.tsx`
+### A. List Laporan Outlet — `table/outlet.filter.tsx`
 
 - Ganti `DatePicker label='Rentang Tanggal' mode='range'` → **`MonthPicker`** (label **"Periode"**).
 - State: `periode: string` (`YYYY-MM`), default bulan berjalan (keputusan #5).
@@ -64,14 +64,14 @@
 
 ### B. Tab Sesi — `tabs/OutletTabFilter.tsx`
 
-- File ini **hanya** dipakai `SessionTab`, dan `SessionTab` **hanya** dipakai di detail Rekap Outlet → aman diubah langsung (tanpa percabangan).
+- File ini **hanya** dipakai `SessionTab`, dan `SessionTab` **hanya** dipakai di detail Laporan Outlet → aman diubah langsung (tanpa percabangan).
 - Ganti rentang tanggal → **`MonthPicker`**; pertahankan filter **Status** (`opened`/`closed`).
 - `buildFilters()` → `{ periode, start_date: "", end_date: "", status }`.
 - **Seed default**: `tabs/SessionTab.tsx` menambah `periode: <bulan berjalan>` di `filter` table config.
 
 ### C. Tab Outstanding / Penjualan Produk / Penjualan Menu / Transaksi Dibatalkan
 
-File filter ini **shared** dengan halaman standalone. Karena pembeda "konteks detail Rekap Outlet" sudah ada yaitu prop **`lockOutlet`** (= `!!outletId`, dan halaman standalone selalu pakai `outletTypeId`), maka:
+File filter ini **shared** dengan halaman standalone. Karena pembeda "konteks detail Laporan Outlet" sudah ada yaitu prop **`lockOutlet`** (= `!!outletId`, dan halaman standalone selalu pakai `outletTypeId`), maka:
 
 - `pos/table/outstanding.filter.tsx`
 - `pos/table/product-sales.filter.tsx`
@@ -112,7 +112,7 @@ Perubahan di tiap file:
 |---|---|
 | `src/components/ui/month-picker/MonthPicker.tsx` | Tambah prop opsional `label` (+ pakai `className` di wrapper) |
 | `src/pages/report/outlet/index.tsx` | Seed `filter: { periode: bulan berjalan }` |
-| `src/pages/report/outlet/table/outlet.filter.tsx` | List Rekap Outlet: rentang tanggal → `MonthPicker` periode |
+| `src/pages/report/outlet/table/outlet.filter.tsx` | List Laporan Outlet: rentang tanggal → `MonthPicker` periode |
 | `src/pages/report/outlet/tabs/SessionTab.tsx` | Seed `periode` di filter table config |
 | `src/pages/report/outlet/tabs/OutletTabFilter.tsx` | Tab Sesi: rentang tanggal → `MonthPicker` periode (status tetap) |
 | `src/pages/report/pos/outstanding.tsx` | Seed `periode` di filter table config saat `lockOutlet` |
@@ -134,8 +134,8 @@ Perubahan di tiap file:
 ## Verifikasi
 
 1. `npm run lint` bersih; `tsc -b` tidak menambah error baru.
-2. **List Rekap Outlet**: filter menampilkan "Periode" (MonthPicker); request `GET /report/franchise/outlet?periode=2026-09` (+ `brand_id`/`outlet_id` untuk superuser); summary ikut `periode`.
-3. **Detail Rekap Outlet**:
+2. **List Laporan Outlet**: filter menampilkan "Periode" (MonthPicker); request `GET /report/franchise/outlet?periode=2026-09` (+ `brand_id`/`outlet_id` untuk superuser); summary ikut `periode`.
+3. **Detail Laporan Outlet**:
    - Tab **Sesi** → Periode (bulan) + Status.
    - Tab **Outstanding / Penjualan Produk / Penjualan Menu / Transaksi Dibatalkan / Settlement Membership** → Periode (bulan); `outlet_id` tetap terkunci; **tidak ada** `start_date`/`end_date` di query.
    - Tab **Settlement** → tetap Periode (tahun), tidak berubah.

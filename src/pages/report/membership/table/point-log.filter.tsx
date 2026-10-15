@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 
-import { DatePicker, RemoteSelect } from "@/components/ui";
+import { DatePicker, MonthPicker, RemoteSelect } from "@/components/ui";
 import { useOutlet } from "@/services/outlet/hooks";
 import type { SelectOptionValue } from "@/services/types/table";
 import TableFilters from "@/components/ui/table/filter";
@@ -79,39 +79,57 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, lockOutlet }) => {
     return undefined;
   });
 
+  // Mode periode (tab detail Laporan Outlet) — pengganti rentang tanggal.
+  const [periode, setPeriode] = useState<string>(() => {
+    const cur = current.periode as string | undefined;
+    return cur || dayjs().format("YYYY-MM");
+  });
+
   const buildFilters = (): Record<string, any> => ({
     reference_type: referenceType?.value ?? "",
-    start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
-    end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
-    ...(lockOutlet ? {} : { outlet_id: outlet?.id ?? "" }),
+    ...(lockOutlet
+      ? {
+          periode,
+          // Bersihkan nilai rentang tanggal lama yang mungkin masih tersimpan.
+          start_date: "",
+          end_date: "",
+        }
+      : {
+          start_date: dateRange?.[0]?.format("YYYY-MM-DD") ?? "",
+          end_date: dateRange?.[1]?.format("YYYY-MM-DD") ?? "",
+          outlet_id: outlet?.id ?? "",
+        }),
   });
 
   const isDirty = useMemo(() => {
     const f = buildFilters();
     return (
       (f.reference_type || "") !== (current.reference_type || "") ||
-      (f.start_date || "") !== (current.start_date || "") ||
-      (f.end_date || "") !== (current.end_date || "") ||
+      (lockOutlet
+        ? (f.periode || "") !== (current.periode || "")
+        : (f.start_date || "") !== (current.start_date || "") ||
+          (f.end_date || "") !== (current.end_date || "")) ||
       (!lockOutlet && (f.outlet_id || "") !== (current.outlet_id || ""))
     );
-  }, [referenceType, dateRange, outlet, current, lockOutlet]);
+  }, [referenceType, periode, dateRange, outlet, current, lockOutlet]);
 
   const anyActive = !!(
     current.reference_type ||
-    current.start_date ||
-    current.end_date ||
+    (lockOutlet ? current.periode : current.start_date || current.end_date) ||
     (!lockOutlet && current.outlet_id)
   );
 
   const handleClear = () => {
+    const defaultPeriode = dayjs().format("YYYY-MM");
     setOutlet(null);
     setReferenceType(null);
     setDateRange(undefined);
+    setPeriode(defaultPeriode);
     table.filter({
       reference_type: "",
-      start_date: "",
-      end_date: "",
-      ...(lockOutlet ? {} : { outlet_id: "" }),
+      ...(lockOutlet
+        ? { periode: defaultPeriode, start_date: "", end_date: "" }
+        : { start_date: "", end_date: "", outlet_id: "" }),
     });
   };
 
@@ -155,17 +173,26 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, lockOutlet }) => {
           getLabel={(item) => item?.label ?? ""}
           renderItem={(item) => item?.label}
         />
-        <DatePicker
-          label='Rentang Tanggal'
-          mode='range'
-          value={dateRange}
-          onChange={(date) => {
-            if (Array.isArray(date)) {
-              setDateRange(date as [Dayjs | null, Dayjs | null]);
-            }
-          }}
-          placeholder='Filter Tanggal'
-        />
+        {lockOutlet ? (
+          <MonthPicker
+            label='Periode'
+            value={periode}
+            onChange={setPeriode}
+            placeholder='Filter Periode'
+          />
+        ) : (
+          <DatePicker
+            label='Rentang Tanggal'
+            mode='range'
+            value={dateRange}
+            onChange={(date) => {
+              if (Array.isArray(date)) {
+                setDateRange(date as [Dayjs | null, Dayjs | null]);
+              }
+            }}
+            placeholder='Filter Tanggal'
+          />
+        )}
       </div>
     </TableFilters>
   );

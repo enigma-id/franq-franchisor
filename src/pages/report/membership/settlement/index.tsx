@@ -18,7 +18,7 @@ import { ACTION } from "@/utils/permissions";
 
 /**
  * Body report reusable — dipakai halaman Settlement standalone dan tab di
- * detail Rekap Outlet (filter `outlet_id` dikunci saat `outletId` diisi).
+ * detail Laporan Outlet (filter `outlet_id` dikunci saat `outletId` diisi).
  */
 export function MembershipSettlementReport({
   outletId,

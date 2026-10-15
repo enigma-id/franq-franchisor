@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
+import dayjs from "dayjs";
 import createTableConfig from "./table/saldo-log.config";
 import TableFilter from "./table/saldo-log.filter";
 import useTable from "@/services/table/hooks";
@@ -56,7 +57,9 @@ export function SaldoLogReport({
       createTableConfig({
         filter: {
           ...(membershipId ? { membership_id: membershipId } : {}),
-          ...(lockOutlet ? { outlet_id: outletId } : {}),
+          ...(lockOutlet
+            ? { outlet_id: outletId, periode: dayjs().format("YYYY-MM") }
+            : {}),
         },
         lockedFilter: lockOutlet ? { outlet_id: outletId } : undefined,
       }),

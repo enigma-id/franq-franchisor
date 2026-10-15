@@ -2,7 +2,7 @@
 
 ## Ringkas
 
-Tab "Sesi" di Detail Rekap Outlet dapat dua hal:
+Tab "Sesi" di Detail Laporan Outlet dapat dua hal:
 
 1. Drill-down **detail per-sesi** (dari baris tabel) — session + outlet + cashier + summary + orders.
 2. **Tooltip** di kolom "Grand Total" berisi breakdown `payment_methods`.

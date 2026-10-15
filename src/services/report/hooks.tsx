@@ -28,6 +28,7 @@ import {
   useLazyGetOutletSaldoSummaryQuery,
   useLazyGetMembershipQuery,
   useLazyGetMembershipSummaryQuery,
+  useLazyGetMembershipDetailQuery,
   useLazyGetSaldoLogQuery,
   useLazyGetSaldoLogSummaryQuery,
   useLazyGetPointLogQuery,
@@ -90,6 +91,7 @@ export const useMembershipReport = createCrudHook<any>({
   additionalQueries: {
     membership: useLazyGetMembershipQuery,
     membershipSummary: useLazyGetMembershipSummaryQuery,
+    membershipDetail: useLazyGetMembershipDetailQuery,
     saldoLog: useLazyGetSaldoLogQuery,
     saldoLogSummary: useLazyGetSaldoLogSummaryQuery,
     pointLog: useLazyGetPointLogQuery,

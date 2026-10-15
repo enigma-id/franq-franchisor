@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useEffect } from "react";
+import dayjs from "dayjs";
 import createTableConfig from "./table/point-log.config";
 import TableFilter from "./table/point-log.filter";
 import useTable from "@/services/table/hooks";
@@ -66,24 +67,43 @@ const OverviewCards = ({ data }: { data: any | null }) => {
 };
 
 /**
- * Body report reusable — dipakai halaman Mutasi Point standalone dan
- * drill-down per member dari Daftar Member (`membership_id` dikunci).
+ * Body report reusable — dipakai halaman Mutasi Point standalone, drill-down per
+ * member dari Daftar Member (`membership_id` dikunci), dan tab di detail Laporan
+ * Outlet (`outlet_id` dikunci saat `outletId` diisi).
  */
-export function PointLogReport({ membershipId }: { membershipId?: string }) {
+export function PointLogReport({
+  membershipId,
+  outletId,
+}: {
+  membershipId?: string;
+  outletId?: string;
+}) {
+  const lockOutlet = !!outletId;
+
   const tableConfig = useMemo(
     () =>
       createTableConfig({
-        filter: membershipId ? { membership_id: membershipId } : undefined,
-        lockedFilter: membershipId
-          ? { membership_id: membershipId }
-          : undefined,
+        filter: lockOutlet
+          ? { outlet_id: outletId, periode: dayjs().format("YYYY-MM") }
+          : membershipId
+            ? { membership_id: membershipId }
+            : undefined,
+        lockedFilter: lockOutlet
+          ? { outlet_id: outletId }
+          : membershipId
+            ? { membership_id: membershipId }
+            : undefined,
         hideMembership: !!membershipId,
       }),
-    [membershipId],
+    [membershipId, lockOutlet, outletId],
   );
 
   const Table = useTable(
-    membershipId ? "report_point_log_detail" : "report_point_log",
+    lockOutlet
+      ? "outlet_tab_point_log"
+      : membershipId
+        ? "report_point_log_detail"
+        : "report_point_log",
     tableConfig as TableConfig<unknown>,
   );
 
@@ -111,7 +131,7 @@ export function PointLogReport({ membershipId }: { membershipId?: string }) {
       <OverviewCards data={summary} />
 
       <Table.Tools downloadable>
-        <TableFilter table={Table} />
+        <TableFilter table={Table} lockOutlet={lockOutlet} />
       </Table.Tools>
       <Table.Render
         emptyTitle='Belum Ada Data'

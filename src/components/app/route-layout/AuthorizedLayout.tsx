@@ -30,7 +30,6 @@ import {
   Contact,
   Wallet,
   Gift,
-  UserRound,
   IdCard,
   CreditCard,
   Warehouse,
@@ -198,74 +197,10 @@ const menuSections: MenuSection[] = [
     label: "Report",
     items: [
       {
-        label: "Rekap Outlet",
+        label: "Laporan Outlet",
         path: "/report/outlet",
         icon: <Store size={18} />,
         permission: MENU.reportOutlet,
-      },
-      {
-        label: "Outlet",
-        icon: <Monitor size={18} />,
-        mitraHidden: true,
-        children: [
-          {
-            label: "Outstanding",
-            path: "/report/pos/outstanding",
-            permission: MENU.reportPosOutstanding,
-          },
-          {
-            label: "Settlement",
-            path: "/report/pos/settlement",
-            permission: MENU.reportPosSettlement,
-          },
-          {
-            label: "Penjualan Produk",
-            path: "/report/pos/product-sales",
-            permission: MENU.reportPosProductSales,
-          },
-          {
-            label: "Penjualan Menu",
-            path: "/report/pos/product-item",
-            permission: MENU.reportPosProductItem,
-          },
-          {
-            label: "Transaksi Dibatalkan",
-            path: "/report/pos/cancelled-product-sales",
-            permission: MENU.reportPosTransactionCancelled,
-          },
-        ],
-      },
-      {
-        label: "Mitra",
-        icon: <UserRound size={18} />,
-        outletHidden: true,
-        children: [
-          {
-            label: "Settlement",
-            path: "/report/mitra/settlement",
-            permission: MENU.reportMitraSettlement,
-          },
-          {
-            label: "Penjualan Produk",
-            path: "/report/mitra/product-sales",
-            permission: MENU.reportMitraProductSales,
-          },
-          {
-            label: "Penjualan Menu",
-            path: "/report/mitra/product-item",
-            permission: MENU.reportMitraProductItem,
-          },
-          {
-            label: "Saldo Outlet",
-            path: "/report/mitra/outlet-saldo",
-            permission: MENU.reportMitraOutletSaldo,
-          },
-          {
-            label: "Peta Outlet",
-            path: "/report/mitra/outlet-maps",
-            permission: MENU.reportOutletMap,
-          },
-        ],
       },
       {
         label: "B2B",
@@ -290,30 +225,10 @@ const menuSections: MenuSection[] = [
       },
       {
         label: "Member",
+        path: "/report/membership",
         icon: <IdCard size={18} />,
+        permission: MENU.reportMembership,
         mitraHidden: true,
-        children: [
-          {
-            label: "Daftar Member",
-            path: "/report/membership",
-            permission: MENU.reportMembership,
-          },
-          {
-            label: "Mutasi Saldo",
-            path: "/report/membership/saldo-log",
-            permission: MENU.reportMembershipSaldoLog,
-          },
-          {
-            label: "Mutasi Point",
-            path: "/report/membership/point-log",
-            permission: MENU.reportMembershipPointLog,
-          },
-          {
-            label: "Settlement",
-            path: "/report/membership/settlement",
-            permission: MENU.reportMembershipSettlement,
-          },
-        ],
       },
       {
         label: "Gudang & Penjualan",

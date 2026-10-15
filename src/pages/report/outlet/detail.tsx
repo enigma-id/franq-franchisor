@@ -12,6 +12,8 @@ import { OutstandingReport } from "@/pages/report/pos/outstanding";
 import { CancelledProductSalesReport } from "@/pages/report/pos/cancelledProductSales";
 import { SettlementReport } from "@/pages/report/pos/settlement";
 import { MembershipSettlementReport } from "@/pages/report/membership/settlement";
+import { SaldoLogReport } from "@/pages/report/membership/saldoLog";
+import { PointLogReport } from "@/pages/report/membership/pointLog";
 import { OutletMapReport } from "@/pages/report/franchisor/outletMap";
 
 type OutletTab = { key: string; label: string };
@@ -25,6 +27,8 @@ const TABS_OUTLET: OutletTab[] = [
   { key: "product-sales", label: "Penjualan Produk" },
   { key: "product-item", label: "Penjualan Menu" },
   { key: "cancelled", label: "Transaksi Dibatalkan" },
+  { key: "saldo-log", label: "Mutasi Saldo" },
+  { key: "point-log", label: "Mutasi Point" },
 ];
 
 /** Tab untuk brand bertipe `mitra`. */
@@ -86,7 +90,7 @@ export default function OutletReportDetailPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title={outletName ? `Rekap Outlet — ${outletName}` : "Rekap Outlet"}
+        title={outletName ? `Laporan Outlet — ${outletName}` : "Laporan Outlet"}
         subtitle='Detail performa outlet beserta rekap per-outlet.'
         backTo={() => navigate("/report/outlet")}
       />
@@ -100,7 +104,7 @@ export default function OutletReportDetailPage() {
             <OutletSummaryCards data={summary} variant='detail' />
 
             {/* Tab navigasi laporan per-outlet */}
-            <div className='flex items-center gap-1 border-b border-slate-200 mb-4 '>
+            <div className='flex flex-wrap items-center gap-1 border-b border-slate-200 mb-4'>
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
@@ -142,6 +146,12 @@ export default function OutletReportDetailPage() {
                 )}
                 {activeTab === "cancelled" && (
                   <CancelledProductSalesReport outletId={outletId} />
+                )}
+                {activeTab === "saldo-log" && (
+                  <SaldoLogReport outletId={outletId} />
+                )}
+                {activeTab === "point-log" && (
+                  <PointLogReport outletId={outletId} />
                 )}
                 {activeTab === "outlet-maps" && (
                   <OutletMapReport outletId={outletId} />

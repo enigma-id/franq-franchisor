@@ -7,7 +7,7 @@ import TableFilter from "./table/warehouse-stock.filter";
 
 /**
  * Body report reusable — dipakai halaman Stok Gudang standalone dan tab di
- * detail Rekap Outlet. `tableName` dipakai supaya state tabel tab tidak bentrok
+ * detail Laporan Outlet. `tableName` dipakai supaya state tabel tab tidak bentrok
  * dengan halaman standalone.
  */
 export function WarehouseStockReport({ tableName }: { tableName?: string }) {

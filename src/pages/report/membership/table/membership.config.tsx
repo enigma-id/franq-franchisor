@@ -3,15 +3,15 @@ import config from "@/services/table/const";
 import { currencyFormat, formatDate, formatDateTime } from "@/utils";
 import type { TableConfig } from "@/services/table/const";
 import { Dropdown } from "@/components/ui";
-import { Gift, MoreVertical, Wallet } from "lucide-react";
+import { Eye, MoreVertical } from "lucide-react";
 
 const createTableConfig = ({
   filter,
-  onNavigate,
+  onDetail,
 }: {
   filter?: Record<string, unknown>;
-  /** Buka mutasi saldo/point milik satu member (drill-down dari kolom aksi). */
-  onNavigate?: (row: any, target: "saldo" | "point") => void;
+  /** Buka halaman detail member (drill-down dari kolom aksi). */
+  onDetail?: (row: any) => void;
 }): TableConfig<any> => ({
   ...config,
   url: "/report/membership",
@@ -41,7 +41,7 @@ const createTableConfig = ({
       ),
     },
     reff_code: {
-      title: "Reff Code",
+      title: "Phone Number",
       sortable: true,
       component: (row: any) => (
         <span className='text-sm'>{row?.reff_code || "-"}</span>
@@ -72,7 +72,7 @@ const createTableConfig = ({
       title: "",
       width: 50,
       sortable: false,
-      // stopPropagation: baris tabel punya onRowClick (drill-down ke Mutasi Saldo),
+      // stopPropagation: jaga-jaga kalau baris tabel punya onRowClick,
       // jangan ikut ter-trigger saat dropdown dibuka/dipilih.
       component: (row: any) => (
         <div onClick={(e) => e.stopPropagation()}>
@@ -86,33 +86,17 @@ const createTableConfig = ({
             contentClassName='dropdown-content z-[100] menu p-2 shadow-2xl bg-white rounded-2xl !w-56 border border-slate-100 mt-2'
           >
             <Dropdown.Item
-              onSelect={() => onNavigate?.(row, "saldo")}
+              onSelect={() => onDetail?.(row)}
               className='hover:bg-indigo-50 hover:text-indigo-600'
             >
               <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
                 <div className='w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600'>
-                  <Wallet className='w-4 h-4' />
+                  <Eye className='w-4 h-4' />
                 </div>
                 <div className='flex flex-col items-start leading-tight'>
-                  <span className='font-bold text-[13px]'>Mutasi Saldo</span>
+                  <span className='font-bold text-[13px]'>Lihat Detail</span>
                   <span className='text-[11px] text-slate-400'>
-                    Riwayat saldo member
-                  </span>
-                </div>
-              </button>
-            </Dropdown.Item>
-            <Dropdown.Item
-              onSelect={() => onNavigate?.(row, "point")}
-              className='hover:bg-emerald-50 hover:text-emerald-600'
-            >
-              <button className='flex items-center py-1 gap-3 rounded-xl text-slate-700'>
-                <div className='w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600'>
-                  <Gift className='w-4 h-4' />
-                </div>
-                <div className='flex flex-col items-start leading-tight'>
-                  <span className='font-bold text-[13px]'>Mutasi Point</span>
-                  <span className='text-[11px] text-slate-400'>
-                    Riwayat point member
+                    Mutasi saldo & point
                   </span>
                 </div>
               </button>

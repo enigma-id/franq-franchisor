@@ -50,7 +50,7 @@ export default function OutletReportPage() {
     <Page className='h-full flex flex-col min-h-0 bg-slate-50'>
       <Page.Header
         category='Report'
-        title='Rekap Outlet'
+        title='Laporan Outlet'
         subtitle='Rekap performa tiap outlet.'
       />
       <Page.Body className='flex-1 flex flex-col min-h-0'>

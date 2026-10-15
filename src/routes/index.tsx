@@ -95,6 +95,7 @@ import OutletSessionDetailPage from "@/pages/report/outlet/sessionDetail";
 
 // ==== REPORT MEMBERSHIP ==== //
 import MembershipReportPage from "@/pages/report/membership/membership";
+import MemberDetailPage from "@/pages/report/membership/memberDetail";
 import SaldoLogReportPage from "@/pages/report/membership/saldoLog";
 import PointLogReportPage from "@/pages/report/membership/pointLog";
 import MembershipSettlementPage from "@/pages/report/membership/settlement";
@@ -715,6 +716,16 @@ export function AppRoutes() {
           element={
             <PermissionGuard permission={MENU.reportMembershipSettlement}>
               <MembershipSettlementDetailPage />
+            </PermissionGuard>
+          }
+        />
+        {/* Detail member — `:membershipId` didaftarkan SETELAH route statis di atas
+            supaya segment statis (saldo-log/point-log/settlement) tetap menang. */}
+        <Route
+          path='/report/membership/:membershipId'
+          element={
+            <PermissionGuard permission={MENU.reportMembership}>
+              <MemberDetailPage />
             </PermissionGuard>
           }
         />

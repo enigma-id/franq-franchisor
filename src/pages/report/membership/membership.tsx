@@ -47,7 +47,7 @@ const OverviewCards = ({ data }: { data: any | null }) => {
 
 /**
  * Body report reusable — dipakai halaman Daftar Member standalone dan tab di
- * detail Rekap Outlet (filter `outlet_id` diisi saat dipakai sebagai tab).
+ * detail Laporan Outlet (filter `outlet_id` diisi saat dipakai sebagai tab).
  */
 export function MembershipReport({ outletId }: { outletId?: string }) {
   const navigate = useNavigate();
@@ -56,10 +56,8 @@ export function MembershipReport({ outletId }: { outletId?: string }) {
     () =>
       createTableConfig({
         filter: outletId ? { outlet_id: outletId } : undefined,
-        onNavigate: (row: any, target: "saldo" | "point") =>
-          navigate(
-            `${target === "point" ? "/report/membership/point-log" : "/report/membership/saldo-log"}?membership_id=${row.membership_id}`,
-          ),
+        onDetail: (row: any) =>
+          navigate(`/report/membership/${row.membership_id}`),
       }),
     [outletId, navigate],
   );

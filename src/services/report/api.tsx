@@ -207,6 +207,13 @@ export const reportApi = createApi({
         params,
       }),
     }),
+    // Detail satu member by membership id — header halaman detail member.
+    getMembershipDetail: builder.query({
+      query: (id) => ({
+        url: `/report/membership/${id}`,
+        method: "GET",
+      }),
+    }),
 
     getSaldoLog: builder.query({
       query: (params) => ({
@@ -329,6 +336,7 @@ export const {
   useLazyGetOutletSaldoSummaryQuery,
   useLazyGetMembershipQuery,
   useLazyGetMembershipSummaryQuery,
+  useLazyGetMembershipDetailQuery,
   useLazyGetSaldoLogQuery,
   useLazyGetSaldoLogSummaryQuery,
   useLazyGetPointLogQuery,

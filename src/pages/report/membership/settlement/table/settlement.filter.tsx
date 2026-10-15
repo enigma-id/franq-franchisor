@@ -85,7 +85,7 @@ const TableFilter: React.FC<TableFilterProps> = ({ table, lockOutlet }) => {
     return undefined;
   });
 
-  // Mode periode (tab detail Rekap Outlet) — pengganti rentang tanggal.
+  // Mode periode (tab detail Laporan Outlet) — pengganti rentang tanggal.
   const [periode, setPeriode] = useState<string>(() => {
     const cur = current.periode as string | undefined;
     return cur || dayjs().format("YYYY-MM");

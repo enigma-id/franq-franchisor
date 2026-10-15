@@ -414,6 +414,10 @@ const B2BOrderDetailPage: React.FC = () => {
                     </dd>
                   </div>
                   <div className='info-row'>
+                    <dt className='info-label'>Payment Ref</dt>
+                    <dd className='info-value'>{order.payment_ref || "-"}</dd>
+                  </div>
+                  <div className='info-row'>
                     <dt className='info-label'>Tanggal Dibayar</dt>
                     <dd className='info-value'>
                       {order.paid_at ? formatDateTime(order.paid_at) : "-"}

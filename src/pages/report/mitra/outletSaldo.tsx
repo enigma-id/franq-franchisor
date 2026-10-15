@@ -42,7 +42,7 @@ const OverviewCards = ({ data }: { data: any | null }) => {
 
 /**
  * Body report reusable — dipakai halaman Saldo Outlet standalone dan tab di
- * detail Rekap Outlet. `tableName` dipakai supaya state tabel tab tidak bentrok
+ * detail Laporan Outlet. `tableName` dipakai supaya state tabel tab tidak bentrok
  * dengan halaman standalone.
  */
 export function OutletSaldoReport({

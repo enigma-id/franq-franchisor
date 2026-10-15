@@ -250,7 +250,7 @@ function CashierMapPanel({
 
 /**
  * Body report reusable — dipakai halaman Peta Outlet standalone dan tab di detail
- * Rekap Outlet. Daftar outlet diambil dari `GET /outlet`; trail diambil per outlet
+ * Laporan Outlet. Daftar outlet diambil dari `GET /outlet`; trail diambil per outlet
  * terpilih dan dipisah per kasir (`cashier_id`). Saat `outletId` diisi (mode tab),
  * daftar disembunyikan dan peta langsung menampilkan outlet tersebut.
  */
