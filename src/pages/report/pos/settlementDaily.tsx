@@ -61,8 +61,13 @@ function SettlementDailyTable({ outletTypeId }: { outletTypeId: string }) {
         outlet_id: outletId ?? "",
         outlet_type_id: outletTypeId,
       },
+      // Kolom aksi ke detail sesi hanya muncul kalau konteks outlet ada.
+      onDetail: outletId
+        ? (row: any) =>
+            navigate(`/report/outlet/${outletId}/session/${row.session_id}`)
+        : undefined,
     });
-  }, [periode, outletId]);
+  }, [periode, outletId, navigate]);
 
   const Table = useTable(
     "pos_settlement_daily",

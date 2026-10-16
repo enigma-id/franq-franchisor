@@ -66,6 +66,19 @@ export default function OutletSessionDetailPage() {
   const topups = session.summary?.topups ?? [];
   const paymentMethods = session.summary?.payment_methods ?? [];
   const categorySolds = session.summary?.category_solds ?? [];
+  const categoryGroups = [
+    {
+      label: "Category Bagi Hasil",
+      items: categorySolds.filter((cat) => !cat.is_non_bagi_hasil),
+    },
+    {
+      label: "Category Non Bagi Hasil",
+      items: categorySolds.filter((cat) => cat.is_non_bagi_hasil),
+    },
+  ].map((group) => ({
+    ...group,
+    total: group.items.reduce((sum, cat) => sum + (cat.total_charges ?? 0), 0),
+  }));
   const orders = session.orders ?? [];
 
   return (
@@ -128,13 +141,13 @@ export default function OutletSessionDetailPage() {
                 </dd>
               </div>
               <div className='info-row'>
-                <dt className='info-label'>Starting Cash</dt>
+                <dt className='info-label'>Kas Awal</dt>
                 <dd className='info-value mono'>
                   {currencyFormat(session.cash_started)}
                 </dd>
               </div>
               <div className='info-row'>
-                <dt className='info-label'>Ending Cash</dt>
+                <dt className='info-label'>Kas Akhir</dt>
                 <dd className='info-value mono'>
                   {currencyFormat(session.cash_finished)}
                 </dd>
@@ -251,19 +264,34 @@ export default function OutletSessionDetailPage() {
             {categorySolds.length === 0 ? (
               <p className='text-sm text-slate-400'>Tidak ada data</p>
             ) : (
-              <dl className='space-y-1'>
-                {categorySolds.map((cat, i) => (
-                  <div key={i} className='info-row'>
-                    <dt className='info-label'>{cat.category_name}</dt>
-                    <div className='flex items-center gap-2'>
-                      <span className='category-tag'>{cat.total_qty}</span>
-                      <span className='info-value mono text-xs'>
-                        {currencyFormat(cat.total_charges)}
-                      </span>
+              <div className='space-y-4'>
+                {categoryGroups.map((group) =>
+                  group.items.length === 0 ? null : (
+                    <div key={group.label}>
+                      <div className='flex items-center justify-between border-b border-slate-200 pb-1'>
+                        <span className='text-[11px] font-bold uppercase tracking-[0.05em] text-slate-400'>
+                          {group.label}
+                        </span>
+                        <span className='font-mono text-xs font-semibold text-slate-600'>
+                          {currencyFormat(group.total)}
+                        </span>
+                      </div>
+                      <dl className='space-y-1'>
+                        {group.items.map((cat, i) => (
+                          <div key={i} className='info-row'>
+                            <dt className='info-label'>
+                              {cat.category_name}
+                            </dt>
+                            <dd className='info-value mono text-xs'>
+                              {currencyFormat(cat.total_charges)}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
                     </div>
-                  </div>
-                ))}
-              </dl>
+                  ),
+                )}
+              </div>
             )}
           </div>
         </div>

@@ -31,7 +31,7 @@ const createTableConfig = ({
       title: "Kasir",
       sortable: true,
       component: (row: any) => (
-        <span className='font-semibold text-sm'>{row?.cashier_name || "-"}</span>
+        <span className='font-semibold text-sm'>{row?.cashier?.name || "-"}</span>
       ),
     },
     started_at: {
@@ -82,43 +82,62 @@ const createTableConfig = ({
       title: "Total Sales",
       align: "right",
       class: "text-right font-mono font-medium",
-      component: (row: any) => currencyFormat(row?.total_sales ?? 0),
+      component: (row: any) =>
+        currencyFormat(row?.summary?.sales?.total_sales ?? 0),
     },
     total_discount: {
       title: "Discount",
       align: "right",
       class: "text-right font-mono font-medium",
       component: (row: any) =>
-        currencyFormat(row?.total_discount ?? 0),
+        currencyFormat(row?.summary?.sales?.total_discount ?? 0),
     },
     total_service: {
       title: "Service",
       align: "right",
       class: "text-right font-mono font-medium",
       component: (row: any) =>
-        currencyFormat(row?.total_service ?? 0),
+        currencyFormat(row?.summary?.sales?.total_service ?? 0),
     },
     grand_total: {
       title: "Grand Total",
       align: "right",
       class: "text-right font-mono font-semibold",
       component: (row: any) => {
-        const methods: SessionPaymentMethod[] = row?.payment_methods ?? [];
+        const methods: SessionPaymentMethod[] =
+          row?.summary?.payment_methods ?? [];
         return (
           <PayTooltip methods={methods}>
             <span className='border-b border-dashed border-slate-400/60 pb-px transition-colors hover:border-indigo-400 hover:text-indigo-600'>
-              {currencyFormat(row?.grand_total ?? 0)}
+              {currencyFormat(row?.summary?.sales?.grand_total ?? 0)}
             </span>
           </PayTooltip>
         );
       },
+    },
+    non_bagi_hasil: {
+      title: "Non Bagi Hasil",
+      align: "right",
+      class: "text-right font-mono font-medium",
+      component: (row: any) =>
+        currencyFormat(
+          (row?.summary?.sales?.grand_total ?? 0) -
+            (row?.summary?.sales?.subtotal_nett_bagi_hasil ?? 0),
+        ),
+    },
+    subtotal_nett_sales: {
+      title: "Subtotal Nett Sales",
+      align: "right",
+      class: "text-right font-mono font-medium",
+      component: (row: any) =>
+        currencyFormat(row?.summary?.sales?.subtotal_nett_bagi_hasil ?? 0),
     },
     outstanding_bill: {
       title: "Outstanding",
       align: "right",
       class: "text-right font-mono font-medium",
       component: (row: any) =>
-        currencyFormat(row?.outstanding_bill ?? 0),
+        currencyFormat(row?.summary?.sales?.outstanding_bill ?? 0),
     },
     action: {
       title: "",

@@ -58,11 +58,22 @@ const buildCashierItems = (row?: OutletMapRow): CashierMapItem[] =>
 const countPoints = (items: CashierMapItem[]) =>
   items.reduce((acc, i) => acc + (i.historys?.length ?? 0), 0);
 
-/** Titik device yang jatuh di rentang waktu sesi (format `YYYY-MM-DD HH:MM:SS`). */
+/** Titik device yang jatuh di rentang waktu sesi. Titik history berformat WIB
+ *  ("YYYY-MM-DD HH:MM:SS"), sedangkan waktu sesi dari BE berupa ISO UTC — jadi
+ *  keduanya dinormalkan ke epoch ms sebelum dibandingkan. */
+const toEpochMs = (v?: string): number => {
+  if (!v) return NaN;
+  const iso = v.includes("T") ? v : `${v.replace(" ", "T")}+07:00`;
+  return new Date(iso).getTime();
+};
+
 const withinSession = (p: OutletMapHistory, s: ReportSessionRow) => {
-  if (!p.created_at || !s.started_at) return false;
-  if (p.created_at < s.started_at) return false;
-  if (s.finished_at && p.created_at > s.finished_at) return false;
+  const at = toEpochMs(p.created_at);
+  const start = toEpochMs(s.started_at);
+  if (Number.isNaN(at) || Number.isNaN(start)) return false;
+  if (at < start) return false;
+  const end = toEpochMs(s.finished_at);
+  if (!Number.isNaN(end) && at > end) return false;
   return true;
 };
 
@@ -98,7 +109,7 @@ function CashierMapPanel({
   }, [sessionReportResult?.data]);
 
   const activeSession =
-    sessions.find((s) => s.session_id === selectedSessionId) ?? null;
+    sessions.find((s) => s.id === selectedSessionId) ?? null;
 
   // Default = kasir dengan titik terbanyak supaya jejaknya langsung kelihatan
   // (grup pertama hasil group-by belum tentu punya banyak titik).
@@ -133,7 +144,7 @@ function CashierMapPanel({
   const selected = mapItems.find((i) => i.cashier_id === activeId);
 
   const sessionLabel = (s: ReportSessionRow) =>
-    `${s.cashier_name || "-"} • ${formatDate(s.started_at)}`;
+    `${s.cashier?.name || "-"} • ${formatDate(s.started_at)}`;
 
   const sessionTimes = (s: ReportSessionRow) =>
     `${formatDateTime(s.started_at)} – ${
@@ -142,7 +153,7 @@ function CashierMapPanel({
 
   /** Label nilai terpilih di select: kasir • rentang waktunya. */
   const sessionValueLabel = (s: ReportSessionRow) =>
-    `${s.cashier_name || "-"} • ${sessionTimes(s)}`;
+    `${s.cashier?.name || "-"} • ${sessionTimes(s)}`;
 
   return (
     <div className='flex-1 min-w-0 flex flex-col bg-white border border-slate-200/60 rounded-2xl overflow-hidden'>
@@ -158,7 +169,7 @@ function CashierMapPanel({
           <RemoteSelect<ReportSessionRow>
             placeholder='Semua Sesi'
             value={activeSession}
-            onChange={(row) => onSessionSelect?.(row.session_id)}
+            onChange={(row) => onSessionSelect?.(row.id)}
             onClear={() => onSessionSelect?.(null)}
             data={sessions}
             getLabel={sessionValueLabel}

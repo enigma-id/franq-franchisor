@@ -17,7 +17,7 @@ export function SessionTab({ outletId }: { outletId: string }) {
         filter: { outlet_id: outletId, periode: dayjs().format("YYYY-MM") },
         lockedFilter: { outlet_id: outletId },
         onDetail: (row: ReportSessionRow) =>
-          navigate(`/report/outlet/${outletId}/session/${row.session_id}`),
+          navigate(`/report/outlet/${outletId}/session/${row.id}`),
       }),
     [outletId, navigate],
   );

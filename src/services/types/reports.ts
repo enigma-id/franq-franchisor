@@ -232,26 +232,28 @@ export interface ReportOutletSummary {
   saldo?: number;
 }
 
-// Laporan Sesi
+// Laporan Sesi — satu baris = satu sales session (bentuk sama dengan detail,
+// nested `outlet` / `cashier` / `summary`; lihat `ReportSessionDetail`).
 export interface ReportSessionRow {
-  session_id: string;
+  id: string;
   outlet_id: string;
-  outlet_name: string;
   cashier_id: string;
-  cashier_name: string;
   transaction_date: string;
   started_at: string;
   finished_at: string;
-  status: string;
   cash_started: number;
   cash_finished: number;
-  total_sales: number;
-  total_discount: number;
-  total_service: number;
-  grand_total: number;
-  outstanding_bill: number;
-  /** Breakdown pembayaran per metode — dipakai tooltip Grand Total. */
-  payment_methods?: SessionPaymentMethod[];
+  status: string;
+  is_synced?: boolean;
+  outlet?: {
+    id: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    recipient_name?: string;
+  } | null;
+  cashier?: { id: string; name: string; username?: string } | null;
+  summary?: SessionSummaryData | null;
 }
 
 // Detail Sesi (GET /report/franchise/session/{id})
@@ -306,26 +308,7 @@ export interface SessionOrderRow {
   payment_method?: { name?: string } | null;
 }
 
-export interface ReportSessionDetail {
-  id: string;
-  outlet_id: string;
-  cashier_id: string;
-  transaction_date: string;
-  started_at: string;
-  finished_at: string;
-  cash_started: number;
-  cash_finished: number;
-  status: string;
-  is_synced?: boolean;
-  outlet?: {
-    id: string;
-    name: string;
-    address?: string;
-    phone?: string;
-    recipient_name?: string;
-  } | null;
-  cashier?: { id: string; name: string; username?: string } | null;
-  summary?: SessionSummaryData | null;
+export interface ReportSessionDetail extends ReportSessionRow {
   orders?: SessionOrderRow[];
 }
 
